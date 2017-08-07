@@ -1,0 +1,49 @@
+/*
+ * Copyright 2017 Expedia, Inc.
+ *
+ *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       you may not use this file except in compliance with the License.
+ *       You may obtain a copy of the License at
+ *
+ *           http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *       Unless required by applicable law or agreed to in writing, software
+ *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *       See the License for the specific language governing permissions and
+ *       limitations under the License.
+ *
+ */
+
+@import '../../app';
+
+.search-bar-form {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+}
+
+// increasing specificity to override default by bootstrap
+.search-bar .input-group {
+  .search-bar-text-box {
+    padding-left: @spacing-s;
+    border: 1px solid @gray-light;
+    border-right: 0;
+    border-radius: 3px 0 0 3px;
+    color: @gray-dark;
+    background-color: white;
+    font-family: courier, mono, monospace;
+    box-shadow: none;
+    &:focus {
+      box-shadow: none;
+      border: 1px solid @brand-primary;
+    }
+  }
+
+  .time-range-picker-toggle {
+    border-radius: 0 !important;
+    font-size: @font-size-base !important;
+    text-transform: capitalize;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    "lodash",
+    "react-hot-loader/babel",
+    "transform-decorators-legacy"
+  ],
+  "presets": [
+    "env",
+    "react",
+    "stage-1"
+  ]
+}
