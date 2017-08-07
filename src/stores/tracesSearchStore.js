@@ -28,6 +28,11 @@ function getFormattedTimestamp(startTime) {
     return new Date(startTime * 1000).toLocaleString();
 }
 
+function TraceException(data) {
+    this.message = 'Unable to resolve API call';
+    this.data = data;
+}
+
 function formatResults(results) {
     return results.map((result) => {
         const formattedResult = {...result};
@@ -52,6 +57,9 @@ export class TracesSearchStore {
                 .get(`/api/traces?${queryString}`)
                 .then((result) => {
                     this.searchResults = formatResults(result.data);
+                })
+                .catch((result) => {
+                    throw new TraceException(result);
                 })
         );
     }
