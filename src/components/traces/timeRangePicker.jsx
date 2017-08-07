@@ -1,0 +1,105 @@
+/*
+ * Copyright 2017 Expedia, Inc.
+ *
+ *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       you may not use this file except in compliance with the License.
+ *       You may obtain a copy of the License at
+ *
+ *           http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *       Unless required by applicable law or agreed to in writing, software
+ *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *       See the License for the specific language governing permissions and
+ *       limitations under the License.
+ *
+ */
+
+import React from 'react';
+import PropTypes from 'prop-types';
+import DateTime from 'react-datetime';
+import moment from 'moment';
+import toPresetDisplayText from './utils/presets';
+import './timeRangePicker.less';
+
+export default class TimeRangePicker extends React.Component {
+    static propTypes = {
+        timeRangeChangeCallback: PropTypes.func.isRequired
+    }
+
+    static timePresetOptions = [
+        '5m',
+        '15m',
+        '1h',
+        '4h',
+        '12h',
+        '24h',
+        '2d',
+        '7d'
+    ];
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            startDateTime: moment().subtract(1, 'day'),
+            endDateTime: moment()
+        };
+
+        this.handlePresetSelection = this.handlePresetSelection.bind(this);
+        this.handleCustomTimeRange = this.handleCustomTimeRange.bind(this);
+        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
+        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+    }
+
+    handleCustomTimeRange() {
+        this.props.timeRangeChangeCallback(null, this.state.startDateTime.valueOf(), this.state.endDateTime.valueOf());
+    }
+
+    handlePresetSelection(preset) {
+        this.props.timeRangeChangeCallback(preset);
+        event.preventDefault();
+    }
+
+    handleChangeStartDate(value) {
+        this.setState({startDateTime: value});
+    }
+
+    handleChangeEndDate(value) {
+        this.setState({endDateTime: value});
+    }
+
+    render() {
+        const PresetOption = ({preset}) => (<li key={preset}>
+            <a key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
+        </li>);
+
+        return (
+            <div className="timerange-picker">
+                <div className="timerange-picker__custom">
+                    <h5>Time Range</h5>
+                    <div className="form-group">
+                        <h6>Start Date :</h6>
+                        <DateTime className="datetimerange-picker" value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
+                        <h6>End Date :</h6>
+                        <DateTime className="datetimerange-picker" value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
+                    </div>
+                    <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={this.handleCustomTimeRange}
+                    >
+                        Apply
+                    </button>
+                </div>
+                <div className="timerange-picker__presets">
+                    <h5>Presets</h5>
+                    <div className="timerange-picker__presets__listblock">
+                        <ul className="timerange-picker__presets__list">
+                            {TimeRangePicker.timePresetOptions.map(preset => (<PresetOption preset={preset}/>))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

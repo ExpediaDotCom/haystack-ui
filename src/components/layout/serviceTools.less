@@ -1,0 +1,73 @@
+/*
+ * Copyright 2017 Expedia, Inc.
+ *
+ *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       you may not use this file except in compliance with the License.
+ *       You may obtain a copy of the License at
+ *
+ *           http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *       Unless required by applicable law or agreed to in writing, software
+ *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *       See the License for the specific language governing permissions and
+ *       limitations under the License.
+ *
+ */
+
+@import "../../app";
+
+@tabPadding: 23px;
+
+.serviceToolsContainer {
+  padding-top: @spacing-l;
+  padding-bottom: @spacing-l;
+}
+
+.serviceToolsTab {
+  background-color: @gray-darker;
+}
+
+.serviceToolsTab__title {
+  color: @gray-lighter;
+}
+
+.serviceToolsTab__tab-option {
+  @media screen and (min-width: @screen-md-min) {
+    margin-top: @spacing-l;
+  }
+  padding-bottom: @tabPadding;
+
+  font-size: 15px;
+  color: @gray-lighter;
+
+  &:hover, &:hover .serviceToolsTab__tab-option-icon:before {
+    .text-gradient-on-dark-bg;
+  }
+}
+
+.tab-active,  .tab-active .serviceToolsTab__tab-option-icon:before {
+  .text-gradient-on-dark-bg;
+}
+
+.tab-active:after {
+  content: ' ';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: @spacing-l;
+  top: @tabPadding;
+  border: 15px solid;
+  border-color: transparent transparent #f6f8fc transparent;
+}
+
+.serviceToolsTab__tab-option-icon {
+  margin-right: @spacing-s;
+}
+
+.text-gradient-on-dark-bg {
+  background: @gradient-bg-lighter;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: none;
+}
