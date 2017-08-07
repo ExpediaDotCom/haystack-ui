@@ -18,6 +18,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import timeago from 'timeago.js';
+import { fromPromise } from 'mobx-utils';
 
 function getTotalSpanCount(services) {
     return services.reduce((sum, service) => sum + service.spanCount, 0);
@@ -44,14 +45,15 @@ function formatResults(results) {
 
 export class TracesSearchStore {
     @observable searchResults = [];
-
+    @observable wrapper = [];
     @action fetchSearchResults(queryString) {
-        this.searchResults = [];
-        axios
-            .get(`/api/traces?${queryString}`)
-            .then((result) => {
-                this.searchResults = formatResults(result.data);
-            });
+        this.wrapper = fromPromise(
+            axios
+                .get(`/api/traces?${queryString}`)
+                .then((result) => {
+                    this.searchResults = formatResults(result.data);
+                })
+        );
     }
 }
 
