@@ -50,9 +50,9 @@ function formatResults(results) {
 
 export class TracesSearchStore {
     @observable searchResults = [];
-    @observable wrapper = [];
+    @observable promiseState = null;
     @action fetchSearchResults(queryString) {
-        this.wrapper = fromPromise(
+        this.promiseState = fromPromise(
             axios
                 .get(`/api/traces?${queryString}`)
                 .then((result) => {

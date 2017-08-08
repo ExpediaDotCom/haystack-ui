@@ -22,7 +22,6 @@ import React from 'react';
 import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
-import {observable} from 'mobx';
 import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar';
 import TraceResults from '../../../src/components/traces/traceResults';
@@ -111,18 +110,15 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function createSpyStore() {
-    return observable({
-        searchResults: [],
-        fetchSearchResults: sinon.spy()
-    });
-}
-
 function createStubStore(results) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
+        store.promiseState = {
+            case: ({fulfilled}) => fulfilled()
+        };
     });
+
     return store;
 }
 
@@ -133,7 +129,7 @@ describe('<Traces />', () => {
     });
 
     it('should trigger fetchSearchResults on mount', () => {
-        const tracesSearchStore = createSpyStore();
+        const tracesSearchStore = createStubStore([]);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(wrapper.find('.traces-panel')).to.have.length(1);

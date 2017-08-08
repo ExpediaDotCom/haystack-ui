@@ -33,10 +33,12 @@ export default class TraceResults extends React.Component {
     render() {
         return (
             <section>
-                { this.props.tracesSearchStore.wrapper.case({
+                { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
-                        fulfilled: () => <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore} history={this.props.history} />
+                        fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
+                                ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore} history={this.props.history} />
+                                : <Error />)
                     })
                 }
             </section>
