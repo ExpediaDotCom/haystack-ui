@@ -46,6 +46,18 @@ const stubMatch = {
     }
 };
 
+const fulfilledPromise = {
+    case: ({fulfilled}) => fulfilled()
+};
+
+const rejectedPromise = {
+    case: ({rejected}) => rejected()
+};
+
+const pendingPromise = {
+    case: ({pending}) => pending()
+};
+
 const stubResults = [{
     traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
     root: {
@@ -110,13 +122,11 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function createStubStore(results) {
+function createStubStore(results, promise) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
-        store.promiseState = {
-            case: ({fulfilled}) => fulfilled()
-        };
+        store.promiseState = promise;
     });
 
     return store;
@@ -137,7 +147,7 @@ describe('<Traces />', () => {
     });
 
     it('should render results after getting search results', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
@@ -145,8 +155,22 @@ describe('<Traces />', () => {
         expect(wrapper.find('.tr-no-border')).to.have.length(2);
     });
 
+    it('should render error if promise is rejected', () => {
+        const tracesSearchStore = createStubStore(stubResults, rejectedPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        expect(wrapper.find('.error')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+    });
+
+    it('should render loading while promise is pending', () => {
+        const tracesSearchStore = createStubStore(stubResults, pendingPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        expect(wrapper.find('.loading')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+    });
+
     it('should update search results on clicking search', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         wrapper.find('.traces-search-button').simulate('click');
 
@@ -156,7 +180,7 @@ describe('<Traces />', () => {
     });
 
     it('should not show search results list on empty results', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         tracesSearchStore.fetchSearchResults.restore();
         sinon.stub(tracesSearchStore, 'fetchSearchResults', () => {

@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 
 import Loading from '../common/loading';
 import TraceResultsTable from './traceResultsTable';
-import Error from './searchError';
+import Error from '../common/error';
 
 @observer
 export default class TraceResults extends React.Component {

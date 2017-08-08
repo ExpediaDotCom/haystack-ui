@@ -29,7 +29,7 @@ function getFormattedTimestamp(startTime) {
 }
 
 function TraceException(data) {
-    this.message = 'Unable to resolve API call';
+    this.message = 'Unable to resolve promise';
     this.data = data;
 }
 
