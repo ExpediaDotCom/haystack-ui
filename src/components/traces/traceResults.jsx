@@ -21,21 +21,26 @@ import PropTypes from 'prop-types';
 
 import Loading from '../common/loading';
 import TraceResultsTable from './traceResultsTable';
+import Error from '../common/error';
 
 @observer
 export default class TraceResults extends React.Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
         tracesSearchStore: PropTypes.object.isRequired
-    }
+    };
 
     render() {
-        const results = this.props.tracesSearchStore.searchResults;
         return (
             <section>
-                { results && results.length ?
-                    <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore} history={this.props.history} /> :
-                    <Loading /> }
+                { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
+                                ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore} history={this.props.history} />
+                                : <Error />)
+                    })
+                }
             </section>
         );
     }

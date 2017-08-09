@@ -18,6 +18,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import timeago from 'timeago.js';
+import { fromPromise } from 'mobx-utils';
 
 function getTotalSpanCount(services) {
     return services.reduce((sum, service) => sum + service.spanCount, 0);
@@ -25,6 +26,11 @@ function getTotalSpanCount(services) {
 
 function getFormattedTimestamp(startTime) {
     return new Date(startTime * 1000).toLocaleString();
+}
+
+function TraceException(data) {
+    this.message = 'Unable to resolve promise';
+    this.data = data;
 }
 
 function formatResults(results) {
@@ -44,14 +50,18 @@ function formatResults(results) {
 
 export class TracesSearchStore {
     @observable searchResults = [];
-
+    @observable promiseState = null;
     @action fetchSearchResults(queryString) {
-        this.searchResults = [];
-        axios
-            .get(`/api/traces?${queryString}`)
-            .then((result) => {
-                this.searchResults = formatResults(result.data);
-            });
+        this.promiseState = fromPromise(
+            axios
+                .get(`/api/traces?${queryString}`)
+                .then((result) => {
+                    this.searchResults = formatResults(result.data);
+                })
+                .catch((result) => {
+                    throw new TraceException(result);
+                })
+        );
     }
 }
 

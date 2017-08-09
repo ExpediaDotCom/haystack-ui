@@ -22,7 +22,6 @@ import React from 'react';
 import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
-import {observable} from 'mobx';
 import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar';
 import TraceResults from '../../../src/components/traces/traceResults';
@@ -45,6 +44,18 @@ const stubMatch = {
     params: {
         serviceName: 'abc-service'
     }
+};
+
+const fulfilledPromise = {
+    case: ({fulfilled}) => fulfilled()
+};
+
+const rejectedPromise = {
+    case: ({rejected}) => rejected()
+};
+
+const pendingPromise = {
+    case: ({pending}) => pending()
 };
 
 const stubResults = [{
@@ -111,18 +122,13 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function createSpyStore() {
-    return observable({
-        searchResults: [],
-        fetchSearchResults: sinon.spy()
-    });
-}
-
-function createStubStore(results) {
+function createStubStore(results, promise) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
+        store.promiseState = promise;
     });
+
     return store;
 }
 
@@ -133,7 +139,7 @@ describe('<Traces />', () => {
     });
 
     it('should trigger fetchSearchResults on mount', () => {
-        const tracesSearchStore = createSpyStore();
+        const tracesSearchStore = createStubStore([]);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(wrapper.find('.traces-panel')).to.have.length(1);
@@ -141,7 +147,7 @@ describe('<Traces />', () => {
     });
 
     it('should render results after getting search results', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
@@ -149,8 +155,22 @@ describe('<Traces />', () => {
         expect(wrapper.find('.tr-no-border')).to.have.length(2);
     });
 
+    it('should render error if promise is rejected', () => {
+        const tracesSearchStore = createStubStore(stubResults, rejectedPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        expect(wrapper.find('.error-message')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+    });
+
+    it('should render loading while promise is pending', () => {
+        const tracesSearchStore = createStubStore(stubResults, pendingPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        expect(wrapper.find('.loading')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+    });
+
     it('should update search results on clicking search', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         wrapper.find('.traces-search-button').simulate('click');
 
@@ -160,7 +180,7 @@ describe('<Traces />', () => {
     });
 
     it('should not show search results list on empty results', () => {
-        const tracesSearchStore = createStubStore(stubResults);
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         tracesSearchStore.fetchSearchResults.restore();
         sinon.stub(tracesSearchStore, 'fetchSearchResults', () => {
