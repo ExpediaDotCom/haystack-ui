@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import TimeRangePicker from './timeRangePicker';
-import {isValid, parseQueryString, toQueryString} from './utils/traceQueryParser';
+import {dateIsValid, queryIsValid, parseQueryString, toQueryString} from './utils/traceQueryParser';
 import toPresetDisplayText from './utils/presets';
 import './searchBar.less';
 
@@ -43,6 +43,8 @@ export default class SearchQueryBar extends React.Component {
         return {
             queryString: toQueryString(query),
             showTimeRangePicker: false,
+            queryError: false,
+            dateError: false,
             timePreset: query.timePreset,
             startTime: query.startTime,
             endTime: query.endTime,
@@ -61,6 +63,7 @@ export default class SearchQueryBar extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
         this.search = this.search.bind(this);
+        this.handleSearchError = this.handleSearchError.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -91,6 +94,11 @@ export default class SearchQueryBar extends React.Component {
         event.preventDefault();
     }
 
+    handleSearchError() {
+        this.setState({queryError: !queryIsValid(this.state.queryString)});
+        this.setState({dateError: !dateIsValid(this.state.startTime, this.state.endTime)});
+    }
+
     timeRangeChangeCallback(timePreset, startTime, endTime) {
         this.setState({timePreset, startTime, endTime});
         this.setState({timeRangePickerToggleText: SearchQueryBar.getTimeRangeText(timePreset, startTime, endTime)});
@@ -98,7 +106,7 @@ export default class SearchQueryBar extends React.Component {
     }
 
     search() {
-        if (isValid(this.state.queryString)) {
+        if (queryIsValid(this.state.queryString) && dateIsValid(this.state.startTime, this.state.endTime)) {
             const query = parseQueryString(this.state.queryString);
             query.timePreset = this.state.timePreset;
             query.startTime = this.state.startTime;
@@ -106,13 +114,14 @@ export default class SearchQueryBar extends React.Component {
 
             this.props.searchCallback(query);
         } else {
-            // TODO show an error message
+            this.handleSearchError();
         }
     }
 
     render() {
         return (
             <section className="search-query-bar">
+                <div>
                 <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
                     <input
                         type="text"
@@ -139,6 +148,9 @@ export default class SearchQueryBar extends React.Component {
                 { this.state.showTimeRangePicker
                     ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
                     : null }
+                </div>
+                { this.state.queryError ? <p className="traces-error-message">Please make sure your keys have values and are separated by a space</p> : null}
+                { this.state.dateError ? <p className="traces-error-message traces-date-error">Invalid Date</p> : null}
             </section>
         );
     }

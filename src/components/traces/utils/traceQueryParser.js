@@ -15,7 +15,18 @@
  *
  */
 
-export const isValid = () => true;
+export const queryIsValid = (queryString) => {
+    let validity = true;
+    queryString.split(' ').map((x) => { if (!RegExp(/\w=\w/).test(x)) { validity = false; } return null; });
+    return validity;
+};
+
+export const dateIsValid = (start, end) => {
+    if (start) {
+        return (end > start) && (Date.now() - start > 0);
+    }
+    return true;
+};
 
 export const parseQueryString = (queryString) => {
     const keyValuePairs = queryString.split(' ');
