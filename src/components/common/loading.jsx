@@ -19,8 +19,10 @@ import React from 'react';
 import './loading.less';
 
 export default () => (
-    <section className="loading text-center">
-        <img alt="loading..." className="loading__img" src="/images/loading.gif"/>
-        <h6 className="loading__text">Loading...</h6>
+    <section className="text-center loading">
+        <section className="loading_text text-center">
+            <img alt="loading..." className="loading__img" src="/images/loading.gif"/>
+            <h6 className="loading__text">Loading...</h6>
+        </section>
     </section>
 );

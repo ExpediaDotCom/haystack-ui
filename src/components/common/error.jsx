@@ -22,8 +22,11 @@ import './error.less';
 
 
 export default () => (
-    <div className="row text-center error">
-        <h4>Oops - something went wrong.</h4>
-    </div>
+    <section className="text-center error-message">
+        <div className="error-message_text">
+            <h5>{"Oops! Couldn't find the needle"}</h5>
+            <p>Please try again later</p>
+        </div>
+    </section>
 );
 

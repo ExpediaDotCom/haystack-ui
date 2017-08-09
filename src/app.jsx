@@ -19,7 +19,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router} from 'react-router-dom';
 import AppRoutes from './appRoutes';
+import storesInitializer from './stores/storesInitializer';
 
+// app initializers
+storesInitializer.init();
+
+// mount react components
 ReactDOM.render(
     <Router history={history}>
         <AppRoutes/>

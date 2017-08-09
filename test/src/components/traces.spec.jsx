@@ -158,7 +158,7 @@ describe('<Traces />', () => {
     it('should render error if promise is rejected', () => {
         const tracesSearchStore = createStubStore(stubResults, rejectedPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-        expect(wrapper.find('.error')).to.have.length(1);
+        expect(wrapper.find('.error-message')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
     });
 

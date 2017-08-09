@@ -15,12 +15,11 @@
  *
  */
 
-@import "../../app";
+import axios from 'axios';
 
-.loading_text {
-  display: inline-block;
-  margin: @spacing-xl;
-  padding: @spacing-s @spacing-xl @spacing-s @spacing-xl;
-  border: 2px solid @brand-primary;
-  background-color: white;
-}
+export default {
+    init: () => {
+        // axios init
+        axios.defaults.timeout = 30000;
+    }
+};
