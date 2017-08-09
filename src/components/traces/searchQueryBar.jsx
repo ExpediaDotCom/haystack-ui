@@ -95,8 +95,8 @@ export default class SearchQueryBar extends React.Component {
     }
 
     handleSearchError() {
-        if (!queryIsValid(this.state.queryString)) { this.setState({queryError: true}); }
-        if (!dateIsValid(this.state.startTime, this.state.endTime)) { this.setState({dateError: true}); }
+        this.setState({queryError: !queryIsValid(this.state.queryString)});
+        this.setState({dateError: !dateIsValid(this.state.startTime, this.state.endTime)});
     }
 
     timeRangeChangeCallback(timePreset, startTime, endTime) {
@@ -114,7 +114,6 @@ export default class SearchQueryBar extends React.Component {
 
             this.props.searchCallback(query);
         } else {
-            event.preventDefault();
             this.handleSearchError();
         }
     }
