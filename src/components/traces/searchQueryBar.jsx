@@ -106,7 +106,6 @@ export default class SearchQueryBar extends React.Component {
     }
 
     search() {
-
         if (queryIsValid(this.state.queryString) && dateIsValid(this.state.startTime, this.state.endTime)) {
             const query = parseQueryString(this.state.queryString);
             query.timePreset = this.state.timePreset;
