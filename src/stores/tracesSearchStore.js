@@ -51,6 +51,7 @@ function formatResults(results) {
 export class TracesSearchStore {
     @observable searchResults = [];
     @observable promiseState = null;
+    @observable serviceInQueryString = null;
     @action fetchSearchResults(queryString) {
         this.promiseState = fromPromise(
             axios

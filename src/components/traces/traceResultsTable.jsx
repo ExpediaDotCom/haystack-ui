@@ -122,8 +122,12 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn isKey dataField="rootUrl" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Start URL</TableHeaderColumn>
                 <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
                 <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDuration" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>Svc Duration</TableHeaderColumn>
+                <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" hidden={!this.props.tracesSearchStore.serviceInQueryString} dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>
+                    Svc Duration %
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="serviceDuration" dataSort width="10" hidden={!this.props.tracesSearchStore.serviceInQueryString} dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>
+                    Svc Duration
+                </TableHeaderColumn>
                 <TableHeaderColumn dataField="duration" dataSort width="10" sortFunc={this.sortByDuration} dataFormat={TraceResultsTable.totalDurationColumnFormatter} thStyle={{ border: 'none' }}>Total Duration</TableHeaderColumn>
             </BootstrapTable>
         );

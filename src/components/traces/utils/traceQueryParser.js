@@ -49,11 +49,12 @@ export const toQuery = (query) => {
     query.substr(1)
         .split('&')
         .forEach((item) => {
-            const key = item.split('=')[0].trim();
-            const value = item.split('=')[1].trim();
-            if (key && value) {
-                queryDict[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1]);
-            }
+            queryDict[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1]);
         });
     return queryDict;
+};
+
+
+export const searchForService = (query) => {
+    return Object.keys(query).includes('serviceName');
 };
