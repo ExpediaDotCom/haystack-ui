@@ -62,8 +62,8 @@ export default class SearchQueryBar extends React.Component {
         this.handleTimeRangeSelect = this.handleTimeRangeSelect.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
+        this.isSearchValid = this.isSearchValid.bind(this);
         this.search = this.search.bind(this);
-        this.handleSearchError = this.handleSearchError.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -94,9 +94,13 @@ export default class SearchQueryBar extends React.Component {
         event.preventDefault();
     }
 
-    handleSearchError() {
-        this.setState({queryError: !queryIsValid(this.state.queryString)});
-        this.setState({dateError: !dateIsValid(this.state.startTime, this.state.endTime)});
+    isSearchValid() {
+        const queryValid = queryIsValid(this.state.queryString);
+        const dateValid = dateIsValid(this.state.startTime, this.state.endTime);
+        this.setState({queryError: !queryValid});
+        this.setState({dateError: !dateValid});
+
+        return queryValid && dateValid;
     }
 
     timeRangeChangeCallback(timePreset, startTime, endTime) {
@@ -106,15 +110,13 @@ export default class SearchQueryBar extends React.Component {
     }
 
     search() {
-        if (queryIsValid(this.state.queryString) && dateIsValid(this.state.startTime, this.state.endTime)) {
+        if (this.isSearchValid()) {
             const query = parseQueryString(this.state.queryString);
             query.timePreset = this.state.timePreset;
             query.startTime = this.state.startTime;
             query.endTime = this.state.endTime;
 
             this.props.searchCallback(query);
-        } else {
-            this.handleSearchError();
         }
     }
 
