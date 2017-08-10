@@ -54,7 +54,4 @@ export const toQuery = (query) => {
     return queryDict;
 };
 
-
-export const searchForService = (query) => {
-    return Object.keys(query).includes('serviceName');
-};
+export const searchForService = query => Object.keys(query).includes('serviceName');
