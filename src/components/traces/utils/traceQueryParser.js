@@ -17,12 +17,16 @@
 
 export const queryIsValid = (queryString) => {
     let validity = true;
-    queryString.split(' ').map((x) => { if (!RegExp(/\w=\w/).test(x)) { validity = false; } return null; });
+    // regex to make sure a key is one word, followed by a value
+    // TODO: Add validation for key/value pairs that have a space character
+    queryString.split(' ').map((q) => { if (!RegExp(/\w=\w/).test(q)) { validity = false; } return null; });
     return validity;
 };
 
 export const dateIsValid = (start, end) => {
+    // preset timers will always be valid; no need to test validation
     if (start) {
+        // ensure the end time is not before the start time, and the start time is not later than current time
         return (end > start) && (Date.now() - start > 0);
     }
     return true;
