@@ -126,7 +126,7 @@ export default class TraceResultsTable extends React.Component {
                         [<TableHeaderColumn dataField="serviceDurationPercent" key="0" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>
                             Svc Duration %
                         </TableHeaderColumn>,
-                        <TableHeaderColumn dataField="serviceDuration" dataSort key="1" width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>
+                        <TableHeaderColumn columnClassName="service-duration" dataField="serviceDuration" dataSort key="1" width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>
                             Svc Duration
                         </TableHeaderColumn>]
                     : null }
