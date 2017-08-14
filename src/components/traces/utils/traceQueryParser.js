@@ -17,9 +17,9 @@
 
 export const queryIsValid = (queryString) => {
     let validity = true;
-    // regex to make sure a key is one word, followed by a value
+    // trim whitespace, check for whitespace before =, split kv pairs, check individually for key=value
     // TODO: Add validation for key/value pairs that have a space character
-    queryString.split(' ').map((q) => { if (!RegExp(/\w=\w/).test(q)) { validity = false; } return null; });
+    queryString.trim().replace(new RegExp(/\s*=\s*/g), '=').split(' ').map((q) => { if (!RegExp(/\w=\w/).test(q)) { validity = false; } return null; });
     return validity;
 };
 
