@@ -151,7 +151,7 @@ export default class SearchQueryBar extends React.Component {
                     ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
                     : null }
                 </div>
-                { this.state.queryError ? <p className="traces-error-message">Please make sure your keys have values and are separated by a space</p> : null}
+                { this.state.queryError ? <p className="traces-error-message">Invalid query, expected format is <span className="trace-error-message_format">tag1=value1 tag2=value2 [...]</span></p> : null}
                 { this.state.dateError ? <p className="traces-error-message traces-date-error">Invalid Date</p> : null}
             </section>
         );
