@@ -18,20 +18,68 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import Home from '../../../src/components/home/home';
 import HomeSearchBox from '../../../src/components/home/homeSearchBox';
+import {ServiceStore} from '../../../src/stores/serviceStore';
 
+
+const stubResults = [
+    'lannister-service',
+    'stark-service',
+    'tyrell-service',
+    'targaryen-service',
+    'baratheon-service',
+    'dragon-service'
+];
+
+const stubLocation = {
+    search: '/'
+};
+
+const stubHistory = {
+    location: {
+        search: '/'
+    },
+    push: (location) => {
+        stubLocation.search = location.search;
+    }
+};
+
+function createStubStore(results) {
+    const store = new ServiceStore();
+    store.services = [];
+    sinon.stub(store, 'fetchServices', () => {
+        store.services = results;
+    });
+    return store;
+}
 
 describe('<Home />', () => {
-    it('should render the homepage`', () => {
-        const wrapper = shallow(<Home />);
+    it('should render the homepage', () => {
+        const wrapper = shallow(<Home history={stubHistory}/>);
         expect(wrapper.find('.home-panel')).to.have.length(1);
     });
 
-    describe('<HomeSearchBox />', () => {
-        it('should render the homesearchbox`', () => {
-            const wrapper = shallow(<HomeSearchBox />);
-            expect(wrapper.find('.container')).to.have.length(1);
-        });
+    it('homepage contains homesearchbox', () => {
+        const wrapper = shallow(<Home history={stubHistory}/>);
+        const serviceStore = createStubStore(stubResults);
+        expect(wrapper.contains(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>)).to.equal(true);
     });
+
+    it('should render the homesearchbox', () => {
+        const serviceStore = createStubStore(stubResults);
+        const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
+        expect(wrapper.find('.container')).to.have.length(1);
+    });
+
+    // it('calls handleChange on Select ', () => {
+    //     const serviceStore = createStubStore(stubResults);
+    //     const onChange = sinon.spy();
+    //     const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services} onChange={onChange}/>);
+    //     const selectWrapper = wrapper.find('Select');
+    //     const event = { label: 'stark-service', value: 'stark-service'};
+    //     selectWrapper.simulate('change', event);
+    //     expect(onChange.calledOnce).to.equal(true);
+    // });
 });

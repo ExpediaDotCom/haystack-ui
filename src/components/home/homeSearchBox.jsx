@@ -19,13 +19,13 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
-import serviceStore from '../../stores/serviceStore';
 import './homeSearchBox.less';
 
 @observer
 export default class HomeSearchBox extends Component {
     static propTypes = {
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        services: PropTypes.array.isRequired
     };
 
     static formatServiceOptions(serviceList) {
@@ -33,16 +33,13 @@ export default class HomeSearchBox extends Component {
         serviceList.map(serviceListItem =>
             serviceListOptions.push({value: serviceListItem, label: serviceListItem}
             ));
+
         return serviceListOptions;
     }
 
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-    }
-
-    componentWillMount() {
-        serviceStore.fetchServices();
     }
 
     handleChange(event) {
@@ -54,10 +51,11 @@ export default class HomeSearchBox extends Component {
             <section className="container">
                 <div className="jumbotron">
                     <h2 className="home__header">Select a service to start </h2>
-                    <div className="col-md-4 col-md-offset-4">
+                    <div className="col-md-4 col-md-offset-4" >
                         <Select
+                            className="test"
                             name="service-list"
-                            options={HomeSearchBox.formatServiceOptions(serviceStore.services)}
+                            options={HomeSearchBox.formatServiceOptions(this.props.services)}
                             onChange={this.handleChange}
                             placeholder="Choose here..."
                         />
