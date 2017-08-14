@@ -44,7 +44,6 @@ const progressBarOptions = {
 // main webpack export
 module.exports = {
     entry: {
-        // index: appPaths.indexView,
         app: appPaths.sourceAppJsx
     },
     module: {
