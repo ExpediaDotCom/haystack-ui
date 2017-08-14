@@ -19,10 +19,19 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { expect } from 'chai';
 import Home from '../../../src/components/home/home';
+import HomeSearchBox from '../../../src/components/home/homeSearchBox';
+
 
 describe('<Home />', () => {
     it('should render the homepage`', () => {
         const wrapper = shallow(<Home />);
         expect(wrapper.find('.home-panel')).to.have.length(1);
+    });
+
+    describe('<HomeSearchBox />', () => {
+        it('should render the homesearchbox`', () => {
+            const wrapper = shallow(<HomeSearchBox />);
+            expect(wrapper.find('.container')).to.have.length(1);
+        });
     });
 });

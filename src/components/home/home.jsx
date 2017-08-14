@@ -16,13 +16,14 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import HomeSearchBox from './homeSearchBox';
 import './home.less';
 import WorkInProgress from '../common/workInProgress';
 
-export default () => (
+const Home = ({history}) => (
     <article>
-        <HomeSearchBox />
+        <HomeSearchBox history={history}/>
         <article className="container home-panel">
             <section className="row">
                 <WorkInProgress/>
@@ -30,3 +31,9 @@ export default () => (
         </article>
     </article>
 );
+
+Home.propTypes = {
+    history: PropTypes.object.isRequired
+};
+
+export default Home;
