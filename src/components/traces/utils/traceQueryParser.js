@@ -17,9 +17,18 @@
 
 export const queryIsValid = (queryString) => {
     let validity = true;
-    // trim whitespace, check for whitespace before =, split kv pairs, check individually for key=value
     // TODO: Add validation for key/value pairs that have a space character
-    queryString.trim().replace(new RegExp(/\s*=\s*/g), '=').split(' ').map((q) => { if (!RegExp(/\w=\w/).test(q)) { validity = false; } return null; });
+    queryString
+        // Trim whitespace, check for whitespace before and after =,
+        .trim().replace(new RegExp(/\s*=\s*/g), '=')
+        // Split kv pairs
+        .split(/\s+/g)
+        // Check individually for key=value
+        .map((q) => {
+            if (!RegExp(/\w=\w/).test(q)) {
+                validity = false;
+            } return null;
+        });
     return validity;
 };
 
@@ -33,7 +42,7 @@ export const dateIsValid = (start, end) => {
 };
 
 export const parseQueryString = (queryString) => {
-    const keyValuePairs = queryString.split(' ');
+    const keyValuePairs = queryString.replace(new RegExp(/\s*=\s*/g), '=').split(/\s+/g);
 
     const parsedQueryString = {};
 
