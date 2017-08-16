@@ -72,14 +72,4 @@ describe('<Home />', () => {
         const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
         expect(wrapper.find('.container')).to.have.length(1);
     });
-
-    // it('calls handleChange on Select ', () => {
-    //     const serviceStore = createStubStore(stubResults);
-    //     const onChange = sinon.spy();
-    //     const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services} onChange={onChange}/>);
-    //     const selectWrapper = wrapper.find('Select');
-    //     const event = { label: 'stark-service', value: 'stark-service'};
-    //     selectWrapper.simulate('change', event);
-    //     expect(onChange.calledOnce).to.equal(true);
-    // });
 });
