@@ -49,6 +49,7 @@ export default class TimeRangePicker extends React.Component {
         this.handleCustomTimeRange = this.handleCustomTimeRange.bind(this);
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
         this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+        this.toValid = this.toValid.bind(this);
     }
 
     handleCustomTimeRange() {
@@ -67,11 +68,18 @@ export default class TimeRangePicker extends React.Component {
     handleChangeEndDate(value) {
         this.setState({endDateTime: value});
     }
+    toValid(current) {
+        return current > moment(this.state.startDateTime).subtract(1, 'day') && current < DateTime.moment();
+    }
 
     render() {
         const PresetOption = ({preset}) => (<li key={preset}>
             <a key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
         </li>);
+
+        function fromValid(current) {
+            return current.isBefore(DateTime.moment());
+        }
 
         return (
             <div className="timerange-picker">
@@ -79,9 +87,9 @@ export default class TimeRangePicker extends React.Component {
                     <h5>Time Range</h5>
                     <div className="form-group">
                         <h6>Start Date :</h6>
-                        <DateTime className="datetimerange-picker" value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
+                        <DateTime className="datetimerange-picker" isValidDate={fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
                         <h6>End Date :</h6>
-                        <DateTime className="datetimerange-picker" value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
+                        <DateTime className="datetimerange-picker" isValidDate={this.toValid} value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
                     </div>
                     <button
                         type="button"

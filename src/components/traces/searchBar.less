@@ -33,7 +33,7 @@
     border-radius: 3px 0 0 3px;
     color: @gray-dark;
     background-color: white;
-    font-family: courier, mono, monospace;
+    font-family: @font-family-monospace;
     font-size: @font-size-base;
     box-shadow: none;
     &:focus {
@@ -47,4 +47,18 @@
     font-size: @font-size-base !important;
     text-transform: capitalize;
   }
+}
+
+.traces-error-message {
+  display: inline-block;
+  padding-top: @spacing-xs;
+  color: @brand-danger;
+  font-weight: 600;
+}
+
+.traces-error-message__code {
+  font-family: @font-family-monospace;
+  font-size: @font-size-small;
+  margin-left: @spacing-xs;
+  font-weight: 600;
 }
