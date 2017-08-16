@@ -15,22 +15,18 @@
  *
  */
 
-export const queryIsValid = (queryString) => {
-    let validity = true;
-    // TODO: Add validation for key/value pairs that have a space character
+const whitespaceAroundEqualsRegex = /\s*=\s*/g;
+const keyValuePairRegex = /\w=\w/;
+const whitespaceRegex = /\s+/g;
+
+export const queryIsValid = queryString =>
     queryString
         // Trim whitespace, check for whitespace before and after =,
-        .trim().replace(new RegExp(/\s*=\s*/g), '=')
+        .trim().replace(whitespaceAroundEqualsRegex, '=')
         // Split kv pairs
-        .split(/\s+/g)
+        .split(whitespaceRegex)
         // Check individually for key=value
-        .map((q) => {
-            if (!RegExp(/\w=\w/).test(q)) {
-                validity = false;
-            } return null;
-        });
-    return validity;
-};
+        .every(kvPair => keyValuePairRegex.test(kvPair));
 
 export const dateIsValid = (start, end) => {
     // preset timers will always be valid; no need to test validation
@@ -42,7 +38,7 @@ export const dateIsValid = (start, end) => {
 };
 
 export const parseQueryString = (queryString) => {
-    const keyValuePairs = queryString.replace(new RegExp(/\s*=\s*/g), '=').split(/\s+/g);
+    const keyValuePairs = queryString.replace(whitespaceAroundEqualsRegex, '=').split(whitespaceRegex);
 
     const parsedQueryString = {};
 
@@ -54,30 +50,8 @@ export const parseQueryString = (queryString) => {
     return parsedQueryString;
 };
 
-export const toQueryUrl = query => Object
-    .keys(query)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)
-    .join('&');
-
 export const toQueryString = query => Object
     .keys(query)
     .filter(key => query[key] && key !== 'timePreset' && key !== 'startTime' && key !== 'endTime')
     .map(key => `${encodeURIComponent(key)}=${query[key]}`)
     .join(' ');
-
-export const toQuery = (query) => {
-    const queryDict = {};
-
-    if (!query || query.length <= 1) return {};
-
-    query.substr(1)
-        .split('&')
-        .forEach((item) => {
-            const key = item.split('=')[0].trim();
-            const value = item.split('=')[1].trim();
-            if (key && value) {
-                queryDict[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1]);
-            }
-        });
-    return queryDict;
-};
