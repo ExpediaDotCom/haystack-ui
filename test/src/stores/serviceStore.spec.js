@@ -16,7 +16,7 @@
  */
 
 import { assert } from 'chai';
-import ServiceStore from '../../../src/stores/serviceStore';
+import {ServiceStore} from '../../../src/stores/serviceStore';
 
 describe('ServiceStore', () => {
     it('contacts the api', () => {

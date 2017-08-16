@@ -15,18 +15,35 @@
  *
  */
 
-import React from 'react';
+import React, {Component} from 'react';
+import {observer} from 'mobx-react';
+import PropTypes from 'prop-types';
 import HomeSearchBox from './homeSearchBox';
+import serviceStore from '../../stores/serviceStore';
 import './home.less';
 import WorkInProgress from '../common/workInProgress';
 
-export default () => (
-    <article>
-        <HomeSearchBox />
-        <article className="container home-panel">
-            <section className="row">
-                <WorkInProgress/>
-            </section>
-        </article>
-    </article>
-);
+@observer
+export default class Home extends Component {
+    componentWillMount() {
+        serviceStore.fetchServices();
+    }
+
+    render() {
+        return (
+            <article>
+                <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
+                <article className="container home-panel">
+                    <section className="row">
+                        <WorkInProgress/>
+                    </section>
+                </article>
+            </article>
+        );
+    }
+}
+
+Home.propTypes = {
+    history: PropTypes.object.isRequired
+};
+
