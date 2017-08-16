@@ -43,8 +43,7 @@ export default class HomeSearchBox extends Component {
     }
 
     handleChange(event) {
-        console.log(event.value);
-        // this.props.history.push(`/service/${event.value}/traces`);
+        this.props.history.push(`/service/${event.value}/traces`);
     }
 
     render() {
@@ -57,7 +56,7 @@ export default class HomeSearchBox extends Component {
                             name="service-list"
                             options={HomeSearchBox.formatServiceOptions(this.props.services)}
                             onChange={this.handleChange}
-                            placeholder="Choose here..."
+                            placeholder="Select..."
                         />
                     </div>
                 </div>
