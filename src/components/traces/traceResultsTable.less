@@ -50,7 +50,7 @@ tr.tr-no-border>td {
   background-color: white;
 }
 
-.react-bs-table tr:hover td {
+.react-bs-table tr:not(.expand-row-body):not(.selected-row):hover td {
   background-color: @gray-dark;
   color: @gray-lighter;
   cursor: pointer;
@@ -267,3 +267,19 @@ tr.tr-no-border>td {
   dominant-baseline: middle;
   text-anchor: middle;
 }
+
+.expand-row-body {
+  background-color: white;
+  > td {
+    padding: 18px !important;
+  }
+}
+
+.selected-row {
+  > td {
+    background-color: @gray-dark !important;
+    color: @gray-lighter;
+    cursor: pointer;
+  }
+}
+
