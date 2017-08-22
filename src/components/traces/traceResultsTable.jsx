@@ -89,10 +89,6 @@ export default class TraceResultsTable extends React.Component {
         </div>);
     }
 
-    static isExpandableRow() {
-        return true;
-    }
-
     static expandComponent() {
         return (
             <TraceDetails/>
@@ -161,7 +157,7 @@ export default class TraceResultsTable extends React.Component {
                 trClassName="tr-no-border"
                 options={options}
                 pagination
-                expandableRow={TraceResultsTable.isExpandableRow}
+                expandableRow={() => true}
                 expandComponent={TraceResultsTable.expandComponent}
                 selectRow={selectRowProp}
             >
