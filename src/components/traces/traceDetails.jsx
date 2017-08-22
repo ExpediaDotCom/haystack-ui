@@ -16,24 +16,19 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import './traces.less';
-import SearchBar from './searchBar';
-import TraceResults from './traceResults';
-import tracesSearchStore from '../../stores/tracesSearchStore';
+import './traceDetails.less';
+import WorkInProgress from '../common/workInProgress';
 
-const Traces = ({history, location, match}) => (
-    <section className="traces-panel">
-        <SearchBar tracesSearchStore={tracesSearchStore} history={history} location={location} match={match}/>
-        <TraceResults tracesSearchStore={tracesSearchStore}/>
+export default () => (
+    <section className="trace-details">
+        <div className="trace-details-nav">
+            <h4>Timeline</h4>
+            <div className="trace-details-toolbar btn-group">
+                <a className="btn btn-default"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
+                <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
+            </div>
+        </div>
+        <WorkInProgress/>
     </section>
 );
-
-Traces.propTypes = {
-    history: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
-};
-
-export default Traces;

@@ -19,13 +19,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import TraceDetails from './traceDetails';
 import './traceResultsTable.less';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
-        history: PropTypes.object.isRequired,
         tracesSearchStore: PropTypes.object.isRequired
-    }
+    };
 
     static sortByTimestamp(a, b, order) {
         if (order === 'desc') {
@@ -89,17 +89,53 @@ export default class TraceResultsTable extends React.Component {
         </div>);
     }
 
-    constructor(props) {
-        super(props);
-        this.rowLink = this.rowLink.bind(this);
+    static isExpandableRow() {
+        return true;
     }
 
-    rowLink(row) {
-        this.props.history.push(`/traces/${row.traceId}`);
+    static expandComponent() {
+        return (
+            <TraceDetails/>
+        );
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            expanding: [],
+            selected: []
+        };
+        this.handleExpand = this.handleExpand.bind(this);
+    }
+
+     handleExpand(rowKey, isExpand) {
+        if (isExpand) {
+            this.setState(
+                {
+                    expanding: [rowKey],
+                    selected: [rowKey]
+                }
+            );
+        } else {
+            this.setState(
+                {
+                    expanding: [],
+                    selected: []
+                }
+            );
+        }
     }
 
     render() {
         const results = this.props.tracesSearchStore.searchResults;
+        const selectRowProp = {
+            clickToSelect: true,
+            clickToExpand: true,
+            className: 'selected-row',
+            mode: 'checkbox',
+            hideSelectColumn: true,
+            selected: this.state.selected
+        };
         const options = {
             page: 1,  // which page you want to show as default
             sizePerPage: 15,  // which size per page you want to locate as default
@@ -112,19 +148,31 @@ export default class TraceResultsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing traces { start } to { to } out of { total } samples</p>),
             hideSizePerPage: true, // Hide page size bar
-            onRowClick: this.rowLink,
             defaultSortName: 'timestamp',  // default sort column name
-            defaultSortOrder: 'desc'  // default sort order
+            defaultSortOrder: 'desc',  // default sort order
+            expanding: this.state.expanding,
+            onExpand: this.handleExpand,
+            expandBodyClass: 'expand-row-body'
         };
         return (
-            <BootstrapTable data={results} tableStyle={{ border: 'none' }} trClassName="tr-no-border" options={options} pagination>
+            <BootstrapTable
+                data={results}
+                tableStyle={{ border: 'none' }}
+                trClassName="tr-no-border"
+                options={options}
+                pagination
+                expandableRow={TraceResultsTable.isExpandableRow}
+                expandComponent={TraceResultsTable.expandComponent}
+                selectRow={selectRowProp}
+            >
                 <TableHeaderColumn dataField="timestamp" sortFunc={this.sortByTimestamp} dataFormat={TraceResultsTable.timeColumnFormatter} dataSort width="12" thStyle={{ border: 'none' }}>Timestamp</TableHeaderColumn>
-                <TableHeaderColumn isKey dataField="rootUrl" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Start URL</TableHeaderColumn>
+                <TableHeaderColumn dataField="rootUrl" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Start URL</TableHeaderColumn>
                 <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
                 <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
                 <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
                 <TableHeaderColumn dataField="serviceDuration" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>Svc Duration</TableHeaderColumn>
                 <TableHeaderColumn dataField="duration" dataSort width="10" sortFunc={this.sortByDuration} dataFormat={TraceResultsTable.totalDurationColumnFormatter} thStyle={{ border: 'none' }}>Total Duration</TableHeaderColumn>
+                <TableHeaderColumn dataField="traceId" hidden isKey>TraceId</TableHeaderColumn>
             </BootstrapTable>
         );
     }

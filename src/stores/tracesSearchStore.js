@@ -43,6 +43,7 @@ function formatResults(results) {
         formattedResult.spans = getTotalSpanCount(result.services);
         formattedResult.serviceDuration = result.services[0].duration;
         formattedResult.serviceDurationPercent = Math.round(Math.random() * 100);
+        formattedResult.traceId = result.traceId;
 
         return formattedResult;
     });

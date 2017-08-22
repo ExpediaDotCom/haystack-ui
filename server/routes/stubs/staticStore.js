@@ -32,7 +32,7 @@ store.getServices = () => Q.fcall(() => ['lannister-service',
 
 store.findTraces = () => Q.fcall(() => [
     {
-        traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
+        traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn231',
         root: {
             url: '/dummy/url',
             serviceName: 'mysvc',
@@ -60,7 +60,7 @@ store.findTraces = () => Q.fcall(() => [
         duration: 829548
     },
     {
-        traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
+        traceId: '23g89z5f-64e1-4f69-b038-c123rc11r12',
         root: {
             url: '/dummy/url',
             serviceName: 'mysvc',
@@ -396,7 +396,7 @@ store.findTraces = () => Q.fcall(() => [
         duration: 895483
     },
     {
-        traceId: '13g89z5f-64e1-4f69-b038-c123rc1c1r1',
+        traceId: '13g89z5f-64e1-4f69-b038-c123rc1d1r1',
         root: {
             url: '/dummy/url',
             serviceName: 'mysvc',
@@ -508,7 +508,7 @@ store.findTraces = () => Q.fcall(() => [
         duration: 89548
     },
     {
-        traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
+        traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1a1',
         root: {
             url: '/dummy/url',
             serviceName: 'mysvc',
@@ -620,7 +620,7 @@ store.findTraces = () => Q.fcall(() => [
         duration: 895481
     },
     {
-        traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
+        traceId: '23g89z5f-64e1-4f69-b038-c124rc1c1r1',
         root: {
             url: '/dummy/url',
             serviceName: 'mysvc',
