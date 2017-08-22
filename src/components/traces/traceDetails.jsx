@@ -16,19 +16,54 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './traceDetails.less';
-import WorkInProgress from '../common/workInProgress';
+import TraceDetailsRow from './traceDetailsRow';
+import Loading from '../common/loading';
+import Error from '../common/error';
 
-export default () => (
-    <section className="trace-details">
-        <div className="trace-details-nav">
-            <h4>Timeline</h4>
-            <div className="trace-details-toolbar btn-group">
-                <a className="btn btn-default"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
-                <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
-            </div>
-        </div>
-        <WorkInProgress/>
-    </section>
-);
+
+export default class TraceDetails extends React.Component {
+    static propTypes = {
+        activeTraceStore: PropTypes.object.isRequired
+    }
+
+    componentDidMount() {
+        this.props.activeTraceStore.fetchTraceDetails();
+    }
+
+    render() {
+        return (
+            <section className="trace-details">
+                <div className="trace-details-nav">
+                    <h4>Timeline</h4>
+                    <div className="trace-details-toolbar btn-group">
+                        <a className="btn btn-default"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
+                        <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
+                    </div>
+                </div>
+                <div>
+                    <svg className="trace-details-graph">
+                    { this.props.activeTraceStore.promiseState && this.props.activeTraceStore.promiseState.case({
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () => ((this.props.activeTraceStore.spans && this.props.activeTraceStore.spans.length)
+                            ? this.props.activeTraceStore.spans.map((span, index) =>
+                                (<TraceDetailsRow
+                                    index={index}
+                                    startTime={this.props.activeTraceStore.startTime}
+                                    rowHeight={18}
+                                    rowPadding={5}
+                                    span={span}
+                                    totalDuration={this.props.activeTraceStore.totalDuration}
+                                />)
+                            ) : <Error />)
+                    })
+                    }
+                    </svg>
+                </div>
+            </section>
+        );
+    }
+}
