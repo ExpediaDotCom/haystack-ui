@@ -17,6 +17,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { observer } from 'mobx-react';
 
 import './traceDetails.less';
 import TraceDetailsRow from './traceDetailsRow';
@@ -25,16 +26,28 @@ import Error from '../common/error';
 import activeTraceStore from '../../stores/activeTraceStore';
 
 
+@observer
 export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired
     };
 
     componentDidMount() {
-        activeTraceStore.fetchTraceDetails();
+        activeTraceStore.fetchTraceDetails(this.props.traceId);
     }
 
     render() {
+        const rowChildren = activeTraceStore.spans.map((span, index) =>
+            (<TraceDetailsRow
+                key={span.id}
+                index={index}
+                startTime={activeTraceStore.startTime}
+                rowHeight={18}
+                rowPadding={5}
+                span={span}
+                totalDuration={activeTraceStore.totalDuration}
+            />));
+
         return (
             <section className="trace-details">
                 <div className="trace-details-nav">
@@ -46,24 +59,14 @@ export default class TraceDetails extends React.Component {
                 </div>
                 <div>
                     <h4>{this.props.traceId}</h4>
-                    <svg className="trace-details-graph">
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? activeTraceStore.spans.map((span, index) =>
-                                (<TraceDetailsRow
-                                    index={index}
-                                    startTime={activeTraceStore.startTime}
-                                    rowHeight={18}
-                                    rowPadding={5}
-                                    span={span}
-                                    totalDuration={activeTraceStore.totalDuration}
-                                />)
-                            ) : <Error />)
+                            ? (<svg className="trace-details-graph">{rowChildren}</svg>)
+                             : <Error />)
                     })
                     }
-                    </svg>
                 </div>
             </section>
         );

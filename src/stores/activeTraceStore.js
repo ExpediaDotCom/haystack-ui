@@ -33,10 +33,10 @@ export class ActiveTraceStore {
     @observable startTime = {};
     @observable totalDuration = {};
     @observable promiseState = null;
-    @action fetchTraceDetails() {
+    @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
-                .get('/api/tracetests')
+                .get(`/api/trace/${traceId}`)
                 .then((result) => {
                     this.startTime = result.data[0].timestamp;
                     this.totalDuration = calculateDuration(result.data);

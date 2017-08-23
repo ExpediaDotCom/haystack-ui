@@ -29,8 +29,8 @@ router.get('/traces', (req, res) => {
     store.findTraces(req.query).then(results => setTimeout(() => res.json(results), 1000));
 });
 
-router.get('/tracetests', (req, res) => {
-    store.getTrace(req.query).then(results => setTimeout(() => res.json(results), 1000));
+router.get('/trace/:traceId', (req, res) => {
+    store.getTrace(req.query.traceId).then(results => setTimeout(() => res.json(results), 1000));
 });
 
 module.exports = router;

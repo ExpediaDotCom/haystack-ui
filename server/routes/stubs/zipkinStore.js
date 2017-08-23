@@ -26,9 +26,8 @@ const store = {};
 const baseZipkinUrl = 'http://blackbox.prod-p.expedia.com/api/v1';
 
 function getBinaryAnnotation(span, key) {
-    return span.binaryAnnotations.find(annotation => annotation.key === key);
+    return span.binaryAnnotations ? span.binaryAnnotations.find(annotation => annotation.key === key) : null;
 }
-
 
 function mapQueryParams(query) {
     return Object
@@ -46,6 +45,16 @@ store.getServices = () => {
         url: `${baseZipkinUrl}/services`
     }).then(response => deferred.resolve(response.data));
 
+    return deferred.promise;
+};
+
+store.getTrace = (traceId) => {
+    const deferred = Q.defer();
+
+    axios({
+        method: 'get',
+        url: `${baseZipkinUrl}/trace/${traceId}`
+    }).then(response => deferred.resolve(response.data));
     return deferred.promise;
 };
 
@@ -101,5 +110,6 @@ store.findTraces = (query) => {
 
     return deferred.promise;
 };
+
 
 module.exports = store;
