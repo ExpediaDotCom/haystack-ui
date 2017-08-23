@@ -21,7 +21,7 @@ import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from './traceDetails';
 import './traceResultsTable.less';
-import activeTraceStore from '../../stores/activeTraceStore';
+// import activeTraceStore from '../../stores/activeTraceStore';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
@@ -90,12 +90,6 @@ export default class TraceResultsTable extends React.Component {
         </div>);
     }
 
-    static expandComponent() {
-        return (
-            <TraceDetails activeTraceStore={activeTraceStore}/>
-        );
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -103,6 +97,7 @@ export default class TraceResultsTable extends React.Component {
             selected: []
         };
         this.handleExpand = this.handleExpand.bind(this);
+        this.expandComponent = this.expandComponent.bind(this);
     }
 
      handleExpand(rowKey, isExpand) {
@@ -121,6 +116,13 @@ export default class TraceResultsTable extends React.Component {
                 }
             );
         }
+    }
+
+     expandComponent(row) {
+        if (this.state.selected.filter(id => id === row.traceId).length > 0) {
+            return <TraceDetails traceId={row.traceId}/>;
+        }
+         return null;
     }
 
     render() {
@@ -159,7 +161,7 @@ export default class TraceResultsTable extends React.Component {
                 options={options}
                 pagination
                 expandableRow={() => true}
-                expandComponent={TraceResultsTable.expandComponent}
+                expandComponent={this.expandComponent}
                 selectRow={selectRowProp}
             >
                 <TableHeaderColumn dataField="timestamp" sortFunc={this.sortByTimestamp} dataFormat={TraceResultsTable.timeColumnFormatter} dataSort width="12" thStyle={{ border: 'none' }}>Timestamp</TableHeaderColumn>

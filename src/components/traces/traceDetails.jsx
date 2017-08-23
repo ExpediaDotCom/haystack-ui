@@ -22,15 +22,16 @@ import './traceDetails.less';
 import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../common/loading';
 import Error from '../common/error';
+import activeTraceStore from '../../stores/activeTraceStore';
 
 
 export default class TraceDetails extends React.Component {
     static propTypes = {
-        activeTraceStore: PropTypes.object.isRequired
-    }
+        traceId: PropTypes.string.isRequired
+    };
 
     componentDidMount() {
-        this.props.activeTraceStore.fetchTraceDetails();
+        activeTraceStore.fetchTraceDetails();
     }
 
     render() {
@@ -44,19 +45,20 @@ export default class TraceDetails extends React.Component {
                     </div>
                 </div>
                 <div>
+                    <h4>{this.props.traceId}</h4>
                     <svg className="trace-details-graph">
-                    { this.props.activeTraceStore.promiseState && this.props.activeTraceStore.promiseState.case({
+                    { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
-                        fulfilled: () => ((this.props.activeTraceStore.spans && this.props.activeTraceStore.spans.length)
-                            ? this.props.activeTraceStore.spans.map((span, index) =>
+                        fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
+                            ? activeTraceStore.spans.map((span, index) =>
                                 (<TraceDetailsRow
                                     index={index}
-                                    startTime={this.props.activeTraceStore.startTime}
+                                    startTime={activeTraceStore.startTime}
                                     rowHeight={18}
                                     rowPadding={5}
                                     span={span}
-                                    totalDuration={this.props.activeTraceStore.totalDuration}
+                                    totalDuration={activeTraceStore.totalDuration}
                                 />)
                             ) : <Error />)
                     })
