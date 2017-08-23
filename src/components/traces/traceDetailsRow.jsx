@@ -52,7 +52,7 @@ export default class TraceDetailsRow extends React.Component {
         return (
             <g>
                 <rect
-                    className="btn btn-primary"
+                    className="btn"
                     id={span.traceId}
                     height={rowHeight}
                     width={`${Math.max(width, 0.2)}%`}

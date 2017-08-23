@@ -21,7 +21,6 @@ import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from './traceDetails';
 import './traceResultsTable.less';
-// import activeTraceStore from '../../stores/activeTraceStore';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
