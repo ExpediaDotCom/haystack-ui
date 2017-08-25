@@ -53,14 +53,14 @@ export default class TraceDetails extends React.Component {
         return (
             <section className="trace-details">
                 <div className="trace-details-nav">
-                    <h4>Timeline</h4>
+                    <h4>Trace Timeline</h4>
                     <div className="trace-details-toolbar btn-group">
                         <a className="btn btn-default"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
                         <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                     </div>
                 </div>
                 <div>
-                    <h4>{this.props.traceId}</h4>
+                    <h4>ID: {this.props.traceId}</h4>
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,

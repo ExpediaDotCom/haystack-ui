@@ -66,10 +66,8 @@ store.findTraces = (query) => {
         url: `${baseZipkinUrl}/traces?limit=15&${queryUrl}`
     }).then((response) => {
         const traces = response.data;
-        console.log(response.data);
-        const mappedTraces = traces.map((trace) => {
+        const mappedTraces = traces.filter(e => e.length).map((trace) => {
             const rootSpan = trace.find(span => span.parentId === undefined);
-            console.log(rootSpan);
             const services = _.countBy(trace,
                 span => span.binaryAnnotations[0].endpoint.serviceName);
             const mappedServices = _.keys(services).map((service) => {
