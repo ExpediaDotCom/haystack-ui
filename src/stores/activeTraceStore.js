@@ -24,9 +24,19 @@ function TraceException(data) {
     this.data = data;
 }
 
-function calculateDuration(spans) {
-    return spans.reduce((a, b) => a + b.duration, 0);
+function calculateStartTime(spans) {
+    return spans.reduce((earliestTime, span) =>
+        (earliestTime ? Math.min(earliestTime, span.timestamp) : span.timestamp), null
+    );
 }
+
+function calculateDuration(spans, start) {
+    const end = spans.reduce((latestTime, span) =>
+        (latestTime ? Math.max(latestTime, (span.timestamp + span.duration)) : (span.timestamp + span.duration)), null
+    );
+    return (end - start) * 1.05;
+}
+
 
 export class ActiveTraceStore {
     @observable spans = [];
@@ -38,9 +48,9 @@ export class ActiveTraceStore {
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
-                    this.startTime = result.data[0].timestamp;
-                    this.totalDuration = calculateDuration(result.data);
                     this.spans = result.data;
+                    this.startTime = calculateStartTime(this.spans);
+                    this.totalDuration = calculateDuration(this.spans, this.startTime);
                 })
                 .catch((result) => {
                     throw new TraceException(result);

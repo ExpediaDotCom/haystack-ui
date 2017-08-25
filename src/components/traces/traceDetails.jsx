@@ -48,6 +48,8 @@ export default class TraceDetails extends React.Component {
                 totalDuration={activeTraceStore.totalDuration}
             />));
 
+        const svgHeight = {height: 40 + (27 * activeTraceStore.spans.length)};
+
         return (
             <section className="trace-details">
                 <div className="trace-details-nav">
@@ -63,7 +65,7 @@ export default class TraceDetails extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? (<svg className="trace-details-graph">{rowChildren}</svg>)
+                            ? (<svg style={svgHeight} className="trace-details-graph">{rowChildren}</svg>)
                              : <Error />)
                     })
                     }

@@ -16,8 +16,8 @@
  */
 
 const express = require('express');
-const store = require('./stubs/staticStore');
-// const store = require('./stubs/zipkinStore');
+// const store = require('./stubs/staticStore');
+const store = require('./stubs/zipkinStore');
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get('/traces', (req, res) => {
 });
 
 router.get('/trace/:traceId', (req, res) => {
-    store.getTrace(req.query.traceId).then(results => setTimeout(() => res.json(results), 1000));
+    store.getTrace(req.params.traceId).then(results => setTimeout(() => res.json(results), 1000));
 });
 
 module.exports = router;
