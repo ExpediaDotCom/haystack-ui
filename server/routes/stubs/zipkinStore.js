@@ -63,7 +63,7 @@ store.findTraces = (query) => {
 
     axios({
         method: 'get',
-        url: `${baseZipkinUrl}/traces?limit=15&${queryUrl}`
+        url: `${baseZipkinUrl}/traces?limit=40&${queryUrl}`
     }).then((response) => {
         const traces = response.data;
         const mappedTraces = traces.filter(e => e.length).map((trace) => {

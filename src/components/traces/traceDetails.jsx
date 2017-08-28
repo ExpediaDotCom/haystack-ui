@@ -42,13 +42,13 @@ export default class TraceDetails extends React.Component {
                 key={span.id}
                 index={index}
                 startTime={activeTraceStore.startTime}
-                rowHeight={18}
-                rowPadding={5}
+                rowHeight={22}
+                rowPadding={10}
                 span={span}
                 totalDuration={activeTraceStore.totalDuration}
             />));
 
-        const svgHeight = {height: 40 + (27 * activeTraceStore.spans.length)};
+        const svgHeight = {height: 30 + (42 * activeTraceStore.spans.length)};
 
         return (
             <section className="trace-details">
