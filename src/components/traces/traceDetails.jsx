@@ -25,6 +25,8 @@ import Loading from '../common/loading';
 import Error from '../common/error';
 import activeTraceStore from '../../stores/activeTraceStore';
 
+// TODO :
+// - Need to set svgViewBox width automatically which will fix the clipping of operation name
 
 @observer
 export default class TraceDetails extends React.Component {
@@ -42,13 +44,14 @@ export default class TraceDetails extends React.Component {
                 key={span.id}
                 index={index}
                 startTime={activeTraceStore.startTime}
-                rowHeight={22}
+                rowHeight={9}
                 rowPadding={10}
                 span={span}
                 totalDuration={activeTraceStore.totalDuration}
             />));
 
-        const svgHeight = {height: 30 + (42 * activeTraceStore.spans.length)};
+        const svgHeight = (30 * activeTraceStore.spans.length);
+        const svgViewBox = `0 0 900 ${svgHeight}`;
 
         return (
             <section className="trace-details">
@@ -59,13 +62,12 @@ export default class TraceDetails extends React.Component {
                         <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                     </div>
                 </div>
-                <div>
-                    <h4>ID: {this.props.traceId}</h4>
+                <div className="trace-details-graph">
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? (<svg style={svgHeight} className="trace-details-graph">{rowChildren}</svg>)
+                            ? (<svg height={svgHeight} width="100%" viewBox={svgViewBox} preserveAspectRatio="xMinYMin meet">{rowChildren}</svg>)
                              : <Error />)
                     })
                     }

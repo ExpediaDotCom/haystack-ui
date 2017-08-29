@@ -50,7 +50,14 @@ export default class TraceDetailsRow extends React.Component {
         const width = ((spanDuration / totalDuration) * 100);
         const formattedDuration = `${span.duration / 1000}ms`;
         return (
-            <g className="trace-details-graph">
+            <g>
+                <text
+                    className="trace-svg-text"
+                    fill="#6B7693"
+                    x={`${leftOffset}%`}
+                    y={topOffset}
+                >{span.name}:{formattedDuration}
+                </text>
                 <rect
                     className="btn trace-svg-bar"
                     id={span.traceId}
@@ -58,14 +65,10 @@ export default class TraceDetailsRow extends React.Component {
                     width={`${Math.max(width, 0.2)}%`}
                     x={`${leftOffset}%`}
                     y={topOffset + 4}
+                    rx="3.5"
+                    ry="3.5"
                     fill="#4CAF50"
                 />
-                <text
-                    className="trace-svg-text"
-                    fill="#6B7693"
-                    x={`${5}%`}
-                    y={topOffset}
-                >{span.name}: {formattedDuration}</text>
             </g>
         );
     }
