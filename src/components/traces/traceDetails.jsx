@@ -23,6 +23,7 @@ import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../common/loading';
 import Error from '../common/error';
 import activeTraceStore from '../../stores/activeTraceStore';
+import RawTraceModal from './rawTraceModal';
 
 // TODO :
 // - Need to set svgViewBox width automatically which will fix the clipping of operation name
@@ -46,9 +47,20 @@ export default class TraceDetails extends React.Component {
         }
         return null;
     }
-
+    constructor(props) {
+        super(props);
+        this.state = {modalIsOpen: false};
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+    }
     componentDidMount() {
         activeTraceStore.fetchTraceDetails(this.props.traceId);
+    }
+    openModal() {
+        this.setState({modalIsOpen: true});
+    }
+    closeModal() {
+        this.setState({modalIsOpen: false});
     }
 
     render() {
@@ -57,24 +69,25 @@ export default class TraceDetails extends React.Component {
                 key={span.id}
                 index={index}
                 startTime={activeTraceStore.startTime}
-                rowHeight={9}
+                rowHeight={12}
                 rowPadding={10}
                 span={span}
                 totalDuration={activeTraceStore.totalDuration}
                 serviceName={TraceDetails.getServiceName(span)}
             />));
 
-        const svgHeight = (30 * activeTraceStore.spans.length);
+        const svgHeight = (32 * activeTraceStore.spans.length) + 5;
 
         return (
             <section className="trace-details">
                 <div className="trace-details-nav">
                     <h4>Trace Timeline</h4>
                     <div className="trace-details-toolbar btn-group">
-                        <a className="btn btn-default"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
+                        <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
                         <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                     </div>
                 </div>
+                <RawTraceModal isOpen={this.state.modalIsOpen} spans={activeTraceStore.spans} closeModal={this.closeModal} />
                 <div className="trace-details-graph">
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
