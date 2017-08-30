@@ -29,10 +29,10 @@ export default class TraceDetailsRow extends React.Component {
             rowHeight: PropTypes.number.isRequired,
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
-            totalDuration: PropTypes.number.isRequired
+            totalDuration: PropTypes.number.isRequired,
+            serviceName: PropTypes.string.isRequired
         };
     }
-
 
     render() {
         const {
@@ -41,16 +41,24 @@ export default class TraceDetailsRow extends React.Component {
             rowHeight,
             rowPadding,
             span,
-            totalDuration
+            totalDuration,
+            serviceName
         } = this.props;
         const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2);
         const spanTimestamp = span.timestamp;
         const spanDuration = span.duration;
-        const leftOffset = ((spanTimestamp - startTime) / totalDuration) * 100;
-        const width = ((spanDuration / totalDuration) * 100);
+        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.7) + 12);
+        const width = ((spanDuration / totalDuration) * 100) * 0.7;
         const formattedDuration = `${span.duration / 1000}ms`;
         return (
-            <g>
+            <g className="">
+                <text
+                    className="service-svg-text"
+                    fill="#6B7693"
+                    x="0"
+                    y={topOffset}
+                >{serviceName}
+                </text>
                 <text
                     className="trace-svg-text"
                     fill="#6B7693"

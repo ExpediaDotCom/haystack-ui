@@ -18,7 +18,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-
 import './traceDetails.less';
 import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../common/loading';
@@ -34,6 +33,20 @@ export default class TraceDetails extends React.Component {
         traceId: PropTypes.string.isRequired
     };
 
+    static getServiceName(span) {
+        const fromAnnotations = (span.annotations)
+            .find(anno =>
+            (anno.value !== null)
+            && (anno.endpoint !== null)
+            && (anno.endpoint.serviceName !== null)
+            && (anno.endpoint.serviceName !== ''));
+        const serviceFromAnnotations = fromAnnotations ? fromAnnotations.endpoint.serviceName : 'not found';
+        if (serviceFromAnnotations) {
+            return serviceFromAnnotations;
+        }
+        return null;
+    }
+
     componentDidMount() {
         activeTraceStore.fetchTraceDetails(this.props.traceId);
     }
@@ -48,10 +61,10 @@ export default class TraceDetails extends React.Component {
                 rowPadding={10}
                 span={span}
                 totalDuration={activeTraceStore.totalDuration}
+                serviceName={TraceDetails.getServiceName(span)}
             />));
 
         const svgHeight = (30 * activeTraceStore.spans.length);
-        const svgViewBox = `0 0 900 ${svgHeight}`;
 
         return (
             <section className="trace-details">
@@ -67,7 +80,7 @@ export default class TraceDetails extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? (<svg height={svgHeight} width="100%" viewBox={svgViewBox} preserveAspectRatio="xMinYMin meet">{rowChildren}</svg>)
+                            ? (<svg height={svgHeight} width="100%" >{rowChildren}</svg>)
                              : <Error />)
                     })
                     }

@@ -16,8 +16,8 @@
  */
 
 const express = require('express');
-const store = require('./stubs/staticStore');
-// const store = require('./stubs/zipkinStore');
+// const store = require('./stubs/staticStore');
+const store = require('./stubs/zipkinStore');
 
 const router = express.Router();
 
