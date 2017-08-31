@@ -24,7 +24,7 @@
 }
 
 .trace-svg-text {
-    font-weight: normal;
+    font-weight: 700;
     font-size: @font-size-base;
 }
 
@@ -32,6 +32,39 @@
     font-size: @font-size-base;
 }
 
-.trace-svg-bar:hover {
-    fill: red;
+.span-click {
+    opacity: 0;
+}
+
+.span-click:hover {
+    opacity: 0.2;
+}
+
+.ReactModalPortal > * {
+    // When the modal is closed, overlay div has no css class
+    // This selector should be overridden by the `&--after-open` class below
+    opacity: 0;
+}
+
+.ReactModal__Overlay {
+    transition: opacity 200ms ease-in-out;
+    background: rgba(0, 0, 0, 0.15);
+    &--after-open {
+        opacity: 1;
+    }
+    &--before-close {
+        opacity: 0;
+    }
+}
+
+.modal-table-padding {
+    padding-left: @spacing-m;
+}
+
+.modal-button-margin {
+    margin-bottom: @spacing-s;
+}
+
+.trace-btn-right {
+    float: right;
 }

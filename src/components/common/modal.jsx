@@ -19,22 +19,34 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'react-modal';
 
-export default class RawTraceModal extends React.Component {
+export default class ModalView extends React.Component {
 
     render() {
-        const modalStyles = {overlay: {zIndex: 10}};
+        const modalStyles = {
+            overlay: {
+                zIndex: 10
+            },
+            content: {
+                width: '50%',
+                top: '10%',
+                bottom: '10%',
+                left: '25%'
+            }
+        };
 
         return (
-            <Modal isOpen={this.props.isOpen} onRequestClose={this.props.closeModal} style={modalStyles} >
-                <h4>Trace Raw Logs</h4>
+            <Modal isOpen={this.props.isOpen} onRequestClose={this.props.closeModal} style={modalStyles} closeTimeoutMS={200}>
+                <h4>{this.props.title}</h4>
+                {this.props.children}
                 <button onClick={this.props.closeModal}>close</button>
             </Modal>
         );
     }
 }
 
-RawTraceModal.propTypes = {
+ModalView.propTypes = {
+    title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
-    closeModal: PropTypes.func.isRequired
-    // spans: PropTypes.object.isRequired
+    closeModal: PropTypes.func.isRequired,
+    children: PropTypes.object.isRequired
 };
