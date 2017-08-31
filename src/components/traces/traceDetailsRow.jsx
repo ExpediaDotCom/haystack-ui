@@ -103,21 +103,25 @@ export default class TraceDetailsRow extends React.Component {
                     onClick={this.openModal}
                 />
                 <ModalView isOpen={this.state.modalIsOpen} closeModal={this.closeModal} title={`Span Id# ${span.id}`}>
-                    <p>{span.duration / 1000}ms</p>
+                    <p>{serviceName} - {span.duration / 1000}ms</p>
                     <Link className="btn btn-primary modal-button-margin" to={`/service/${serviceName}/trends`}>View in Trends</Link>
                     <Link className="btn trace-btn-right modal-button-margin" to={`/service/${serviceName}/flow`}>Dependencies</Link>
                     <pre>
                         <table>
-                            <tr>
-                                <th className="modal-table-padding">Key</th>
-                                <th className="modal-table-padding">Value</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th className="modal-table-padding">Key</th>
+                                    <th className="modal-table-padding">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                             {span.binaryAnnotations.map(annotation =>
                                 (<tr>
                                     <td className="modal-table-padding">{annotation.key}</td>
                                     <td className="modal-table-padding">{annotation.value}</td>
                                 </tr>)
                             )}
+                            </tbody>
                         </table>
                     </pre>
                 </ModalView>

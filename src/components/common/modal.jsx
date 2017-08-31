@@ -27,10 +27,10 @@ export default class ModalView extends React.Component {
                 zIndex: 10
             },
             content: {
-                width: '50%',
+                width: '60%',
                 top: '10%',
                 bottom: '10%',
-                left: '25%'
+                left: '20%'
             }
         };
 
