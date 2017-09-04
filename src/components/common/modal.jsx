@@ -14,35 +14,39 @@
  *       limitations under the License.
  *
  */
-/* eslint-disable react/prefer-stateless-function */
 import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'react-modal';
+import './modal.less';
 
-export default class ModalView extends React.Component {
-
-    render() {
-        const modalStyles = {
-            overlay: {
-                zIndex: 10
-            },
-            content: {
-                width: '60%',
-                top: '10%',
-                bottom: '10%',
-                left: '20%'
-            }
-        };
-
-        return (
-            <Modal isOpen={this.props.isOpen} onRequestClose={this.props.closeModal} style={modalStyles} closeTimeoutMS={200}>
-                <h4>{this.props.title}</h4>
-                {this.props.children}
-                <button onClick={this.props.closeModal}>close</button>
-            </Modal>
-        );
+const modalStyles = {
+    overlay: {
+        zIndex: 10,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    content: {
+        width: '95%',
+        maxWidth: '1240px',
+        top: '10%',
+        bottom: '5%',
+        left: '0',
+        right: '0',
+        marginLeft: 'auto',
+        marginRight: 'auto'
     }
-}
+};
+
+const ModalView = ({title, isOpen, closeModal, children}) => (
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200}>
+        <header className="clearfix">
+            <h4 className="pull-left">{title}</h4>
+            <button className="close pull-right" onClick={closeModal}>&times;</button>
+        </header>
+        <section>
+            {children}
+        </section>
+    </Modal>
+);
 
 ModalView.propTypes = {
     title: PropTypes.string.isRequired,
@@ -50,3 +54,5 @@ ModalView.propTypes = {
     closeModal: PropTypes.func.isRequired,
     children: PropTypes.object.isRequired
 };
+
+export default ModalView;
