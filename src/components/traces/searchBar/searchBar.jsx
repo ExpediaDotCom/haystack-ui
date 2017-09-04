@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import SearchQueryBar from './searchQueryBar';
-import {toQueryUrl, toQuery} from '../../utils/queryParser';
+import {toQueryUrl, toQuery} from '../../../utils/queryParser';
 import './searchBar.less';
 
 export default class SearchBar extends React.Component {

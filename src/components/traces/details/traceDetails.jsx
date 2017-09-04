@@ -20,9 +20,9 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import './traceDetails.less';
 import TraceDetailsRow from './traceDetailsRow';
-import Loading from '../common/loading';
-import Error from '../common/error';
-import activeTraceStore from '../../stores/activeTraceStore';
+import Loading from '../../common/loading';
+import Error from '../../common/error';
+import activeTraceStore from '../../../stores/activeTraceStore';
 import RawTraceModal from './rawTraceModal';
 
 // TODO :

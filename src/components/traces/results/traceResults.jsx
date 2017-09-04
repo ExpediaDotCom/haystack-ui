@@ -19,9 +19,9 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
-import Loading from '../common/loading';
+import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
-import Error from '../common/error';
+import Error from '../../common/error';
 
 @observer
 export default class TraceResults extends React.Component {

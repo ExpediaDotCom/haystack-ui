@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Modal from '../common/modal';
+import Modal from '../../common/modal';
 
 const RawTraceModal = ({isOpen, closeModal, spans}) => (
     <Modal isOpen={isOpen} closeModal={closeModal} title={'Raw Trace'}>

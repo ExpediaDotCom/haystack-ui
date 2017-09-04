@@ -23,8 +23,8 @@ import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
 import Traces from '../../../src/components/traces/traces';
-import SearchBar from '../../../src/components/traces/searchBar';
-import TraceResults from '../../../src/components/traces/traceResults';
+import SearchBar from '../../../src/components/traces/searchBar/searchBar';
+import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/stores/tracesSearchStore';
 
 const stubLocation = {
