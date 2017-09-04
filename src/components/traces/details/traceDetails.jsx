@@ -19,14 +19,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import './traceDetails.less';
-import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../../common/loading';
 import Error from '../../common/error';
 import activeTraceStore from '../../../stores/activeTraceStore';
 import RawTraceModal from './rawTraceModal';
-
-// TODO :
-// - Need to set svgViewBox width automatically which will fix the clipping of operation name
+import Timeline from './timeline';
 
 @observer
 export default class TraceDetails extends React.Component {
@@ -34,26 +31,11 @@ export default class TraceDetails extends React.Component {
         traceId: PropTypes.string.isRequired
     };
 
-    static getServiceName(span) {
-        const fromAnnotations = (span.annotations)
-            .find(anno =>
-            (anno.value !== null)
-            && (anno.endpoint !== null)
-            && (anno.endpoint.serviceName !== null)
-            && (anno.endpoint.serviceName !== ''));
-        const serviceFromAnnotations = fromAnnotations ? fromAnnotations.endpoint.serviceName : 'not found';
-        if (serviceFromAnnotations) {
-            return serviceFromAnnotations;
-        }
-        return null;
-    }
-
     constructor(props) {
         super(props);
         this.state = {modalIsOpen: false};
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        // this.getTimeLineRows = this.getTimeLineRows.bind(this);
     }
 
     componentDidMount() {
@@ -69,20 +51,6 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
-        const rowChildren = activeTraceStore.spans.map((span, index) =>
-            (<TraceDetailsRow
-                key={span.id}
-                index={index}
-                startTime={activeTraceStore.startTime}
-                rowHeight={12}
-                rowPadding={10}
-                span={span}
-                totalDuration={activeTraceStore.totalDuration}
-                serviceName={TraceDetails.getServiceName(span)}
-            />));
-
-        const svgHeight = (32 * activeTraceStore.spans.length) + 30;
-
         return (
             <section className="trace-details">
                 <div className="trace-details-nav">
@@ -92,17 +60,12 @@ export default class TraceDetails extends React.Component {
                         <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                     </div>
                 </div>
-                <div className="trace-details-graph">
+                <div className="trace-details-timeline">
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? (<svg height={svgHeight} width="100%" >
-                                <g>
-                                    {activeTraceStore.timePointers.map(tp => <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
-                                </g>
-                                {rowChildren}
-                                </svg>)
+                            ? (<Timeline totalDuration={activeTraceStore.totalDuration} startTime={activeTraceStore.startTime} timePointers={activeTraceStore.timePointers} spans={activeTraceStore.spans}/>)
                              : <Error />)
                     })
                     }

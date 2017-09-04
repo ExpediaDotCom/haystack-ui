@@ -42,3 +42,5 @@ exclude
 # generated scripts/css in public should not be commited
 public/bundles
 public/index.html
+
+*.DS_Store

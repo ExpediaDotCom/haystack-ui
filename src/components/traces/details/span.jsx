@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import SpanDetailsModal from './spanDetailsModal';
 
 
-export default class TraceDetailsRow extends React.Component {
+export default class Span extends React.Component {
 
     static get propTypes() {
         return {
