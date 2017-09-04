@@ -37,12 +37,22 @@ function calculateDuration(spans, start) {
     return (end - start) * 1.05;
 }
 
+function getTimePointers(totalDuration) {
+    let timePointers = [];
+    const pointerDurations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+        .map(dur => (totalDuration * dur));
+    const leftOffset = [0.12, 0.27, 0.39, 0.52, 0.65, 0.78]
+        .map(lo => (lo * 100));
+    timePointers = leftOffset.map((p, i) => ({leftOffset: p, time: `${pointerDurations[i] / 1000}ms`}));
+    return timePointers;
+}
 
 export class ActiveTraceStore {
     @observable spans = [];
     @observable startTime = {};
     @observable totalDuration = {};
     @observable promiseState = null;
+    @observable timePointers = [];
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
@@ -51,6 +61,7 @@ export class ActiveTraceStore {
                     this.spans = result.data;
                     this.startTime = calculateStartTime(this.spans);
                     this.totalDuration = calculateDuration(this.spans, this.startTime);
+                    this.timePointers = getTimePointers(this.totalDuration);
                 })
                 .catch((result) => {
                     throw new TraceException(result);

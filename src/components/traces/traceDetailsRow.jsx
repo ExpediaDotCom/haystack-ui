@@ -60,14 +60,14 @@ export default class TraceDetailsRow extends React.Component {
             totalDuration,
             serviceName
         } = this.props;
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2);
+        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30;
         const spanTimestamp = span.timestamp;
         const spanDuration = span.duration;
-        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.7) + 12);
-        const width = ((spanDuration / totalDuration) * 100) * 0.7;
+        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12);
+        const width = ((spanDuration / totalDuration) * 100) * 0.8;
         const formattedDuration = `${span.duration / 1000}ms`;
         return (
-            <g className="">
+            <g>
                 <text
                     className="service-svg-text"
                     fill="#6B7693"
@@ -96,7 +96,7 @@ export default class TraceDetailsRow extends React.Component {
                 />
                 <rect
                     className="span-click"
-                    width="80%"
+                    width="100%"
                     x="0"
                     y={topOffset - 13}
                     height={rowHeight + 20}

@@ -17,7 +17,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import './traceDetails.less';
 import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../common/loading';
@@ -47,18 +47,23 @@ export default class TraceDetails extends React.Component {
         }
         return null;
     }
+
     constructor(props) {
         super(props);
         this.state = {modalIsOpen: false};
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        // this.getTimeLineRows = this.getTimeLineRows.bind(this);
     }
+
     componentDidMount() {
         activeTraceStore.fetchTraceDetails(this.props.traceId);
     }
+
     openModal() {
         this.setState({modalIsOpen: true});
     }
+
     closeModal() {
         this.setState({modalIsOpen: false});
     }
@@ -76,7 +81,7 @@ export default class TraceDetails extends React.Component {
                 serviceName={TraceDetails.getServiceName(span)}
             />));
 
-        const svgHeight = (32 * activeTraceStore.spans.length) + 10;
+        const svgHeight = (32 * activeTraceStore.spans.length) + 30;
 
         return (
             <section className="trace-details">
@@ -97,7 +102,12 @@ export default class TraceDetails extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((activeTraceStore.spans && activeTraceStore.spans.length)
-                            ? (<svg height={svgHeight} width="100%" >{rowChildren}</svg>)
+                            ? (<svg height={svgHeight} width="100%" >
+                                <g>
+                                    {activeTraceStore.timePointers.map(tp => <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
+                                </g>
+                                {rowChildren}
+                                </svg>)
                              : <Error />)
                     })
                     }
