@@ -23,7 +23,7 @@ import TraceDetailsRow from './traceDetailsRow';
 import Loading from '../common/loading';
 import Error from '../common/error';
 import activeTraceStore from '../../stores/activeTraceStore';
-import ModalView from '../common/modal';
+import RawTraceModal from './rawTraceModal';
 
 // TODO :
 // - Need to set svgViewBox width automatically which will fix the clipping of operation name
@@ -92,11 +92,6 @@ export default class TraceDetails extends React.Component {
                         <a className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                     </div>
                 </div>
-                <ModalView isOpen={this.state.modalIsOpen} closeModal={this.closeModal} title={'Raw Trace'}>
-                    {activeTraceStore.spans.map(span =>
-                        <div><pre>{JSON.stringify(span, null, 2)}</pre></div>
-                    )}
-                </ModalView>
                 <div className="trace-details-graph">
                     { activeTraceStore.promiseState && activeTraceStore.promiseState.case({
                         pending: () => <Loading />,
@@ -112,6 +107,7 @@ export default class TraceDetails extends React.Component {
                     })
                     }
                 </div>
+                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={activeTraceStore.spans}/>
             </section>
         );
     }

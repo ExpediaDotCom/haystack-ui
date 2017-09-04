@@ -19,9 +19,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
 
-import ModalView from '../common/modal';
+import SpanDetailsModal from './spanDetailsModal';
 
 
 export default class TraceDetailsRow extends React.Component {
@@ -102,29 +101,12 @@ export default class TraceDetailsRow extends React.Component {
                     height={rowHeight + 20}
                     onClick={this.openModal}
                 />
-                <ModalView isOpen={this.state.modalIsOpen} closeModal={this.closeModal} title={`Span Id# ${span.id}`}>
-                    <p>{serviceName} - {span.duration / 1000}ms</p>
-                    <Link className="btn btn-primary modal-button-margin" to={`/service/${serviceName}/trends`}>View in Trends</Link>
-                    <Link className="btn trace-btn-right modal-button-margin" to={`/service/${serviceName}/flow`}>Dependencies</Link>
-                    <pre>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th className="modal-table-padding">Key</th>
-                                    <th className="modal-table-padding">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {span.binaryAnnotations.map(annotation =>
-                                (<tr>
-                                    <td className="modal-table-padding">{annotation.key}</td>
-                                    <td className="modal-table-padding">{annotation.value}</td>
-                                </tr>)
-                            )}
-                            </tbody>
-                        </table>
-                    </pre>
-                </ModalView>
+                <SpanDetailsModal
+                    isOpen={this.state.modalIsOpen}
+                    closeModal={this.closeModal}
+                    serviceName={serviceName}
+                    span={span}
+                />
             </g>
         );
     }

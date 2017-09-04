@@ -40,6 +40,7 @@ function formatResults(results) {
         formattedResult.timeago = timeago().format(result.startTime * 1000);
         formattedResult.timestamp = getFormattedTimestamp(result.startTime);
         formattedResult.rootUrl = result.root.url;
+        formattedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
         formattedResult.spans = getTotalSpanCount(result.services);
         formattedResult.serviceDuration = result.services[0].duration;
         formattedResult.serviceDurationPercent = Math.round(Math.random() * 100);

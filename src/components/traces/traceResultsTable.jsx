@@ -55,8 +55,8 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static rootColumnFormatter(cell, row) {
-        return `<div class="table__primary">${row.root.url}</div>
-                <div class="table__secondary">${row.root.serviceName}:${row.root.operationName}</div>`;
+        return `<div class="table__primary">${row.rootOperation}</div>
+                <div class="table__secondary">${row.root.url}</div>`;
     }
 
     static spanColumnFormatter(cell, row) {
@@ -164,7 +164,7 @@ export default class TraceResultsTable extends React.Component {
                 selectRow={selectRowProp}
             >
                 <TableHeaderColumn dataField="timestamp" sortFunc={this.sortByTimestamp} dataFormat={TraceResultsTable.timeColumnFormatter} dataSort width="12" thStyle={{ border: 'none' }}>Timestamp</TableHeaderColumn>
-                <TableHeaderColumn dataField="rootUrl" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Start URL</TableHeaderColumn>
+                <TableHeaderColumn dataField="rootOperation" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Root</TableHeaderColumn>
                 <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
                 <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
                 <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
