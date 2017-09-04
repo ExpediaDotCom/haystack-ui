@@ -88,12 +88,13 @@ store.findTraces = (query) => {
             });
 
             const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
+            const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
 
             return {
                 traceId: trace[0].traceId,
                 services: mappedServices,
                 root: {
-                    url: urlAnnotation ? urlAnnotation.value : '/dummy/url',
+                    url: (urlAnnotation && urlAnnotation.value) || (methodUriAnnotation && methodUriAnnotation.value) || '',
                     serviceName: rootSpan.binaryAnnotations[0].endpoint.serviceName,
                     operationName: rootSpan.name
                 },
