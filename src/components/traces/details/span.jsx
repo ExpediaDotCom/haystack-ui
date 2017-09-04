@@ -68,14 +68,14 @@ export default class Span extends React.Component {
         return (
             <g>
                 <text
-                    className="service-svg-text"
+                    className="span-service-label"
                     fill="#6B7693"
                     x="1%"
                     y={topOffset}
                 >{serviceName}
                 </text>
                 <text
-                    className="trace-svg-text"
+                    className="span-label"
                     fill="#6B7693"
                     x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
                     y={topOffset}
@@ -83,7 +83,7 @@ export default class Span extends React.Component {
                 >{span.name}:{formattedDuration}
                 </text>
                 <rect
-                    className="btn trace-svg-bar"
+                    className="btn span-bar"
                     id={span.traceId}
                     height={rowHeight}
                     width={`${Math.max(width, 0.2)}%`}
