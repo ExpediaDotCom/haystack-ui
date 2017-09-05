@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
-import toPresetDisplayText from './utils/presets';
+import toPresetDisplayText from '../utils/presets';
 import './timeRangePicker.less';
 
 export default class TimeRangePicker extends React.Component {

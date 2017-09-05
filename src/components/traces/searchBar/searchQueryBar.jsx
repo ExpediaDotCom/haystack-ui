@@ -19,8 +19,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import TimeRangePicker from './timeRangePicker';
-import {dateIsValid, queryIsValid, parseQueryString, toQueryString} from './utils/traceQueryParser';
-import toPresetDisplayText from './utils/presets';
+import {dateIsValid, queryIsValid, parseQueryString, toQueryString} from '../utils/traceQueryParser';
+import toPresetDisplayText from '../utils/presets';
 import './searchBar.less';
 
 export default class SearchQueryBar extends React.Component {

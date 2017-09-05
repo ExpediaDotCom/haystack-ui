@@ -15,10 +15,27 @@
  *
  */
 
-@import (reference) '../../app';
+@import (reference) '../../../app';
 
 .trace-details-nav {
     display: flex;
     justify-content: space-between;
     border-bottom: solid 1px @gray-lighter;
+}
+
+.span-label {
+    font-weight: 700;
+    font-size: @font-size-base;
+}
+
+.span-service-label {
+    font-size: @font-size-base;
+}
+
+.span-click {
+    opacity: 0;
+}
+
+.span-click:hover {
+    opacity: 0.2;
 }

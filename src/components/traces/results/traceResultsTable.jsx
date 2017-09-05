@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import TraceDetails from './traceDetails';
+import TraceDetails from '../details/traceDetails';
 import './traceResultsTable.less';
 
 export default class TraceResultsTable extends React.Component {
@@ -55,8 +55,8 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static rootColumnFormatter(cell, row) {
-        return `<div class="table__primary">${row.root.url}</div>
-                <div class="table__secondary">${row.root.serviceName}:${row.root.operationName}</div>`;
+        return `<div class="table__primary">${row.rootOperation}</div>
+                <div class="table__secondary">${row.root.url}</div>`;
     }
 
     static spanColumnFormatter(cell, row) {
@@ -89,12 +89,6 @@ export default class TraceResultsTable extends React.Component {
         </div>);
     }
 
-    static expandComponent() {
-        return (
-            <TraceDetails/>
-        );
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -102,6 +96,7 @@ export default class TraceResultsTable extends React.Component {
             selected: []
         };
         this.handleExpand = this.handleExpand.bind(this);
+        this.expandComponent = this.expandComponent.bind(this);
     }
 
      handleExpand(rowKey, isExpand) {
@@ -120,6 +115,13 @@ export default class TraceResultsTable extends React.Component {
                 }
             );
         }
+    }
+
+     expandComponent(row) {
+        if (this.state.selected.filter(id => id === row.traceId).length > 0) {
+            return <TraceDetails traceId={row.traceId} />;
+        }
+         return null;
     }
 
     render() {
@@ -158,11 +160,11 @@ export default class TraceResultsTable extends React.Component {
                 options={options}
                 pagination
                 expandableRow={() => true}
-                expandComponent={TraceResultsTable.expandComponent}
+                expandComponent={this.expandComponent}
                 selectRow={selectRowProp}
             >
                 <TableHeaderColumn dataField="timestamp" sortFunc={this.sortByTimestamp} dataFormat={TraceResultsTable.timeColumnFormatter} dataSort width="12" thStyle={{ border: 'none' }}>Timestamp</TableHeaderColumn>
-                <TableHeaderColumn dataField="rootUrl" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Start URL</TableHeaderColumn>
+                <TableHeaderColumn dataField="rootOperation" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Root</TableHeaderColumn>
                 <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
                 <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
                 <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
