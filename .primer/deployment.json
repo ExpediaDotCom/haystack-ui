@@ -1,0 +1,54 @@
+{
+    "global": {
+        "source_repo": "git@github.com:ExpediaInc/haystack-ui.git",
+        "team": "Haystack",
+        "department": "Exp WW Mgmt ",
+        "cost_center": "10312",
+        "portfolio": "Shared - Internal Tools",
+        "product_area": "Engineering and Operations",
+        "app_name": "haystack-ui",
+        "notify": {
+            "email": {
+                "addresses": [
+                    "haystack@expedia.com"
+                ]
+            },
+            "hipchat": {
+                "room": "Haystack"
+            }
+        }
+
+    },
+    "eweprod-p": {
+        "no-auto-delete": true,
+        "enable_spot": false,
+        "instances": {
+            "min_count": 1
+        },
+        "loadbalancer": {
+            "https_enabled": true
+        },
+        "app_ssl_port": 8080,
+        "traefik_frontend_rule" : "Host:haystack-ui.prod-p.expedia.com"
+
+    },
+    "ewetest-int": {
+        "loadbalancer": {
+            "https_enabled": true
+        },
+        "app_ssl_port": 8080,
+        "no-auto-delete": true,
+        "enable_spot": false,
+        "traefik_frontend_rule" : "Host:haystack-ui.int.expedia.com"
+
+    },
+    "ewetest": {
+        "no-auto-delete": true,
+        "enable_spot": false,
+        "loadbalancer": {
+            "https_enabled": true
+        },
+        "app_ssl_port": 8080,
+        "traefik_frontend_rule" : "Host:haystack-ui.test.expedia.com"
+    }
+}
