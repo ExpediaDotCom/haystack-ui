@@ -1,4 +1,6 @@
+
 /*
+
  *  Copyright 2017 Expedia, Inc.
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +15,15 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  *
+
  */
 
-const express = require('express');
-const config = require('../config/config');
+const Q = require('q');
 
-const store = require(`../stores/${config.store.name}`); // eslint-disable-line import/no-dynamic-require
+const store = {};
 
-const router = express.Router();
+store.getServices = () => Q.fcall(() => []);
+store.findTraces = () => Q.fcall(() => []);
+store.getTrace = () => Q.fcall(() => []);
 
-router.get('/services', (req, res) => {
-    store.getServices().then(results => res.json(results));
-});
-
-router.get('/traces', (req, res) => {
-    store.findTraces(req.query).then(results => res.json(results));
-});
-
-router.get('/trace/:traceId', (req, res) => {
-    store.getTrace(req.params.traceId).then(results => res.json(results));
-});
-
-module.exports = router;
+module.exports = store;
