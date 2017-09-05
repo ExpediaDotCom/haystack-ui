@@ -30,6 +30,17 @@ function calculateStartTime(spans) {
     );
 }
 
+function formatDuration(duration) {
+    if (duration === 0) {
+        return '0';
+    } else if (duration < 1000) {
+        return `${duration}µ`;
+    } else if (duration < 1000000) {
+        return `${(duration / 1000).toFixed(3)}ms`;
+    }
+    return `${(duration / 1000000).toFixed(3)}s`;
+}
+
 function calculateDuration(spans, start) {
     const end = spans.reduce((latestTime, span) =>
         (latestTime ? Math.max(latestTime, (span.timestamp + span.duration)) : (span.timestamp + span.duration)), null
@@ -38,13 +49,11 @@ function calculateDuration(spans, start) {
 }
 
 function getTimePointers(totalDuration) {
-    let timePointers = [];
-    const pointerDurations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    const pointerDurations = [0.0, 0.25, 0.50, 0.75, 1.0]
         .map(dur => (totalDuration * dur));
-    const leftOffset = [0.12, 0.27, 0.39, 0.52, 0.65, 0.78]
+    const leftOffset = [0.12, 0.29, 0.46, 0.63, 0.80]
         .map(lo => (lo * 100));
-    timePointers = leftOffset.map((p, i) => ({leftOffset: p, time: `${pointerDurations[i] / 1000}ms`}));
-    return timePointers;
+    return leftOffset.map((p, i) => ({leftOffset: p, time: formatDuration(pointerDurations[i])}));
 }
 
 export class ActiveTraceStore {

@@ -32,7 +32,7 @@ export default class Span extends React.Component {
             rowHeight: PropTypes.number.isRequired,
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
-            totalDuration: PropTypes.number.isRequired,
+            totalDuration: PropTypes.string.isRequired,
             serviceName: PropTypes.string.isRequired
         };
     }
@@ -59,10 +59,10 @@ export default class Span extends React.Component {
             totalDuration,
             serviceName
         } = this.props;
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30;
+        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
         const spanTimestamp = span.timestamp;
         const spanDuration = span.duration;
-        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12);
+        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
         const width = ((spanDuration / totalDuration) * 100) * 0.8;
         const formattedDuration = `${span.duration / 1000}ms`;
         return (
