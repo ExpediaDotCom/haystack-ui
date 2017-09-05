@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf public/bundles/",
-    "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json . && echo 'Done' ",
+    "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json --ignore-pattern 'public/*' . && echo 'Done' ",
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-core/register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" ",
     "build": "npm run clean & npm test && webpack -p",
     "start": "node server/start.js",
