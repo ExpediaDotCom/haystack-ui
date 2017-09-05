@@ -71,6 +71,8 @@ export default class Span extends React.Component {
                     fill="#6B7693"
                     x="1%"
                     y={topOffset}
+                    clipPath="url(#overflow)"
+                    cursor="default"
                 >{serviceName}
                 </text>
                 <text
@@ -79,6 +81,7 @@ export default class Span extends React.Component {
                     x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
                     y={topOffset}
                     textAnchor={leftOffset > 50 ? 'end' : 'start'}
+                    cursor="default"
                 >{span.name}:{formattedDuration}
                 </text>
                 <rect
@@ -106,6 +109,9 @@ export default class Span extends React.Component {
                     serviceName={serviceName}
                     span={span}
                 />
+                <clipPath id="overflow">
+                    <rect x="0"height="100%" width="11.5%"/>
+                </clipPath>
             </g>
         );
     }

@@ -49,7 +49,7 @@ export default class Timeline extends React.Component {
             startTime,
             totalDuration
         } = this.props;
-        const timelineHeight = (32 * spans.length) + 35;
+        const timelineHeight = (32 * spans.length) + 37;
         const getSpans = spans.map((span, index) =>
             (<Span
                 key={span.id}
@@ -68,6 +68,7 @@ export default class Timeline extends React.Component {
                     {timePointers.map(tp => <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
                 </g>
                 {getSpans}
+                <rect x="11.4%" y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
             </svg>
         );
     }
