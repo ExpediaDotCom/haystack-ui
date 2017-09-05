@@ -49,7 +49,7 @@ export default class Timeline extends React.Component {
             startTime,
             totalDuration
         } = this.props;
-        const timelineHeight = (32 * spans.length) + 30;
+        const timelineHeight = (32 * spans.length) + 35;
         const getSpans = spans.map((span, index) =>
             (<Span
                 key={span.id}
