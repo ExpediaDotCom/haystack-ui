@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 
 import SpanDetailsModal from './spanDetailsModal';
 
-
 export default class Span extends React.Component {
 
     static get propTypes() {
