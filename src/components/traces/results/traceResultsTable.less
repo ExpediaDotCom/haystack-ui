@@ -42,7 +42,7 @@
   text-overflow: ellipsis;
 }
 
-.react-bs-table table tr {
+.react-bs-table table tr:not(.selected-row) {
   border-bottom: 1px solid @gray-mid-lighter;
 }
 
@@ -269,18 +269,26 @@ tr.tr-no-border>td {
 }
 
 .expand-row-body {
-  background-color: white;
-  border-bottom: 20px solid @gray-lighter !important;
+  border-bottom: 15px solid @gray-lighter !important;
   > td {
-    padding-top: 18px !important;
+    padding: 0 !important;
   }
+}
+
+.trace-details {
+  padding: 15px;
+  border-right: 2px solid @gray-dark ;
+  border-left: 2px solid @gray-dark ;
+  border-bottom: 2px solid @gray-dark;
+  border-radius: 0px 0px 5px 5px;
+  background-color: white;
 }
 
 .selected-row {
   > td {
+    cursor: pointer;
     background-color: @gray-dark !important;
     color: @gray-lighter;
-    cursor: pointer;
   }
 }
 
