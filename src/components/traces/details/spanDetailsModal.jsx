@@ -13,7 +13,6 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-/* eslint-disable no-nested-ternary */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -29,12 +28,23 @@ export default class SpanDetailsModal extends React.Component {
         this.state = {
             tabSelected: 1
         };
-
+        this.tabViewer = this.tabViewer.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
     }
-
     toggleTab(tabNumber) {
         this.setState({tabSelected: tabNumber});
+    }
+    tabViewer(span) {
+        switch (this.state.tabSelected) {
+            case 1:
+                return <TagsTable binaryAnnotations={span.binaryAnnotations} />;
+            case 2:
+                return <LogsTable annotations={span.annotations} />;
+            case 3:
+                return <pre>{JSON.stringify(span, null, 2)}</pre>;
+            default:
+                return null;
+        }
     }
 
     render() {
@@ -68,13 +78,7 @@ export default class SpanDetailsModal extends React.Component {
                         </li>
                     </ul>
                 </div>
-                {
-                (this.state.tabSelected === 1) ?
-                    (<TagsTable binaryAnnotations={this.props.span.binaryAnnotations} />) :
-                (this.state.tabSelected === 2) ?
-                    (<LogsTable annotations={this.props.span.annotations} />) :
-                    (<pre>{JSON.stringify(this.props.span, null, 2)}</pre>)
-                }
+                {this.tabViewer(this.props.span)}
             </Modal>
         );
     }
