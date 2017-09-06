@@ -23,8 +23,8 @@ export default class Timeline extends React.Component {
 
     static get propTypes() {
         return {
-            timePointers: PropTypes.array.isRequired,
-            spans: PropTypes.array.isRequired,
+            timePointers: PropTypes.object.isRequired,
+            spans: PropTypes.object.isRequired,
             startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired
         };
@@ -65,7 +65,7 @@ export default class Timeline extends React.Component {
         return (
             <svg height={timelineHeight} width="100%">
                 <g>
-                    {timePointers.map(tp => <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
+                    {timePointers.map(tp => <text key={tp.time} x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
                 </g>
                 {getSpans}
                 <rect x="11.5%" y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
