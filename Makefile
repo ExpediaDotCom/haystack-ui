@@ -29,7 +29,7 @@ release: all
 	# assign version tag
 	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(VERSION)
 	# assign symentic version tag
-	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(CURRENT_SYMENTIC_VERSION).$(SHORT_VERSION)
+	# docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(CURRENT_SYMENTIC_VERSION).$(SHORT_VERSION)
 	# push image
 	docker push $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME)
 else
