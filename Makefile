@@ -1,7 +1,7 @@
 .PHONY: clean build docker_build all release
 
 # docker namespace
-DOCKER_ORG := ewe
+DOCKER_ORG := expediadotcom
 DOCKER_IMAGE_NAME := haystack-ui
 
 # branching and versioning
@@ -29,9 +29,9 @@ release: all
 	# assign version tag
 	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(VERSION)
 	# assign symentic version tag
-	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(CURRENT_SYMENTIC_VERSION).$(SHORT_VERSION)
+	# docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(CURRENT_SYMENTIC_VERSION).$(SHORT_VERSION)
 	# push image
-	docker push $(REPO)
+	docker push $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME)
 else
 release: all
 endif
