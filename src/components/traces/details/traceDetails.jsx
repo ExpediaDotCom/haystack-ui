@@ -61,7 +61,7 @@ export default class TraceDetails extends React.Component {
 
 
     render() {
-        const InvocationWaterfall = () => (<div>blah</div>);
+        const InvocationWaterfall = () => (<div>To Add Waterfall</div>);
 
         return (
             <section className="trace-details">
