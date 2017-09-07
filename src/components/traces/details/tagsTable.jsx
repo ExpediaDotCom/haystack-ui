@@ -16,9 +16,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
-const TagsTable = ({binaryAnnotations}) => (
-    <table className="table table-striped">
+const TagsTable = ({binaryAnnotations}) => {
+    const unique = _.uniqBy(binaryAnnotations, annotation => annotation.key.toLowerCase());
+    const sortedBinaryAnnotations = _.sortBy(unique, [annotation => annotation.key.toLowerCase()]);
+
+    return (<table className="table table-striped">
         <thead>
         <tr>
             <th>Key</th>
@@ -26,14 +30,15 @@ const TagsTable = ({binaryAnnotations}) => (
         </tr>
         </thead>
         <tbody>
-        {binaryAnnotations.map(annotation =>
-            (<tr key={annotation.key}>
+        {sortedBinaryAnnotations.map(annotation =>
+            (<tr key={Math.random()}>
                 <td>{annotation.key}</td>
                 <td>{annotation.value}</td>
             </tr>)
         )}
         </tbody>
     </table>);
+};
 
 TagsTable.propTypes = {
     binaryAnnotations: PropTypes.object.isRequired
