@@ -18,41 +18,68 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 
+import TagsTable from './tagsTable';
+import LogsTable from './logsTable';
 import Modal from '../../common/modal';
 
-const SpanDetailsModal = ({isOpen, closeModal, serviceName, span}) => (<Modal
-    isOpen={isOpen}
-    closeModal={closeModal}
-    title={`[${serviceName}] ${span.name}: ${span.duration / 1000}ms`}
->
-    <div className="clearfix">
-        <p className="pull-left">{serviceName} - {span.duration / 1000}ms</p>
-        <div className="pull-right btn-group">
-            <Link className="btn btn-primary" to={`/service/${serviceName}/trends`}>
-                <span className="ti-stats-up"/> Trends
-            </Link>
-            <Link className="btn btn-primary" to={`/service/${serviceName}/flow`}>
-                <span className="ti-vector"/> Dependencies
-            </Link>
-        </div>
-    </div>
-    <table className="table table-striped">
-        <thead>
-        <tr>
-            <th>Key</th>
-            <th>Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        {span.binaryAnnotations.map(annotation =>
-            (<tr>
-                <td>{annotation.key}</td>
-                <td>{annotation.value}</td>
-            </tr>)
-        )}
-        </tbody>
-    </table>
-</Modal>);
+export default class SpanDetailsModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            tabSelected: 1
+        };
+        this.tabViewer = this.tabViewer.bind(this);
+        this.toggleTab = this.toggleTab.bind(this);
+    }
+    toggleTab(tabIndex) {
+        this.setState({tabSelected: tabIndex});
+    }
+    tabViewer(span) {
+        switch (this.state.tabSelected) {
+            case 1:
+                return <TagsTable binaryAnnotations={span.binaryAnnotations} />;
+            case 2:
+                return <LogsTable annotations={span.annotations} />;
+            case 3:
+                return <pre>{JSON.stringify(span, null, 2)}</pre>;
+            default:
+                return null;
+        }
+    }
+
+    render() {
+        return (
+            <Modal
+                title={`[${this.props.serviceName}] ${this.props.span.name}: ${this.props.span.duration / 1000}ms`}
+                isOpen={this.props.isOpen}
+                closeModal={this.props.closeModal}
+            >
+                <div className="tabs-nav-container clearfix">
+                    <ul className="nav nav-tabs pull-left">
+                        <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Tags</a>
+                        </li>
+                        <li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                            <a role="button" tabIndex="-2" onClick={() => this.toggleTab(2)} >Logs</a>
+                        </li>
+                        <li className={this.state.tabSelected === 3 ? 'active' : ''}>
+                            <a role="button" tabIndex="-3" onClick={() => this.toggleTab(3)} >Raw Span</a>
+                        </li>
+                    </ul>
+                    <div className="btn-group-sm pull-right">
+                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/trends`}>
+                            <span className="ti-stats-up"/> Trends
+                        </Link>
+                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/flow`}>
+                            <span className="ti-vector"/> Dependencies
+                        </Link>
+                    </div>
+                </div>
+                {this.tabViewer(this.props.span)}
+            </Modal>
+        );
+    }
+}
 
 SpanDetailsModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
@@ -60,5 +87,3 @@ SpanDetailsModal.propTypes = {
     serviceName: PropTypes.string.isRequired,
     span: PropTypes.object.isRequired
 };
-
-export default SpanDetailsModal;

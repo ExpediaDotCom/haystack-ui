@@ -15,22 +15,5 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import Modal from '../../common/modal';
-
-const RawTraceModal = ({isOpen, closeModal, spans}) => (
-    <Modal isOpen={isOpen} closeModal={closeModal} title={'Raw Trace'}>
-        {spans.map(span =>
-            (<div key={span.id}>
-                <pre>{JSON.stringify(span, null, 2)}</pre>
-            </div>))}
-    </Modal>);
-
-RawTraceModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    closeModal: PropTypes.func.isRequired,
-    spans: PropTypes.array.isRequired
-};
-
-export default RawTraceModal;
+export default () => <div>TODO add invocations view</div>;
