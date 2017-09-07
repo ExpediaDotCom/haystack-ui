@@ -27,6 +27,3 @@ release: all
 	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(VERSION)
 	# push image
 	docker push $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME)
-else
-release: all
-endif
