@@ -31,8 +31,8 @@ export default class SpanDetailsModal extends React.Component {
         this.tabViewer = this.tabViewer.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
     }
-    toggleTab(tabNumber) {
-        this.setState({tabSelected: tabNumber});
+    toggleTab(tabIndex) {
+        this.setState({tabSelected: tabIndex});
     }
     tabViewer(span) {
         switch (this.state.tabSelected) {
@@ -54,18 +54,7 @@ export default class SpanDetailsModal extends React.Component {
                 isOpen={this.props.isOpen}
                 closeModal={this.props.closeModal}
             >
-                <div className="clearfix">
-                    <p className="pull-left">{this.props.serviceName} - {this.props.span.duration / 1000}ms</p>
-                    <div className="pull-right btn-group">
-                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/trends`}>
-                            <span className="ti-stats-up"/> Trends
-                        </Link>
-                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/flow`}>
-                            <span className="ti-vector"/> Dependencies
-                        </Link>
-                    </div>
-                </div>
-                <div className="trace-details-nav clearfix">
+                <div className="tabs-nav-container clearfix">
                     <ul className="nav nav-tabs pull-left">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Tags</a>
@@ -77,6 +66,14 @@ export default class SpanDetailsModal extends React.Component {
                             <a role="button" tabIndex="-3" onClick={() => this.toggleTab(3)} >Raw Span</a>
                         </li>
                     </ul>
+                    <div className="btn-group-sm pull-right">
+                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/trends`}>
+                            <span className="ti-stats-up"/> Trends
+                        </Link>
+                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/flow`}>
+                            <span className="ti-vector"/> Dependencies
+                        </Link>
+                    </div>
                 </div>
                 {this.tabViewer(this.props.span)}
             </Modal>

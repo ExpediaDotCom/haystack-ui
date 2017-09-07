@@ -20,6 +20,7 @@
 
 @import 'bootstrap/bootstrap';
 
+@spacing-xxs : 3px;
 @spacing-xs : 6px;
 @spacing-s : 12px;
 @spacing-m : 18px;
@@ -55,4 +56,15 @@ table {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.tabs-nav-container {
+  margin-bottom: @spacing-m;
+  font-size: @font-size-large;
+  ul > li > a {
+    padding: 0 @spacing-m @spacing-xs @spacing-m;
+    &:focus {
+      outline: 0;
+    }
+  }
 }

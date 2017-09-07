@@ -16,6 +16,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import _ from 'lodash';
 
 const LogEnum = {
     ss: 'Server Send',
@@ -24,23 +26,43 @@ const LogEnum = {
     cr: 'Client Receive'
 };
 
-const LogsTable = ({annotations}) => (
-    <table className="table table-striped">
-        <thead>
-        <tr>
-            <th>Value</th>
-            <th>Timestamp</th>
-        </tr>
-        </thead>
-        <tbody>
-        {annotations.map(annotation =>
-            (<tr key={annotation.value}>
-                <td>{LogEnum[annotation.value]}</td>
-                <td>{Date(annotation.timestamp * 1000)}</td>
-            </tr>)
-        )}
-        </tbody>
-    </table>);
+function findAnnotation(annotations, annotationValue) {
+    return _.find(annotations, annotation => annotation.value.toLowerCase() === annotationValue);
+}
+
+const LogsTable = ({annotations}) => {
+    const clientSend = findAnnotation(annotations, 'cs');
+    const serverReceive = findAnnotation(annotations, 'sr');
+    const serverSend = findAnnotation(annotations, 'ss');
+    const clientReceive = findAnnotation(annotations, 'cr');
+
+    const startSpan = (clientSend || serverReceive || serverSend || clientReceive);
+
+    if (startSpan) {
+        const startTime = startSpan.timestamp;
+
+        return (<table className="table table-striped">
+            <thead>
+            <tr>
+                <th>Value</th>
+                <th>Relative</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {_.compact([clientSend, serverReceive, serverSend, clientReceive]).map(annotation =>
+                (<tr key={annotation.value}>
+                    <td>{LogEnum[annotation.value]}</td>
+                    <td>{(annotation.timestamp - startTime) / 1000}ms</td>
+                    <td>{moment(annotation.timestamp / 1000).format('kk:mm:ss.SSS, DD MMM YY')}</td>
+                </tr>)
+            )}
+            </tbody>
+        </table>);
+    }
+    return <h6>No logs associated with span</h6>;
+};
 
 LogsTable.propTypes = {
     annotations: PropTypes.object.isRequired
