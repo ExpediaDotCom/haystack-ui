@@ -18,10 +18,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router} from 'react-router-dom';
+import Perf from 'react-addons-perf';
 import AppRoutes from './appRoutes';
 import storesInitializer from './stores/storesInitializer';
 
 // app initializers
+Perf.start();
 storesInitializer.init();
 
 // mount react components
@@ -31,3 +33,10 @@ ReactDOM.render(
     </Router>
     , document.getElementById('root')
 );
+
+// measuring perf for development purposes
+// TODO remove once production ready
+Perf.stop();
+Perf.printWasted();
+Perf.printInclusive();
+Perf.printExclusive();

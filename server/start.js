@@ -21,7 +21,7 @@ const Server = require('./support/server');
 
 const server = new Server(app);
 
-if (config.preferClusterMode) {
+if (config.cluster) {
     server.startInClusterMode();
 } else {
     server.startInStandaloneMode();

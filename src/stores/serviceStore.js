@@ -18,7 +18,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 
-class ServiceStore {
+export class ServiceStore {
     @observable services = [];
 
     @action fetchServices() {

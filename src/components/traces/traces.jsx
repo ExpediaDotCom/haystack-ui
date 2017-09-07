@@ -19,14 +19,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import './traces.less';
-import SearchBar from './searchBar';
-import TraceResults from './traceResults';
+import SearchBar from './searchBar/searchBar';
+import TraceResults from './results/traceResults';
 import tracesSearchStore from '../../stores/tracesSearchStore';
 
 const Traces = ({history, location, match}) => (
     <section className="traces-panel">
         <SearchBar tracesSearchStore={tracesSearchStore} history={history} location={location} match={match}/>
-        <TraceResults tracesSearchStore={tracesSearchStore} history={history}/>
+        <TraceResults tracesSearchStore={tracesSearchStore}/>
     </section>
 );
 

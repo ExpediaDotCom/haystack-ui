@@ -17,30 +17,33 @@
 
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-import {Link} from 'react-router-dom';
-import serviceStore from '../../stores/serviceStore';
+import Select from 'react-select';
+import PropTypes from 'prop-types';
+import './homeSearchBox.less';
 
 @observer
 export default class HomeSearchBox extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {service: ''};
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
+    static propTypes = {
+        history: PropTypes.object.isRequired,
+        services: PropTypes.array.isRequired
+    };
+
+    static formatServiceOptions(serviceList) {
+        const serviceListOptions = [];
+        serviceList.map(serviceListItem =>
+            serviceListOptions.push({value: serviceListItem, label: serviceListItem}
+            ));
+
+        return serviceListOptions;
     }
 
-    componentWillMount() {
-        serviceStore.fetchServices();
+    constructor(props) {
+        super(props);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event) {
-        this.setState({service: event.target.value});
-    }
-
-    handleSelect(event) {
-        if (!this.state.service || (this.state.service === 'Choose here')) {
-            event.preventDefault();
-        }
+        this.props.history.push(`/service/${event.value}/traces`);
     }
 
     render() {
@@ -48,39 +51,14 @@ export default class HomeSearchBox extends Component {
             <section className="container">
                 <div className="jumbotron">
                     <h2 className="home__header">Select a service to start </h2>
-                    <form className="form-horizontal">
-                        <fieldset>
-                            <div className="form-group">
-                                <div className="col-lg-10 col-md-offset-3">
-                                    <div className="col-md-6">
-                                        <select
-                                            value={this.state.service}
-                                            onChange={this.handleChange}
-                                            className="form-control selectpicker"
-                                            id="select"
-                                        >
-                                            <option selected>Choose here</option>
-                                            {serviceStore.services.map(ServiceListItem =>
-                                                (<option
-                                                    value={ServiceListItem}
-                                                    key={ServiceListItem}
-                                                >
-                                                    {ServiceListItem}
-                                                </option>))}
-                                        </select>
-                                    </div>
-                                    <Link
-                                        to={`/service/${this.state.service}/traces`}
-                                        className="btn btn-primary trace-search"
-                                        onClick={this.handleSelect}
-                                        disabled={!this.state.service || this.state.service === 'Choose here'}
-                                    >
-                                        Select
-                                    </Link>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
+                    <div className="col-md-4 col-md-offset-4" >
+                        <Select
+                            name="service-list"
+                            options={HomeSearchBox.formatServiceOptions(this.props.services)}
+                            onChange={this.handleChange}
+                            placeholder="Select..."
+                        />
+                    </div>
                 </div>
             </section>
         );

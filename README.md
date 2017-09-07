@@ -1,4 +1,6 @@
 
+[![Build Status](https://travis-ci.org/ExpediaDotCom/haystack-ui.svg?branch=master)](https://travis-ci.org/ExpediaDotCom/haystack-ui)
+
 <img src="/public/images/assets/logo_bg_transparent.png" width="300" />
 
 # haystack-ui
