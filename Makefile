@@ -23,10 +23,9 @@ all: build docker_build
 
 # build all and release
 release: all
+	# assign latest tag
+	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):latest
 	# assign version tag
 	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(VERSION)
 	# push image
 	docker push $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME)
-else
-release: all
-endif
