@@ -17,12 +17,6 @@
 
 @import (reference) '../../../app';
 
-.trace-details-nav {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: solid 1px @gray-lighter;
-}
-
 .span-label {
     font-weight: 700;
     font-size: @font-size-base;
@@ -38,4 +32,14 @@
 
 .span-click:hover {
     opacity: 0.2;
+}
+
+.trace-details-nav {
+    font-size: @font-size-large;
+    ul > li > a {
+        padding: 0 18px 3px 18px;
+        &:focus {
+            outline: 0;
+        }
+    }
 }
