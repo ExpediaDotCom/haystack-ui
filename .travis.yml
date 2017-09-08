@@ -15,4 +15,4 @@ env:
 script:
   # build, create docker image
   # upload to dockerhub only for master(non PR) and tag scenario
-  - if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ ! -z "$TRAVIS_TAG" ];  then make release; else make all; fi
+  - if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ -n "$TRAVIS_TAG" ];  then make release; else make all; fi

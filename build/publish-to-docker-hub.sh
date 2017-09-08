@@ -18,10 +18,11 @@ if [[ $TAG =~ ([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
     MINOR="${BASH_REMATCH[2]}"
     PATCH="${BASH_REMATCH[3]}"
 
-    # for tag, add MAJOR, MAJOR.MINOR, MAJOR.MINOR.PATCH as tag
+    # for tag, add MAJOR, MAJOR.MINOR, MAJOR.MINOR.PATCH and latest as tag
     docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:$MAJOR
     docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:$MAJOR.$MINOR
     docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:$MAJOR.$MINOR.$PATCH
+    docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:latest
 
     # publish image with tags
     docker push $QUALIFIED_DOCKER_IMAGE_NAME
@@ -29,8 +30,7 @@ if [[ $TAG =~ ([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
 elif [[ "$BRANCH" == "master" ]]; then
     echo "releasing master branch"
 
-    # for 'master' branch, add latest and SHA as tags
-    docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:latest
+    # for 'master' branch, add SHA as tags
     docker tag $DOCKER_IMAGE_NAME $QUALIFIED_DOCKER_IMAGE_NAME:$SHA
 
     # publish image with tags
