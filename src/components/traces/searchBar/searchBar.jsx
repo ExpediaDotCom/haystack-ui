@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import SearchQueryBar from './searchQueryBar';
-import {toQueryUrl, toQuery} from '../../../utils/queryParser';
+import {toQueryUrl, toQuery, searchForService} from '../utils/traceQueryParser';
 import './searchBar.less';
 
 export default class SearchBar extends React.Component {
@@ -65,6 +65,7 @@ export default class SearchBar extends React.Component {
     }
 
     fetchSearchResults(query) {
+        this.props.tracesSearchStore.serviceInQueryString = searchForService(query);
         this.props.tracesSearchStore.fetchSearchResults(toQueryUrl(query));
     }
 

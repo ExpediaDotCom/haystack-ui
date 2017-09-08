@@ -167,8 +167,14 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn dataField="rootOperation" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Root</TableHeaderColumn>
                 <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
                 <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDuration" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>Svc Duration</TableHeaderColumn>
+                {this.props.tracesSearchStore.serviceInQueryString ?
+                        [<TableHeaderColumn dataField="serviceDurationPercent" key="0" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>
+                            Svc Duration %
+                        </TableHeaderColumn>,
+                        <TableHeaderColumn columnClassName="service-duration" dataField="serviceDuration" dataSort key="1" width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>
+                            Svc Duration
+                        </TableHeaderColumn>]
+                    : null }
                 <TableHeaderColumn dataField="duration" dataSort width="10" sortFunc={this.sortByDuration} dataFormat={TraceResultsTable.totalDurationColumnFormatter} thStyle={{ border: 'none' }}>Total Duration</TableHeaderColumn>
                 <TableHeaderColumn dataField="traceId" hidden isKey>TraceId</TableHeaderColumn>
             </BootstrapTable>

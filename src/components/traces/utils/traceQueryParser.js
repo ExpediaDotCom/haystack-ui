@@ -55,3 +55,25 @@ export const toQueryString = query => Object
     .filter(key => query[key] && key !== 'timePreset' && key !== 'startTime' && key !== 'endTime')
     .map(key => `${encodeURIComponent(key)}=${query[key]}`)
     .join(' ');
+
+export const toQueryUrl = query => Object
+    .keys(query)
+    .filter(key => query[key])
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)
+    .join('&');
+
+export const toQuery = (query) => {
+    const queryDict = {};
+
+    if (!query || query.length <= 1) return {};
+
+    query.substr(1)
+        .split('&')
+        .forEach((item) => {
+            queryDict[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1]);
+        });
+    return queryDict;
+};
+
+export const searchForService = query => Object.keys(query).includes('serviceName');
+

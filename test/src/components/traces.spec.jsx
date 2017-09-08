@@ -15,7 +15,7 @@
  *
  */
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, no-unused-expressions */
 
 
 import React from 'react';
@@ -193,6 +193,28 @@ describe('<Traces />', () => {
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
     });
 
+    it('should only render service duration and percentage when a service name is present in query string', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'serviceName=test'}});
+        wrapper.find('.traces-search-button').simulate('click');
+        expect(wrapper.find('.service-duration')).to.have.length.above(0);
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'no service'}});
+        wrapper.find('.traces-search-button').simulate('click');
+        expect(wrapper.find('.service-duration')).to.have.length(0);
+    });
+
+    it('should update URL query params on clicking search', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'serviceName=test'}});
+        wrapper.find('.traces-search-button').simulate('click');
+        const queryA = wrapper.props().location.search;
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'noService'}});
+        wrapper.find('.traces-search-button').simulate('click');
+        const queryB = wrapper.props().location.search;
+        expect(queryA === queryB).to.be.false;
+    });
     it('should not accept invalid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
