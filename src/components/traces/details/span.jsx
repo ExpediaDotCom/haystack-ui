@@ -19,6 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import serviceStore from '../../../stores/serviceStore';
 
 import SpanDetailsModal from './spanDetailsModal';
 
@@ -69,6 +70,7 @@ export default class Span extends React.Component {
                 <text
                     className="span-service-label"
                     fill="#6B7693"
+                    fontSize="60px"
                     x="1%"
                     y={topOffset}
                     clipPath="url(#overflow)"
@@ -93,7 +95,7 @@ export default class Span extends React.Component {
                     y={topOffset + 4}
                     rx="3.5"
                     ry="3.5"
-                    fill="#4CAF50"
+                    fill={serviceStore.servicesWithColor[serviceName]}
                 />
                 <rect
                     className="span-click"

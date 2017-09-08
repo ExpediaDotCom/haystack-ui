@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from '../details/traceDetails';
+import serviceStore from '../../../stores/serviceStore';
 import './traceResultsTable.less';
 
 export default class TraceResultsTable extends React.Component {
@@ -43,7 +44,8 @@ export default class TraceResultsTable extends React.Component {
     static handleServiceList(services) {
         let serviceList = '';
         services.map((svc) => {
-            serviceList += `<span class="service-spans label label-success">${svc.name} x${svc.spanCount}</span> `;
+            const bgColor = serviceStore.servicesWithColor[svc.name];
+            serviceList += `<span class="service-spans label label-success" style="background-color:${bgColor}"=>${svc.name[0].toUpperCase()} x${svc.spanCount}</span> `;
             return serviceList;
         });
         return serviceList;
@@ -99,7 +101,7 @@ export default class TraceResultsTable extends React.Component {
         this.expandComponent = this.expandComponent.bind(this);
     }
 
-     handleExpand(rowKey, isExpand) {
+    handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
                 {
@@ -117,11 +119,11 @@ export default class TraceResultsTable extends React.Component {
         }
     }
 
-     expandComponent(row) {
+    expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
             return <TraceDetails traceId={row.traceId} />;
         }
-         return null;
+        return null;
     }
 
     render() {

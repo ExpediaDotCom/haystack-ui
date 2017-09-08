@@ -18,6 +18,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import serviceStore from '../../../stores/serviceStore';
 
 import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
@@ -28,17 +29,21 @@ export default class TraceResults extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired
     };
+    constructor() {
+        super();
+        serviceStore.fetchServices();
+    }
 
     render() {
         return (
             <section>
                 { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
-                        pending: () => <Loading />,
-                        rejected: () => <Error />,
-                        fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                                ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore}/>
-                                : <Error />)
-                    })
+                    pending: () => <Loading />,
+                    rejected: () => <Error />,
+                    fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
+                        ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore}/>
+                        : <Error />)
+                })
                 }
             </section>
         );
