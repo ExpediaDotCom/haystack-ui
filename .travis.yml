@@ -11,8 +11,8 @@ env:
     - BRANCH=${TRAVIS_BRANCH}
     - TAG=${TRAVIS_TAG}
     - SHA=${TRAVIS_COMMIT}
-    - DO_RELEASE=if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ ! -z "$TRAVIS_TAG" ];  then echo "true"; else echo "false"; fi
 
 script:
-  # build, create docker image and upload to dockerhub
-  - if [["$DO_RELEASE" == true]];  then make release; else make all; fi
+  # build, create docker image
+  # upload to dockerhub only for master(non PR) and tag scenario
+  - if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ ! -z "$TRAVIS_TAG" ];  then make release; else make all; fi
