@@ -6,8 +6,13 @@ node_js:
 services:
   - docker
 
+env:
+  global:
+    - BRANCH=${TRAVIS_BRANCH}
+    - TAG=${TRAVIS_TAG}
+    - SHA=${TRAVIS_COMMIT}
+    - DO_RELEASE=if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ ! -z "$TRAVIS_TAG" ];  then echo "true"; else echo "false"; fi
+
 script:
-  # docker login
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   # build, create docker image and upload to dockerhub
-  - make release
+  - if [["$DO_RELEASE" == true]];  then make release; else make all; fi

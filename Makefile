@@ -1,14 +1,8 @@
 .PHONY: clean build docker_build all release
 
 # docker namespace
-DOCKER_ORG := expediadotcom
-DOCKER_IMAGE_NAME := haystack-ui
-
-# branching and versioning
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-VERSION := $(shell git rev-parse HEAD)
-SHORT_VERSION := $(shell git rev-parse --short HEAD)
-CURRENT_SYMENTIC_VERSION := $(shell git describe --abbrev=0 --tags)
+export DOCKER_ORG := expediadotcom
+export DOCKER_IMAGE_NAME := haystack-ui
 
 clean:
 	npm run clean
@@ -22,10 +16,5 @@ docker_build:
 all: build docker_build
 
 # build all and release
-release: all
-	# assign latest tag
-	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):latest
-	# assign version tag
-	docker tag $(DOCKER_IMAGE_NAME) $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME):$(VERSION)
-	# push image
-	docker push $(DOCKER_ORG)/$(DOCKER_IMAGE_NAME)
+release:
+	./build/publish-to-docker-hub.sh
