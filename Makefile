@@ -16,5 +16,5 @@ docker_build:
 all: build docker_build
 
 # build all and release
-release:
-	./build/publish-to-docker-hub.sh
+release: all
+	./build/docker/publish-to-docker-hub.sh
