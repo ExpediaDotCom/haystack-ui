@@ -18,6 +18,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import timeago from 'timeago.js';
+import moment from 'moment';
 import { fromPromise } from 'mobx-utils';
 import { toQueryUrlString } from '../utils/queryParser';
 
@@ -26,7 +27,7 @@ function getTotalSpanCount(services) {
 }
 
 function getFormattedTimestamp(startTime) {
-    return new Date(startTime * 1000).toLocaleString();
+    return moment(startTime * 1000).format('kk:mm:ss.SSS, DD MMM YY');
 }
 
 function TraceException(data) {

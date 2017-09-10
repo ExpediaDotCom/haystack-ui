@@ -216,7 +216,7 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="timestamp"
                     dataFormat={TraceResultsTable.timeColumnFormatter}
-                    width="12"
+                    width="15"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     sortFunc={this.sortByTimestamp}
@@ -241,7 +241,7 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="spans"
                     dataFormat={TraceResultsTable.spanColumnFormatter}
-                    width="30"
+                    width="25"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
@@ -251,7 +251,7 @@ export default class TraceResultsTable extends React.Component {
                     && <TableHeaderColumn
                         dataField="serviceDuration"
                         dataFormat={TraceResultsTable.serviceDurationFormatter}
-                        width="15"
+                        width="10"
                         dataSort
                         sortFunc={this.sortByDuration}
                         caretRender={TraceResultsTable.getCaret}
@@ -263,7 +263,7 @@ export default class TraceResultsTable extends React.Component {
                     && <TableHeaderColumn
                         dataField="serviceDurationPercent"
                         dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
-                        width="15"
+                        width="10"
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
@@ -272,7 +272,7 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="serviceDuration"
                     dataFormat={TraceResultsTable.serviceDurationFormatter}
-                    width="15"
+                    width="10"
                     dataSort
                     sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
@@ -281,7 +281,7 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="serviceDurationPercent"
                     dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
-                    width="15"
+                    width="10"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -289,7 +289,7 @@ export default class TraceResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="duration"
                     dataFormat={TraceResultsTable.totalDurationColumnFormatter}
-                    width="15"
+                    width="10"
                     dataSort
                     sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
