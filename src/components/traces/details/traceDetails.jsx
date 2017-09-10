@@ -63,7 +63,7 @@ export default class TraceDetails extends React.Component {
         this.setState({tabSelected: tabIndex});
     }
 
-    handleCopy(tabIndex) {
+    handleCopy() {
         this.setState({showCopied: true});
         setTimeout(() => this.setState({showCopied: false}), 2000);
     }
@@ -92,7 +92,9 @@ export default class TraceDetails extends React.Component {
         return (
             <section className="trace-details">
                 <div className="tabs-nav-container clearfix">
-                    <ul className="nav nav-tabs pull-left">
+                    <h5 className="pull-left">TraceId: {this.props.traceId}</h5>
+
+                    <ul className="nav nav-tabs pull-left hidden">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                         </li>
@@ -100,6 +102,7 @@ export default class TraceDetails extends React.Component {
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Invocations</a>
                         </li>
                     </ul>
+
                     <div className="btn-group-sm pull-right">
                           {
                             this.state.showCopied ? (
@@ -113,7 +116,6 @@ export default class TraceDetails extends React.Component {
                         <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?serviceName=${this.props.baseServiceName}&traceId=${this.props.traceId}`} onCopy={this.handleCopy} >
                             <a role="button" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
                         </Clipboard>
-
                     </div>
                 </div>
                 {this.tabViewer({
