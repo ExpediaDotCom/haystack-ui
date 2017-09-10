@@ -15,7 +15,7 @@
  *
  */
 
-export const toQueryUrl = query => Object
+export const toQueryUrlString = query => Object
     .keys(query)
     .filter(key => query[key])
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)

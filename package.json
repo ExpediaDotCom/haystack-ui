@@ -61,7 +61,6 @@
     "mobx-react": "^4.2.1",
     "mobx-utils": "^3.0.0",
     "mocha": "^3.2.0",
-    "moment": "^2.18.1",
     "nodemon": "^1.11.0",
     "progress-bar-webpack-plugin": "^1.9.3",
     "prop-types": "^15.5.10",

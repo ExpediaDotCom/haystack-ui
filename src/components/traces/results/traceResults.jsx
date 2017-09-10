@@ -36,7 +36,7 @@ export default class TraceResults extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                                ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore}/>
+                                ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults}/>
                                 : <Error />)
                     })
                 }
