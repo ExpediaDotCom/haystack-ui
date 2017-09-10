@@ -33,16 +33,16 @@ export default class SearchBar extends React.Component {
     constructor(props) {
         super(props);
 
-        // set state
+        // construct query state
         const query = toQuery(props.location.search);
 
-        // set defaults timerange if not present already
+        // set defaults
         if (!(query.timePreset || (query.startTime && query.endTime))) {
             query.timePreset = '5m';
         }
-        if (!query.serviceName) {
-            query.serviceName = props.match.params.serviceName;
-        }
+        query.serviceName = query.serviceName || props.match.params.serviceName || 'all';
+        query.operationName = query.operationName || 'all';
+
         this.state = {query};
 
         // bind functions
@@ -84,6 +84,7 @@ export default class SearchBar extends React.Component {
     }
 
     render() {
+        console.log(this.state.query);
         return (
             <section className="search-bar">
                 <SearchQueryBar query={this.state.query} searchCallback={this.searchCallback}/>

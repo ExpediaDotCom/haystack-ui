@@ -17,76 +17,51 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import TimeRangePicker from './timeRangePicker';
-import {dateIsValid, queryIsValid, parseQueryString, toQueryString} from '../utils/traceQueryParser';
-import toPresetDisplayText from '../utils/presets';
+import ServiceOperationPicker from './serviceOperationPicker';
+import FieldsPicker from './fieldsPicker';
+import TimeWindowPicker from './timeWindowPicker';
+import {extractSecondaryFields} from '../utils/traceQueryParser';
+import uiState from './searchBarUiStateStore';
 import './searchBar.less';
 
 export default class SearchQueryBar extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
         searchCallback: PropTypes.func.isRequired
-    }
+    };
 
-    static getTimeRangeText(timePreset, startTime, endTime) {
-        if (timePreset) {
-            return toPresetDisplayText(timePreset);
-        }
+    static createUiStateUsingQuery(query) {
+        uiState.setServiceOperation({
+            serviceName: query.serviceName,
+            operationName: query.operationName
+        });
 
-        const start = moment(parseInt(startTime, 10));
-        const end = moment(parseInt(endTime, 10));
-        return `${start.format('L')} ${start.format('LTS')} - ${end.format('L')} ${end.format('LTS')}`;
-    }
+        uiState.setFields(extractSecondaryFields(query));
 
-    static createStateUsingQuery(query) {
-        return {
-            queryString: toQueryString(query),
-            showTimeRangePicker: false,
-            queryError: false,
-            dateError: false,
+        uiState.setTimeWindow({
             timePreset: query.timePreset,
             startTime: query.startTime,
-            endTime: query.endTime,
-            timeRangePickerToggleText: SearchQueryBar.getTimeRangeText(query.timePreset, query.startTime, query.endTime)
-        };
+            endTime: query.endTime
+        });
+
+        uiState.resetErrors();
     }
 
     constructor(props) {
         super(props);
+        SearchQueryBar.createUiStateUsingQuery(this.props.query);
+        this.state = {errors: null};
 
-        this.state = SearchQueryBar.createStateUsingQuery(props.query);
-
-        this.handleQueryStringChange = this.handleQueryStringChange.bind(this);
-        this.handleTimeRangePicker = this.handleTimeRangePicker.bind(this);
-        this.handleTimeRangeSelect = this.handleTimeRangeSelect.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
-        this.isSearchValid = this.isSearchValid.bind(this);
         this.search = this.search.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState(SearchQueryBar.createStateUsingQuery(nextProps.query));
-    }
+        console.log('nextprops');
+        console.log(nextProps);
 
-    handleQueryStringChange(event) {
-        this.setState({queryString: event.target.value});
-    }
-
-    handleTimeRangePicker() {
-        if (this.state.showTimeRangePicker) {
-            this.setState({showTimeRangePicker: false});
-        } else {
-            this.setState({showTimeRangePicker: true});
-        }
-    }
-
-    handleTimeRangeSelect(timeRange, optionType) {
-        this.setState({
-            timeRangeSelected: timeRange,
-            timeRangeType: optionType
-        });
+        SearchQueryBar.createUiStateUsingQuery(nextProps.query);
+        this.setState({errors: null});
     }
 
     handleSubmit(event) {
@@ -94,71 +69,56 @@ export default class SearchQueryBar extends React.Component {
         event.preventDefault();
     }
 
-    isSearchValid() {
-        const queryValid = queryIsValid(this.state.queryString);
-        const dateValid = dateIsValid(this.state.startTime, this.state.endTime);
-        this.setState({queryError: !queryValid});
-        this.setState({dateError: !dateValid});
-
-        return queryValid && dateValid;
-    }
-
-    timeRangeChangeCallback(timePreset, startTime, endTime) {
-        this.setState({timePreset, startTime, endTime});
-        this.setState({timeRangePickerToggleText: SearchQueryBar.getTimeRangeText(timePreset, startTime, endTime)});
-        this.setState({showTimeRangePicker: false});
-    }
-
     search() {
-        if (this.isSearchValid()) {
-            const query = parseQueryString(this.state.queryString);
-            query.timePreset = this.state.timePreset;
-            query.startTime = this.state.startTime;
-            query.endTime = this.state.endTime;
+      console.log({
+        ...uiState.serviceOperation,
+        ...uiState.fields,
+        ...uiState.timeWindow
+      });
 
-            this.props.searchCallback(query);
+      if (uiState.serviceOperationError || uiState.fieldsError || uiState.timeWindowError) {
+            this.setState({errors: {
+                serviceOperationError: uiState.serviceOperationError,
+                fieldsError: uiState.fieldsError,
+                timeWindowError: uiState.timeWindowError
+            }});
+        } else {
+            this.props.searchCallback({
+                ...uiState.serviceOperation,
+                ...uiState.fields,
+                ...uiState.timeWindow
+            });
         }
     }
 
     render() {
+        console.log('rendered!');
         return (
-            <section className="search-query-bar">
-                <div>
-                <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
-                    <input
-                        type="text"
-                        className="search-bar-text-box form-control"
-                        placeholder="enter query..."
-                        value={this.state.queryString}
-                        onChange={this.handleQueryStringChange}
-                    />
-                    <span className="input-group-btn">
-                        <button
-                            className="btn btn-primary time-range-picker-toggle"
-                            type="button"
-                            onClick={this.handleTimeRangePicker}
-                        >
-                            {this.state.timeRangePickerToggleText}
-                        </button>
-                    </span>
-                    <span className="input-group-btn">
-                        <button className="btn btn-primary traces-search-button" type="button" onClick={this.search}>
-                            <span className="ti-search"/>
-                        </button>
-                    </span>
-                </form>
-                { this.state.showTimeRangePicker
-                    ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
-                    : null }
-                </div>
-                { (this.state.queryError || this.state.dateError)
-                    ? <div className="traces-error-message">
-                        {this.state.dateError ? <div>Invalid date</div> : null}
-                        {this.state.queryError ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
-                    </div>
-                    : null
-                }
-            </section>
+            <article className="search-query-bar">
+                <section>
+                    <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
+                        <ServiceOperationPicker />
+                        <FieldsPicker />
+                        <TimeWindowPicker />
+
+                        <span className="input-group-btn">
+                            <button className="btn btn-primary traces-search-button" type="button" onClick={this.search}>
+                                <span className="ti-search"/>
+                            </button>
+                        </span>
+                    </form>
+                </section>
+                <section>
+                    { (this.state.errors)
+                        ? <div className="traces-error-message">
+                            {this.state.errors.serviceOperationError ? <div>Invalid service or operation name</div> : null}
+                            {this.state.errors.fieldsError ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
+                            {this.state.errors.timeWindowError ? <div>Invalid date</div> : null}
+                        </div>
+                        : null
+                    }
+                </section>
+            </article>
         );
     }
 }
