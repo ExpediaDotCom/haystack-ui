@@ -2,7 +2,7 @@ module.exports = {
     port: 8080,
     cluster: false,
     store: {
-        name: 'staticStubStore'
+        name: 'stubStore'
     },
     logs: {
         colorize: true

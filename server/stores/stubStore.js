@@ -30,13 +30,13 @@ store.getTrace = () => Q.fcall(() => [
         {
             traceId: 'root-traceid',
             spanId: 'root-spanid',
-            name: 'stark-service',
+            serviceName: 'stark-service',
             operationName: 'stark1',
-            startTime: 1504784384000,
-            duration: 3500000,
+            startTime: 1504784384,
+            duration: 3500,
             logs: [
                 {
-                    timestamp: 1504784384000,
+                    timestamp: 1504784384,
                     endpoint: {
                         serviceName: 'stark-service'
                     }
@@ -48,12 +48,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid1',
             spanId: 'spanid2',
             parentSpanId: 'root-spanid',
-            name: 'stark-service',
+            serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785384000,
-            duration: 2000000,
+            startTime: 1504785384,
+            duration: 2000,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -64,12 +64,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid2',
             spanId: 'spanid3',
             parentSpanId: 'root-spanid',
-            name: 'stark-service',
+            serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785484000,
-            duration: 320000,
+            startTime: 1504785484,
+            duration: 320,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -80,12 +80,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid3',
             spanId: 'spanid4',
             parentSpanId: 'spanid3',
-            name: 'tyrell-service',
+            serviceName: 'tyrell-service',
             operationName: 'tyrell1',
-            startTime: 1504785584000,
-            duration: 62000,
+            startTime: 1504785584,
+            duration: 62,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -96,12 +96,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid7',
             spanId: 'spanid8',
             parentSpanId: 'spanid4',
-            name: 'tyrell-service',
+            serviceName: 'tyrell-service',
             operationName: 'tyrell4',
-            startTime: 1504785684000,
-            duration: 62000,
+            startTime: 1504785684,
+            duration: 62,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -112,12 +112,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid4',
             spanId: 'spanid5',
             parentSpanId: 'spanid3',
-            name: 'tyrell-service',
+            serviceName: 'tyrell-service',
             operationName: 'tyrell2',
-            startTime: 1504785684000,
-            duration: 520000,
+            startTime: 1504785684,
+            duration: 520,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -128,12 +128,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid5',
             spanId: 'spanid6',
             parentSpanId: 'spanid2',
-            name: 'stark-service',
+            serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785784000,
-            duration: 2000000,
+            startTime: 1504785784,
+            duration: 2000,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -144,12 +144,12 @@ store.getTrace = () => Q.fcall(() => [
             traceId: 'traceid6',
             spanId: 'spanid7',
             parentSpanId: 'root-spanid',
-            name: 'dragon-service',
+            serviceName: 'dragon-service',
             operationName: 'dragon1',
-            startTime: 1504786484000,
-            duration: 320000,
+            startTime: 1504786484,
+            duration: 320,
             logs: [{
-                timestamp: 1504784384000,
+                timestamp: 1504784384,
                 endpoint: {
                     serviceName: 'dragon-service'
                 }

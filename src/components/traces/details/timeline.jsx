@@ -32,28 +32,6 @@ export default class Timeline extends React.Component {
             totalDuration: PropTypes.number.isRequired
         };
     }
-    static getServiceName(span) {
-        const fromLogs = _.find((span.logs), log =>
-            (log.value !== null)
-            && (log.endpoint !== null)
-            && (log.endpoint.serviceName !== null)
-            && (log.endpoint.serviceName !== ''));
-        const serviceFromLogs = fromLogs ? fromLogs.endpoint.serviceName : 'not found';
-        if (serviceFromLogs) {
-            return serviceFromLogs;
-        }
-        const fromAnnotations = (span.annotations)
-            .find(anno =>
-            (anno.value !== null)
-            && (anno.endpoint !== null)
-            && (anno.endpoint.serviceName !== null)
-            && (anno.endpoint.serviceName !== ''));
-        const serviceFromAnnotations = fromAnnotations ? fromAnnotations.endpoint.serviceName : 'not found';
-        if (serviceFromAnnotations) {
-            return serviceFromAnnotations;
-        }
-        return null;
-    }
 
     render() {
         const {
@@ -73,7 +51,7 @@ export default class Timeline extends React.Component {
                 rowPadding={10}
                 span={span}
                 totalDuration={totalDuration}
-                serviceName={Timeline.getServiceName(span)}
+                serviceName={span.serviceName}
                 spanDepth={spanTreeDepths[span.spanId]}
             />));
         return (

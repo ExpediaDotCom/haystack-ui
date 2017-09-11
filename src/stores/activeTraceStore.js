@@ -36,11 +36,9 @@ function formatDuration(duration) {
     if (duration === 0) {
         return '0';
     } else if (duration < 1000) {
-        return `${duration}µ`;
-    } else if (duration < 1000000) {
-        return `${(duration / 1000).toFixed(3)}ms`;
+        return `${(duration).toFixed(3)}ms`;
     }
-    return `${(duration / 1000000).toFixed(3)}s`;
+    return `${(duration / 1000).toFixed(3)}s`;
 }
 
 function calculateDuration(spans, start) {

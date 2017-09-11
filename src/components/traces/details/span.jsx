@@ -65,7 +65,7 @@ export default class Span extends React.Component {
         const spanDuration = span.duration;
         const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
         const width = ((spanDuration / totalDuration) * 100) * 0.8;
-        const formattedDuration = `${span.duration / 1000}ms`;
+        const formattedDuration = `${span.duration}ms`;
         return (
             <g>
                 <text
