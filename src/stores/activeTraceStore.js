@@ -16,8 +16,10 @@
  */
 
 import axios from 'axios';
+import _ from 'lodash';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -26,7 +28,7 @@ function TraceException(data) {
 
 function calculateStartTime(spans) {
     return spans.reduce((earliestTime, span) =>
-        (earliestTime ? Math.min(earliestTime, span.timestamp) : span.timestamp), null
+        (earliestTime ? Math.min(earliestTime, span.startTime) : span.startTime), null
     );
 }
 
@@ -43,7 +45,7 @@ function formatDuration(duration) {
 
 function calculateDuration(spans, start) {
     const end = spans.reduce((latestTime, span) =>
-        (latestTime ? Math.max(latestTime, (span.timestamp + span.duration)) : (span.timestamp + span.duration)), null
+        (latestTime ? Math.max(latestTime, (span.startTime + span.duration)) : (span.startTime + span.duration)), null
     );
     return (end - start) * 1.05;
 }
@@ -56,12 +58,43 @@ function getTimePointers(totalDuration) {
     return leftOffset.map((p, i) => ({leftOffset: p, time: formatDuration(pointerDurations[i])}));
 }
 
+function spanTreeDepths(spanTree, initialDepth) {
+    const initial = {};
+    initial[spanTree.span.spanId] = initialDepth;
+    if (spanTree.children.length === 0) return initial;
+    return (spanTree.children || []).reduce((prevMap, child) => {
+        const childDepths = spanTreeDepths(child, initialDepth + 1);
+        return {
+            ...prevMap,
+            ...childDepths
+        };
+    }, initial);
+}
+
+function createSpanTree(span, trace, groupByParentId = null) {
+    const spansWithParent = _.filter(trace, s => s.parentSpanId);
+    const grouped = groupByParentId !== null ? groupByParentId : _
+        .groupBy(spansWithParent, s => s.parentSpanId);
+    return {
+        span,
+        children: (grouped[span.spanId] || [])
+            .map(s => createSpanTree(s, trace, grouped))
+    };
+}
+
+function calculateSpansDepth(spans) {
+    const rootSpan = spans.find(span => !span.parentSpanId);
+    const spanTree = createSpanTree(rootSpan, spans);
+    return spanTreeDepths(spanTree, 1);
+}
+
 export class ActiveTraceStore {
     @observable spans = [];
     @observable startTime = {};
     @observable totalDuration = {};
     @observable promiseState = null;
     @observable timePointers = [];
+    @observable spanTreeDepths = {};
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
@@ -71,6 +104,7 @@ export class ActiveTraceStore {
                     this.startTime = calculateStartTime(this.spans);
                     this.totalDuration = calculateDuration(this.spans, this.startTime);
                     this.timePointers = getTimePointers(this.totalDuration);
+                    this.spanTreeDepths = calculateSpansDepth(this.spans);
                 })
                 .catch((result) => {
                     throw new TraceException(result);

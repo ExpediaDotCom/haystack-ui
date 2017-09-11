@@ -17,6 +17,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+
 import Span from './span';
 
 export default class Timeline extends React.Component {
@@ -25,11 +27,21 @@ export default class Timeline extends React.Component {
         return {
             timePointers: PropTypes.object.isRequired,
             spans: PropTypes.object.isRequired,
+            spanTreeDepths: PropTypes.object.isRequired,
             startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired
         };
     }
     static getServiceName(span) {
+        const fromLogs = _.find((span.logs), log =>
+            (log.value !== null)
+            && (log.endpoint !== null)
+            && (log.endpoint.serviceName !== null)
+            && (log.endpoint.serviceName !== ''));
+        const serviceFromLogs = fromLogs ? fromLogs.endpoint.serviceName : 'not found';
+        if (serviceFromLogs) {
+            return serviceFromLogs;
+        }
         const fromAnnotations = (span.annotations)
             .find(anno =>
             (anno.value !== null)
@@ -42,17 +54,19 @@ export default class Timeline extends React.Component {
         }
         return null;
     }
+
     render() {
         const {
             timePointers,
             spans,
             startTime,
-            totalDuration
+            totalDuration,
+            spanTreeDepths
         } = this.props;
         const timelineHeight = (32 * spans.length) + 37;
         const getSpans = spans.map((span, index) =>
             (<Span
-                key={span.id}
+                key={span.spanId}
                 index={index}
                 startTime={startTime}
                 rowHeight={12}
@@ -60,15 +74,18 @@ export default class Timeline extends React.Component {
                 span={span}
                 totalDuration={totalDuration}
                 serviceName={Timeline.getServiceName(span)}
+                spanDepth={spanTreeDepths[span.spanId]}
             />));
-
         return (
             <svg height={timelineHeight} width="100%">
-                <g>
-                    {timePointers.map(tp => <text key={tp.time} x={`${tp.leftOffset}%`} y="25" fill="#6B7693">{tp.time}</text>)}
-                </g>
+                {timePointers.map(tp =>
+                (<g>
+                    <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693" xmlSpace="preserve">{`  ${tp.time}`}</text>
+                    <rect x={`${tp.leftOffset}%`} y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
+                </g>)
+                )}
+                <rect x="0%" y="30" width="100%" height="1px" fill="#6B7693" fillOpacity="0.3" />
                 {getSpans}
-                <rect x="11.5%" y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
             </svg>
         );
     }
