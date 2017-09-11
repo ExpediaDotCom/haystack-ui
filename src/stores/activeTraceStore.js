@@ -47,13 +47,13 @@ function calculateDuration(spans, start) {
     const end = spans.reduce((latestTime, span) =>
         (latestTime ? Math.max(latestTime, (span.startTime + span.duration)) : (span.startTime + span.duration)), null
     );
-    return (end - start) * 1.05;
+    return (end - start);
 }
 
 function getTimePointers(totalDuration) {
     const pointerDurations = [0.0, 0.25, 0.50, 0.75, 1.0]
         .map(dur => (totalDuration * dur));
-    const leftOffset = [0.12, 0.29, 0.46, 0.63, 0.80]
+    const leftOffset = [0.12, 0.32, 0.52, 0.72, 0.92]
         .map(lo => (lo * 100));
     return leftOffset.map((p, i) => ({leftOffset: p, time: formatDuration(pointerDurations[i])}));
 }

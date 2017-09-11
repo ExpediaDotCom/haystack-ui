@@ -33,7 +33,7 @@ store.getTrace = () => Q.fcall(() => [
             name: 'stark-service',
             operationName: 'stark1',
             startTime: 1504784384000,
-            duration: 1000000,
+            duration: 3500000,
             logs: [
                 {
                     timestamp: 1504784384000,
@@ -66,7 +66,7 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'root-spanid',
             name: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504786384000,
+            startTime: 1504785484000,
             duration: 320000,
             logs: [{
                 timestamp: 1504784384000,
@@ -82,7 +82,23 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid3',
             name: 'tyrell-service',
             operationName: 'tyrell1',
-            startTime: 1504786384000,
+            startTime: 1504785584000,
+            duration: 62000,
+            logs: [{
+                timestamp: 1504784384000,
+                endpoint: {
+                    serviceName: 'tyrell-service'
+                }
+            }],
+            tags: null
+        },
+        {
+            traceId: 'traceid7',
+            spanId: 'spanid8',
+            parentSpanId: 'spanid4',
+            name: 'tyrell-service',
+            operationName: 'tyrell4',
+            startTime: 1504785684000,
             duration: 62000,
             logs: [{
                 timestamp: 1504784384000,
@@ -98,7 +114,7 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid3',
             name: 'tyrell-service',
             operationName: 'tyrell2',
-            startTime: 1504787384000,
+            startTime: 1504785684000,
             duration: 520000,
             logs: [{
                 timestamp: 1504784384000,
@@ -114,7 +130,7 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid2',
             name: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785384000,
+            startTime: 1504785784000,
             duration: 2000000,
             logs: [{
                 timestamp: 1504784384000,

@@ -77,7 +77,7 @@ export default class TraceDetails extends React.Component {
                         fulfilled: () => {
                             if (spans && spans.length) {
                                 return (this.state.tabSelected === 1) ?
-                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={activeTraceStore.spanTreeDepths}/> :
+                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spaDepths={activeTraceStore.spanTreeDepths}/> :
                                     <Invocations/>;
                             }
 
