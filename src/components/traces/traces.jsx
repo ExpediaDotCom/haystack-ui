@@ -26,7 +26,7 @@ import tracesSearchStore from '../../stores/tracesSearchStore';
 const Traces = ({history, location, match}) => (
     <section className="traces-panel">
         <SearchBar tracesSearchStore={tracesSearchStore} history={history} location={location} match={match}/>
-        <TraceResults tracesSearchStore={tracesSearchStore}/>
+        <TraceResults tracesSearchStore={tracesSearchStore} location={location}/>
     </section>
 );
 

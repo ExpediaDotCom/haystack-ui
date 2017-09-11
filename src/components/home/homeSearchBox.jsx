@@ -25,7 +25,7 @@ import './homeSearchBox.less';
 export default class HomeSearchBox extends Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
-        services: PropTypes.array.isRequired
+        services: PropTypes.object.isRequired // array wrapped in a mobx observer object
     };
 
     static formatServiceOptions(serviceList) {
