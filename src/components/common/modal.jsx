@@ -37,7 +37,7 @@ const modalStyles = {
 };
 
 const ModalView = ({title, isOpen, closeModal, children}) => (
-    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200}>
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'}>
         <header className="clearfix">
             <h4 className="pull-left">{title}</h4>
             <button className="close pull-right" onClick={closeModal}>&times;</button>

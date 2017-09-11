@@ -77,7 +77,7 @@ export default class TraceDetails extends React.Component {
                         fulfilled: () => {
                             if (spans && spans.length) {
                                 return (this.state.tabSelected === 1) ?
-                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans}/> :
+                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={activeTraceStore.spanTreeDepths}/> :
                                     <Invocations/>;
                             }
 
@@ -114,7 +114,7 @@ export default class TraceDetails extends React.Component {
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
                         <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?serviceName=${this.props.baseServiceName}&traceId=${this.props.traceId}`} onCopy={this.handleCopy} >
-                            <a role="button" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Copy Link</a>
+                            <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
                 </div>
