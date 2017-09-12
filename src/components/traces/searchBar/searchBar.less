@@ -17,36 +17,99 @@
 
 @import (reference) '../../../app';
 
-.search-bar-form {
+// TODO use grid system instead of flex
+.search-bar-headers {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  max-width: 100%;
+  margin-bottom: @spacing-xs;
 }
 
-// increasing specificity to override default by bootstrap
-.search-bar .input-group {
-  .search-bar-text-box {
-    padding-left: @spacing-s;
-    border: 1px solid @gray-light;
-    border-right: 0;
-    border-radius: 3px 0 0 3px;
-    color: @gray-dark;
-    background-color: white;
+.search-bar-headers_service {
+  flex: none;
+  width: 200px;
+}
+
+.search-bar-headers_operation {
+  flex: none;
+  width: 200px;
+}
+
+// TODO use grid system instead of flex
+.search-bar-pickers {
+  display: flex;
+  border: 1px solid @gray-light;
+  border-radius: 3px;
+  background-color: white;
+
+  // TODO Move Select in a separate shared file instead of keeping with home's styling
+  // increasing specificity to override default by bootstrap
+  .Select {
     font-family: @font-family-monospace;
     font-size: @font-size-base;
-    box-shadow: none;
-    &:focus {
+    .Select-value-label {
+      color: @gray-darker !important;
+    }
+
+    .Select-control {
+      color: @gray-darker !important;
+      padding: 4px 0 4px 0;
       box-shadow: none;
-      border: 1px solid @brand-primary;
+
+      &:hover {
+        box-shadow: inset 0 -2px 0 @brand-primary;
+      }
     }
   }
 
-  .time-range-picker-toggle {
-    border-radius: 0 !important;
-    font-size: @font-size-base !important;
-    text-transform: capitalize;
+  .search-bar-text-box {
+    width: 100%;
+    padding-left: @spacing-s;
+    font-size: @font-size-base;
+    font-family: @font-family-monospace;
+    line-height: 42px;
+    box-shadow: none;
+
+    &:focus {
+      outline:none;
+    }
   }
+}
+
+.search-bar-pickers_service {
+  flex: none;
+  width: 200px;
+  border-right: 2px solid @gray-mid-lighter;
+}
+
+.search-bar-pickers_operation {
+  flex: none;
+  width: 200px;
+  border-right: 2px solid @gray-mid-lighter;
+}
+
+.search-bar-pickers_fields {
+  flex-grow: 1;
+}
+
+.search-bar-pickers_time-window {
+  flex: none;
+  align-self: flex-end;
+  position: relative;
+}
+
+.traces-search-button {
+  border-radius: 0;
+}
+
+.search-bar-pickers_submit {
+  flex: none;
+  align-self: flex-end;
+}
+
+.time-range-picker-toggle {
+  border-radius: 0 !important;
+  font-size: @font-size-base !important;
+  line-height: 22px;
+  text-transform: capitalize;
 }
 
 .traces-error-message {

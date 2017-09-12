@@ -20,7 +20,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    min-width: 250px;
+    min-width: 150px;
 }
 
 .timerange-picker__presets__list{
@@ -30,14 +30,18 @@
 
 .timerange-picker {
     display: flex;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    padding: @spacing-l;
     justify-content: flex-end;
     align-items: flex-start;
     animation-duration: 0.2s;
     animation-name: slideDown;
     background-color: white;
-    border-right: 1px solid @gray-mid-lighter;
-    border-bottom: 1px solid @gray-mid-lighter;
-    border-left: 1px solid @gray-mid-lighter;
+    border-right: 1px solid @gray;
+    border-bottom: 1px solid @gray;
+    border-left: 1px solid @gray;
 
     a:hover {
         cursor: pointer;

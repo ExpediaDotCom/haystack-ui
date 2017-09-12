@@ -44,12 +44,10 @@ export default class TimeWindowPicker extends React.Component {
     console.log('fieldPicker rendered!');
 
     return (
-      <div>
-        <header>Fields</header>
+      <div className="search-bar-pickers_fields">
         <input
             type="text"
-            className="search-bar-text-box form-control"
-            placeholder="enter fields in key=value format"
+            className="search-bar-text-box"
             value={this.state.fieldsKvString}
             onChange={this.updateFieldKv}
         />

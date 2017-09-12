@@ -74,10 +74,10 @@ export default class TimeWindowPicker extends React.Component {
     const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
 
     return (
-        <div>
-          <span className="input-group-btn">
+        <div className="search-bar-pickers_time-window">
+          <span>
               <button
-                  className="btn btn-primary time-range-picker-toggle"
+                  className="btn btn-primary time-range-picker-toggle btn-lg"
                   type="button"
                   onClick={this.handleTimeRangePicker}
               >

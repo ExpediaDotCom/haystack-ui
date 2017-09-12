@@ -71,18 +71,23 @@ export default class SearchQueryBar extends React.Component {
         return (
             <article className="search-query-bar">
                 <section>
-                    <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
-
-                        <FieldsPicker uiState={uiState}/>
-                        <TimeWindowPicker uiState={uiState}/>
-                        <ServicePicker uiState={uiState}/>
-                        <OperationPicker uiState={uiState}/>
-
-                        <span className="input-group-btn">
-                            <button className="btn btn-primary traces-search-button" type="button" onClick={this.search}>
+                    <form onSubmit={this.handleSubmit}>
+                      <div className="search-bar-headers">
+                        <div className="search-bar-headers_service">Service</div>
+                        <div className="search-bar-headers_operation">Operation</div>
+                        <div className="search-bar-headers_fields">Fields <i>(in key=value format)</i></div>
+                      </div>
+                      <div className="search-bar-pickers">
+                          <ServicePicker uiState={uiState}/>
+                          <OperationPicker uiState={uiState}/>
+                          <FieldsPicker uiState={uiState}/>
+                          <TimeWindowPicker uiState={uiState}/>
+                          <div className="search-bar-pickers_submit">
+                            <button className="btn btn-primary btn-lg traces-search-button" type="button" onClick={this.search}>
                                 <span className="ti-search"/>
                             </button>
-                        </span>
+                          </div>
+                      </div>
                     </form>
                 </section>
                 <section>

@@ -25,7 +25,8 @@ import './traceResultsTable.less';
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
-        results: PropTypes.object.isRequired
+        results: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     static sortByTimestamp(a, b, order) {

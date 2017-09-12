@@ -38,7 +38,6 @@ export default class ServicePicker extends React.Component {
   }
 
   handleChange(event) {
-    console.log(event);
     this.props.uiState.setServiceName(event.value);
   }
 
@@ -46,15 +45,21 @@ export default class ServicePicker extends React.Component {
     console.log('ServicePicker rendered!');
     const serviceName = this.props.uiState.serviceName;
 
+    // default to current service if there is not operation in store
+    const options = serviceStore.services.length
+        ? ServicePicker.convertToValueLabelMap(serviceStore.services)
+        : ServicePicker.convertToValueLabelMap([serviceName]);
+
     return (
-        <div>
-          <header>Service</header>
+        <div className="search-bar-pickers_service">
           <Select
               name="service-list"
-              options={ServicePicker.convertToValueLabelMap(serviceStore.services)}
+              className="search-bar-picker-select"
+              options={options}
               onChange={this.handleChange}
               value={serviceName}
               clearable={false}
+              placeholder=""
           />
         </div>);
   }
