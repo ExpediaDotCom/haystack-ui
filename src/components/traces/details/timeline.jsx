@@ -14,10 +14,10 @@
  *       limitations under the License.
  *
  */
+/* eslint-disable react/prefer-stateless-function */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
 import Span from './span';
 
