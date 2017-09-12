@@ -15,21 +15,28 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 import uiState from './searchBarUiStateStore';
 
+@observer
 export default class extends React.Component {
+    static propTypes = {
+        uiState: PropTypes.object.isRequired
+    };
+
     constructor(props) {
         super(props);
     }
 
     render() {
-        const {
+      console.log('serviceOperationPicker rendered!');
+
+      const {
             serviceName,
             operationName
-        } = uiState.serviceOperation;
+        } = this.props.uiState.serviceOperation;
 
-        console.log('serviceName');
-        console.log(uiState);
         return <span>{serviceName}, {operationName}</span>;
     }
 }

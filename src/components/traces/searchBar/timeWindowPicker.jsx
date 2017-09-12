@@ -15,20 +15,30 @@
  */
 
 import React from 'react';
+import {observer} from 'mobx-react';
+import PropTypes from 'prop-types';
+
 import uiState from './searchBarUiStateStore';
 
+@observer
 export default class TimeWindowPicker extends React.Component {
+  static propTypes = {
+    uiState: PropTypes.object.isRequired
+  };
+
   constructor(props) {
     super(props);
   }
 
   render() {
-      const {
+    console.log('timeWindowPicker rendered!');
+
+    const {
           timePreset,
           startTime,
           endTime
       } = uiState.timeWindow;
 
-    return <span>{timePreset}, {startTime}, {endTime}.</span>;
+    return <span>{timePreset}, {startTime}, {endTime}</span>;
   }
 }

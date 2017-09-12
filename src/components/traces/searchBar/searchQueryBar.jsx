@@ -17,51 +17,30 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 import ServiceOperationPicker from './serviceOperationPicker';
 import FieldsPicker from './fieldsPicker';
 import TimeWindowPicker from './timeWindowPicker';
-import {extractSecondaryFields} from '../utils/traceQueryParser';
 import uiState from './searchBarUiStateStore';
 import './searchBar.less';
 
+@observer
 export default class SearchQueryBar extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
         searchCallback: PropTypes.func.isRequired
     };
 
-    static createUiStateUsingQuery(query) {
-        uiState.setServiceOperation({
-            serviceName: query.serviceName,
-            operationName: query.operationName
-        });
-
-        uiState.setFields(extractSecondaryFields(query));
-
-        uiState.setTimeWindow({
-            timePreset: query.timePreset,
-            startTime: query.startTime,
-            endTime: query.endTime
-        });
-
-        uiState.resetErrors();
-    }
-
     constructor(props) {
         super(props);
-        SearchQueryBar.createUiStateUsingQuery(this.props.query);
-        this.state = {errors: null};
-
         this.handleSubmit = this.handleSubmit.bind(this);
         this.search = this.search.bind(this);
+
+        uiState.initUsingQuery(this.props.query);
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('nextprops');
-        console.log(nextProps);
-
-        SearchQueryBar.createUiStateUsingQuery(nextProps.query);
-        this.setState({errors: null});
+        uiState.initUsingQuery(nextProps.query);
     }
 
     handleSubmit(event) {
@@ -70,18 +49,13 @@ export default class SearchQueryBar extends React.Component {
     }
 
     search() {
-      console.log({
-        ...uiState.serviceOperation,
-        ...uiState.fields,
-        ...uiState.timeWindow
-      });
+      console.log('search triggered!');
 
       if (uiState.serviceOperationError || uiState.fieldsError || uiState.timeWindowError) {
-            this.setState({errors: {
-                serviceOperationError: uiState.serviceOperationError,
-                fieldsError: uiState.fieldsError,
-                timeWindowError: uiState.timeWindowError
-            }});
+            uiState.setDisplayErrors({serviceOperation: uiState.serviceOperationError,
+              fields: uiState.fieldsError,
+              timeWindow: uiState.timeWindowError
+            });
         } else {
             this.props.searchCallback({
                 ...uiState.serviceOperation,
@@ -92,14 +66,15 @@ export default class SearchQueryBar extends React.Component {
     }
 
     render() {
-        console.log('rendered!');
+        console.log('searchQueryBar rendered!');
         return (
             <article className="search-query-bar">
                 <section>
                     <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
-                        <ServiceOperationPicker />
-                        <FieldsPicker />
-                        <TimeWindowPicker />
+
+                        <ServiceOperationPicker uiState={uiState}/>
+                        <FieldsPicker uiState={uiState}/>
+                        <TimeWindowPicker uiState={uiState}/>
 
                         <span className="input-group-btn">
                             <button className="btn btn-primary traces-search-button" type="button" onClick={this.search}>
@@ -109,11 +84,11 @@ export default class SearchQueryBar extends React.Component {
                     </form>
                 </section>
                 <section>
-                    { (this.state.errors)
+                    { (uiState.displayErrors)
                         ? <div className="traces-error-message">
-                            {this.state.errors.serviceOperationError ? <div>Invalid service or operation name</div> : null}
-                            {this.state.errors.fieldsError ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
-                            {this.state.errors.timeWindowError ? <div>Invalid date</div> : null}
+                            {uiState.displayErrors.serviceOperation ? <div>Invalid service or operation name</div> : null}
+                            {uiState.displayErrors.fields ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
+                            {uiState.displayErrors.timeWindow ? <div>Invalid date</div> : null}
                         </div>
                         : null
                     }
