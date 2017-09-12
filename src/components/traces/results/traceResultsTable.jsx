@@ -47,7 +47,7 @@ export default class TraceResultsTable extends React.Component {
         let serviceList = '';
         services.map((svc) => {
             const bgColor = serviceStore.servicesWithColor[svc.name];
-            serviceList += `<span class="service-spans label label-success" style="background-color:${bgColor}"=>${svc.name[0].toUpperCase()} x${svc.spanCount}</span> `;
+            serviceList += `<span class="service-spans label label-success" style="background-color:${bgColor}"=>${svc.name} x${svc.spanCount}</span> `;
             return serviceList;
         });
 
