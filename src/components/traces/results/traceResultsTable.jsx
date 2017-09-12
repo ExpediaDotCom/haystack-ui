@@ -155,7 +155,7 @@ export default class TraceResultsTable extends React.Component {
 
      expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} />;
+            return <TraceDetails traceId={row.traceId} location={this.props.location} baseServiceName={this.props.query.serviceName} />;
         }
          return null;
     }

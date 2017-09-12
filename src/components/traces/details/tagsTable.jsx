@@ -18,9 +18,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-const TagsTable = ({binaryAnnotations}) => {
-    const unique = _.uniqBy(binaryAnnotations, annotation => annotation.key.toLowerCase());
-    const sortedBinaryAnnotations = _.sortBy(unique, [annotation => annotation.key.toLowerCase()]);
+const TagsTable = ({tags}) => {
+    const unique = _.uniqBy(tags, tag => tag.key.toLowerCase());
+    const sortedTags = _.sortBy(unique, [tag => tag.key.toLowerCase()]);
 
     return (<table className="table table-striped">
         <thead>
@@ -30,10 +30,10 @@ const TagsTable = ({binaryAnnotations}) => {
         </tr>
         </thead>
         <tbody>
-        {sortedBinaryAnnotations.map(annotation =>
+        {sortedTags.map(tag =>
             (<tr key={Math.random()}>
-                <td>{annotation.key}</td>
-                <td>{annotation.value}</td>
+                <td>{tag.key}</td>
+                <td>{tag.value}</td>
             </tr>)
         )}
         </tbody>
@@ -41,7 +41,7 @@ const TagsTable = ({binaryAnnotations}) => {
 };
 
 TagsTable.propTypes = {
-    binaryAnnotations: PropTypes.object.isRequired
+    tags: PropTypes.object.isRequired
 };
 
 export default TagsTable;

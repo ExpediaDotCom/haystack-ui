@@ -26,7 +26,8 @@ import Error from '../../common/error';
 @observer
 export default class TraceResults extends React.Component {
     static propTypes = {
-        tracesSearchStore: PropTypes.object.isRequired
+        tracesSearchStore: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     render() {
@@ -36,7 +37,7 @@ export default class TraceResults extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                                ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults}/>
+                                ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults} location={this.props.location} />
                                 : <Error />)
                     })
                 }

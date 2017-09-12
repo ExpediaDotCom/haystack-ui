@@ -31,5 +31,21 @@
 }
 
 .span-click:hover {
-    opacity: 0.2;
+    background-color: @gray-light;
+    opacity: 0.1;
+    cursor: pointer;
+}
+
+.trace-details-nav {
+    font-size: @font-size-large;
+    ul > li > a {
+        padding: 0 18px 3px 18px;
+        &:focus {
+            outline: 0;
+        }
+    }
+}
+
+.trace-details-timeline {
+    padding-top: 18px ;
 }

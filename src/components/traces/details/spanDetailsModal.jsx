@@ -37,9 +37,9 @@ export default class SpanDetailsModal extends React.Component {
     tabViewer(span) {
         switch (this.state.tabSelected) {
             case 1:
-                return <TagsTable binaryAnnotations={span.binaryAnnotations} />;
+                return <TagsTable tags={span.tags} />;
             case 2:
-                return <LogsTable annotations={span.annotations} />;
+                return <LogsTable logs={span.logs} />;
             case 3:
                 return <pre>{JSON.stringify(span, null, 2)}</pre>;
             default:
@@ -50,7 +50,7 @@ export default class SpanDetailsModal extends React.Component {
     render() {
         return (
             <Modal
-                title={`[${this.props.serviceName}] ${this.props.span.name}: ${this.props.span.duration / 1000}ms`}
+                title={`[${this.props.serviceName}] ${this.props.span.operationName}: ${this.props.span.duration / 1000}ms`}
                 isOpen={this.props.isOpen}
                 closeModal={this.props.closeModal}
             >
