@@ -69,14 +69,22 @@ export default class Span extends React.Component {
         const formattedDuration = `${span.duration}ms`;
         return (
             <g>
+                <rect
+                    className="span-color-bar"
+                    fill={serviceStore.servicesWithColor[serviceName]}
+                    height={20}
+                    y={topOffset - 6}
+                    x={`${spanDepth - 0.5}%`}
+                    clipPath="url(#overflow)"
+                    width={(serviceName.length * 5) + 30}
+                    rx="3.5"
+                    ry="3.5"
+                />
                 <text
                     className="span-service-label"
-                    fill="#6B7693"
-                    fontSize="60px"
                     x={`${spanDepth}%`}
-                    y={topOffset}
+                    y={topOffset + 8}
                     clipPath="url(#overflow)"
-                    cursor="default"
                 >{serviceName}
                 </text>
                 <text
@@ -97,7 +105,7 @@ export default class Span extends React.Component {
                     y={topOffset + 4}
                     rx="3.5"
                     ry="3.5"
-                    fill={serviceStore.servicesWithColor[serviceName]}
+                    fill="#28a228"
                 />
                 <rect
                     className="span-click"
