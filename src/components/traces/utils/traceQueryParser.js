@@ -90,9 +90,9 @@ export const extractSecondaryFields = (query) => {
 
 export const isValidFieldKvString = queryString =>
     queryString
-    // Trim whitespace, check for whitespace before and after =,
+        // Trim whitespace, check for whitespace before and after =,
         .trim().replace(whitespaceAroundEqualsRegex, '=')
-    // Split kv pairs
+        // Split kv pairs
         .split(whitespaceRegex)
         // Check individually for key=value
         .every(kvPair => keyValuePairRegex.test(kvPair));

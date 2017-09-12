@@ -18,9 +18,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import ServiceOperationPicker from './serviceOperationPicker';
-import FieldsPicker from './fieldsPicker';
-import TimeWindowPicker from './timeWindowPicker';
+import ServicePicker from './pickers/servicePicker';
+import OperationPicker from './pickers/operationPicker';
+import FieldsPicker from './pickers/fieldsPicker';
+import TimeWindowPicker from './pickers/timeWindowPicker';
 import uiState from './searchBarUiStateStore';
 import './searchBar.less';
 
@@ -51,14 +52,14 @@ export default class SearchQueryBar extends React.Component {
     search() {
       console.log('search triggered!');
 
-      if (uiState.serviceOperationError || uiState.fieldsError || uiState.timeWindowError) {
-            uiState.setDisplayErrors({serviceOperation: uiState.serviceOperationError,
-              fields: uiState.fieldsError,
+      if (uiState.fieldsError || uiState.timeWindowError) {
+            uiState.setDisplayErrors({fields: uiState.fieldsError,
               timeWindow: uiState.timeWindowError
             });
         } else {
             this.props.searchCallback({
-                ...uiState.serviceOperation,
+                serviceName: uiState.serviceName,
+                operationName: uiState.operationName,
                 ...uiState.fields,
                 ...uiState.timeWindow
             });
@@ -72,9 +73,10 @@ export default class SearchQueryBar extends React.Component {
                 <section>
                     <form className="input-group input-group-lg" onSubmit={this.handleSubmit}>
 
-                        <ServiceOperationPicker uiState={uiState}/>
                         <FieldsPicker uiState={uiState}/>
                         <TimeWindowPicker uiState={uiState}/>
+                        <ServicePicker uiState={uiState}/>
+                        <OperationPicker uiState={uiState}/>
 
                         <span className="input-group-btn">
                             <button className="btn btn-primary traces-search-button" type="button" onClick={this.search}>
@@ -86,7 +88,6 @@ export default class SearchQueryBar extends React.Component {
                 <section>
                     { (uiState.displayErrors)
                         ? <div className="traces-error-message">
-                            {uiState.displayErrors.serviceOperation ? <div>Invalid service or operation name</div> : null}
                             {uiState.displayErrors.fields ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
                             {uiState.displayErrors.timeWindow ? <div>Invalid date</div> : null}
                         </div>

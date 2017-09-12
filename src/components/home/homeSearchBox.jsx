@@ -28,16 +28,11 @@ export default class HomeSearchBox extends Component {
         services: PropTypes.object.isRequired // array wrapped in a mobx observer object
     };
 
-    static formatServiceOptions(serviceList) {
-        const serviceListOptions = [];
-        serviceList.map(serviceListItem =>
-            serviceListOptions.push({value: serviceListItem, label: serviceListItem}
-            ));
-
-        return serviceListOptions;
+    static convertToValueLabelMap(serviceList) {
+        return serviceList.map(service => ({value: service, label: service}));
     }
 
-    constructor(props) {
+  constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
     }
@@ -54,7 +49,7 @@ export default class HomeSearchBox extends Component {
                     <div className="col-md-4 col-md-offset-4" >
                         <Select
                             name="service-list"
-                            options={HomeSearchBox.formatServiceOptions(this.props.services)}
+                            options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
                             onChange={this.handleChange}
                             placeholder="Select..."
                         />

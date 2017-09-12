@@ -129,6 +129,16 @@ store.getServices = () => {
     return deferred.promise;
 };
 
+store.getOperations = (serviceName) => {
+  const deferred = Q.defer();
+
+  axios
+  .get(`${baseZipkinUrl}/spans?serviceName=${serviceName}`)
+  .then(response => deferred.resolve(response.data));
+
+  return deferred.promise;
+};
+
 store.getTrace = (traceId) => {
     const deferred = Q.defer();
 

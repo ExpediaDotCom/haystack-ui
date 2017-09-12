@@ -16,11 +16,11 @@
  */
 
 import {observable, action} from 'mobx';
-import {toFieldsObject, isValidFieldKvString, extractSecondaryFields} from '../utils/traceQueryParser';
+import {toFieldsObject, isValidFieldKvString, dateIsValid, extractSecondaryFields} from '../utils/traceQueryParser';
 
 export class SearchBarUiStateStore {
-  @observable serviceOperation = {};
-  @observable serviceOperationError = false;
+  @observable serviceName = null;
+  @observable operationName = null;
 
   @observable fields = {};
   @observable fieldsError = false;
@@ -30,17 +30,24 @@ export class SearchBarUiStateStore {
 
   @observable displayErrors = {};
 
-  @action setServiceOperation(serviceOperation) {
-    this.serviceOperation = serviceOperation;
+  @action setServiceName(serviceName) {
+    this.serviceName = serviceName;
+  }
+
+  @action setOperationName(operationName) {
+    this.operationName = operationName;
   }
 
   @action setTimeWindow(timeWindow) {
-    this.timeWindow = timeWindow;
+    if (dateIsValid(...timeWindow)) {
+      this.timeWindow = timeWindow;
+      this.timeWindowError = false;
+    } else {
+      this.timeWindowError = true;
+    }
   }
 
   @action setFieldsUsingKvString(fieldsKvString) {
-    this.fieldsKvString = fieldsKvString;
-
     if (isValidFieldKvString(fieldsKvString)) {
       this.fields = toFieldsObject(fieldsKvString);
       this.fieldsError = false;
@@ -50,16 +57,12 @@ export class SearchBarUiStateStore {
   }
 
   @action setDisplayErrors(displayErrors) {
-    console.log('displayerrors set');
     this.displayErrors = displayErrors;
   }
 
   @action initUsingQuery(query) {
-    this.serviceOperation = {
-      serviceName: query.serviceName,
-      operationName: query.operationName
-    };
-    this.serviceOperationError = false;
+    this.serviceName = query.serviceName;
+    this.operationName = query.operationName;
 
     this.timeWindow = {
       timePreset: query.timePreset,
@@ -71,7 +74,6 @@ export class SearchBarUiStateStore {
     this.fields = extractSecondaryFields(query);
     this.fieldsError = false;
 
-    console.log('displayerrors reset');
     this.displayErrors = {};
   }
 }

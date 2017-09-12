@@ -28,21 +28,26 @@ export default class SearchBar extends React.Component {
         history: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         match: PropTypes.object.isRequired
+    };
+
+    static addDefaultParams(query, serviceNameParam) {
+        const augmentedQuery = {...query};
+      if (!(query.timePreset || (query.startTime && query.endTime))) {
+        augmentedQuery.timePreset = '5m';
+      }
+      augmentedQuery.serviceName = query.serviceName || serviceNameParam || 'all';
+      augmentedQuery.operationName = query.operationName || 'all';
+
+      return augmentedQuery;
     }
 
     constructor(props) {
         super(props);
 
         // construct query state
-        const query = toQuery(props.location.search);
-
-        // set defaults
-        if (!(query.timePreset || (query.startTime && query.endTime))) {
-            query.timePreset = '5m';
-        }
-        query.serviceName = query.serviceName || props.match.params.serviceName || 'all';
-        query.operationName = query.operationName || 'all';
-
+        const query = SearchBar.addDefaultParams(
+            toQuery(props.location.search),
+            props.match.params.serviceName);
         this.state = {query};
 
         // bind functions
@@ -57,7 +62,9 @@ export default class SearchBar extends React.Component {
         if (this.isTriggeredThroughSearchBar) {
             this.isTriggeredThroughSearchBar = false;
         } else {
-            const query = toQuery(nextProps.location.search);
+            const query = SearchBar.addDefaultParams(
+                toQuery(nextProps.location.search),
+                nextProps.match.params.serviceName);
 
             this.setState({query});
             this.fetchSearchResults(query);

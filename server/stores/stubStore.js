@@ -26,6 +26,12 @@ store.getServices = () => Q.fcall(() => ['lannister-service',
     'dragon-service'
 ]);
 
+store.getOperations = () => Q.fcall(() => ['op1',
+    'op2',
+    'op3',
+    'op4'
+]);
+
 store.getTrace = () => Q.fcall(() => [
         {
             traceId: 'root-traceid',

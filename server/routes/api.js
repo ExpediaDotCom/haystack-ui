@@ -26,6 +26,10 @@ router.get('/services', (req, res) => {
     store.getServices().then(results => res.json(results));
 });
 
+router.get('/operations', (req, res) => {
+    store.getOperations(req.query.serviceName).then(results => res.json(results));
+});
+
 router.get('/traces', (req, res) => {
     store.findTraces(req.query).then(results => res.json(results));
 });

@@ -14,29 +14,22 @@
  *         limitations under the License.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import {observer} from 'mobx-react';
-import uiState from './searchBarUiStateStore';
+import axios from 'axios';
+import {observable, action} from 'mobx';
 
-@observer
-export default class extends React.Component {
-    static propTypes = {
-        uiState: PropTypes.object.isRequired
-    };
+export class OperationStore {
+    @observable operations = [];
 
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-      console.log('serviceOperationPicker rendered!');
-
-      const {
-            serviceName,
-            operationName
-        } = this.props.uiState.serviceOperation;
-
-        return <span>{serviceName}, {operationName}</span>;
+    @action fetchOperations(serviceName) {
+        this.operations = [];
+        axios({
+            method: 'get',
+            url: `/api/operations?serviceName=${serviceName}`
+            })
+            .then((response) => {
+                this.operations = ['all', ...response.data];
+            });
     }
 }
+
+export default new OperationStore();

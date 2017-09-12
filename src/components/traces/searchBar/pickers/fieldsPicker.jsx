@@ -17,7 +17,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import {toFieldsKvString, toFieldsObject, isValidFieldKvString, extractSecondaryFields} from '../utils/traceQueryParser';
+import {toFieldsKvString} from '../../utils/traceQueryParser';
 
 @observer
 export default class TimeWindowPicker extends React.Component {
@@ -29,6 +29,10 @@ export default class TimeWindowPicker extends React.Component {
     super(props);
     this.state = { fieldsKvString: toFieldsKvString(props.uiState.fields)};
     this.updateFieldKv = this.updateFieldKv.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({fieldsKvString: toFieldsKvString(nextProps.uiState.fields)});
   }
 
   updateFieldKv(event) {
@@ -45,7 +49,7 @@ export default class TimeWindowPicker extends React.Component {
         <input
             type="text"
             className="search-bar-text-box form-control"
-            placeholder="enter query..."
+            placeholder="enter fields in key=value format"
             value={this.state.fieldsKvString}
             onChange={this.updateFieldKv}
         />
