@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import SearchQueryBar from './searchQueryBar';
-import {toQueryUrl, toQuery} from '../../../utils/queryParser';
+import {toQueryUrlString, toQuery} from '../../../utils/queryParser';
 import './searchBar.less';
 
 export default class SearchBar extends React.Component {
@@ -65,13 +65,13 @@ export default class SearchBar extends React.Component {
     }
 
     fetchSearchResults(query) {
-        this.props.tracesSearchStore.fetchSearchResults(toQueryUrl(query));
+        this.props.tracesSearchStore.fetchSearchResults(query);
     }
 
     searchCallback(query) {
         this.setState({query});
 
-        const queryUrl = `?${toQueryUrl(query)}`;
+        const queryUrl = `?${toQueryUrlString(query)}`;
         // push to history only if it is not the same search as the current one
         if (queryUrl !== this.props.location.search) {
             this.isTriggeredThroughSearchBar = true;

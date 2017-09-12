@@ -33,7 +33,8 @@ export default class Span extends React.Component {
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.string.isRequired,
-            serviceName: PropTypes.string.isRequired
+            serviceName: PropTypes.string.isRequired,
+            spanDepth: PropTypes.number.isRequired
         };
     }
     constructor(props) {
@@ -57,21 +58,22 @@ export default class Span extends React.Component {
             rowPadding,
             span,
             totalDuration,
-            serviceName
+            serviceName,
+            spanDepth
         } = this.props;
         const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
-        const spanTimestamp = span.timestamp;
+        const spanTimestamp = span.startTime;
         const spanDuration = span.duration;
         const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
         const width = ((spanDuration / totalDuration) * 100) * 0.8;
-        const formattedDuration = `${span.duration / 1000}ms`;
+        const formattedDuration = `${span.duration}ms`;
         return (
             <g>
                 <text
                     className="span-service-label"
                     fill="#6B7693"
                     fontSize="60px"
-                    x="1%"
+                    x={`${spanDepth}%`}
                     y={topOffset}
                     clipPath="url(#overflow)"
                     cursor="default"
@@ -84,7 +86,7 @@ export default class Span extends React.Component {
                     y={topOffset}
                     textAnchor={leftOffset > 50 ? 'end' : 'start'}
                     cursor="default"
-                >{span.name}:{formattedDuration}
+                >{span.operationName}:{formattedDuration}
                 </text>
                 <rect
                     className="btn span-bar"
@@ -112,7 +114,7 @@ export default class Span extends React.Component {
                     span={span}
                 />
                 <clipPath id="overflow">
-                    <rect x="0"height="100%" width="11.5%"/>
+                    <rect x="0" height="100%" width="11.5%"/>
                 </clipPath>
             </g>
         );

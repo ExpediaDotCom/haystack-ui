@@ -26,24 +26,32 @@ const LogEnum = {
     cr: 'Client Receive'
 };
 
-function findAnnotation(annotations, annotationValue) {
-    return _.find(annotations, annotation => annotation.value.toLowerCase() === annotationValue);
+function findLogEvent(logs, eventValue) {
+    return _.find(logs, log => log.value.toLowerCase() === eventValue);
 }
 
-const LogsTable = ({annotations}) => {
-    const clientSend = findAnnotation(annotations, 'cs');
-    const serverReceive = findAnnotation(annotations, 'sr');
-    const serverSend = findAnnotation(annotations, 'ss');
-    const clientReceive = findAnnotation(annotations, 'cr');
+const LogsTable = ({logs}) => {
+    const flattenedLogs = logs.map(log => log.fields.map(field => ({
+      timestamp: log.timestamp,
+      key: field.key,
+      value: field.value
+    }))).reduce((x, y) => x.concat(y), []);
 
-    const startSpan = (clientSend || serverReceive || serverSend || clientReceive);
+    if (flattenedLogs) {
+        const clientSend = findLogEvent(flattenedLogs, 'cs');
+        const serverReceive = findLogEvent(flattenedLogs, 'sr');
+        const serverSend = findLogEvent(flattenedLogs, 'ss');
+        const clientReceive = findLogEvent(flattenedLogs, 'cr');
 
-    if (startSpan) {
-        const startTime = startSpan.timestamp;
+        const startSpan = (clientSend || serverReceive || serverSend || clientReceive);
+        let startTime = 0;
+        if (startSpan) startTime = startSpan.timestamp;
 
+        // display while making sure that logical ordering of events is maintained
         return (<table className="table table-striped">
             <thead>
             <tr>
+                <th>Key</th>
                 <th>Value</th>
                 <th>Relative</th>
                 <th>Timestamp</th>
@@ -51,11 +59,12 @@ const LogsTable = ({annotations}) => {
             </thead>
             <tbody>
 
-            {_.compact([clientSend, serverReceive, serverSend, clientReceive]).map(annotation =>
-                (<tr key={annotation.value}>
-                    <td>{LogEnum[annotation.value]}</td>
-                    <td>{(annotation.timestamp - startTime) / 1000}ms</td>
-                    <td>{moment(annotation.timestamp / 1000).format('kk:mm:ss.SSS, DD MMM YY')}</td>
+            {_.compact(_.union([clientSend, serverReceive, serverSend, clientReceive, ...flattenedLogs])).map(log =>
+                (<tr key={log.value}>
+                    <td>{log.key}</td>
+                    <td>{LogEnum[log.value]}</td>
+                    <td>{(log.timestamp - startTime) / 1000}ms</td>
+                    <td>{moment(log.timestamp / 1000).format('kk:mm:ss.SSS, DD MMM YY')}</td>
                 </tr>)
             )}
             </tbody>
@@ -65,7 +74,7 @@ const LogsTable = ({annotations}) => {
 };
 
 LogsTable.propTypes = {
-    annotations: PropTypes.object.isRequired
+    logs: PropTypes.object.isRequired
 };
 
 export default LogsTable;

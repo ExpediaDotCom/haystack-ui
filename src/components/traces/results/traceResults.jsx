@@ -27,7 +27,8 @@ import Error from '../../common/error';
 @observer
 export default class TraceResults extends React.Component {
     static propTypes = {
-        tracesSearchStore: PropTypes.object.isRequired
+        tracesSearchStore: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
     constructor() {
         super();
@@ -38,12 +39,12 @@ export default class TraceResults extends React.Component {
         return (
             <section>
                 { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                        ? <TraceResultsTable tracesSearchStore={this.props.tracesSearchStore}/>
-                        : <Error />)
-                })
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
+                                ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults} location={this.props.location} />
+                                : <Error />)
+                    })
                 }
             </section>
         );

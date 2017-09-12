@@ -21,16 +21,18 @@ import Modal from '../../common/modal';
 
 const RawTraceModal = ({isOpen, closeModal, spans}) => (
     <Modal isOpen={isOpen} closeModal={closeModal} title={'Raw Trace'}>
+        <div>
         {spans.map(span =>
-            (<div key={span.id}>
+            (<div key={Math.random()}>
                 <pre>{JSON.stringify(span, null, 2)}</pre>
             </div>))}
+        </div>
     </Modal>);
 
 RawTraceModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
-    spans: PropTypes.array.isRequired
+    spans: PropTypes.object.isRequired
 };
 
 export default RawTraceModal;

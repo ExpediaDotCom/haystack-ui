@@ -25,7 +25,9 @@ import './traceResultsTable.less';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
-        tracesSearchStore: PropTypes.object.isRequired
+        query: PropTypes.object.isRequired,
+        results: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     static sortByTimestamp(a, b, order) {
@@ -48,6 +50,11 @@ export default class TraceResultsTable extends React.Component {
             serviceList += `<span class="service-spans label label-success" style="background-color:${bgColor}"=>${svc.name[0].toUpperCase()} x${svc.spanCount}</span> `;
             return serviceList;
         });
+
+        if (services.length > 2) {
+            return `${serviceList} <span>...</span>`;
+        }
+
         return serviceList;
     }
 
@@ -63,7 +70,7 @@ export default class TraceResultsTable extends React.Component {
 
     static spanColumnFormatter(cell, row) {
         return `<div class="table__primary">${cell}</div>
-                <div class="table__secondary">${TraceResultsTable.handleServiceList(row.services)}</div>`;
+                <div>${TraceResultsTable.handleServiceList(row.services)}</div>`;
     }
 
     static errorFormatter(cell) {
@@ -86,9 +93,32 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static serviceDurationPercentFormatter(cell) {
-        return (<div className="percentContainer">
-            <CircularProgressbar percentage={cell} strokeWidth={6}/>
-        </div>);
+        return (
+            <div className="text-right">
+                <div className="percentContainer text-center">
+                    <CircularProgressbar percentage={cell} strokeWidth={8}/>
+                </div>
+            </div>);
+    }
+
+    static getCaret(direction) {
+        if (direction === 'asc') {
+          return (
+              <span className="order dropup">
+                  <span className="caret" style={{margin: '10px 5px'}}/>
+              </span>);
+        }
+        if (direction === 'desc') {
+          return (
+              <span className="order dropdown">
+                  <span className="caret" style={{margin: '10px 5px'}}/>
+              </span>);
+        }
+        return <div/>;
+    }
+
+    static Header({name}) {
+        return <span className="results-header">{name}</span>;
     }
 
     constructor(props) {
@@ -100,7 +130,12 @@ export default class TraceResultsTable extends React.Component {
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
     }
-
+    componentDidMount() {
+        const results = this.props.results;
+        if (results.length === 1) {
+            this.handleExpand(results[0].traceId, true);
+        }
+    }
     handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
@@ -121,13 +156,17 @@ export default class TraceResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} />;
+            return <TraceDetails traceId={row.traceId} location={this.props.location} baseServiceName={this.props.query.serviceName} />;
         }
         return null;
     }
 
     render() {
-        const results = this.props.tracesSearchStore.searchResults;
+        const {
+            query,
+            results
+        } = this.props;
+
         const selectRowProp = {
             clickToSelect: true,
             clickToExpand: true,
@@ -136,6 +175,7 @@ export default class TraceResultsTable extends React.Component {
             hideSelectColumn: true,
             selected: this.state.selected
         };
+
         const options = {
             page: 1,  // which page you want to show as default
             sizePerPage: 15,  // which size per page you want to locate as default
@@ -148,12 +188,16 @@ export default class TraceResultsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing traces { start } to { to } out of { total } samples</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: 'timestamp',  // default sort column name
+            defaultSortName: query.sortBy || 'timestamp',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
             expandBodyClass: 'expand-row-body'
         };
+
+        const tableHeaderStyle = { border: 'none' };
+        const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
+
         return (
             <BootstrapTable
                 data={results}
@@ -165,14 +209,93 @@ export default class TraceResultsTable extends React.Component {
                 expandComponent={this.expandComponent}
                 selectRow={selectRowProp}
             >
-                <TableHeaderColumn dataField="timestamp" sortFunc={this.sortByTimestamp} dataFormat={TraceResultsTable.timeColumnFormatter} dataSort width="12" thStyle={{ border: 'none' }}>Timestamp</TableHeaderColumn>
-                <TableHeaderColumn dataField="rootOperation" dataFormat={TraceResultsTable.rootColumnFormatter} dataSort width="25" thStyle={{ border: 'none' }}>Root</TableHeaderColumn>
-                <TableHeaderColumn dataField="error" dataFormat={TraceResultsTable.errorFormatter} dataSort width="10" thStyle={{ border: 'none' }}>Success</TableHeaderColumn>
-                <TableHeaderColumn dataField="spans" width="30" dataFormat={TraceResultsTable.spanColumnFormatter} dataSort thStyle={{ border: 'none' }}>Span Count</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDurationPercent" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationPercentFormatter} thStyle={{ border: 'none' }}>Svc Duration %</TableHeaderColumn>
-                <TableHeaderColumn dataField="serviceDuration" dataSort width="10" dataFormat={TraceResultsTable.serviceDurationFormatter} thStyle={{ border: 'none' }}>Svc Duration</TableHeaderColumn>
-                <TableHeaderColumn dataField="duration" dataSort width="10" sortFunc={this.sortByDuration} dataFormat={TraceResultsTable.totalDurationColumnFormatter} thStyle={{ border: 'none' }}>Total Duration</TableHeaderColumn>
-                <TableHeaderColumn dataField="traceId" hidden isKey>TraceId</TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="traceId"
+                    hidden
+                    isKey
+                >TraceId</TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="timestamp"
+                    dataFormat={TraceResultsTable.timeColumnFormatter}
+                    width="15"
+                    dataSort
+                    caretRender={TraceResultsTable.getCaret}
+                    sortFunc={this.sortByTimestamp}
+                    thStyle={tableHeaderStyle}
+                ><TraceResultsTable.Header name="Timestamp"/></TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="rootOperation"
+                    dataFormat={TraceResultsTable.rootColumnFormatter}
+                    width="25"
+                    dataSort
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderStyle}
+                ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="error"
+                    width="10"
+                    dataFormat={TraceResultsTable.errorFormatter}
+                    dataSort
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderStyle}
+                ><TraceResultsTable.Header name="Success"/></TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="spans"
+                    dataFormat={TraceResultsTable.spanColumnFormatter}
+                    width="25"
+                    dataSort
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderStyle}
+                ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
+                {
+                    (query.operationName && query.operationName !== 'all')
+                    && <TableHeaderColumn
+                        dataField="serviceDuration"
+                        dataFormat={TraceResultsTable.serviceDurationFormatter}
+                        width="10"
+                        dataSort
+                        sortFunc={this.sortByDuration}
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderRightAlignedStyle}
+                    ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
+                }
+                {
+                    (query.operationName && query.operationName !== 'all')
+                    && <TableHeaderColumn
+                        dataField="serviceDurationPercent"
+                        dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
+                        width="10"
+                        dataSort
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderRightAlignedStyle}
+                    ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
+                }
+                <TableHeaderColumn
+                    dataField="serviceDuration"
+                    dataFormat={TraceResultsTable.serviceDurationFormatter}
+                    width="10"
+                    dataSort
+                    sortFunc={this.sortByDuration}
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderRightAlignedStyle}
+                ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="serviceDurationPercent"
+                    dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
+                    width="10"
+                    dataSort
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderRightAlignedStyle}
+                ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="duration"
+                    dataFormat={TraceResultsTable.totalDurationColumnFormatter}
+                    width="10"
+                    dataSort
+                    sortFunc={this.sortByDuration}
+                    caretRender={TraceResultsTable.getCaret}
+                    thStyle={tableHeaderRightAlignedStyle}
+                ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
             </BootstrapTable>
         );
     }

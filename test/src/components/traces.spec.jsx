@@ -122,11 +122,12 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function createStubStore(results, promise) {
+function createStubStore(results, promise, searchQuery = {}) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
         store.promiseState = promise;
+        store.searchQuery = searchQuery;
     });
 
     return store;

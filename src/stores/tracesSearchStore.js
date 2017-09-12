@@ -18,14 +18,16 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import timeago from 'timeago.js';
+import moment from 'moment';
 import { fromPromise } from 'mobx-utils';
+import { toQueryUrlString } from '../utils/queryParser';
 
 function getTotalSpanCount(services) {
     return services.reduce((sum, service) => sum + service.spanCount, 0);
 }
 
 function getFormattedTimestamp(startTime) {
-    return new Date(startTime * 1000).toLocaleString();
+    return moment(startTime * 1000).format('kk:mm:ss.SSS, DD MMM YY');
 }
 
 function TraceException(data) {
@@ -51,16 +53,22 @@ function formatResults(results) {
 }
 
 export class TracesSearchStore {
-    @observable searchResults = [];
     @observable promiseState = null;
-    @action fetchSearchResults(queryString) {
+    @observable searchQuery = null;
+    @observable searchResults = [];
+
+    @action fetchSearchResults(query) {
+        const queryUrlString = toQueryUrlString(query);
         this.promiseState = fromPromise(
             axios
-                .get(`/api/traces?${queryString}`)
+                .get(`/api/traces?${queryUrlString}`)
                 .then((result) => {
+                    this.searchQuery = query;
                     this.searchResults = formatResults(result.data);
                 })
                 .catch((result) => {
+                    this.searchQuery = query;
+                    this.searchResults = [];
                     throw new TraceException(result);
                 })
         );
