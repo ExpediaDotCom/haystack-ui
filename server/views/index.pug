@@ -12,4 +12,6 @@ html
 
   body
     #root
+    script.
+      var subsystems = !{JSON.stringify(subsystems)}
     script(async, defer, src='/bundles/js/app.js')
