@@ -26,16 +26,16 @@ import Trends from '../trends/trends';
 import Alerts from '../alerts/alerts';
 
 const subsystems = window.subsystems || [];
-const allSubsytemsEnabled = !subsystems.length || subsystems.includes('all');
+const allSubsystemsEnabled = !subsystems.length || subsystems.includes('all');
 
-function isSubsytemEnabled(sub) {
-  return allSubsytemsEnabled || subsystems.includes(sub);
+function isSubsystemEnabled(sub) {
+  return allSubsystemsEnabled || subsystems.includes(sub);
 }
 
-const isFlowEnabled = isSubsytemEnabled('flow');
-const isTrendsEnabled = isSubsytemEnabled('trends');
-const isTracesEnabled = isSubsytemEnabled('traces');
-const isAlertsEnabled = isSubsytemEnabled('alerts');
+const isFlowEnabled = isSubsystemEnabled('flow');
+const isTrendsEnabled = isSubsystemEnabled('trends');
+const isTracesEnabled = isSubsystemEnabled('traces');
+const isAlertsEnabled = isSubsystemEnabled('alerts');
 
 const ServiceTools = (props) => {
     const serviceName = props.match.params.serviceName;
