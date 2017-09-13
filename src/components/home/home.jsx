@@ -25,7 +25,8 @@ import WorkInProgress from '../common/workInProgress';
 
 @observer
 export default class Home extends Component {
-    componentWillMount() {
+    constructor(props) {
+        super(props);
         serviceStore.fetchServices();
     }
 

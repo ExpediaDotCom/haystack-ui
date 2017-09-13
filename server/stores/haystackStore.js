@@ -23,6 +23,7 @@ const Q = require('q');
 const store = {};
 
 store.getServices = () => Q.fcall(() => []);
+store.getOperations = () => Q.fcall(() => []);
 store.findTraces = () => Q.fcall(() => []);
 store.getTrace = () => Q.fcall(() => []);
 
