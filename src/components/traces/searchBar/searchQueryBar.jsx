@@ -93,8 +93,8 @@ export default class SearchQueryBar extends React.Component {
                 <section>
                     { (uiState.displayErrors)
                         ? <div className="traces-error-message">
-                            {uiState.displayErrors.fields ? <div>Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
-                            {uiState.displayErrors.timeWindow ? <div>Invalid date</div> : null}
+                            {uiState.displayErrors.fields ? <div className="traces-error-message_item">Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
+                            {uiState.displayErrors.timeWindow ? <div className="traces-error-message_item">Invalid date</div> : null}
                         </div>
                         : null
                     }

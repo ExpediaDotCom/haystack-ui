@@ -199,39 +199,42 @@ describe('<Traces />', () => {
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing no key value'}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(1);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'failure'}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(1);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'this=is wrong format ='}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(1);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'a=b c d=e'}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(1);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
     });
 
     it('should accept valid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(0);
+        console.log(wrapper.find('.search-bar-text-box').html());
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key value = pair'}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(0);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: '   testing   =   key value   =   pair   '}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(0);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key        value = pair '}});
         wrapper.find('.traces-search-button').simulate('click');
-        expect(wrapper.find('.traces-error-message')).to.have.length(0);
+        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
     });
 
     it('should update URL query params on clicking search');
