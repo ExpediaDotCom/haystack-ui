@@ -25,6 +25,18 @@ import Traces from '../traces/traces';
 import Trends from '../trends/trends';
 import Alerts from '../alerts/alerts';
 
+const subsystems = window.subsystems || [];
+const allSubsytemsEnabled = !subsystems.length || subsystems.includes('all');
+
+function isSubsytemEnabled(sub) {
+  return allSubsytemsEnabled || subsystems.includes(sub);
+}
+
+const isFlowEnabled = isSubsytemEnabled('flow');
+const isTrendsEnabled = isSubsytemEnabled('trends');
+const isTracesEnabled = isSubsytemEnabled('traces');
+const isAlertsEnabled = isSubsytemEnabled('alerts');
+
 const ServiceTools = (props) => {
     const serviceName = props.match.params.serviceName;
 
@@ -37,49 +49,61 @@ const ServiceTools = (props) => {
                     <div className="row">
                         <h3 className="serviceToolsTab__title col-md-5">{serviceName}</h3>
                         <nav className="serviceToolsTab__tabs col-md-7">
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                exact
-                                to={`/service/${serviceName}`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-vector"/>
-                                Flow
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${serviceName}/trends`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
-                                Trends
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${serviceName}/traces`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
-                                Traces
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${serviceName}/alerts`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-bell"/>
-                                Alerts
-                            </NavLink>
+                          {isFlowEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  exact
+                                  to={`/service/${serviceName}/flow`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-vector"/>
+                                  Flow
+                              </NavLink>
+                              : null
+                          }
+                          {isTrendsEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/trends`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
+                                  Trends
+                              </NavLink>
+                              : null
+                          }
+                          {isTracesEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/traces`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
+                                  Traces
+                              </NavLink>
+                              : null
+                          }
+                          {isAlertsEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/alerts`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-bell"/>
+                                  Alerts
+                              </NavLink>
+                              : null
+                          }
                         </nav>
                     </div>
                 </div>
             </nav>
             <article className="serviceToolsContainer container">
                 <Switch>
-                    <Route exact path="/service/:serviceName" component={Flow}/>
-                    <Route exact path="/service/:serviceName/traces" component={Traces}/>
-                    <Route exact path="/service/:serviceName/trends" component={Trends}/>
-                    <Route exact path="/service/:serviceName/alerts" component={Alerts}/>
+                  {isAlertsEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
+                  {isTrendsEnabled ? <Route exact path="/service/:serviceName/traces" component={Traces}/> : null}
+                  {isTracesEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}
+                  {isAlertsEnabled ? <Route exact path="/service/:serviceName/alerts" component={Alerts}/> : null}
                 </Switch>
             </article>
         </article>
