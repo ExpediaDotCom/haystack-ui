@@ -17,36 +17,38 @@
 
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
-import PageLayout from './components/layout/pageLayout';
+
+import Header from './components/layout/header';
+import Footer from './components/layout/footer';
 import Home from './components/home/home';
-import NoMatch from './components/common/noMatch';
+import TracesHome from './components/home/TracesHome';
 import Help from './components/docs/help';
 import ServiceTools from './components/layout/serviceTools';
-import Flow from './components/flow/flow';
 import Traces from './components/traces/traces';
-import Trends from './components/trends/trends';
-import Alerts from './components/alerts/alerts';
-
+import NoMatch from './components/common/noMatch';
 
 export default () => (
     <Route>
-        <PageLayout>
-            <Switch>
-                <Route exact path="/" component={Home}/>
-                <Route path="/search" component={Traces}/>
-                <Route path="/help" component={Help}/>
-                <Route path="/service/:serviceName">
-                    <Switch>
-                        <ServiceTools>
-                            <Route exact path="/service/:serviceName/traces" component={Traces}/>
-                            <Route path="/service/:serviceName/trends" component={Trends}/>
-                            <Route path="/service/:serviceName/flow" component={Flow}/>
-                            <Route path="/service/:serviceName/alerts" component={Alerts}/>
-                        </ServiceTools>
-                    </Switch>
-                </Route>
+      <div className="layout">
+        <Header/>
+        <article className="primary-content">
+          { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
+              <Switch>
+                <Route exact path="/" component={TracesHome}/>
+                <Route exact path="/search" component={Traces}/>
+                <Route exact path="/help" component={Help}/>
                 <Route path="*" component={NoMatch}/>
-            </Switch>
-        </PageLayout>
+              </Switch> :
+              <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route exact path="/search" component={Traces}/>
+                <Route exact path="/help" component={Help}/>
+                <Route path="/service/:serviceName" component={ServiceTools}/>
+                <Route path="*" component={NoMatch}/>
+              </Switch>
+          }
+        </article>
+        <Footer/>
+      </div>
     </Route>
 );
