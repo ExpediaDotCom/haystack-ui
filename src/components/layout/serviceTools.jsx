@@ -40,7 +40,8 @@ const ServiceTools = (props) => {
                             <NavLink
                                 className={navLinkClass}
                                 activeClassName={navLinkClassActive}
-                                to={`/service/${serviceName}/flow`}
+                                exact
+                                to={`/service/${serviceName}`}
                             >
                                 <span className="serviceToolsTab__tab-option-icon ti-vector"/>
                                 Flow
@@ -75,9 +76,9 @@ const ServiceTools = (props) => {
             </nav>
             <article className="serviceToolsContainer container">
                 <Switch>
+                    <Route exact path="/service/:serviceName" component={Flow}/>
                     <Route exact path="/service/:serviceName/traces" component={Traces}/>
                     <Route exact path="/service/:serviceName/trends" component={Trends}/>
-                    <Route exact path="/service/:serviceName/flow" component={Flow}/>
                     <Route exact path="/service/:serviceName/alerts" component={Alerts}/>
                 </Switch>
             </article>

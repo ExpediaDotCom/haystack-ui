@@ -8,7 +8,7 @@ module.exports = {
     // list of subsystems for which UI should be enabled,
     // options - can be any combination of traces, trends, dependency and alerts
     // or,  all for enabling all subsystems
-    subsystems: ['all'],
+    subsystems: ['traces'],
 
     // name of and config store module to use for fetching data from downstream
     // options
@@ -19,7 +19,10 @@ module.exports = {
     //                       eg. zipkin: { url: 'http://<zipkin>/api/v1'}
     //  - stubStore - a stub used during development, will be removed in future
     store: {
-        name: 'stubStore'
+        name: 'zipkinBridgeStore',
+        zipkin: {
+            url: 'http://blackbox.test.expedia.com/api/v1'
+        }
     },
 
     // configs for logs

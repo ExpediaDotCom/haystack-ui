@@ -21,6 +21,7 @@ import {Route, Switch} from 'react-router-dom';
 import Header from './components/layout/header';
 import Footer from './components/layout/footer';
 import Home from './components/home/home';
+import TracesHome from './components/home/TracesHome';
 import Help from './components/docs/help';
 import ServiceTools from './components/layout/serviceTools';
 import Traces from './components/traces/traces';
@@ -31,13 +32,21 @@ export default () => (
       <div className="layout">
         <Header/>
         <article className="primary-content">
-          <Switch>
-            <Route exact path="/" component={Home}/>
-            <Route exact path="/search" component={Traces}/>
-            <Route exact path="/help" component={Help}/>
-            <Route path="/service/:serviceName" component={ServiceTools}/>
-            <Route path="*" component={NoMatch}/>
-          </Switch>
+          { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
+              <Switch>
+                <Route exact path="/" component={TracesHome}/>
+                <Route exact path="/search" component={Traces}/>
+                <Route exact path="/help" component={Help}/>
+                <Route path="*" component={NoMatch}/>
+              </Switch> :
+              <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route exact path="/search" component={Traces}/>
+                <Route exact path="/help" component={Help}/>
+                <Route path="/service/:serviceName" component={ServiceTools}/>
+                <Route path="*" component={NoMatch}/>
+              </Switch>
+          }
         </article>
         <Footer/>
       </div>
