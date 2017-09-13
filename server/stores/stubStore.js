@@ -236,7 +236,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 15000
                 },
@@ -264,7 +264,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 21000
                 },
@@ -292,7 +292,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 151
                 },
@@ -320,7 +320,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 2,
                     duration: 80000
                 },
@@ -348,7 +348,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 5151
                 },
@@ -376,7 +376,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 48573
                 },
@@ -404,7 +404,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 8000
                 },
@@ -432,7 +432,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 12,
                     duration: 9000
                 },
@@ -460,7 +460,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 2000
                 },
@@ -488,7 +488,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 400012
                 },
@@ -516,7 +516,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 96789
                 },
@@ -544,7 +544,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 12,
                     duration: 843212
                 },
@@ -572,7 +572,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 16789
                 },
@@ -600,7 +600,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 9,
                     duration: 48211
                 },
@@ -628,7 +628,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 111513
                 },
@@ -656,7 +656,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 12,
                     duration: 29000
                 },
@@ -684,7 +684,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 144000
                 },
@@ -712,7 +712,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 420002
                 },
@@ -740,7 +740,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 111111
                 },
@@ -768,7 +768,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 2,
                     duration: 295482
                 },
@@ -796,7 +796,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 12000
                 },
@@ -824,7 +824,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 9001
                 },
@@ -852,7 +852,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 11000
                 },
@@ -880,7 +880,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 12,
                     duration: 88000
                 },
@@ -908,7 +908,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 6100
                 },
@@ -936,7 +936,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 1,
                     duration: 21212
                 },
@@ -964,7 +964,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 7000
                 },
@@ -992,7 +992,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 12,
                     duration: 31564
                 },
@@ -1020,7 +1020,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 11,
                     duration: 8151
                 },
@@ -1048,7 +1048,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 9,
                     duration: 33333
                 },
@@ -1076,7 +1076,7 @@ store.findTraces = query => Q.fcall(() => {
             },
             services: [
                 {
-                    name: 'abc-service',
+                    name: 'stark-service',
                     spanCount: 3,
                     duration: 222
                 },
