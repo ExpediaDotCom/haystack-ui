@@ -76,7 +76,7 @@ export default class Span extends React.Component {
                     y={topOffset - 6}
                     x={`${spanDepth - 0.5}%`}
                     clipPath="url(#overflow)"
-                    width={(serviceName.length * 5) + 30}
+                    width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
                     rx="3.5"
                     ry="3.5"
                 />
@@ -89,11 +89,9 @@ export default class Span extends React.Component {
                 </text>
                 <text
                     className="span-label"
-                    fill="#6B7693"
                     x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
                     y={topOffset}
                     textAnchor={leftOffset > 50 ? 'end' : 'start'}
-                    cursor="default"
                 >{span.operationName}:{formattedDuration}
                 </text>
                 <rect
@@ -105,11 +103,9 @@ export default class Span extends React.Component {
                     y={topOffset + 4}
                     rx="3.5"
                     ry="3.5"
-                    fill="#28a228"
                 />
                 <rect
                     className="span-click"
-                    width="100%"
                     x="0"
                     y={topOffset - 13}
                     height={rowHeight + 20}
