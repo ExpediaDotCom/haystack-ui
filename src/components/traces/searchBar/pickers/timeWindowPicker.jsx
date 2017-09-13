@@ -21,8 +21,6 @@ import moment from 'moment';
 import TimeRangePicker from './timeRangePicker';
 import toPresetDisplayText from '../../utils/presets';
 
-import uiState from '../searchBarUiStateStore';
-
 @observer
 export default class TimeWindowPicker extends React.Component {
   static propTypes = {
@@ -57,7 +55,7 @@ export default class TimeWindowPicker extends React.Component {
   }
 
   timeRangeChangeCallback(timePreset, startTime, endTime) {
-    uiState.setTimeWindow({timePreset, startTime, endTime});
+    this.props.uiState.setTimeWindow({timePreset, startTime, endTime});
     this.setState({timeRangePickerToggleText: TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime)});
     this.setState({showTimeRangePicker: false});
   }
@@ -67,7 +65,7 @@ export default class TimeWindowPicker extends React.Component {
           timePreset,
           startTime,
           endTime
-      } = uiState.timeWindow;
+      } = this.props.uiState.timeWindow;
 
     const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
 
