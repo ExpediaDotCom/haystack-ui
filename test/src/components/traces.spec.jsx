@@ -197,6 +197,7 @@ describe('<Traces />', () => {
     it('should not accept invalid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing no key value'}});
         wrapper.find('.traces-search-button').simulate('click');
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
@@ -221,7 +222,6 @@ describe('<Traces />', () => {
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});
         wrapper.find('.traces-search-button').simulate('click');
-        console.log(wrapper.find('.search-bar-text-box').html());
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key value = pair'}});

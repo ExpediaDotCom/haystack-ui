@@ -20,15 +20,6 @@ const keyValuePairRegex = /\w=\w/;
 const whitespaceRegex = /\s+/g;
 const primaryFields = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime'];
 
-export const queryIsValid = queryString =>
-    queryString
-        // Trim whitespace, check for whitespace before and after =,
-        .trim().replace(whitespaceAroundEqualsRegex, '=')
-        // Split kv pairs
-        .split(whitespaceRegex)
-        // Check individually for key=value
-        .every(kvPair => keyValuePairRegex.test(kvPair));
-
 export const dateIsValid = (start, end) => {
     // preset timers will always be valid; no need to test validation
     if (start) {
@@ -37,25 +28,6 @@ export const dateIsValid = (start, end) => {
     }
     return true;
 };
-
-export const parseQueryString = (queryString) => {
-    const keyValuePairs = queryString.replace(whitespaceAroundEqualsRegex, '=').split(whitespaceRegex);
-
-    const parsedQueryString = {};
-
-    keyValuePairs.forEach((pair) => {
-        const keyValue = pair.trim().split('=');
-        parsedQueryString[keyValue[0]] = keyValue[1];
-    });
-
-    return parsedQueryString;
-};
-
-export const toQueryString = query => Object
-    .keys(query)
-    .filter(key => query[key] && !primaryFields.includes(key))
-    .map(key => `${encodeURIComponent(key)}=${query[key]}`)
-    .join(' ');
 
 export const toFieldsKvString = query => Object
     .keys(query)
@@ -88,8 +60,10 @@ export const extractSecondaryFields = (query) => {
   return fields;
 };
 
+// query string can be empty or a valid sequence key=value formatted pairs
 export const isValidFieldKvString = queryString =>
-    queryString
+    !queryString.trim()
+    || queryString
         // Trim whitespace, check for whitespace before and after =,
         .trim().replace(whitespaceAroundEqualsRegex, '=')
         // Split kv pairs

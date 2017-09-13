@@ -16,17 +16,13 @@
  */
 
 import {observable, action} from 'mobx';
-import {toFieldsObject, isValidFieldKvString, dateIsValid, extractSecondaryFields} from '../utils/traceQueryParser';
+import {toFieldsKvString, extractSecondaryFields} from '../utils/traceQueryParser';
 
 export class SearchBarUiStateStore {
   @observable serviceName = null;
   @observable operationName = null;
-
-  @observable fields = {};
-  @observable fieldsError = false;
-
-  @observable timeWindow = {};
-  @observable timeWindowError = false;
+  @observable fieldsKvString = null;
+  @observable timeWindow = null;
 
   @observable displayErrors = {};
 
@@ -39,21 +35,11 @@ export class SearchBarUiStateStore {
   }
 
   @action setTimeWindow(timeWindow) {
-    if (dateIsValid(...timeWindow)) {
-      this.timeWindow = timeWindow;
-      this.timeWindowError = false;
-    } else {
-      this.timeWindowError = true;
-    }
+    this.timeWindow = timeWindow;
   }
 
   @action setFieldsUsingKvString(fieldsKvString) {
-    if (isValidFieldKvString(fieldsKvString)) {
-      this.fields = toFieldsObject(fieldsKvString);
-      this.fieldsError = false;
-    } else {
-      this.fieldsError = true;
-    }
+    this.fieldsKvString = fieldsKvString;
   }
 
   @action setDisplayErrors(displayErrors) {
@@ -61,20 +47,16 @@ export class SearchBarUiStateStore {
   }
 
   @action initUsingQuery(query) {
+    this.displayErrors = {};
+
     this.serviceName = query.serviceName;
     this.operationName = query.operationName;
-
+    this.fieldsKvString = toFieldsKvString(extractSecondaryFields(query));
     this.timeWindow = {
       timePreset: query.timePreset,
       startTime: query.startTime,
       endTime: query.endTime
     };
-    this.timeWindowError = false;
-
-    this.fields = extractSecondaryFields(query);
-    this.fieldsError = false;
-
-    this.displayErrors = {};
   }
 }
 

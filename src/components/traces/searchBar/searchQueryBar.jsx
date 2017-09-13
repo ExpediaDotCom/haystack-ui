@@ -23,6 +23,7 @@ import OperationPicker from './pickers/operationPicker';
 import FieldsPicker from './pickers/fieldsPicker';
 import TimeWindowPicker from './pickers/timeWindowPicker';
 import uiState from './searchBarUiStateStore';
+import {toFieldsObject, isValidFieldKvString, dateIsValid} from '../utils/traceQueryParser';
 import './searchBar.less';
 
 @observer
@@ -50,24 +51,23 @@ export default class SearchQueryBar extends React.Component {
     }
 
     search() {
-      console.log('search triggered!');
+      const fieldError = !isValidFieldKvString(uiState.fieldsKvString);
+      const timeWindowError = !dateIsValid(...uiState.timeWindow);
 
-      if (uiState.fieldsError || uiState.timeWindowError) {
-            uiState.setDisplayErrors({fields: uiState.fieldsError,
-              timeWindow: uiState.timeWindowError
-            });
+      // trigger search only if searchBar is in valid state
+      if (fieldError || timeWindowError) {
+            uiState.setDisplayErrors({fieldError, timeWindowError});
         } else {
             this.props.searchCallback({
                 serviceName: uiState.serviceName,
                 operationName: uiState.operationName,
-                ...uiState.fields,
+                ...toFieldsObject(uiState.fieldsKvString),
                 ...uiState.timeWindow
             });
         }
     }
 
     render() {
-        console.log('searchQueryBar rendered!');
         return (
             <article className="search-query-bar">
                 <section>
@@ -83,7 +83,7 @@ export default class SearchQueryBar extends React.Component {
                           <FieldsPicker uiState={uiState}/>
                           <TimeWindowPicker uiState={uiState}/>
                           <div className="search-bar-pickers_submit">
-                            <button className="btn btn-primary btn-lg traces-search-button" type="button" onClick={this.search}>
+                            <button className="btn btn-primary btn-lg traces-search-button" type="submit" onClick={this.handleSubmit}>
                                 <span className="ti-search"/>
                             </button>
                           </div>
@@ -91,10 +91,10 @@ export default class SearchQueryBar extends React.Component {
                     </form>
                 </section>
                 <section>
-                    { (uiState.displayErrors)
+                    { (uiState.displayErrors.fieldError || uiState.displayErrors.timeWindowError)
                         ? <div className="traces-error-message">
-                            {uiState.displayErrors.fields ? <div className="traces-error-message_item">Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
-                            {uiState.displayErrors.timeWindow ? <div className="traces-error-message_item">Invalid date</div> : null}
+                            {uiState.displayErrors.fieldError ? <div className="traces-error-message_item">Invalid query, expected format is <span className="traces-error-message__code"> tag1=value1 tag2=value2 [...]</span></div> : null}
+                            {uiState.displayErrors.timeWindowError ? <div className="traces-error-message_item">Invalid date</div> : null}
                         </div>
                         : null
                     }

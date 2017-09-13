@@ -42,7 +42,6 @@ export default class ServicePicker extends React.Component {
   }
 
   render() {
-    console.log('ServicePicker rendered!');
     const serviceName = this.props.uiState.serviceName;
 
     // default to current service if there is not operation in store

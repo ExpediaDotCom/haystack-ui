@@ -17,7 +17,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import {toFieldsKvString} from '../../utils/traceQueryParser';
 
 @observer
 export default class TimeWindowPicker extends React.Component {
@@ -27,28 +26,20 @@ export default class TimeWindowPicker extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { fieldsKvString: toFieldsKvString(props.uiState.fields)};
     this.updateFieldKv = this.updateFieldKv.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({fieldsKvString: toFieldsKvString(nextProps.uiState.fields)});
-  }
-
   updateFieldKv(event) {
-    this.setState({fieldsKvString: event.target.value});
     this.props.uiState.setFieldsUsingKvString(event.target.value);
   }
 
   render() {
-    console.log('fieldPicker rendered!');
-
     return (
       <div className="search-bar-pickers_fields">
         <input
             type="text"
             className="search-bar-text-box"
-            value={this.state.fieldsKvString}
+            value={this.props.uiState.fieldsKvString}
             onChange={this.updateFieldKv}
         />
       </div>);

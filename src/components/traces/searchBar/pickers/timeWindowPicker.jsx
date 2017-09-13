@@ -63,8 +63,6 @@ export default class TimeWindowPicker extends React.Component {
   }
 
   render() {
-    console.log('timeWindowPicker rendered!');
-
     const {
           timePreset,
           startTime,

@@ -91,7 +91,6 @@ export default class SearchBar extends React.Component {
     }
 
     render() {
-        console.log(this.state.query);
         return (
             <section className="search-bar">
                 <SearchQueryBar query={this.state.query} searchCallback={this.searchCallback}/>

@@ -46,8 +46,6 @@ export default class OperationPicker extends React.Component {
     }
 
     render() {
-      console.log('OperationPicker rendered!');
-
       const operationName = this.props.uiState.operationName || operationStore.operations[0];
 
       // default to current operation if there is not operation in store
