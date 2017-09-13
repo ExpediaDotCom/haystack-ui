@@ -17,69 +17,101 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {NavLink} from 'react-router-dom';
+import {Route, Switch, NavLink} from 'react-router-dom';
 import './serviceTools.less';
 
-const ServiceTools = ({computedMatch, children}) => {
-    const params = computedMatch.params;
+import Flow from '../flow/flow';
+import Traces from '../traces/traces';
+import Trends from '../trends/trends';
+import Alerts from '../alerts/alerts';
+
+const subsystems = window.subsystems || [];
+const allSubsystemsEnabled = !subsystems.length || subsystems.includes('all');
+
+function isSubsystemEnabled(sub) {
+  return allSubsystemsEnabled || subsystems.includes(sub);
+}
+
+const isFlowEnabled = isSubsystemEnabled('flow');
+const isTrendsEnabled = isSubsystemEnabled('trends');
+const isTracesEnabled = isSubsystemEnabled('traces');
+const isAlertsEnabled = isSubsystemEnabled('alerts');
+
+const ServiceTools = (props) => {
+    const serviceName = props.match.params.serviceName;
+
     const navLinkClass = 'serviceToolsTab__tab-option col-xs-3';
     const navLinkClassActive = 'serviceToolsTab__tab-option col-xs-3 tab-active';
+
     return (<article className="serviceTools">
             <nav className="serviceToolsTab">
                 <div className="container">
                     <div className="row">
-                        <h3 className="serviceToolsTab__title col-md-5">{params.serviceName}</h3>
+                        <h3 className="serviceToolsTab__title col-md-5">{serviceName}</h3>
                         <nav className="serviceToolsTab__tabs col-md-7">
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/flow`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-vector"/>
-                                Flow
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/trends`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
-                                Trends
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/traces`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
-                                Traces
-                            </NavLink>
-                            <NavLink
-                                className={navLinkClass}
-                                activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/alerts`}
-                            >
-                                <span className="serviceToolsTab__tab-option-icon ti-bell"/>
-                                Alerts
-                            </NavLink>
+                          {isFlowEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  exact
+                                  to={`/service/${serviceName}/flow`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-vector"/>
+                                  Flow
+                              </NavLink>
+                              : null
+                          }
+                          {isTrendsEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/trends`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
+                                  Trends
+                              </NavLink>
+                              : null
+                          }
+                          {isTracesEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/traces`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
+                                  Traces
+                              </NavLink>
+                              : null
+                          }
+                          {isAlertsEnabled ?
+                              <NavLink
+                                  className={navLinkClass}
+                                  activeClassName={navLinkClassActive}
+                                  to={`/service/${serviceName}/alerts`}
+                              >
+                                  <span className="serviceToolsTab__tab-option-icon ti-bell"/>
+                                  Alerts
+                              </NavLink>
+                              : null
+                          }
                         </nav>
                     </div>
                 </div>
             </nav>
             <article className="serviceToolsContainer container">
-                {children}
+                <Switch>
+                  {isAlertsEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
+                  {isTrendsEnabled ? <Route exact path="/service/:serviceName/traces" component={Traces}/> : null}
+                  {isTracesEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}
+                  {isAlertsEnabled ? <Route exact path="/service/:serviceName/alerts" component={Alerts}/> : null}
+                </Switch>
             </article>
         </article>
     );
 };
 
 ServiceTools.propTypes = {
-    children: PropTypes.arrayOf(PropTypes.element).isRequired,
-    computedMatch: PropTypes.shape({
-        params: PropTypes.shape({
-            serviceName: PropTypes.string
-        })
-    }).isRequired
+    match: PropTypes.object.isRequired
 };
 
 export default ServiceTools;

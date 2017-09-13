@@ -16,23 +16,11 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
+import {shallow} from 'enzyme';
+import {expect} from 'chai';
+import Main from '../../src/main';
 
-import Header from './header';
-import Footer from './footer';
-
-const Layout = props => (
-    <div className="layout">
-        <Header />
-        <article className="primary-content">
-            {props.children}
-        </article>
-        <Footer />
-    </div>
-);
-
-Layout.propTypes = {
-    children: PropTypes.element.isRequired
-};
-
-export default Layout;
+it('renders correct routes', () => {
+    const wrapper = shallow(<Main/>);
+    expect(wrapper.find('.layout')).to.have.length(1);
+});

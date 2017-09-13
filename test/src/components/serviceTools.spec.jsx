@@ -23,7 +23,7 @@ import ServiceTools from '../../../src/components/layout/serviceTools';
 
 describe('<ServiceTools />', () => {
     it('should render the ServiceTools navigation menu`', () => {
-        const wrapper = shallow(<ServiceTools computedMatch={{ params: {serviceName: 'traces'}}}><div /><div /></ServiceTools>);
+        const wrapper = shallow(<ServiceTools match={{ params: {serviceName: 'traces'}}}><div /><div /></ServiceTools>);
         expect(wrapper.find('.serviceTools')).to.have.length(1);
     });
 });
