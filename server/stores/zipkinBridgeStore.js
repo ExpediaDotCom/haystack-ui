@@ -79,21 +79,26 @@ function toHaystackTrace(zipkinTrace) {
     }));
 }
 
+function calcSpansDuration(spans) {
+    const startTime = spans
+        .map(span => span.timestamp || 0)
+        .reduce((earliest, cur) => Math.min(earliest, cur));
+    const endTime = spans
+        .map(span => (span.timestamp + span.duration) || 0)
+        .reduce((latest, cur) => Math.max(latest, cur));
+    return endTime - startTime;
+}
+
 function toHaystackSearchResult(zipkinTraces) {
   return zipkinTraces.filter(e => e.length).map((trace) => {
     const rootSpan = trace.find(span => span.parentId === undefined);
     const services = _.countBy(trace,
-        span => span.binaryAnnotations[0] && span.binaryAnnotations[0].endpoint.serviceName);
+        span => (span.binaryAnnotations[0] && span.binaryAnnotations[0].endpoint.serviceName) || (span.annotations[0] && span.annotations[0].endpoint.serviceName));
     const mappedServices = _.keys(services).map((service) => {
       const spans =
           _.filter(trace,
-              span => span.binaryAnnotations[0] && span.binaryAnnotations[0].endpoint.serviceName === service);
-      let serviceDuration = 0;
-      spans.map((span) => {
-        serviceDuration = span.duration + serviceDuration;
-        return span;
-      });
-
+              span => ((span.binaryAnnotations[0] && span.binaryAnnotations[0].endpoint.serviceName) || (span.annotations[0] && span.annotations[0].endpoint.serviceName)) === service);
+      const serviceDuration = calcSpansDuration(spans);
       return {
         name: service,
         spanCount: services[service],
@@ -105,26 +110,28 @@ function toHaystackSearchResult(zipkinTraces) {
     const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
 
     return {
-      traceId: trace[0].traceId,
-      services: mappedServices,
-      root: {
-        url: (urlAnnotation && urlAnnotation.value) || (methodUriAnnotation && methodUriAnnotation.value) || '',
-        serviceName: rootSpan.binaryAnnotations[0] && rootSpan.binaryAnnotations[0].endpoint.serviceName,
-        operationName: rootSpan.name
-      },
-      error: Math.random() < 0.2,
-      startTime: Math.floor(rootSpan.timestamp / 1000000),
-      duration: rootSpan.duration
+        traceId: trace[0].traceId,
+        services: mappedServices,
+        root: {
+            url: (urlAnnotation && urlAnnotation.value) || (methodUriAnnotation && methodUriAnnotation.value) || '',
+            serviceName: (rootSpan.binaryAnnotations[0] && rootSpan.binaryAnnotations[0].endpoint.serviceName) || (rootSpan.annotations[0] && rootSpan.annotations[0].endpoint.serviceName),
+            operationName: rootSpan.name
+        },
+        error: Math.random() < 0.2,
+        startTime: Math.floor(rootSpan.timestamp / 1000000),
+        duration: calcSpansDuration(trace)
     };
   });
 }
 
 store.getServices = () => {
     const deferred = Q.defer();
-
     axios
         .get(`${baseZipkinUrl}/services`)
-        .then(response => deferred.resolve(response.data));
+        .then((response) => {
+                deferred.resolve(response.data);
+            }
+        );
 
     return deferred.promise;
 };

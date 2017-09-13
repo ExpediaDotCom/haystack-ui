@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 /*
  * Copyright 2017 Expedia, Inc.
  *
