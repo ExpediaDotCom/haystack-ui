@@ -18,7 +18,7 @@
 import { assert } from 'chai';
 import {ServiceStore} from '../../../src/stores/serviceStore';
 
-describe('ServiceStore', () => {
+describe('OperationStore', () => {
     it('contacts the api', () => {
         const store = ServiceStore;
         store.services = ['lannister-service']; // placeholder until we implement api

@@ -31,9 +31,33 @@ describe('Routes.api', () => {
             });
     });
 
+    it('returns http 200 for /operations', (done) => {
+        request(server)
+            .get('/api/operations?serviceName=service')
+            .expect(200)
+            .end((err) => {
+              if (err) {
+                return done(err);
+              }
+              return done();
+            });
+    });
+
     it('returns http 200 for /traces', (done) => {
         request(server)
             .get('/api/traces')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trace', (done) => {
+        request(server)
+            .get('/api/trace/traceid')
             .expect(200)
             .end((err) => {
                 if (err) {
