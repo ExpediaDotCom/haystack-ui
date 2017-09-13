@@ -17,23 +17,30 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {NavLink} from 'react-router-dom';
+import {Route, Switch, NavLink} from 'react-router-dom';
 import './serviceTools.less';
 
-const ServiceTools = ({computedMatch, children}) => {
-    const params = computedMatch.params;
+import Flow from '../flow/flow';
+import Traces from '../traces/traces';
+import Trends from '../trends/trends';
+import Alerts from '../alerts/alerts';
+
+const ServiceTools = (props) => {
+    const serviceName = props.match.params.serviceName;
+
     const navLinkClass = 'serviceToolsTab__tab-option col-xs-3';
     const navLinkClassActive = 'serviceToolsTab__tab-option col-xs-3 tab-active';
+
     return (<article className="serviceTools">
             <nav className="serviceToolsTab">
                 <div className="container">
                     <div className="row">
-                        <h3 className="serviceToolsTab__title col-md-5">{params.serviceName}</h3>
+                        <h3 className="serviceToolsTab__title col-md-5">{serviceName}</h3>
                         <nav className="serviceToolsTab__tabs col-md-7">
                             <NavLink
                                 className={navLinkClass}
                                 activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/flow`}
+                                to={`/service/${serviceName}/flow`}
                             >
                                 <span className="serviceToolsTab__tab-option-icon ti-vector"/>
                                 Flow
@@ -41,7 +48,7 @@ const ServiceTools = ({computedMatch, children}) => {
                             <NavLink
                                 className={navLinkClass}
                                 activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/trends`}
+                                to={`/service/${serviceName}/trends`}
                             >
                                 <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
                                 Trends
@@ -49,7 +56,7 @@ const ServiceTools = ({computedMatch, children}) => {
                             <NavLink
                                 className={navLinkClass}
                                 activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/traces`}
+                                to={`/service/${serviceName}/traces`}
                             >
                                 <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
                                 Traces
@@ -57,7 +64,7 @@ const ServiceTools = ({computedMatch, children}) => {
                             <NavLink
                                 className={navLinkClass}
                                 activeClassName={navLinkClassActive}
-                                to={`/service/${params.serviceName}/alerts`}
+                                to={`/service/${serviceName}/alerts`}
                             >
                                 <span className="serviceToolsTab__tab-option-icon ti-bell"/>
                                 Alerts
@@ -67,19 +74,19 @@ const ServiceTools = ({computedMatch, children}) => {
                 </div>
             </nav>
             <article className="serviceToolsContainer container">
-                {children}
+                <Switch>
+                    <Route exact path="/service/:serviceName/traces" component={Traces}/>
+                    <Route exact path="/service/:serviceName/trends" component={Trends}/>
+                    <Route exact path="/service/:serviceName/flow" component={Flow}/>
+                    <Route exact path="/service/:serviceName/alerts" component={Alerts}/>
+                </Switch>
             </article>
         </article>
     );
 };
 
 ServiceTools.propTypes = {
-    children: PropTypes.arrayOf(PropTypes.element).isRequired,
-    computedMatch: PropTypes.shape({
-        params: PropTypes.shape({
-            serviceName: PropTypes.string
-        })
-    }).isRequired
+    match: PropTypes.object.isRequired
 };
 
 export default ServiceTools;

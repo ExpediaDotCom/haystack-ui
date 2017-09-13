@@ -19,7 +19,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router} from 'react-router-dom';
 import Perf from 'react-addons-perf';
-import AppRoutes from './appRoutes';
+import Main from './main';
 import storesInitializer from './stores/storesInitializer';
 
 // app initializers
@@ -29,7 +29,7 @@ storesInitializer.init();
 // mount react components
 ReactDOM.render(
     <Router history={history}>
-        <AppRoutes/>
+        <Main/>
     </Router>
     , document.getElementById('root')
 );

@@ -15,21 +15,12 @@
  *
  */
 
-/* eslint-disable */
 import React from 'react';
 import {shallow} from 'enzyme';
-import {Route} from 'react-router';
 import {expect} from 'chai';
-import AppRoutes from '../../src/appRoutes';
-import Help from '../../src/components/docs/help';
+import Main from '../../src/main';
 
 it('renders correct routes', () => {
-    const wrapper = shallow(<AppRoutes />);
-    const pathMap = wrapper.find(Route).reduce((map, route) => {
-        const routeProps = route.props();
-        map[routeProps.path] = routeProps.component;
-        return map;
-    }, {});
-
-    expect(pathMap['/help']).to.equal(Help);
+    const wrapper = shallow(<Main/>);
+    expect(wrapper.find('.layout')).to.have.length(1);
 });
