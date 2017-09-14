@@ -58,6 +58,10 @@ export class TracesSearchStore {
     @observable searchResults = [];
 
     @action fetchSearchResults(query) {
+        if (query.serviceName === '') {
+            this.promiseState = { case: ({empty}) => empty() };
+            return;
+        }
         const queryUrlString = toQueryUrlString(query);
         this.promiseState = fromPromise(
             axios

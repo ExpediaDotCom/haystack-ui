@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from '../details/traceDetails';
-import './traceResultsTable.less';
+import './traceResults.less';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {

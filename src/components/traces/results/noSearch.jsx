@@ -18,14 +18,13 @@
  */
 
 import React from 'react';
-import './error.less';
+import './traceResults.less';
 
 
 export default () => (
     <section className="text-center">
-        <div className="error-message_text">
-            <h5>{"Oops! Couldn't find the needle"}</h5>
-            <p>Please try again later</p>
+        <div className="no-search_text">
+            <h5>{'Please select a service'}</h5>
         </div>
     </section>
 );

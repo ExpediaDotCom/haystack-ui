@@ -35,7 +35,7 @@ export default class SearchBar extends React.Component {
       if (!(query.timePreset || (query.startTime && query.endTime))) {
         augmentedQuery.timePreset = '5m';
       }
-      augmentedQuery.serviceName = query.serviceName || serviceNameParam || 'all';
+      augmentedQuery.serviceName = query.serviceName || serviceNameParam || '';
       augmentedQuery.operationName = query.operationName || 'all';
 
       return augmentedQuery;
