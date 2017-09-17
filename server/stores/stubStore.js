@@ -194,7 +194,12 @@ store.findTraces = query => Q.fcall(() => {
                 ],
                 error: true,
                 startTime: 1504784384,
-                duration: 51000
+                duration: 51000,
+                queriedSvcDur: 51000,
+                queriedSvcDurPerc: 100,
+                rootSpanSuccess: true,
+                queriedOperationSuccess: true,
+                queriedServiceSuccess: true
             }
         ];
     }
@@ -225,7 +230,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: true,
             startTime: 1504784384,
-            duration: 51000
+            duration: 51000,
+            queriedSvcDur: 51000,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: false,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '23g89z5f-64e1-4f69-b038-c123rc11r12',
@@ -253,7 +263,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 117765
+            duration: 117765,
+            queriedSvcDur: 51000,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: false,
+            queriedServiceSuccess: true
         },
         {
             traceId: '45a13f6z-64e1-4f69-b038-1t241t23z4t',
@@ -281,7 +296,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 513519
+            duration: 513519,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: false
         },
         {
             traceId: '88f53n5t-64e1-4f69-b038-vs455sv4gvs',
@@ -309,7 +329,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 13513
+            duration: 13513,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: false,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
@@ -337,7 +362,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: true,
             startTime: 1499975993,
-            duration: 895483
+            duration: 895483,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: false,
+            queriedServiceSuccess: true
         },
         {
             traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
@@ -365,7 +395,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 171765
+            duration: 171765,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: false,
+            queriedServiceSuccess: true
         },
         {
             traceId: '45a13f6z-64e1-4f69-b038-1t444t23z4t',
@@ -393,7 +428,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 1151351
+            duration: 1151351,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '48f53n5t-64e1-4f69-b038-vs455sv4gvs',
@@ -421,7 +461,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: true,
             startTime: 1499945993,
-            duration: 135131
+            duration: 135131,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '35b83d5f-64e1-4f69-b038-aaa23rfn23r',
@@ -449,7 +494,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 89548
+            duration: 89548,
+            queriedSvcDur: 513519,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '33g89z5f-64e1-4f69-b038-c123rc1c1r1',
@@ -477,7 +527,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: true,
             startTime: 1499985993,
-            duration: 177615
+            duration: 177615,
+            queriedSvcDur: 5135,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '35a13f6z-64e1-4f69-b038-1t241t23z4t',
@@ -505,7 +560,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: true,
             startTime: 1499869444,
-            duration: 512351
+            duration: 512351,
+            queriedSvcDur: 5135,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '38f53n5t-64e1-4f69-b038-vs455sv4gvs',
@@ -533,7 +593,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 135131
+            duration: 135131,
+            queriedSvcDur: 5135,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '25b83d5f-64e1-4f69-b038-aaa23rfn23r',
@@ -561,7 +626,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 895483
+            duration: 895483,
+            queriedSvcDur: 5139,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '13g89z5f-64e1-4f69-b038-c123rc1d1r1',
@@ -589,7 +659,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 177651
+            duration: 177651,
+            queriedSvcDur: 5139,
+            queriedSvcDurPerc: 70,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '25a13f6z-64e1-4f69-b038-1t241t23z4t',
@@ -617,7 +692,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 51351
+            duration: 51351,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '28f53n5t-64e1-4f69-b038-vs455sv4gvs',
@@ -645,7 +725,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 195131
+            duration: 195131,
+            queriedSvcDur: 5135,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '15b83d5f-64e1-41z9-b138-aaa23rfn23r',
@@ -673,7 +758,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 89548
+            duration: 89548,
+            queriedSvcDur: 5135,
+            queriedSvcDurPerc: 100,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1a1',
@@ -701,7 +791,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 217765
+            duration: 217765,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '51a13f6z-64e1-4f69-b138-1t241t23z4t',
@@ -729,7 +824,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 513512
+            duration: 513512,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '88f53n5t-64e1-4f69-b038-vs455sfav3vs',
@@ -757,7 +857,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 135131
+            duration: 135131,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '11z83d5f-64e1-4f69-b038-aaa23rfn23r',
@@ -785,7 +890,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 895481
+            duration: 895481,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '23g89z5f-64e1-4f69-b038-c124rc1c1r1',
@@ -841,7 +951,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 59351
+            duration: 59351,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '48f53n5t-z4e1-4f69-b038-vs4av1v4gvs',
@@ -869,7 +984,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 13513
+            duration: 13513,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '35b83d5f-64e1-4f69-b038-13rc31fa3',
@@ -897,7 +1017,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 89548
+            duration: 89548,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '3a3f9z5f-64e1-4f69-b038ra1c1r1',
@@ -925,7 +1050,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 17765
+            duration: 17765,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '35a13f6z-64e1-4f69-b038-1tafv3a3z4t',
@@ -953,7 +1083,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 51351
+            duration: 51351,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '38f53n5t-64e1-4f69-b038-vs4awbf3avs',
@@ -981,7 +1116,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 13513
+            duration: 13513,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '2a2rv5f-64e1-4f69-b038-aaav3fva323r',
@@ -1009,7 +1149,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499975993,
-            duration: 89548
+            duration: 89548,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: false
         },
         {
             traceId: '13g89z5f-64e1-4fav-b038-cav23rv1r1',
@@ -1037,7 +1182,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499985993,
-            duration: 17765
+            duration: 17765,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: true,
+            queriedOperationSuccess: false,
+            queriedServiceSuccess: true
         },
         {
             traceId: '25a11zf6z-64e1-4f69-b038-1av3faf33z4t',
@@ -1065,7 +1215,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499869444,
-            duration: 51351
+            duration: 51351,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: false,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         },
         {
             traceId: '28a3rv5t-64e1-4f69-b038-vsav3r4gvs',
@@ -1093,7 +1248,12 @@ store.findTraces = query => Q.fcall(() => {
             ],
             error: false,
             startTime: 1499945993,
-            duration: 13513
+            duration: 13513,
+            queriedSvcDur: 3519,
+            queriedSvcDurPerc: 80,
+            rootSpanSuccess: false,
+            queriedOperationSuccess: true,
+            queriedServiceSuccess: true
         }
     ];
 });
