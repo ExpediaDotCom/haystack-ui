@@ -74,13 +74,13 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static errorFormatter(cell) {
-        if (cell) {
+        if (cell === false) {
             return (<div className="table__status">
-                <span className="table__status-error ti-close" />
+                <img src="/images/error.svg" alt="Error" height="36" width="36" />
             </div>);
         }
         return (<div className="table__status">
-            <span className="table__status-success ti-check" />
+            <img src="/images/success.svg" alt="Success" height="36" width="36" />
         </div>);
     }
 
