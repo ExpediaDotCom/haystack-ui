@@ -118,8 +118,8 @@ function toHaystackSearchResult(zipkinTraces, query) {
             };
         });
 
-        const queriedSvcDur = mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration;
-        const duration = calcSpansDuration(trace);
+        const queriedSvcDur = (mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration || 0.001);
+        const duration = calcSpansDuration(trace) ? calcSpansDuration(trace) : 0.001;
         const queriedSvcDurPerc = (queriedSvcDur / duration) * 100;
         const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
         const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
