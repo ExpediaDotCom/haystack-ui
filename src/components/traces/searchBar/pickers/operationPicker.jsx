@@ -37,7 +37,7 @@ export default class OperationPicker extends React.Component {
 
         autorun(() => {
           if (this.props.uiState.serviceName) {
-            props.uiState.setOperationName('');
+            props.uiState.setOperationName('all');
             operationStore.fetchOperations(this.props.uiState.serviceName);
           }
         });
