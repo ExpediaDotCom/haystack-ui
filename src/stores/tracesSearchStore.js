@@ -35,7 +35,7 @@ function TraceException(data) {
     this.data = data;
 }
 
-function formatResults(results, searchQuery) {
+function formatResults(results) {
     return results.map((result) => {
         const formattedResult = {...result};
         formattedResult.timeago = timeago().format(result.startTime * 1000);
@@ -43,11 +43,10 @@ function formatResults(results, searchQuery) {
         formattedResult.rootUrl = result.root.url;
         formattedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
         formattedResult.spans = getTotalSpanCount(result.services);
-        formattedResult.serviceDuration = result.services.find(s => s.name === (searchQuery.serviceName || result.root.serviceName)).duration;
-        const serviceDurationPercent = ((formattedResult.serviceDuration / result.duration) * 100);
-        formattedResult.serviceDurationPercent = serviceDurationPercent < 1 ? serviceDurationPercent.toFixed(1) : Math.round(serviceDurationPercent);
+        formattedResult.serviceDuration = result.queriedSvcDur;
+        formattedResult.serviceDurationPercent = result.queriedSvcDurPerc < 1 ? result.queriedSvcDurPerc.toFixed(1) : Math.round(result.queriedSvcDurPerc);
         formattedResult.traceId = result.traceId;
-
+        formattedResult.error = (result.rootSpanSuccess || result.queriedServiceSuccess || result.queriedOperationSuccess) === false ? false : result.queriedOperationSuccess;
         return formattedResult;
     });
 }
@@ -64,7 +63,7 @@ export class TracesSearchStore {
                 .get(`/api/traces?${queryUrlString}`)
                 .then((result) => {
                     this.searchQuery = query;
-                    this.searchResults = formatResults(result.data, query);
+                    this.searchResults = formatResults(result.data);
                 })
                 .catch((result) => {
                     this.searchQuery = query;

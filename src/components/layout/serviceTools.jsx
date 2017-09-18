@@ -36,10 +36,9 @@ const isFlowEnabled = isSubsystemEnabled('flow');
 const isTrendsEnabled = isSubsystemEnabled('trends');
 const isTracesEnabled = isSubsystemEnabled('traces');
 const isAlertsEnabled = isSubsystemEnabled('alerts');
-
 const ServiceTools = (props) => {
     const serviceName = props.match.params.serviceName;
-
+    const serviceTitleStyle = serviceName.length > 35 ? {fontSize: 25, lineHeight: 1.5} : {fontSize: 34};
     const navLinkClass = 'serviceToolsTab__tab-option col-xs-3';
     const navLinkClassActive = 'serviceToolsTab__tab-option col-xs-3 tab-active';
 
@@ -47,7 +46,7 @@ const ServiceTools = (props) => {
             <nav className="serviceToolsTab">
                 <div className="container">
                     <div className="row">
-                        <h3 className="serviceToolsTab__title col-md-5">{serviceName}</h3>
+                        <h3 style={serviceTitleStyle} className="serviceToolsTab__title col-md-5">{serviceName}</h3>
                         <nav className="serviceToolsTab__tabs col-md-7">
                           {isFlowEnabled ?
                               <NavLink
