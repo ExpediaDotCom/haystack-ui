@@ -24,7 +24,7 @@ import './traceResults.less';
 export default () => (
     <section className="text-center">
         <div className="no-search_text">
-            <h5>{'Please select a service'}</h5>
+            <h5>{'Please select a service and search'}</h5>
         </div>
     </section>
 );

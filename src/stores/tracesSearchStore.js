@@ -53,15 +53,11 @@ function formatResults(results, searchQuery) {
 }
 
 export class TracesSearchStore {
-    @observable promiseState = null;
+    @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
 
     @action fetchSearchResults(query) {
-        if (query.serviceName === '') {
-            this.promiseState = { case: ({empty}) => empty() };
-            return;
-        }
         const queryUrlString = toQueryUrlString(query);
         this.promiseState = fromPromise(
             axios
