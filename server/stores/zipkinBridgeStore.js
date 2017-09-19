@@ -124,6 +124,7 @@ function toHaystackSearchResult(zipkinTraces, query) {
             ? getSuccess(trace.find(span => span.name === query.operationName))
             : null;
         const queriedServiceSuccess = !(trace.filter(span => getServiceName(span) === query.serviceName)).some(span => getSuccess(span) === false);
+
         return {
             traceId: trace[0].traceId,
             services: mappedServices,
