@@ -51,7 +51,7 @@ function toHaystackLogs(annotations) {
     }));
 }
 
-function getTraceServiceName(zipkinSpan) {
+function getServiceName(zipkinSpan) {
     const serverReceived = zipkinSpan.annotations.find(annotation => annotation.value === 'sr');
     const serverSend = zipkinSpan.annotations.find(annotation => annotation.value === 'ss');
 
@@ -64,16 +64,12 @@ function getTraceServiceName(zipkinSpan) {
         || 'Not Found';
 }
 
-function getSpanServiceName(span) {
-    return ((span.binaryAnnotations[0] && span.binaryAnnotations[0].endpoint.serviceName) || (span.annotations[0] && span.annotations[0].endpoint.serviceName));
-}
-
 function toHaystackTrace(zipkinTrace) {
     return zipkinTrace.map(zipkinSpan => ({
         traceId: zipkinSpan.traceId,
         spanId: zipkinSpan.id,
         parentSpanId: zipkinSpan.parentId,
-        serviceName: getTraceServiceName(zipkinSpan),
+        serviceName: getServiceName(zipkinSpan),
         operationName: zipkinSpan.name,
         startTime: zipkinSpan.timestamp / 1000,
         duration: zipkinSpan.duration / 1000,
@@ -82,18 +78,19 @@ function toHaystackTrace(zipkinTrace) {
     }));
 }
 
-function calcSpansDuration(spans) {
+function calcEndToEndDuration(spans) {
     const startTime = spans
-        .map(span => span.timestamp || 0)
+        .map(span => span.timestamp)
         .reduce((earliest, cur) => Math.min(earliest, cur));
     const endTime = spans
-        .map(span => (span.timestamp + span.duration) || 0)
+        .map(span => (span.timestamp + span.duration))
         .reduce((latest, cur) => Math.max(latest, cur));
-    return endTime - startTime;
+    const difference = endTime - startTime;
+    return difference || 1;
 }
 
 function getSuccess(span) {
-    if (span !== undefined) {
+    if (span) {
         const success = getBinaryAnnotation(span, 'success');
         if (success && success.key && success.value) {
             return success.value === 'true';
@@ -104,37 +101,36 @@ function getSuccess(span) {
 
 function toHaystackSearchResult(zipkinTraces, query) {
     return zipkinTraces.filter(e => e.length).map((trace) => {
-        const rootSpan = trace.find(span => span.parentId === undefined);
+        const rootSpan = trace.find(span => !span.parentId);
         const services = _.countBy(trace,
-            span => getSpanServiceName(span));
+            span => getServiceName(span));
         const mappedServices = _.keys(services).map((service) => {
-            const spans =
-                _.filter(trace,
-                    span => getSpanServiceName(span));
+            const spans = trace
+                .filter(span => getServiceName(span) === service);
             return {
                 name: service,
                 spanCount: services[service],
-                duration: calcSpansDuration(spans)
+                duration: calcEndToEndDuration(spans)
             };
         });
 
-        const queriedSvcDur = (mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration || 0.001);
-        const spansDuration = calcSpansDuration(trace);
-        const duration = spansDuration || 0.001;
+        const queriedSvcDur = mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration || 0.001;
+        const duration = calcEndToEndDuration(trace) || 0.001;
         const queriedSvcDurPerc = (queriedSvcDur / duration) * 100;
         const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
         const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
         const rootSpanSuccess = getSuccess(rootSpan);
-        const queriedOperationSuccess = (query.operationName === 'all')
-            ? !trace.some(span => getSuccess(span) === false)
-            : getSuccess(trace.find(span => span.name === query.operationName));
-        const queriedServiceSuccess = !(trace.filter(span => getSpanServiceName(span) === query.serviceName)).some(span => getSuccess(span) === false);
+        const queriedOperationSuccess = (query.operationName !== 'all')
+            ? getSuccess(trace.find(span => span.name === query.operationName))
+            : null;
+        const queriedServiceSuccess = !(trace.filter(span => getServiceName(span) === query.serviceName)).some(span => getSuccess(span) === false);
+
         return {
             traceId: trace[0].traceId,
             services: mappedServices,
             root: {
                 url: (urlAnnotation && urlAnnotation.value) || (methodUriAnnotation && methodUriAnnotation.value) || '',
-                serviceName: getSpanServiceName(rootSpan),
+                serviceName: getServiceName(rootSpan),
                 operationName: rootSpan.name
             },
             startTime: Math.floor(rootSpan.timestamp / 1000000),

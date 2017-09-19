@@ -48,7 +48,12 @@ store.getTrace = () => Q.fcall(() => [
                     }
                 }
             ],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'true'
+                }
+            ]
         },
         {
             traceId: 'traceid1',
@@ -64,7 +69,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'stark-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'false'
+                }
+            ]
         },
         {
             traceId: 'traceid2',
@@ -80,7 +90,7 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'stark-service'
                 }
             }],
-            tags: null
+            tags: []
         },
         {
             traceId: 'traceid3',
@@ -96,7 +106,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'tyrell-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'false'
+                }
+            ]
         },
         {
             traceId: 'traceid7',
@@ -112,7 +127,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'tyrell-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'true'
+                }
+            ]
         },
         {
             traceId: 'traceid4',
@@ -128,7 +148,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'tyrell-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'true'
+                }
+            ]
         },
         {
             traceId: 'traceid5',
@@ -144,7 +169,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'stark-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'true'
+                }
+            ]
         },
         {
             traceId: 'traceid6',
@@ -160,7 +190,12 @@ store.getTrace = () => Q.fcall(() => [
                     serviceName: 'dragon-service'
                 }
             }],
-            tags: null
+            tags: [
+                {
+                    key: 'success',
+                    value: 'true'
+                }
+            ]
         }
     ]
 );
