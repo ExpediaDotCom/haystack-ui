@@ -45,7 +45,8 @@ function calculateDuration(spans, start) {
     const end = spans.reduce((latestTime, span) =>
         (latestTime ? Math.max(latestTime, (span.startTime + span.duration)) : (span.startTime + span.duration)), null
     );
-    return (end - start);
+    const difference = end - start;
+     return difference || 1;
 }
 
 function getTimePointers(totalDuration) {
