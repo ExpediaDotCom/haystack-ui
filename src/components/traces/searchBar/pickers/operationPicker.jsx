@@ -36,8 +36,10 @@ export default class OperationPicker extends React.Component {
         this.handleChange = this.handleChange.bind(this);
 
         autorun(() => {
-          props.uiState.setOperationName('all');
-          operationStore.fetchOperations(this.props.uiState.serviceName);
+          if (this.props.uiState.serviceName) {
+            props.uiState.setOperationName('all');
+            operationStore.fetchOperations(this.props.uiState.serviceName);
+          }
         });
     }
 
@@ -48,7 +50,7 @@ export default class OperationPicker extends React.Component {
     render() {
       const operationName = this.props.uiState.operationName || operationStore.operations[0];
 
-      // default to current operation if there is not operation in store
+      // default to current operation if there is no operation in store
       const options = operationStore.operations.length
           ? OperationPicker.convertToValueLabelMap(operationStore.operations)
           : OperationPicker.convertToValueLabelMap([operationName]);

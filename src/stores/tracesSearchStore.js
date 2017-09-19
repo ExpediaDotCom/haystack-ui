@@ -52,7 +52,7 @@ function formatResults(results) {
 }
 
 export class TracesSearchStore {
-    @observable promiseState = null;
+    @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
 
