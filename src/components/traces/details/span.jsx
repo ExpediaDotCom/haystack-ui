@@ -37,6 +37,15 @@ export default class Span extends React.Component {
             spanDepth: PropTypes.number.isRequired
         };
     }
+
+    static getSpanSuccess(span) {
+        const successTag = (span.tags.find(tag => (tag.key === 'success')));
+        if (successTag !== undefined) {
+            return successTag.value;
+        }
+        return null;
+    }
+
     constructor(props) {
         super(props);
         this.state = {modalIsOpen: false};
@@ -103,6 +112,7 @@ export default class Span extends React.Component {
                     y={topOffset + 4}
                     rx="3.5"
                     ry="3.5"
+                    fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
                 />
                 <rect
                     className="span-click"

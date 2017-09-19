@@ -35,8 +35,8 @@ export default class SearchBar extends React.Component {
       if (!(query.timePreset || (query.startTime && query.endTime))) {
         augmentedQuery.timePreset = '5m';
       }
-      augmentedQuery.serviceName = query.serviceName || serviceNameParam || 'all';
-      augmentedQuery.operationName = query.operationName || 'all';
+      augmentedQuery.serviceName = query.serviceName || serviceNameParam;
+      augmentedQuery.operationName = query.operationName;
 
       return augmentedQuery;
     }
@@ -54,8 +54,10 @@ export default class SearchBar extends React.Component {
         this.fetchSearchResults = this.fetchSearchResults.bind(this);
         this.searchCallback = this.searchCallback.bind(this);
 
-        // trigger search
-        this.fetchSearchResults(query);
+        // trigger search if service name is present
+        if (query.serviceName) {
+            this.fetchSearchResults(query);
+        }
     }
 
     componentWillReceiveProps(nextProps) {

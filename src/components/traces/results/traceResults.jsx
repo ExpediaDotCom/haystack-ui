@@ -23,6 +23,7 @@ import serviceStore from '../../../stores/serviceStore';
 import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
 import Error from '../../common/error';
+import NoSearch from './noSearch';
 
 @observer
 export default class TraceResults extends React.Component {
@@ -41,6 +42,7 @@ export default class TraceResults extends React.Component {
                 { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
+                        empty: () => <NoSearch />,
                         fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
                                 ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults} location={this.props.location} />
                                 : <Error />)

@@ -46,13 +46,13 @@ function formatResults(results) {
         formattedResult.serviceDuration = result.queriedSvcDur;
         formattedResult.serviceDurationPercent = result.queriedSvcDurPerc < 1 ? result.queriedSvcDurPerc.toFixed(1) : Math.round(result.queriedSvcDurPerc);
         formattedResult.traceId = result.traceId;
-        formattedResult.error = (result.rootSpanSuccess || result.queriedServiceSuccess || result.queriedOperationSuccess) === false ? false : result.queriedOperationSuccess;
+        formattedResult.error = (result.rootSpanSuccess || result.queriedServiceSuccess) === false ? false : result.rootSpanSuccess;
         return formattedResult;
     });
 }
 
 export class TracesSearchStore {
-    @observable promiseState = null;
+    @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
 
