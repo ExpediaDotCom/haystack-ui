@@ -85,7 +85,8 @@ function calcEndToEndDuration(spans) {
     const endTime = spans
         .map(span => (span.timestamp + span.duration))
         .reduce((latest, cur) => Math.max(latest, cur));
-    return endTime - startTime;
+    const difference = endTime - startTime;
+    return difference || 1;
 }
 
 function getSuccess(span) {
@@ -113,16 +114,16 @@ function toHaystackSearchResult(zipkinTraces, query) {
             };
         });
 
-        const queriedSvcDur = mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration;
-        const duration = calcEndToEndDuration(trace);
+        const queriedSvcDur = mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration || 0.001;
+        const duration = calcEndToEndDuration(trace) || 0.001;
         const queriedSvcDurPerc = (queriedSvcDur / duration) * 100;
         const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
         const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
         const rootSpanSuccess = getSuccess(rootSpan);
-        const queriedServiceSuccess = (query.operationName === 'all')
-            ? !(trace.filter(span => getServiceName(span) === query.serviceName)).some(span => getSuccess(span) === false)
-            : getSuccess(trace.find(span => span.name === query.operationName));
-
+        const queriedOperationSuccess = (query.operationName !== 'all')
+            ? getSuccess(trace.find(span => span.name === query.operationName))
+            : null;
+        const queriedServiceSuccess = !(trace.filter(span => getServiceName(span) === query.serviceName)).some(span => getSuccess(span) === false);
         return {
             traceId: trace[0].traceId,
             services: mappedServices,
@@ -136,6 +137,7 @@ function toHaystackSearchResult(zipkinTraces, query) {
             queriedSvcDur,
             queriedSvcDurPerc,
             rootSpanSuccess,
+            queriedOperationSuccess,
             queriedServiceSuccess
         };
     });
