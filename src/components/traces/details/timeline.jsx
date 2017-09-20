@@ -45,7 +45,7 @@ export default class Timeline extends React.Component {
         const timelineHeight = (32 * spans.length) + 37;
         const getSpans = spans.map((span, index) =>
             (<Span
-                key={span.spanId}
+                key={Math.random()}
                 index={index}
                 startTime={startTime}
                 rowHeight={12}

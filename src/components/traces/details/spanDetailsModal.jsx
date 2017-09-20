@@ -21,6 +21,7 @@ import {Link} from 'react-router-dom';
 import TagsTable from './tagsTable';
 import LogsTable from './logsTable';
 import Modal from '../../common/modal';
+import formatters from '../../../utils/formatters';
 
 export default class SpanDetailsModal extends React.Component {
     constructor(props) {
@@ -50,7 +51,7 @@ export default class SpanDetailsModal extends React.Component {
     render() {
         return (
             <Modal
-                title={`[${this.props.serviceName}] ${this.props.span.operationName}: ${this.props.span.duration / 1000}ms`}
+                title={`[${this.props.serviceName}] ${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`}
                 isOpen={this.props.isOpen}
                 closeModal={this.props.closeModal}
             >

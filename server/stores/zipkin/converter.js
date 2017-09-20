@@ -27,7 +27,6 @@ function convertMethodUriTag(tags) {
   const methodUriTag = tags.find(tag => tag.key.toLowerCase() === 'methoduri');
   if (methodUriTag) {
     methodUriTag.key = 'url';
-    methodUriTag.value = methodUriTag.value;
   }
 }
 
@@ -45,7 +44,7 @@ function toHaystackTags(binaryAnnotations) {
 
 function toHaystackLogs(annotations) {
   return annotations.map(annotation => ({
-    timestamp: annotation.timestamp / 1000,
+    timestamp: annotation.timestamp,
     fields: [
       {
         key: 'event',
@@ -91,8 +90,8 @@ converter.toHaystackTrace = zipkinTrace => zipkinTrace.map(zipkinSpan => ({
   parentSpanId: zipkinSpan.parentId || null,
   serviceName: getServiceName(zipkinSpan),
   operationName: zipkinSpan.name || 'not_found',
-  startTime: zipkinSpan.timestamp / 1000,
-  duration: zipkinSpan.duration / 1000,
+  startTime: zipkinSpan.timestamp,
+  duration: zipkinSpan.duration,
   tags: toHaystackTags(zipkinSpan.binaryAnnotations),
   logs: toHaystackLogs(zipkinSpan.annotations)
 }));

@@ -17,18 +17,8 @@
 
 import axios from 'axios';
 import {observable, action} from 'mobx';
-import timeago from 'timeago.js';
-import moment from 'moment';
 import { fromPromise } from 'mobx-utils';
 import { toQueryUrlString } from '../utils/queryParser';
-
-function getTotalSpanCount(services) {
-    return services.reduce((sum, service) => sum + service.spanCount, 0);
-}
-
-function getFormattedTimestamp(startTime) {
-    return moment(startTime * 1000).format('kk:mm:ss.SSS, DD MMM YY');
-}
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -37,17 +27,15 @@ function TraceException(data) {
 
 function formatResults(results) {
     return results.map((result) => {
-        const formattedResult = {...result};
-        formattedResult.timeago = timeago().format(result.startTime * 1000);
-        formattedResult.timestamp = getFormattedTimestamp(result.startTime);
-        formattedResult.rootUrl = result.root.url;
-        formattedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
-        formattedResult.spans = getTotalSpanCount(result.services);
-        formattedResult.serviceDuration = result.queriedSvcDur;
-        formattedResult.serviceDurationPercent = result.queriedSvcDurPerc < 1 ? result.queriedSvcDurPerc.toFixed(1) : Math.round(result.queriedSvcDurPerc);
-        formattedResult.traceId = result.traceId;
-        formattedResult.error = (result.rootSpanSuccess || result.queriedServiceSuccess) === false ? false : result.rootSpanSuccess;
-        return formattedResult;
+        const flattenedResult = {...result};
+        flattenedResult.rootUrl = result.root.url;
+        flattenedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
+        flattenedResult.operationDuration = result.queriedOperation.duration;
+        flattenedResult.operationDurationPercent = result.queriedOperation.durationPercent;
+        flattenedResult.serviceDuration = result.queriedService.duration;
+        flattenedResult.serviceDurationPercent = result.queriedService.durationPercent;
+
+        return flattenedResult;
     });
 }
 
