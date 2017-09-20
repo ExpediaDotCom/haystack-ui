@@ -18,7 +18,7 @@
 const express = require('express');
 const config = require('../config/config');
 
-const store = require(`../stores/${config.store.name}`); // eslint-disable-line import/no-dynamic-require
+const store = require(`../stores/${config.store.name}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
