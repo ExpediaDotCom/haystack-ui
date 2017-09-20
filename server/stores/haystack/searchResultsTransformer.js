@@ -17,89 +17,113 @@ const _ = require('lodash');
 
 const transformer = {};
 
-
-function getBinaryAnnotation(span, key) {
-  return span.binaryAnnotations ? span.binaryAnnotations.find(annotation => annotation.key === key) : null;
-}
-
-function getServiceName(zipkinSpan) {
-  const serverReceived = zipkinSpan.annotations.find(annotation => annotation.value === 'sr');
-  const serverSend = zipkinSpan.annotations.find(annotation => annotation.value === 'ss');
-
-  return (serverReceived && serverReceived.endpoint && serverReceived.endpoint.serviceName)
-      || (serverSend && serverSend.endpoint && serverSend.endpoint.serviceName)
-      || (zipkinSpan.binaryAnnotations
-      && zipkinSpan.binaryAnnotations[0]
-      && zipkinSpan.binaryAnnotations[0].endpoint
-      && zipkinSpan.binaryAnnotations[0].endpoint.serviceName)
-      || 'Not Found';
-}
-
-function calcEndToEndDuration(spans) {
+function calculateEndToEndDuration(spans) {
   const startTime = spans
-  .map(span => span.timestamp)
-  .reduce((earliest, cur) => Math.min(earliest, cur));
+                      .map(span => span.startTime)
+                      .reduce((earliest, cur) => Math.min(earliest, cur));
   const endTime = spans
-  .map(span => (span.timestamp + span.duration))
-  .reduce((latest, cur) => Math.max(latest, cur));
+                      .map(span => (span.startTime + span.duration))
+                      .reduce((latest, cur) => Math.max(latest, cur));
+
   const difference = endTime - startTime;
   return difference || 1;
 }
 
-function getSuccess(span) {
-  if (span) {
-    const success = getBinaryAnnotation(span, 'success');
-    if (success && success.key && success.value) {
-      return success.value === 'true';
-    }
-  }
-  return null;
+function calculateCumulativeDuration(spans) {
+  return spans.reduce((running, span) => running + span.duration, 0);
 }
 
+function findTag(tags, tagName) {
+  const foundTag = tags.find(tag => tag.key && tag.key.toLowerCase() === tagName);
+  return foundTag && foundTag.value;
+}
+
+function isSpanError(span) {
+  return findTag(span.tags, 'error') === 'true';
+}
+
+function createServicesSummary(trace) {
+  const services = _.countBy(trace, span => span.serviceName);
+
+  return _.keys(services).map(service => ({
+    name: service,
+    spanCount: services[service]
+  }));
+}
+
+// TODO instead of cumulative time, use shadow time on total timeline
+function createQueriedServiceSummary(trace, serviceName, totalCumulativeDuration) {
+  const serviceSpans = trace.filter(span => span.serviceName === serviceName);
+  const cumulativeDuration = calculateCumulativeDuration(serviceSpans);
+
+  return serviceName && serviceSpans && {
+        duration: cumulativeDuration,
+        durationPercent: (cumulativeDuration / totalCumulativeDuration) * 100,
+        error: serviceSpans.some(span => isSpanError(span))
+      };
+}
+
+// TODO instead of cumulative time, use shadow time on total timeline
+function createQueriedOperationSummary(trace, operationName, totalCumulativeDuration) {
+  const operationSpans = trace.filter(span => span.operationName === operationName);
+  const cumulativeDuration = calculateCumulativeDuration(operationSpans);
+
+  return operationName && operationSpans && {
+        duration: cumulativeDuration,
+        durationPercent: (cumulativeDuration / totalCumulativeDuration) * 100,
+        error: operationSpans.some(span => isSpanError(span))
+      };
+}
 
 function toSearchResult(trace, query) {
-  const rootSpan = trace.find(span => !span.parentId);
-  const services = _.countBy(trace,
-      span => getServiceName(span));
-  const mappedServices = _.keys(services).map((service) => {
-    const spans = trace.filter(span => getServiceName(span) === service);
-    return {
-      name: service,
-      spanCount: services[service],
-      duration: calcEndToEndDuration(spans)
-    };
-  });
+  //
+  // const services = _.countBy(trace, span => getServiceName(span));
+  // const mappedServices = _.keys(services).map((service) => {
+  //   const spans = trace.filter(span => getServiceName(span) === service);
+  //   return {
+  //     name: service,
+  //     spanCount: services[service],
+  //     duration: calcEndToEndDuration(spans)
+  //   };
+  // });
+  //
+  // const queriedSvcDur = mappedServices.find(s => s.name === (query.serviceName || rootSpan.serviceName)).duration || 0.001;
+  // const duration = calcEndToEndDuration(trace) || 0.001;
+  // const queriedSvcDurPerc = (queriedSvcDur / duration) * 100;
+  // const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
+  // const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
+  // const rootSpanSuccess = getSuccess(rootSpan);
+  // const queriedOperationSuccess = (query.operationName !== 'all')
+  //     ? getSuccess(trace.find(span => span.name === query.operationName))
+  //     : null;
+  // const queriedServiceSuccess = !(trace.filter(
+  //     span => getServiceName(span) === query.serviceName)).some(
+  //     span => getSuccess(span) === false);
 
-  const queriedSvcDur = mappedServices.find(s => s.name ===
-      (query.serviceName || rootSpan.serviceName)).duration || 0.001;
-  const duration = calcEndToEndDuration(trace) || 0.001;
-  const queriedSvcDurPerc = (queriedSvcDur / duration) * 100;
-  const urlAnnotation = getBinaryAnnotation(rootSpan, 'url');
-  const methodUriAnnotation = getBinaryAnnotation(rootSpan, 'methodUri');
-  const rootSpanSuccess = getSuccess(rootSpan);
-  const queriedOperationSuccess = (query.operationName !== 'all')
-      ? getSuccess(trace.find(span => span.name === query.operationName))
-      : null;
-  const queriedServiceSuccess = !(trace.filter(
-      span => getServiceName(span) === query.serviceName)).some(
-      span => getSuccess(span) === false);
+  const rootSpan = trace.find(span => !span.parentSpanId);
+  const root = {
+    url: findTag(rootSpan.tags, 'url') || null,
+    serviceName: rootSpan.serviceName,
+    operationName: rootSpan.operationName,
+    duration: rootSpan.duration,
+    error: isSpanError(rootSpan)
+  };
+
+  const services = createServicesSummary(trace);
+
+  const totalCumulativeDuration = calculateCumulativeDuration(trace);
+  const queriedService = createQueriedServiceSummary(trace, query.serviceName, totalCumulativeDuration);
+  const queriedOperation = createQueriedOperationSummary(trace, query.operationName, totalCumulativeDuration);
 
   return {
-    traceId: trace[0].traceId,
-    services: mappedServices,
-    root: {
-      url: (urlAnnotation && urlAnnotation.value) ||
-      (methodUriAnnotation && methodUriAnnotation.value) || '',
-      serviceName: getServiceName(rootSpan),
-      operationName: rootSpan.name
-    },
-    startTime: Math.floor(rootSpan.timestamp / 1000000),
-    duration,
-    queriedSvcDur,
-    queriedSvcDurPerc,
-    rootSpanSuccess,
-    queriedOperationSuccess,
-    queriedServiceSuccess
+    traceId: rootSpan.traceId,
+    services,
+    root,
+    queriedService,
+    queriedOperation,
+    startTime: Math.floor(rootSpan.startTime / 1000),  // start time of the root span
+    duration: calculateEndToEndDuration(trace),        // end-to-end duration
+    error: isSpanError(rootSpan)                       // success of the root span
   };
 }
 
