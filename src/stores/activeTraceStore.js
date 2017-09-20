@@ -19,7 +19,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
-
+import formatters from '../utils/formatters';
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -30,15 +30,6 @@ function calculateStartTime(spans) {
     return spans.reduce((earliestTime, span) =>
         (earliestTime ? Math.min(earliestTime, span.startTime) : span.startTime), null
     );
-}
-
-function formatDuration(duration) {
-    if (duration === 0) {
-        return '0';
-    } else if (duration < 1000) {
-        return `${(duration).toFixed(3)}ms`;
-    }
-    return `${(duration / 1000).toFixed(3)}s`;
 }
 
 function calculateDuration(spans, start) {
@@ -54,7 +45,7 @@ function getTimePointers(totalDuration) {
         .map(dur => (totalDuration * dur));
     const leftOffset = [0.12, 0.32, 0.52, 0.72, 0.92]
         .map(lo => (lo * 100));
-    return leftOffset.map((p, i) => ({leftOffset: p, time: formatDuration(pointerDurations[i])}));
+    return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
 }
 
 function spanTreeDepths(spanTree, initialDepth) {
