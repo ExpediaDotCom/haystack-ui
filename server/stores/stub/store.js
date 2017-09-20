@@ -38,11 +38,11 @@ store.getTrace = () => Q.fcall(() => [
             spanId: 'root-spanid',
             serviceName: 'stark-service',
             operationName: 'stark1',
-            startTime: 1504784384,
-            duration: 3500,
+            startTime: 1504784384000,
+            duration: 3500000,
             logs: [
                 {
-                    timestamp: 1504784384,
+                    timestamp: 1504784384000,
                     endpoint: {
                         serviceName: 'stark-service'
                     }
@@ -61,10 +61,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'root-spanid',
             serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785384,
-            duration: 2000,
+            startTime: 1504785384000,
+            duration: 2000000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -82,10 +82,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'root-spanid',
             serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785484,
-            duration: 320,
+            startTime: 1504785484000,
+            duration: 320000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -98,10 +98,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid3',
             serviceName: 'tyrell-service',
             operationName: 'tyrell1',
-            startTime: 1504785584,
-            duration: 62,
+            startTime: 1504785584000,
+            duration: 62000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -119,10 +119,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid4',
             serviceName: 'tyrell-service',
             operationName: 'tyrell4',
-            startTime: 1504785684,
-            duration: 62,
+            startTime: 1504785684000,
+            duration: 62000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -140,10 +140,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid3',
             serviceName: 'tyrell-service',
             operationName: 'tyrell2',
-            startTime: 1504785684,
-            duration: 520,
+            startTime: 1504785684000,
+            duration: 520000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'tyrell-service'
                 }
@@ -161,10 +161,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'spanid2',
             serviceName: 'stark-service',
             operationName: 'stark2',
-            startTime: 1504785784,
-            duration: 2000,
+            startTime: 1504785784000,
+            duration: 2000000,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'stark-service'
                 }
@@ -182,10 +182,10 @@ store.getTrace = () => Q.fcall(() => [
             parentSpanId: 'root-spanid',
             serviceName: 'dragon-service',
             operationName: 'dragon1',
-            startTime: 1504786484,
+            startTime: 1504786484000,
             duration: 320,
             logs: [{
-                timestamp: 1504784384,
+                timestamp: 1504784384000,
                 endpoint: {
                     serviceName: 'dragon-service'
                 }
@@ -203,1093 +203,213 @@ store.getTrace = () => Q.fcall(() => [
 store.findTraces = query => Q.fcall(() => {
     if (query.traceId) {
         return [
-            {
-                traceId: 'root-traceid',
-                root: {
-                    url: '/got/starks',
-                    serviceName: 'stark-service',
-                    operationName: 'stark1'
-                },
-                services: [
-                    {
-                        name: 'stark-service',
-                        spanCount: 4,
-                        duration: 36400
-                    },
-                    {
-                        name: 'dragon-service',
-                        spanCount: 1,
-                        duration: 3200
-                    },
-                    {
-                        name: 'tyrell-service',
-                        spanCount: 2,
-                        duration: 11400
-                    }
-                ],
-                error: true,
-                startTime: 1504784384,
-                duration: 51000,
-                queriedSvcDur: 51000,
-                queriedSvcDurPerc: 100,
-                rootSpanSuccess: true,
-                queriedOperationSuccess: true,
-                queriedServiceSuccess: true
-            }
+          {
+            traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
+            spanCount: 30,
+            services: [
+              {
+                name: 'stark-service',
+                spanCount: 1
+              },
+              {
+                name: 'tyrell-service',
+                spanCount: 29
+              }
+            ],
+            root: {
+              url: '/stark/endpoint',
+              serviceName: 'stark-service',
+              operationName: 'svc-operation',
+              duration: 3404000,
+              error: false
+            },
+            queriedService: {
+              duration: 5990000,
+              durationPercent: 64,
+              error: true
+            },
+            queriedOperation: {
+              duration: 1,
+              durationPercent: 0,
+              error: false
+            },
+            startTime: 1505914774596000,
+            duration: 3467000,
+            error: true
+          }
         ];
     }
     return [
-        {
-            traceId: 'root-traceid',
-            root: {
-                url: '/got/starks',
-                serviceName: 'stark-service',
-                operationName: 'stark1'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 4,
-                    duration: 36400
-                },
-                {
-                    name: 'dragon-service',
-                    spanCount: 1,
-                    duration: 3200
-                },
-                {
-                    name: 'tyrell-service',
-                    spanCount: 2,
-                    duration: 11400
-                }
-            ],
-            error: true,
-            startTime: 1504784384,
-            duration: 51000,
-            queriedSvcDur: 51000,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: false,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+      {
+        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'tyrell-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
         },
-        {
-            traceId: '23g89z5f-64e1-4f69-b038-c123rc11r12',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 15000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 12,
-                    duration: 1000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 12,
-                    duration: 1000
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 117765,
-            queriedSvcDur: 51000,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: false,
-            queriedServiceSuccess: true
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: true
         },
-        {
-            traceId: '45a13f6z-64e1-4f69-b038-1t241t23z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 21000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 32,
-                    duration: 29000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 2500
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 513519,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: false
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
         },
-        {
-            traceId: '88f53n5t-64e1-4f69-b038-vs455sv4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 151
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 1,
-                    duration: 4344
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 6789
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 13513,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: false,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        startTime: 1505914774596000,
+        duration: 3467000,
+        error: true
+      },
+      {
+        traceId: 'b80965e5-e0c4-4c37-91a7-da79def7597b',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'tyrell-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
         },
-        {
-            traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 2,
-                    duration: 80000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 4000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 5548
-                }
-            ],
-            error: true,
-            startTime: 1499975993,
-            duration: 895483,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: false,
-            queriedServiceSuccess: true
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: true
         },
-        {
-            traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 5151
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 12,
-                    duration: 6161
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 5151
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 171765,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: false,
-            queriedServiceSuccess: true
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
         },
-        {
-            traceId: '45a13f6z-64e1-4f69-b038-1t444t23z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 48573
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 22,
-                    duration: 2345
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 1234
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 1151351,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        startTime: 1505914774596000,
+        duration: 3467000,
+        error: true
+      },
+      {
+        traceId: 'c80965e5-e0c4-4c37-91a7-da79def7597b',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'tyrell-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
         },
-        {
-            traceId: '48f53n5t-64e1-4f69-b038-vs455sv4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 8000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 11,
-                    duration: 1
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 5000
-                }
-            ],
-            error: true,
-            startTime: 1499945993,
-            duration: 135131,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: false
         },
-        {
-            traceId: '35b83d5f-64e1-4f69-b038-aaa23rfn23r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 12,
-                    duration: 9000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 1
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 80000
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 89548,
-            queriedSvcDur: 513519,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
         },
-        {
-            traceId: '33g89z5f-64e1-4f69-b038-c123rc1c1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 2000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 5000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 11,
-                    duration: 10000
-                }
-            ],
-            error: true,
-            startTime: 1499985993,
-            duration: 177615,
-            queriedSvcDur: 5135,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        startTime: 1505914774596000,
+        duration: 3467000,
+        error: false
+      },
+      {
+        traceId: 'd80965e5-e0c4-4c37-91a7-da79def7597b',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'tyrell-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
         },
-        {
-            traceId: '35a13f6z-64e1-4f69-b038-1t241t23z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 400012
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 1234
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 15,
-                    duration: 45211
-                }
-            ],
-            error: true,
-            startTime: 1499869444,
-            duration: 512351,
-            queriedSvcDur: 5135,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: true
         },
-        {
-            traceId: '38f53n5t-64e1-4f69-b038-vs455sv4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 96789
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 18,
-                    duration: 2345
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 1234
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 135131,
-            queriedSvcDur: 5135,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
         },
-        {
-            traceId: '25b83d5f-64e1-4f69-b038-aaa23rfn23r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 12,
-                    duration: 843212
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 4321
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 31,
-                    duration: 43121
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 895483,
-            queriedSvcDur: 5139,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        startTime: 1505914774596000,
+        duration: 3467000,
+        error: false
+      },
+      {
+        traceId: 'e80965e5-e0c4-4c37-91a7-da79def7597b',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'tyrell-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
         },
-        {
-            traceId: '13g89z5f-64e1-4f69-b038-c123rc1d1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 16789
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 1234
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 22,
-                    duration: 1234
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 177651,
-            queriedSvcDur: 5139,
-            queriedSvcDurPerc: 70,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: true
         },
-        {
-            traceId: '25a13f6z-64e1-4f69-b038-1t241t23z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 9,
-                    duration: 48211
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 2345
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 31,
-                    duration: 1234
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 51351,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
         },
-        {
-            traceId: '28f53n5t-64e1-4f69-b038-vs455sv4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 111513
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 1,
-                    duration: 5000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 8000
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 195131,
-            queriedSvcDur: 5135,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '15b83d5f-64e1-41z9-b138-aaa23rfn23r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 12,
-                    duration: 29000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 29,
-                    duration: 35000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 31,
-                    duration: 25000
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 89548,
-            queriedSvcDur: 5135,
-            queriedSvcDurPerc: 100,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1a1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 144000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 12,
-                    duration: 8000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 12,
-                    duration: 5000
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 217765,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '51a13f6z-64e1-4f69-b138-1t241t23z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 420002
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 32,
-                    duration: 5135
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 3123
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 513512,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '88f53n5t-64e1-4f69-b038-vs455sfav3vs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 111111
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 1,
-                    duration: 1111
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 11111
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 135131,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '11z83d5f-64e1-4f69-b038-aaa23rfn23r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 2,
-                    duration: 295482
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 30000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 30000
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 895481,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '23g89z5f-64e1-4f69-b038-c124rc1c1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 12000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 12,
-                    duration: 3535
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 1531
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 17765
-        },
-        {
-            traceId: '45a13f6z-64e1-5aa3-b038-1t23f13z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 9001
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 22,
-                    duration: 1
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 51521
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 59351,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '48f53n5t-z4e1-4f69-b038-vs4av1v4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 11000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 11,
-                    duration: 1000
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 1000
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 13513,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '35b83d5f-64e1-4f69-b038-13rc31fa3',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 12,
-                    duration: 88000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 444
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 1,
-                    duration: 111
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 89548,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '3a3f9z5f-64e1-4f69-b038ra1c1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 6100
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 500
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 11,
-                    duration: 11111
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 17765,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '35a13f6z-64e1-4f69-b038-1tafv3a3z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1,
-                    duration: 21212
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 13131
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 15,
-                    duration: 15151
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 51351,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '38f53n5t-64e1-4f69-b038-vs4awbf3avs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 7000
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 18,
-                    duration: 3222
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 2131
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 13513,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '2a2rv5f-64e1-4f69-b038-aaav3fva323r',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 12,
-                    duration: 31564
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 9,
-                    duration: 23753
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 31,
-                    duration: 45211
-                }
-            ],
-            error: false,
-            startTime: 1499975993,
-            duration: 89548,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: false
-        },
-        {
-            traceId: '13g89z5f-64e1-4fav-b038-cav23rv1r1',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 11,
-                    duration: 8151
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 3151
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 22,
-                    duration: 5131
-                }
-            ],
-            error: false,
-            startTime: 1499985993,
-            duration: 17765,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: true,
-            queriedOperationSuccess: false,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '25a11zf6z-64e1-4f69-b038-1av3faf33z4t',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 9,
-                    duration: 33333
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 2,
-                    duration: 22222
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 31,
-                    duration: 13111
-                }
-            ],
-            error: false,
-            startTime: 1499869444,
-            duration: 51351,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: false,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        },
-        {
-            traceId: '28a3rv5t-64e1-4f69-b038-vsav3r4gvs',
-            root: {
-                url: '/dummy/url',
-                serviceName: 'mysvc',
-                operationName: 'dummyOperation'
-            },
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 3,
-                    duration: 222
-                },
-                {
-                    name: 'def-service',
-                    spanCount: 1,
-                    duration: 111
-                },
-                {
-                    name: 'ghi-service',
-                    spanCount: 4,
-                    duration: 12313
-                }
-            ],
-            error: false,
-            startTime: 1499945993,
-            duration: 13513,
-            queriedSvcDur: 3519,
-            queriedSvcDurPerc: 80,
-            rootSpanSuccess: false,
-            queriedOperationSuccess: true,
-            queriedServiceSuccess: true
-        }
+        startTime: 1505914774596000,
+        duration: 3467000,
+        error: true
+      }
     ];
 });
 

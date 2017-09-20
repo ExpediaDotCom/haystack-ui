@@ -19,17 +19,17 @@ import moment from 'moment';
 
 const formatters = {};
 
-formatters.toTimestring = startTime => moment(Math.ceil(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
+formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
 
-formatters.toTimeago = startTime => timeago().format(Math.ceil(startTime / 1000));
+formatters.toTimeago = startTime => timeago().format(Math.floor(startTime / 1000));
 
-formatters.toDurationMsString = duration => `${Math.ceil(duration / 1000)}ms`;
+formatters.toDurationMsString = duration => `${Math.floor(duration / 1000)}ms`;
 
 formatters.toDurationString = (duration) => {
   if (duration === 0) {
     return '0';
   } else if (duration < 1000000) {
-    return `${Math.ceil(duration / 1000)}ms`;
+    return `${Math.floor(duration / 1000)}ms`;
   }
   return `${(duration / 1000000).toFixed(3)}s`;
 };

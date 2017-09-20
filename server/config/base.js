@@ -19,9 +19,6 @@ module.exports = {
     //               eg. zipkin: { url: 'http://<zipkin>/api/v1'}
     //  - stub      - a stub used during development, will be removed in future
     store: {
-        name: 'zipkin',
-      zipkin: {
-        url: 'http://blackbox.test.expedia.com/api/v1'
-      }
+        name: 'stub'
     }
 };
