@@ -30,7 +30,7 @@ function calculateEndToEndDuration(spans) {
 }
 
 function calculateCumulativeDuration(spans) {
-  return spans.reduce((running, span) => running + span.duration, 0);
+  return spans.reduce((running, span) => running + span.duration, 0) || 1;
 }
 
 function findTag(tags, tagName) {
