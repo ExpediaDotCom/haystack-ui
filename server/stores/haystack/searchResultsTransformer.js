@@ -80,7 +80,7 @@ function createQueriedOperationSummary(trace, operationName, totalCumulativeDura
 function toSearchResult(trace, query) {
   const rootSpan = trace.find(span => !span.parentSpanId);
   const root = {
-    url: findTag(rootSpan.tags, 'url') || null,
+    url: findTag(rootSpan.tags, 'url') || '',
     serviceName: rootSpan.serviceName,
     operationName: rootSpan.operationName,
     duration: rootSpan.duration,
