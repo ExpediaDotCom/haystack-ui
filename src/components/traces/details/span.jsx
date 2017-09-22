@@ -88,6 +88,7 @@ export default class Span extends React.Component {
                     width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
                     rx="3.5"
                     ry="3.5"
+                    fillOpacity="0.8"
                 />
                 <text
                     className="span-service-label"
@@ -128,8 +129,9 @@ export default class Span extends React.Component {
                     span={span}
                 />
                 <clipPath id="overflow">
-                    <rect x="0" height="100%" width="11.5%"/>
+                    <rect x="0" height="100%" width="10.5%"/>
                 </clipPath>
+                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.4" />
             </g>
         );
     }
