@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import serviceStore from '../../../stores/serviceStore';
 
 import SpanDetailsModal from './spanDetailsModal';
+import formatters from '../../../utils/formatters';
 
 export default class Span extends React.Component {
 
@@ -32,7 +33,7 @@ export default class Span extends React.Component {
             rowHeight: PropTypes.number.isRequired,
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
-            totalDuration: PropTypes.string.isRequired,
+            totalDuration: PropTypes.number.isRequired,
             serviceName: PropTypes.string.isRequired,
             spanDepth: PropTypes.number.isRequired
         };
@@ -75,7 +76,7 @@ export default class Span extends React.Component {
         const spanDuration = span.duration;
         const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
         const width = ((spanDuration / totalDuration) * 100) * 0.8;
-        const formattedDuration = `${span.duration}ms`;
+        const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         return (
             <g>
                 <rect
