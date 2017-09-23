@@ -55,15 +55,18 @@ export default class Timeline extends React.Component {
                 serviceName={span.serviceName}
                 spanDepth={spanTreeDepths[span.spanId]}
             />));
+        const lineHeight = timelineHeight - 15;
+
         return (
             <svg height={timelineHeight} width="100%">
                 {timePointers.map(tp =>
-                (<g>
+                (<g key={Math.random()}>
                     <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693" xmlSpace="preserve" textAnchor="end" >{`${tp.time} `}</text>
                     <rect x={`${tp.leftOffset}%`} y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
                 </g>)
                 )}
                 <rect x="0%" y="30" width="92%" height="1px" fill="#6B7693" fillOpacity="0.3" />
+                <line x1="10.7%" x2="10.5%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.3" />
                 {getSpans}
             </svg>
         );

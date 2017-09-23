@@ -107,9 +107,9 @@ export default class TraceDetails extends React.Component {
                           {
                             this.state.showCopied ? (
                                 <span className="tooltip fade left in" role="tooltip">
-                                        <span className="tooltip-arrow" />
-                                        <span className="tooltip-inner">Link Copied!</span>
-                                    </span>
+                                    <span className="tooltip-arrow" />
+                                    <span className="tooltip-inner">Link Copied!</span>
+                                </span>
                             ) : null
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>

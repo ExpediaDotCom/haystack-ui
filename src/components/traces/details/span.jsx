@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 
 import SpanDetailsModal from './spanDetailsModal';
 import formatters from '../../../utils/formatters';
+import serviceColor from '../../../utils/serviceColorMapper';
 
 export default class Span extends React.Component {
 
@@ -78,22 +79,29 @@ export default class Span extends React.Component {
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         return (
             <g>
+                <rect
+                    className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
+                    height={20}
+                    y={topOffset - 6}
+                    x={`${spanDepth - 0.5}%`}
+                    clipPath="url(#overflow)"
+                    width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
+                    rx="3.5"
+                    ry="3.5"
+                    fillOpacity="0.8"
+                />
                 <text
                     className="span-service-label"
-                    fill="#6B7693"
                     x={`${spanDepth}%`}
-                    y={topOffset}
+                    y={topOffset + 8}
                     clipPath="url(#overflow)"
-                    cursor="default"
                 >{serviceName}
                 </text>
                 <text
                     className="span-label"
-                    fill="#6B7693"
                     x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
                     y={topOffset}
                     textAnchor={leftOffset > 50 ? 'end' : 'start'}
-                    cursor="default"
                 >{span.operationName}:{formattedDuration}
                 </text>
                 <rect
@@ -109,7 +117,6 @@ export default class Span extends React.Component {
                 />
                 <rect
                     className="span-click"
-                    width="100%"
                     x="0"
                     y={topOffset - 13}
                     height={rowHeight + 20}
@@ -122,8 +129,9 @@ export default class Span extends React.Component {
                     span={span}
                 />
                 <clipPath id="overflow">
-                    <rect x="0" height="100%" width="11.5%"/>
+                    <rect x="0" height="100%" width="10.5%"/>
                 </clipPath>
+                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.3" />
             </g>
         );
     }

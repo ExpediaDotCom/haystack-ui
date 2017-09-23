@@ -21,6 +21,7 @@ import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from '../details/traceDetails';
 import formatters from '../../../utils/formatters';
+import colorMapper from '../../../utils/serviceColorMapper';
 import './traceResults.less';
 
 export default class TraceResultsTable extends React.Component {
@@ -45,8 +46,8 @@ export default class TraceResultsTable extends React.Component {
 
     static handleServiceList(services) {
         let serviceList = '';
-        services.slice(0, 2).map((svc) => {
-            serviceList += `<span class="service-spans label label-success">${svc.name} x${svc.spanCount}</span> `;
+        services.map((svc) => {
+            serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
             return serviceList;
         });
 
@@ -75,11 +76,11 @@ export default class TraceResultsTable extends React.Component {
     static errorFormatter(cell) {
         if (cell) {
             return (<div className="table__status">
-                <img src="/images/error.svg" alt="Error" height="30" width="30" />
+                <img src="/images/error.svg" alt="Error" height="24" width="24" />
             </div>);
         }
         return (<div className="table__status">
-            <img src="/images/success.svg" alt="Success" height="30" width="30" />
+            <img src="/images/success.svg" alt="Success" height="24" width="24" />
         </div>);
     }
 
@@ -129,14 +130,12 @@ export default class TraceResultsTable extends React.Component {
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
     }
-
     componentDidMount() {
         const results = this.props.results;
         if (results.length === 1) {
             this.handleExpand(results[0].traceId, true);
         }
     }
-
     handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
@@ -155,11 +154,11 @@ export default class TraceResultsTable extends React.Component {
         }
     }
 
-     expandComponent(row) {
+    expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
             return <TraceDetails traceId={row.traceId} location={this.props.location} baseServiceName={this.props.query.serviceName} />;
         }
-         return null;
+        return null;
     }
 
     render() {
