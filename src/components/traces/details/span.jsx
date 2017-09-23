@@ -19,10 +19,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import serviceStore from '../../../stores/serviceStore';
 
 import SpanDetailsModal from './spanDetailsModal';
 import formatters from '../../../utils/formatters';
+import serviceColor from '../../../utils/serviceColorMapper';
 
 export default class Span extends React.Component {
 
@@ -80,8 +80,7 @@ export default class Span extends React.Component {
         return (
             <g>
                 <rect
-                    className="span-color-bar"
-                    fill={serviceStore.servicesWithColor[serviceName]}
+                    className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
                     height={20}
                     y={topOffset - 6}
                     x={`${spanDepth - 0.5}%`}

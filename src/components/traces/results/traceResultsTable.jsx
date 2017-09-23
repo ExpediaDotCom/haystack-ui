@@ -20,8 +20,8 @@ import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from '../details/traceDetails';
-import serviceStore from '../../../stores/serviceStore';
 import formatters from '../../../utils/formatters';
+import colorMapper from '../../../utils/serviceColorMapper';
 import './traceResults.less';
 
 export default class TraceResultsTable extends React.Component {
@@ -47,8 +47,7 @@ export default class TraceResultsTable extends React.Component {
     static handleServiceList(services) {
         let serviceList = '';
         services.map((svc) => {
-            const bgColor = serviceStore.servicesWithColor[svc.name];
-            serviceList += `<span class="service-spans label label-success" style="background-color:${bgColor}"=>${svc.name} x${svc.spanCount}</span> `;
+            serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
             return serviceList;
         });
 
@@ -77,11 +76,11 @@ export default class TraceResultsTable extends React.Component {
     static errorFormatter(cell) {
         if (cell) {
             return (<div className="table__status">
-                <img src="/images/error.svg" alt="Error" height="30" width="30" />
+                <img src="/images/error.svg" alt="Error" height="24" width="24" />
             </div>);
         }
         return (<div className="table__status">
-            <img src="/images/success.svg" alt="Success" height="30" width="30" />
+            <img src="/images/success.svg" alt="Success" height="24" width="24" />
         </div>);
     }
 
