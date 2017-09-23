@@ -18,7 +18,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import serviceStore from '../../../stores/serviceStore';
 
 import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
@@ -31,10 +30,6 @@ export default class TraceResults extends React.Component {
         tracesSearchStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired
     };
-    constructor() {
-        super();
-        serviceStore.fetchServices();
-    }
 
     render() {
         return (

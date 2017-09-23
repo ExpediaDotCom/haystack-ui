@@ -66,7 +66,7 @@ export default class Timeline extends React.Component {
                 </g>)
                 )}
                 <rect x="0%" y="30" width="92%" height="1px" fill="#6B7693" fillOpacity="0.3" />
-                <line x1="10.7%" x2="10.5%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.4" />
+                <line x1="10.7%" x2="10.5%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.3" />
                 {getSpans}
             </svg>
         );

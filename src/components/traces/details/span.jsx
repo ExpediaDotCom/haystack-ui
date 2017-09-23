@@ -131,7 +131,7 @@ export default class Span extends React.Component {
                 <clipPath id="overflow">
                     <rect x="0" height="100%" width="10.5%"/>
                 </clipPath>
-                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.4" />
+                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.3" />
             </g>
         );
     }
