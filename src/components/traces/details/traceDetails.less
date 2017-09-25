@@ -20,20 +20,41 @@
 .span-label {
     font-weight: 700;
     font-size: @font-size-base;
+    cursor: default;
+    fill: #6B7693
 }
 
 .span-service-label {
     font-size: @font-size-base;
+    font-weight: 600;
+    fill: #FFFFFF;
+    cursor: default;
+}
+
+.span-bar {
+    rx: 3.5;
+    ry: 3.5;
+    fill: #28a228
 }
 
 .span-click {
     opacity: 0;
+    width: 100%;
 }
 
 .span-click:hover {
     background-color: @gray-light;
     opacity: 0.1;
     cursor: pointer;
+}
+
+.trace-details {
+    padding: 18px 18px 24px 18px;
+    border-right: 2px solid @gray-dark ;
+    border-left: 2px solid @gray-dark ;
+    border-bottom: 2px solid @gray-dark;
+    border-radius: 0px 0px 5px 5px;
+    background-color: white;
 }
 
 .trace-details-nav {

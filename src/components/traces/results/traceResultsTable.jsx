@@ -20,7 +20,9 @@ import PropTypes from 'prop-types';
 import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import TraceDetails from '../details/traceDetails';
-import './traceResultsTable.less';
+import formatters from '../../../utils/formatters';
+import colorMapper from '../../../utils/serviceColorMapper';
+import './traceResults.less';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
@@ -31,9 +33,9 @@ export default class TraceResultsTable extends React.Component {
 
     static sortByTimestamp(a, b, order) {
         if (order === 'desc') {
-            return b.startTime - a.startTime;
+            return b - a;
         }
-        return a.startTime - b.startTime;
+        return a - b;
     }
     static sortByDuration(a, b, order) {
         if (order === 'desc') {
@@ -44,8 +46,8 @@ export default class TraceResultsTable extends React.Component {
 
     static handleServiceList(services) {
         let serviceList = '';
-        services.slice(0, 2).map((svc) => {
-            serviceList += `<span class="service-spans label label-success">${svc.name} x${svc.spanCount}</span> `;
+        services.map((svc) => {
+            serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
             return serviceList;
         });
 
@@ -56,9 +58,9 @@ export default class TraceResultsTable extends React.Component {
         return serviceList;
     }
 
-    static timeColumnFormatter(cell, row) {
-        return `<div class="table__primary">${row.timeago}</div>
-                <div class="table__secondary">${cell}</div>`;
+    static timeColumnFormatter(startTime) {
+        return `<div class="table__primary">${formatters.toTimeago(startTime)}</div>
+                <div class="table__secondary">${formatters.toTimestring(startTime)}</div>`;
     }
 
     static rootColumnFormatter(cell, row) {
@@ -74,23 +76,23 @@ export default class TraceResultsTable extends React.Component {
     static errorFormatter(cell) {
         if (cell) {
             return (<div className="table__status">
-                <span className="table__status-error ti-close" />
+                <img src="/images/error.svg" alt="Error" height="24" width="24" />
             </div>);
         }
         return (<div className="table__status">
-            <span className="table__status-success ti-check" />
+            <img src="/images/success.svg" alt="Success" height="24" width="24" />
         </div>);
     }
 
-    static totalDurationColumnFormatter(cell) {
-        return `<div class="table__primary-duration text-right">${Math.round(cell / 1000)} ms</div>`;
+    static totalDurationColumnFormatter(duration) {
+        return `<div class="table__primary-duration text-right">${formatters.toDurationString(duration)}</div>`;
     }
 
-    static serviceDurationFormatter(cell) {
-        return <div className="table__primary text-right">{Math.round(cell / 1000)} ms</div>;
+  static durationFormatter(duration) {
+        return <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>;
     }
 
-    static serviceDurationPercentFormatter(cell) {
+    static durationPercentFormatter(cell) {
         return (
             <div className="text-right">
                 <div className="percentContainer text-center">
@@ -128,14 +130,12 @@ export default class TraceResultsTable extends React.Component {
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
     }
-
     componentDidMount() {
         const results = this.props.results;
         if (results.length === 1) {
             this.handleExpand(results[0].traceId, true);
         }
     }
-
     handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
@@ -154,11 +154,11 @@ export default class TraceResultsTable extends React.Component {
         }
     }
 
-     expandComponent(row) {
+    expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
             return <TraceDetails traceId={row.traceId} location={this.props.location} baseServiceName={this.props.query.serviceName} />;
         }
-         return null;
+        return null;
     }
 
     render() {
@@ -188,7 +188,7 @@ export default class TraceResultsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing traces { start } to { to } out of { total } samples</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: query.sortBy || 'timestamp',  // default sort column name
+            defaultSortName: query.sortBy || 'startTime',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
@@ -215,14 +215,14 @@ export default class TraceResultsTable extends React.Component {
                     isKey
                 >TraceId</TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="timestamp"
+                    dataField="startTime"
                     dataFormat={TraceResultsTable.timeColumnFormatter}
                     width="15"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     sortFunc={this.sortByTimestamp}
                     thStyle={tableHeaderStyle}
-                ><TraceResultsTable.Header name="Timestamp"/></TableHeaderColumn>
+                ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="rootOperation"
                     dataFormat={TraceResultsTable.rootColumnFormatter}
@@ -240,7 +240,7 @@ export default class TraceResultsTable extends React.Component {
                     thStyle={tableHeaderStyle}
                 ><TraceResultsTable.Header name="Success"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="spans"
+                    dataField="spanCount"
                     dataFormat={TraceResultsTable.spanColumnFormatter}
                     width="25"
                     dataSort
@@ -250,8 +250,8 @@ export default class TraceResultsTable extends React.Component {
                 {
                     (query.operationName && query.operationName !== 'all')
                     && <TableHeaderColumn
-                        dataField="serviceDuration"
-                        dataFormat={TraceResultsTable.serviceDurationFormatter}
+                        dataField="operationDuration"
+                        dataFormat={TraceResultsTable.durationFormatter}
                         width="10"
                         dataSort
                         sortFunc={this.sortByDuration}
@@ -262,8 +262,8 @@ export default class TraceResultsTable extends React.Component {
                 {
                     (query.operationName && query.operationName !== 'all')
                     && <TableHeaderColumn
-                        dataField="serviceDurationPercent"
-                        dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
+                        dataField="operationDurationPercent"
+                        dataFormat={TraceResultsTable.durationPercentFormatter}
                         width="10"
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
@@ -272,7 +272,7 @@ export default class TraceResultsTable extends React.Component {
                 }
                 <TableHeaderColumn
                     dataField="serviceDuration"
-                    dataFormat={TraceResultsTable.serviceDurationFormatter}
+                    dataFormat={TraceResultsTable.durationFormatter}
                     width="10"
                     dataSort
                     sortFunc={this.sortByDuration}
@@ -281,7 +281,7 @@ export default class TraceResultsTable extends React.Component {
                 ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="serviceDurationPercent"
-                    dataFormat={TraceResultsTable.serviceDurationPercentFormatter}
+                    dataFormat={TraceResultsTable.durationPercentFormatter}
                     width="10"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}

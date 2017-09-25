@@ -17,43 +17,30 @@
 
 import axios from 'axios';
 import {observable, action} from 'mobx';
-import timeago from 'timeago.js';
-import moment from 'moment';
 import { fromPromise } from 'mobx-utils';
 import { toQueryUrlString } from '../utils/queryParser';
-
-function getTotalSpanCount(services) {
-    return services.reduce((sum, service) => sum + service.spanCount, 0);
-}
-
-function getFormattedTimestamp(startTime) {
-    return moment(startTime * 1000).format('kk:mm:ss.SSS, DD MMM YY');
-}
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
 }
 
-function formatResults(results, searchQuery) {
+function formatResults(results) {
     return results.map((result) => {
-        const formattedResult = {...result};
-        formattedResult.timeago = timeago().format(result.startTime * 1000);
-        formattedResult.timestamp = getFormattedTimestamp(result.startTime);
-        formattedResult.rootUrl = result.root.url;
-        formattedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
-        formattedResult.spans = getTotalSpanCount(result.services);
-        formattedResult.serviceDuration = result.services.find(s => s.name === (searchQuery.serviceName || result.root.serviceName)).duration;
-        const serviceDurationPercent = ((formattedResult.serviceDuration / result.duration) * 100);
-        formattedResult.serviceDurationPercent = serviceDurationPercent < 1 ? serviceDurationPercent.toFixed(1) : Math.round(serviceDurationPercent);
-        formattedResult.traceId = result.traceId;
+        const flattenedResult = {...result};
+        flattenedResult.rootUrl = result.root.url;
+        flattenedResult.rootOperation = `${result.root.serviceName}: ${result.root.operationName}`;
+        flattenedResult.operationDuration = result.queriedOperation && result.queriedOperation.duration;
+        flattenedResult.operationDurationPercent = result.queriedOperation && result.queriedOperation.durationPercent;
+        flattenedResult.serviceDuration = result.queriedService.duration;
+        flattenedResult.serviceDurationPercent = result.queriedService.durationPercent;
 
-        return formattedResult;
+        return flattenedResult;
     });
 }
 
 export class TracesSearchStore {
-    @observable promiseState = null;
+    @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
 
@@ -64,7 +51,7 @@ export class TracesSearchStore {
                 .get(`/api/traces?${queryUrlString}`)
                 .then((result) => {
                     this.searchQuery = query;
-                    this.searchResults = formatResults(result.data, query);
+                    this.searchResults = formatResults(result.data);
                 })
                 .catch((result) => {
                     this.searchQuery = query;

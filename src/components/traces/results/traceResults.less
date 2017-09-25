@@ -224,18 +224,7 @@ tr.tr-no-border>td {
 }
 
 .table__status {
-  padding-top: @spacing-m;
-  font-size: @font-size-h5;
-}
-
-.table__status-error {
-  color: @brand-danger;
-  font-weight: 900 !important; // to override bootstrap
-}
-
-.table__status-success {
-  color: @brand-success;
-  font-weight: 900 !important; // to override bootstrap
+  padding-top: @spacing-xs;
 }
 
 .service-spans {
@@ -275,7 +264,7 @@ tr.tr-no-border>td {
 
 .CircularProgressbar .CircularProgressbar-text {
   fill: @brand-success;
-  font-size: 40px;
+  font-size: 35px;
   font-weight: 400;
   dominant-baseline: middle;
   text-anchor: middle;
@@ -288,15 +277,6 @@ tr.tr-no-border>td {
   }
 }
 
-.trace-details {
-  padding: 18px 18px 24px 18px;
-  border-right: 2px solid @gray-dark ;
-  border-left: 2px solid @gray-dark ;
-  border-bottom: 2px solid @gray-dark;
-  border-radius: 0px 0px 5px 5px;
-  background-color: white;
-}
-
 .selected-row {
   > td {
     cursor: pointer;
@@ -305,3 +285,10 @@ tr.tr-no-border>td {
   }
 }
 
+.no-search_text {
+  display: inline-block;
+  margin: @spacing-xl;
+  padding: @spacing-s @spacing-l @spacing-s @spacing-l;
+  border: 1px solid @gray-mid-lighter;
+  background-color: white;
+}

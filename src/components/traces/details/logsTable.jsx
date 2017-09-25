@@ -16,8 +16,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import _ from 'lodash';
+import formatters from '../../../utils/formatters';
 
 const LogEnum = {
     ss: 'Server Send',
@@ -63,8 +63,8 @@ const LogsTable = ({logs}) => {
                 (<tr key={log.value}>
                     <td>{log.key}</td>
                     <td>{LogEnum[log.value]}</td>
-                    <td>{(log.timestamp - startTime) / 1000}ms</td>
-                    <td>{moment(log.timestamp / 1000).format('kk:mm:ss.SSS, DD MMM YY')}</td>
+                    <td>{formatters.toDurationString(log.timestamp - startTime)}</td>
+                    <td>{formatters.toTimestring(log.timestamp)}</td>
                 </tr>)
             )}
             </tbody>

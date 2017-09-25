@@ -21,11 +21,9 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const _ = require('lodash');
 const moment = require('moment');
-const config = require('../config/config');
 
 const BASE_TRANSPORT_OPTIONS = {
-    json: false,
-    colorize: config.logs.colorize
+    json: false
 };
 const CONSOLE_TRANSPORT_OPTIONS = _.merge({}, BASE_TRANSPORT_OPTIONS);
 

@@ -14,21 +14,19 @@
  *       limitations under the License.
  *
  */
-
 import axios from 'axios';
 import {observable, action} from 'mobx';
 
 export class ServiceStore {
     @observable services = [];
-
     @action fetchServices() {
         axios({
             method: 'get',
             url: '/api/services'
-            })
-            .then((response) => {
-                this.services = response.data;
-            });
+        })
+        .then((response) => {
+            this.services = response.data;
+        });
     }
 }
 
