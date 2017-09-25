@@ -18,37 +18,12 @@ const axios = require('axios');
 const Q = require('q');
 const config = require('../../config/config');
 const converter = require('./converter');
+const rangeConverter = require('../utils/rangeConverter');
 
 const store = {};
 const baseZipkinUrl = config.store.zipkin.url;
 
 const reservedField = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime'];
-
-function rangeToDuration(preset) {
-    if (preset) {
-        const count = preset.substr(0, preset.length - 1);
-        const unit = preset[preset.length - 1];
-        let multiplier;
-
-        switch (unit) {
-          case 's':
-            multiplier = 60;
-            break;
-          case 'h':
-            multiplier = 60 * 60;
-            break;
-          case 'd':
-            multiplier = 60 * 60 * 24;
-            break;
-          default:
-            multiplier = 60;
-        }
-
-        return parseInt(count, 10) * multiplier * 1000;
-    }
-
-  return null;
-}
 
 function toAnnotationQuery(query) {
   return Object
@@ -63,8 +38,8 @@ function mapQueryParams(query) {
         serviceName: query.serviceName,
         spanName: query.operationName,
         annotationQuery: toAnnotationQuery(query),
-        endTs: query.endTime || Date().now * 1000,
-        lookback: rangeToDuration(query.timePreset) || (query.endTime - query.startTime),
+        endTs: query.endTime || Date.now() * 1000,
+        lookback: rangeConverter.toDuration(query.timePreset) || (query.endTime - query.startTime),
         limit: 40
     };
 
@@ -109,7 +84,6 @@ store.getTrace = (traceId) => {
 
 store.findTraces = (query) => {
     const deferred = Q.defer();
-    const queryUrl = mapQueryParams(query);
 
     if (query.traceId) {
         // if search is for a trace perform getTrace instead of search
@@ -117,6 +91,8 @@ store.findTraces = (query) => {
             .get(`${baseZipkinUrl}/trace/${query.traceId}`)
             .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)));
     } else {
+        const queryUrl = mapQueryParams(query);
+
         axios
             .get(`${baseZipkinUrl}/traces?${queryUrl}`)
             .then(response => deferred.resolve(converter.toHaystackSearchResult(response.data, query)));
