@@ -26,6 +26,9 @@ import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/stores/tracesSearchStore';
+import {ActiveTraceStore} from '../../../src/stores/activeTraceStore';
+import TraceDetails from '../../../src/components/traces/details/traceDetails';
+import traceDetailsFormatters from '../../../src/components/traces/utils/traceDetailsFormatters';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -113,12 +116,107 @@ const stubResults = [{
         error: false,
         startTime: 1499985993,
         duration: 17765
-    }];
+    }
+];
+
+const stubDetails = [
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504784384000,
+        duration: 3500000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                endpoint: {
+                    serviceName: 'test-service'
+                }
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'true'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-2',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-3',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-4',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    }
+];
 
 function TracesStubComponent({tracesSearchStore, history, location, match}) {
     return (<section className="traces-panel">
         <SearchBar tracesSearchStore={tracesSearchStore} history={history} location={location} match={match}/>
         <TraceResults tracesSearchStore={tracesSearchStore} history={history}/>
+    </section>);
+}
+
+function TraceStubComponent({activeTraceStore, traceId, location, baseServiceName}) {
+    return (<section className="traces-panel">
+        <TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} activeTraceStore={activeTraceStore} />
     </section>);
 }
 
@@ -128,6 +226,20 @@ function createStubStore(results, promise, searchQuery = {}) {
         store.searchResults = results;
         store.promiseState = promise;
         store.searchQuery = searchQuery;
+    });
+
+    return store;
+}
+
+function createStubDetailsStore(spans, promise) {
+    const store = new ActiveTraceStore();
+    sinon.stub(store, 'fetchTraceDetails', () => {
+        store.spans = spans;
+        store.promiseState = promise;
+        store.startTime = traceDetailsFormatters.calculateStartTime(store.spans);
+        store.totalDuration = traceDetailsFormatters.calculateDuration(store.spans, store.startTime);
+        store.timePointers = traceDetailsFormatters.getTimePointers(store.totalDuration);
+        store.spanTreeDepths = traceDetailsFormatters.calculateSpansDepth(store.spans);
     });
 
     return store;
@@ -235,6 +347,12 @@ describe('<Traces />', () => {
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key        value = pair '}});
         wrapper.find('.traces-search-button').simulate('click');
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
+    });
+
+    it('renders the all spans in the trace in the detail view', () => {
+        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].traceId} activeTraceStore={activeTraceStore} />);
+        expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
     });
 
     it('should update URL query params on clicking search');

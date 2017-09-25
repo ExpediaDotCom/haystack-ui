@@ -22,7 +22,6 @@ import Clipboard from 'react-copy-to-clipboard';
 import './traceDetails.less';
 import Loading from '../../common/loading';
 import Error from '../../common/error';
-import activeTraceStore from '../../../stores/activeTraceStore';
 import RawTraceModal from './rawTraceModal';
 import Timeline from './timeline';
 import Invocations from './invocations';
@@ -32,7 +31,8 @@ export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        baseServiceName: PropTypes.string.isRequired
+        baseServiceName: PropTypes.string.isRequired,
+        activeTraceStore: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -48,7 +48,7 @@ export default class TraceDetails extends React.Component {
     }
 
     componentDidMount() {
-        activeTraceStore.fetchTraceDetails(this.props.traceId);
+        this.props.activeTraceStore.fetchTraceDetails(this.props.traceId);
     }
 
     openModal() {
@@ -77,7 +77,7 @@ export default class TraceDetails extends React.Component {
                         fulfilled: () => {
                             if (spans && spans.length) {
                                 return (this.state.tabSelected === 1) ?
-                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={activeTraceStore.spanTreeDepths}/> :
+                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={this.props.activeTraceStore.spanTreeDepths}/> :
                                     <Invocations/>;
                             }
 
@@ -119,13 +119,13 @@ export default class TraceDetails extends React.Component {
                     </div>
                 </div>
                 {this.tabViewer({
-                    promiseState: activeTraceStore.promiseState,
-                    spans: activeTraceStore.spans,
-                    totalDuration: activeTraceStore.totalDuration,
-                    startTime: activeTraceStore.startTime,
-                    timePointers: activeTraceStore.timePointers})}
+                    promiseState: this.props.activeTraceStore.promiseState,
+                    spans: this.props.activeTraceStore.spans,
+                    totalDuration: this.props.activeTraceStore.totalDuration,
+                    startTime: this.props.activeTraceStore.startTime,
+                    timePointers: this.props.activeTraceStore.timePointers})}
 
-                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={activeTraceStore.spans}/>
+                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={this.props.activeTraceStore.spans}/>
             </section>
         );
     }
