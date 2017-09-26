@@ -48,21 +48,8 @@ function getTimePointers(totalDuration) {
     return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
 }
 
-function spanTreeDepths(spanTree, initialDepth) {
-    const initial = {};
-    initial[spanTree.span.spanId] = initialDepth;
-    if (spanTree.children.length === 0) return initial;
-    return (spanTree.children || []).reduce((prevMap, child) => {
-        const childDepths = spanTreeDepths(child, initialDepth + 1);
-        return {
-            ...prevMap,
-            ...childDepths
-        };
-    }, initial);
-}
-
 function createSpanTree(span, trace, groupByParentId = null) {
-    const spansWithParent = _.filter(trace, s => s.parentSpanId);
+    const spansWithParent = trace.filter(s => s.parentSpanId);
     const grouped = groupByParentId !== null ? groupByParentId : _
         .groupBy(spansWithParent, s => s.parentSpanId);
     return {
@@ -72,34 +59,70 @@ function createSpanTree(span, trace, groupByParentId = null) {
     };
 }
 
-function calculateSpansDepth(spans) {
-    const rootSpan = spans.find(span => !span.parentSpanId);
-    const spanTree = createSpanTree(rootSpan, spans);
-    return spanTreeDepths(spanTree, 1);
+function createFlattenedSpanTree(spanTree, depth) {
+  return [observable({
+    ...spanTree.span,
+    children: spanTree.children.map(child => child.span.spanId),
+    depth,
+    expandable: !!spanTree.children.length,
+    display: true,
+    expanded: true
+  })]
+  .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
+}
+
+function createSpanTimeline(spans, root) {
+  const tree = createSpanTree(root, spans);
+  return createFlattenedSpanTree(tree, 0);
+}
+
+function setChildExpandState(timelineSpans, parentId, display) {
+    const parent = timelineSpans.find(s => s.spanId === parentId);
+    parent.children.forEach((childId) => {
+        const childSpan = timelineSpans.find(s => s.spanId === childId);
+        childSpan.display = display;
+        childSpan.expanded = display;
+        setChildExpandState(timelineSpans, childSpan.spanId, display);
+    });
 }
 
 export class ActiveTraceStore {
+    @observable promiseState = null;
     @observable spans = [];
+    @observable rootSpan = [];
+    @observable timelineSpans = [];
     @observable startTime = {};
     @observable totalDuration = {};
-    @observable promiseState = null;
     @observable timePointers = [];
-    @observable spanTreeDepths = {};
+
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
+                    // raw and process span data
                     this.spans = result.data;
+                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
+                    this.timelineSpans = createSpanTimeline(this.spans, this.rootSpan);
+
+                    // timing information
                     this.startTime = calculateStartTime(this.spans);
                     this.totalDuration = calculateDuration(this.spans, this.startTime);
                     this.timePointers = getTimePointers(this.totalDuration);
-                    this.spanTreeDepths = calculateSpansDepth(this.spans);
-                })
+             })
                 .catch((result) => {
                     throw new TraceException(result);
                 })
         );
+    }
+
+    @action toggleExpand(selectedParentId) {
+        const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
+
+        const isExpanded = parent.expanded;
+        parent.expanded = !isExpanded;
+
+        setChildExpandState(this.timelineSpans, selectedParentId, !isExpanded);
     }
 }
 

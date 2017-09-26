@@ -19,44 +19,44 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 
 import Span from './span';
+import activeTraceStore from '../../../stores/activeTraceStore';
 
+@observer
 export default class Timeline extends React.Component {
-
     static get propTypes() {
         return {
+            timelineSpans: PropTypes.object.isRequired,
             timePointers: PropTypes.object.isRequired,
-            spans: PropTypes.object.isRequired,
-            spanTreeDepths: PropTypes.object.isRequired,
             startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired
         };
     }
 
+    constructor(props) {
+        super(props);
+        this.toggleExpand = this.toggleExpand.bind(this);
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    toggleExpand(selectedParentId, expand) {
+        activeTraceStore.toggleExpand(selectedParentId, expand);
+    }
+
     render() {
         const {
+            timelineSpans,
             timePointers,
-            spans,
             startTime,
-            totalDuration,
-            spanTreeDepths
+            totalDuration
         } = this.props;
-        const timelineHeight = (32 * spans.length) + 37;
-        const getSpans = spans.map((span, index) =>
-            (<Span
-                key={Math.random()}
-                index={index}
-                startTime={startTime}
-                rowHeight={12}
-                rowPadding={10}
-                span={span}
-                totalDuration={totalDuration}
-                serviceName={span.serviceName}
-                spanDepth={spanTreeDepths[span.spanId]}
-            />));
-        const lineHeight = timelineHeight - 15;
 
+        const spans = timelineSpans.filter(s => s.display);
+
+        const timelineHeight = (32 * spans.length) + 37;
+        const lineHeight = timelineHeight - 15;
         return (
             <svg height={timelineHeight} width="100%">
                 {timePointers.map(tp =>
@@ -67,7 +67,20 @@ export default class Timeline extends React.Component {
                 )}
                 <rect x="0%" y="30" width="92%" height="1px" fill="#6B7693" fillOpacity="0.3" />
                 <line x1="10.7%" x2="10.5%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.3" />
-                {getSpans}
+
+              {
+                spans.map((span, index) => (
+                    (<Span
+                        key={span.spanId}
+                        index={index}
+                        startTime={startTime}
+                        rowHeight={12}
+                        rowPadding={10}
+                        span={span}
+                        totalDuration={totalDuration}
+                        toggleExpand={this.toggleExpand}
+                    />)))
+              }
             </svg>
         );
     }
