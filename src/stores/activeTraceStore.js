@@ -48,19 +48,6 @@ function getTimePointers(totalDuration) {
     return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
 }
 
-function spanTreeDepths(spanTree, initialDepth) {
-    const initial = {};
-    initial[spanTree.span.spanId] = initialDepth;
-    if (spanTree.children.length === 0) return initial;
-    return (spanTree.children || []).reduce((prevMap, child) => {
-        const childDepths = spanTreeDepths(child, initialDepth + 1);
-        return {
-            ...prevMap,
-            ...childDepths
-        };
-    }, initial);
-}
-
 function createSpanTree(span, trace, groupByParentId = null) {
     const spansWithParent = trace.filter(s => s.parentSpanId);
     const grouped = groupByParentId !== null ? groupByParentId : _
@@ -72,74 +59,70 @@ function createSpanTree(span, trace, groupByParentId = null) {
     };
 }
 
-function getSpanChilds(spanTree) {
-    const firstNode = [];
-    firstNode[spanTree.span.spanId] = spanTree.children.map(span => span.span.spanId);
-    if (spanTree.children.length === 0) return firstNode;
-    return (spanTree.children || []).reduce((prevMap, child) => {
-        const parentChild = getSpanChilds(child);
-        return {
-            ...prevMap,
-            ...parentChild
-        };
-    }, firstNode);
+function createFlattenedSpanTree(spanTree, depth) {
+  return [observable({
+    ...spanTree.span,
+    children: spanTree.children.map(child => child.span.spanId),
+    depth,
+    expandable: !!spanTree.children.length,
+    display: true,
+    expanded: true
+  })]
+  .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
 }
 
-function getSpans(spanTree) {
-    const firstNode = [];
-    firstNode.push(spanTree.span);
-    return (spanTree.children || []).reduce((prevMap, child) => {
-        const parentChild = getSpans(child);
-        return [
-            ...prevMap,
-            ...parentChild
-        ];
-    }, firstNode);
+function createSpanTimeline(spans, root) {
+  const tree = createSpanTree(root, spans);
+  return createFlattenedSpanTree(tree, 0);
+}
+
+function setChildExpandState(timelineSpans, parentId, display) {
+    const parent = timelineSpans.find(s => s.spanId === parentId);
+    parent.children.forEach((childId) => {
+        const childSpan = timelineSpans.find(s => s.spanId === childId);
+        childSpan.display = display;
+        childSpan.expanded = display;
+        setChildExpandState(timelineSpans, childSpan.spanId, display);
+    });
 }
 
 export class ActiveTraceStore {
+    @observable promiseState = null;
     @observable spans = [];
-    @observable fromSpanTree = [];
+    @observable rootSpan = [];
+    @observable timelineSpans = [];
     @observable startTime = {};
     @observable totalDuration = {};
-    @observable promiseState = null;
     @observable timePointers = [];
-    @observable rootSpan = [];
-    @observable spanTree = [];
-    @observable spanTreeDepths = [];
-    @observable spanChildren = [];
+
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
+                    // raw and process span data
                     this.spans = result.data;
-                    this.backupSpans = result.data;
+                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
+                    this.timelineSpans = createSpanTimeline(this.spans, this.rootSpan);
+
+                    // timing information
                     this.startTime = calculateStartTime(this.spans);
                     this.totalDuration = calculateDuration(this.spans, this.startTime);
                     this.timePointers = getTimePointers(this.totalDuration);
-                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
-                    this.spanTree = createSpanTree(this.rootSpan, this.spans);
-                    this.spanTreeDepths = spanTreeDepths(this.spanTree, 1);
-                    this.spanChildren = getSpanChilds(this.spanTree);
-                    this.fromSpanTree = getSpans(this.spanTree);
-                })
+             })
                 .catch((result) => {
                     throw new TraceException(result);
                 })
         );
     }
 
-    @action toggleExpandCollapse(spans, selectedParentId, expand){
-        const selectedParentChildrenId = this.spanChildren[selectedParentId];
-        if (expand) {
-            selectedParentChildrenId.forEach(childId => _.remove(spans, span => span.spanId === childId));
-        } else {
-            selectedParentChildrenId.forEach(childId => spans.push(this.backupSpans.find(bkSpan => bkSpan.spanId === childId)));
-        }
-        const rootSpan = spans.find(span => !span.parentSpanId);
-        const spanTree = createSpanTree(rootSpan, spans);
-        this.fromSpanTree = getSpans(spanTree);
+    @action toggleExpand(selectedParentId) {
+        const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
+
+        const isExpanded = parent.expanded;
+        parent.expanded = !isExpanded;
+
+        setChildExpandState(this.timelineSpans, selectedParentId, !isExpanded);
     }
 }
 
