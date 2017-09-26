@@ -15,8 +15,21 @@
  */
 
 import _ from 'lodash';
+import {observable} from 'mobx';
 
 import formatters from '../../../utils/formatters';
+
+
+function createSpanTree(span, trace, groupByParentId = null) {
+    const spansWithParent = _.filter(trace, s => s.parentSpanId);
+    const grouped = groupByParentId !== null ? groupByParentId : _
+        .groupBy(spansWithParent, s => s.parentSpanId);
+    return {
+        span,
+        children: (grouped[span.spanId] || [])
+            .map(s => createSpanTree(s, trace, grouped))
+    };
+}
 
 const traceDetailsFormatters = {};
 
@@ -55,21 +68,27 @@ traceDetailsFormatters.spanTreeDepths = (spanTree, initialDepth) => {
     }, initial);
 };
 
-traceDetailsFormatters.createSpanTree = (span, trace, groupByParentId = null) => {
-    const spansWithParent = _.filter(trace, s => s.parentSpanId);
-    const grouped = groupByParentId !== null ? groupByParentId : _
-        .groupBy(spansWithParent, s => s.parentSpanId);
-    return {
-        span,
-        children: (grouped[span.spanId] || [])
-            .map(s => traceDetailsFormatters.createSpanTree(s, trace, grouped))
-    };
-};
-
 traceDetailsFormatters.calculateSpansDepth = (spans) => {
     const rootSpan = spans.find(span => !span.parentSpanId);
-    const spanTree = traceDetailsFormatters.createSpanTree(rootSpan, spans);
+    const spanTree = createSpanTree(rootSpan, spans);
     return traceDetailsFormatters.spanTreeDepths(spanTree, 1);
+};
+
+function createFlattenedSpanTree(spanTree, depth) {
+    return [observable({
+        ...spanTree.span,
+        children: spanTree.children.map(child => child.span.spanId),
+        depth,
+        expandable: !!spanTree.children.length,
+        display: true,
+        expanded: true
+    })]
+        .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
+}
+
+traceDetailsFormatters.createSpanTimeline = (spans, root) => {
+    const tree = createSpanTree(root, spans);
+    return createFlattenedSpanTree(tree, 0);
 };
 
 export default traceDetailsFormatters;

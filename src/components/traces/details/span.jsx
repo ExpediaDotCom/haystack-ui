@@ -19,11 +19,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 
 import SpanDetailsModal from './spanDetailsModal';
 import formatters from '../../../utils/formatters';
 import serviceColor from '../../../utils/serviceColorMapper';
 
+@observer
 export default class Span extends React.Component {
 
     static get propTypes() {
@@ -34,8 +36,7 @@ export default class Span extends React.Component {
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            serviceName: PropTypes.string.isRequired,
-            spanDepth: PropTypes.number.isRequired
+            toggleExpand: PropTypes.func.isRequired
         };
     }
 
@@ -49,15 +50,21 @@ export default class Span extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {modalIsOpen: false};
+        this.state = {
+            modalIsOpen: false
+        };
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.toggleChild = this.toggleChild.bind(this);
     }
     openModal() {
         this.setState({modalIsOpen: true});
     }
     closeModal() {
         this.setState({modalIsOpen: false});
+    }
+    toggleChild() {
+        this.props.toggleExpand(this.props.span.spanId);
     }
 
     render() {
@@ -67,10 +74,15 @@ export default class Span extends React.Component {
             rowHeight,
             rowPadding,
             span,
-            totalDuration,
-            serviceName,
-            spanDepth
+            totalDuration
         } = this.props;
+
+        const {
+            serviceName,
+            depth,
+            expandable
+        } = span;
+
         const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
         const spanTimestamp = span.startTime;
         const spanDuration = span.duration;
@@ -79,11 +91,12 @@ export default class Span extends React.Component {
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         return (
             <g>
+                {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
                 <rect
                     className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
                     height={20}
                     y={topOffset - 6}
-                    x={`${spanDepth - 0.5}%`}
+                    x={`${depth + 1}%`}
                     clipPath="url(#overflow)"
                     width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
                     rx="3.5"
@@ -92,7 +105,7 @@ export default class Span extends React.Component {
                 />
                 <text
                     className="span-service-label"
-                    x={`${spanDepth}%`}
+                    x={`${depth + 1.5}%`}
                     y={topOffset + 8}
                     clipPath="url(#overflow)"
                 >{serviceName}
@@ -115,9 +128,20 @@ export default class Span extends React.Component {
                     ry="3.5"
                     fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
                 />
+                {(expandable === true)
+                    ? <rect
+                        className="span-click"
+                        width="12%"
+                        x="0%"
+                        y={topOffset - 13}
+                        height={rowHeight + 20}
+                        onClick={this.toggleChild}
+                    />
+                    : null }
                 <rect
                     className="span-click"
-                    x="0"
+                    width="100%"
+                    x="12%"
                     y={topOffset - 13}
                     height={rowHeight + 20}
                     onClick={this.openModal}

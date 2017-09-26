@@ -25,19 +25,35 @@ function TraceException(data) {
     this.data = data;
 }
 
+function setChildExpandState(timelineSpans, parentId, display) {
+    const parent = timelineSpans.find(s => s.spanId === parentId);
+    parent.children.forEach((childId) => {
+        const childSpan = timelineSpans.find(s => s.spanId === childId);
+        childSpan.display = display;
+        childSpan.expanded = display;
+        setChildExpandState(timelineSpans, childSpan.spanId, display);
+    });
+}
+
 export class ActiveTraceStore {
+    @observable promiseState = null;
     @observable spans = [];
+    @observable rootSpan = [];
+    @observable timelineSpans = [];
     @observable startTime = {};
     @observable totalDuration = {};
-    @observable promiseState = null;
     @observable timePointers = [];
-    @observable spanTreeDepths = {};
+
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
+                    // raw and process span data
                     this.spans = result.data;
+                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
+                    this.timelineSpans = traceDetailsFormatters.createSpanTimeline(this.spans, this.rootSpan);
+                    // timing information
                     this.startTime = traceDetailsFormatters.calculateStartTime(this.spans);
                     this.totalDuration = traceDetailsFormatters.calculateDuration(this.spans, this.startTime);
                     this.timePointers = traceDetailsFormatters.getTimePointers(this.totalDuration);
@@ -47,6 +63,15 @@ export class ActiveTraceStore {
                     throw new TraceException(result);
                 })
         );
+    }
+
+    @action toggleExpand(selectedParentId) {
+        const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
+
+        const isExpanded = parent.expanded;
+        parent.expanded = !isExpanded;
+
+        setChildExpandState(this.timelineSpans, selectedParentId, !isExpanded);
     }
 }
 

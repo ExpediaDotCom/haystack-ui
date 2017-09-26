@@ -236,6 +236,8 @@ function createStubDetailsStore(spans, promise) {
     sinon.stub(store, 'fetchTraceDetails', () => {
         store.spans = spans;
         store.promiseState = promise;
+        store.rootSpan = store.spans.find(span => !span.parentSpanId);
+        store.timelineSpans = traceDetailsFormatters.createSpanTimeline(store.spans, store.rootSpan);
         store.startTime = traceDetailsFormatters.calculateStartTime(store.spans);
         store.totalDuration = traceDetailsFormatters.calculateDuration(store.spans, store.startTime);
         store.timePointers = traceDetailsFormatters.getTimePointers(store.totalDuration);

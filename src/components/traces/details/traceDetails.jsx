@@ -68,16 +68,22 @@ export default class TraceDetails extends React.Component {
         setTimeout(() => this.setState({showCopied: false}), 2000);
     }
 
-    tabViewer({promiseState, spans, totalDuration, startTime, timePointers}) {
+    tabViewer({promiseState, timelineSpans, totalDuration, startTime, timePointers}) {
         return (<section>
                 {
                     promiseState && promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => {
-                            if (spans && spans.length) {
+                            if (timelineSpans && timelineSpans.length) {
                                 return (this.state.tabSelected === 1) ?
-                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={this.props.activeTraceStore.spanTreeDepths}/> :
+                                    <Timeline
+                                        timelineSpans={timelineSpans}
+                                        totalDuration={totalDuration}
+                                        startTime={startTime}
+                                        timePointers={timePointers}
+                                        toggleExpand={this.props.activeTraceStore.toggleExpand}
+                                    /> :
                                     <Invocations/>;
                             }
 
@@ -93,7 +99,6 @@ export default class TraceDetails extends React.Component {
             <section className="trace-details">
                 <div className="tabs-nav-container clearfix">
                     <h5 className="pull-left">TraceId: {this.props.traceId}</h5>
-
                     <ul className="nav nav-tabs pull-left hidden">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
@@ -120,7 +125,7 @@ export default class TraceDetails extends React.Component {
                 </div>
                 {this.tabViewer({
                     promiseState: this.props.activeTraceStore.promiseState,
-                    spans: this.props.activeTraceStore.spans,
+                    timelineSpans: this.props.activeTraceStore.timelineSpans,
                     totalDuration: this.props.activeTraceStore.totalDuration,
                     startTime: this.props.activeTraceStore.startTime,
                     timePointers: this.props.activeTraceStore.timePointers})}
