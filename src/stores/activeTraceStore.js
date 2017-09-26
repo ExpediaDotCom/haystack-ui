@@ -62,7 +62,7 @@ function spanTreeDepths(spanTree, initialDepth) {
 }
 
 function createSpanTree(span, trace, groupByParentId = null) {
-    const spansWithParent = _.filter(trace, s => s.parentSpanId);
+    const spansWithParent = trace.filter(s => s.parentSpanId);
     const grouped = groupByParentId !== null ? groupByParentId : _
         .groupBy(spansWithParent, s => s.parentSpanId);
     return {
@@ -72,34 +72,74 @@ function createSpanTree(span, trace, groupByParentId = null) {
     };
 }
 
-function calculateSpansDepth(spans) {
-    const rootSpan = spans.find(span => !span.parentSpanId);
-    const spanTree = createSpanTree(rootSpan, spans);
-    return spanTreeDepths(spanTree, 1);
+function getSpanChilds(spanTree) {
+    const firstNode = [];
+    firstNode[spanTree.span.spanId] = spanTree.children.map(span => span.span.spanId);
+    if (spanTree.children.length === 0) return firstNode;
+    return (spanTree.children || []).reduce((prevMap, child) => {
+        const parentChild = getSpanChilds(child);
+        return {
+            ...prevMap,
+            ...parentChild
+        };
+    }, firstNode);
+}
+
+function getSpans(spanTree) {
+    const firstNode = [];
+    firstNode.push(spanTree.span);
+    return (spanTree.children || []).reduce((prevMap, child) => {
+        const parentChild = getSpans(child);
+        return [
+            ...prevMap,
+            ...parentChild
+        ];
+    }, firstNode);
 }
 
 export class ActiveTraceStore {
     @observable spans = [];
+    @observable fromSpanTree = [];
     @observable startTime = {};
     @observable totalDuration = {};
     @observable promiseState = null;
     @observable timePointers = [];
-    @observable spanTreeDepths = {};
+    @observable rootSpan = [];
+    @observable spanTree = [];
+    @observable spanTreeDepths = [];
+    @observable spanChildren = [];
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
                     this.spans = result.data;
+                    this.backupSpans = result.data;
                     this.startTime = calculateStartTime(this.spans);
                     this.totalDuration = calculateDuration(this.spans, this.startTime);
                     this.timePointers = getTimePointers(this.totalDuration);
-                    this.spanTreeDepths = calculateSpansDepth(this.spans);
+                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
+                    this.spanTree = createSpanTree(this.rootSpan, this.spans);
+                    this.spanTreeDepths = spanTreeDepths(this.spanTree, 1);
+                    this.spanChildren = getSpanChilds(this.spanTree);
+                    this.fromSpanTree = getSpans(this.spanTree);
                 })
                 .catch((result) => {
                     throw new TraceException(result);
                 })
         );
+    }
+
+    @action toggleExpandCollapse(spans, selectedParentId, expand){
+        const selectedParentChildrenId = this.spanChildren[selectedParentId];
+        if (expand) {
+            selectedParentChildrenId.forEach(childId => _.remove(spans, span => span.spanId === childId));
+        } else {
+            selectedParentChildrenId.forEach(childId => spans.push(this.backupSpans.find(bkSpan => bkSpan.spanId === childId)));
+        }
+        const rootSpan = spans.find(span => !span.parentSpanId);
+        const spanTree = createSpanTree(rootSpan, spans);
+        this.fromSpanTree = getSpans(spanTree);
     }
 }
 

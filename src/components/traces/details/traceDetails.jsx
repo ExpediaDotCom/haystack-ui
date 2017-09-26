@@ -77,7 +77,14 @@ export default class TraceDetails extends React.Component {
                         fulfilled: () => {
                             if (spans && spans.length) {
                                 return (this.state.tabSelected === 1) ?
-                                    <Timeline totalDuration={totalDuration} startTime={startTime} timePointers={timePointers} spans={spans} spanTreeDepths={activeTraceStore.spanTreeDepths}/> :
+                                    <Timeline
+                                        totalDuration={totalDuration}
+                                        startTime={startTime}
+                                        timePointers={timePointers}
+                                        spans={spans}
+                                        spanTreeDepths={activeTraceStore.spanTreeDepths}
+                                        spanChildren={activeTraceStore.spanChildren}
+                                    /> :
                                     <Invocations/>;
                             }
 
@@ -93,7 +100,6 @@ export default class TraceDetails extends React.Component {
             <section className="trace-details">
                 <div className="tabs-nav-container clearfix">
                     <h5 className="pull-left">TraceId: {this.props.traceId}</h5>
-
                     <ul className="nav nav-tabs pull-left hidden">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
@@ -120,7 +126,7 @@ export default class TraceDetails extends React.Component {
                 </div>
                 {this.tabViewer({
                     promiseState: activeTraceStore.promiseState,
-                    spans: activeTraceStore.spans,
+                    spans: activeTraceStore.fromSpanTree,
                     totalDuration: activeTraceStore.totalDuration,
                     startTime: activeTraceStore.startTime,
                     timePointers: activeTraceStore.timePointers})}

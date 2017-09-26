@@ -35,7 +35,10 @@ export default class Span extends React.Component {
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
             serviceName: PropTypes.string.isRequired,
-            spanDepth: PropTypes.number.isRequired
+            spanDepth: PropTypes.number.isRequired,
+            expandable: PropTypes.bool.isRequired,
+            spanDisplay: PropTypes.func.isRequired,
+            selected: PropTypes.bool.isRequired
         };
     }
 
@@ -49,15 +52,28 @@ export default class Span extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {modalIsOpen: false};
+        this.state = {
+            modalIsOpen: false,
+            expand: true
+        };
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.toggleChild = this.toggleChild.bind(this);
     }
     openModal() {
         this.setState({modalIsOpen: true});
     }
     closeModal() {
         this.setState({modalIsOpen: false});
+    }
+
+    toggleChild() {
+        if (this.state.expand) {
+            this.setState({expand: false});
+        } else {
+            this.setState({expand: true});
+        }
+        this.props.spanDisplay(this.props.span.spanId, this.state.expand);
     }
 
     render() {
@@ -69,7 +85,8 @@ export default class Span extends React.Component {
             span,
             totalDuration,
             serviceName,
-            spanDepth
+            spanDepth,
+            expandable
         } = this.props;
         const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
         const spanTimestamp = span.startTime;
@@ -115,9 +132,20 @@ export default class Span extends React.Component {
                     ry="3.5"
                     fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
                 />
+                {(expandable === true)
+                    ? <rect
+                        className="span-click"
+                        width="12%"
+                        x="0%"
+                        y={topOffset - 13}
+                        height={rowHeight + 20}
+                        onClick={this.toggleChild}
+                    />
+                    : null }
                 <rect
                     className="span-click"
-                    x="0"
+                    width="100%"
+                    x="12%"
                     y={topOffset - 13}
                     height={rowHeight + 20}
                     onClick={this.openModal}
