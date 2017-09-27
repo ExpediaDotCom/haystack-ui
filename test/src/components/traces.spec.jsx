@@ -214,10 +214,8 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function TraceStubComponent({activeTraceStore, traceId, location, baseServiceName}) {
-    return (<section className="traces-panel">
-        <TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} activeTraceStore={activeTraceStore} />
-    </section>);
+function TraceDetailsStubComponent({activeTraceStore, traceId, location, baseServiceName}) {
+    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} activeTraceStore={activeTraceStore} />);
 }
 
 function createStubStore(results, promise, searchQuery = {}) {
@@ -241,7 +239,6 @@ function createStubDetailsStore(spans, promise) {
         store.startTime = traceDetailsFormatters.calculateStartTime(store.spans);
         store.totalDuration = traceDetailsFormatters.calculateDuration(store.spans, store.startTime);
         store.timePointers = traceDetailsFormatters.getTimePointers(store.totalDuration);
-        store.spanTreeDepths = traceDetailsFormatters.calculateSpansDepth(store.spans);
     });
 
     return store;
@@ -353,7 +350,7 @@ describe('<Traces />', () => {
 
     it('renders the all spans in the trace in the detail view', () => {
         const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].traceId} activeTraceStore={activeTraceStore} />);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].traceId} activeTraceStore={activeTraceStore} />);
         expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
     });
 

@@ -19,19 +19,30 @@ import {observable} from 'mobx';
 
 import formatters from '../../../utils/formatters';
 
+const traceDetailsFormatters = {};
 
 function createSpanTree(span, trace, groupByParentId = null) {
     const spansWithParent = _.filter(trace, s => s.parentSpanId);
     const grouped = groupByParentId !== null ? groupByParentId : _
-        .groupBy(spansWithParent, s => s.parentSpanId);
+    .groupBy(spansWithParent, s => s.parentSpanId);
     return {
         span,
         children: (grouped[span.spanId] || [])
-            .map(s => createSpanTree(s, trace, grouped))
+        .map(s => createSpanTree(s, trace, grouped))
     };
 }
 
-const traceDetailsFormatters = {};
+function createFlattenedSpanTree(spanTree, depth) {
+    return [observable({
+        ...spanTree.span,
+        children: spanTree.children.map(child => child.span.spanId),
+        depth,
+        expandable: !!spanTree.children.length,
+        display: true,
+        expanded: true
+    })]
+    .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
+}
 
 traceDetailsFormatters.calculateStartTime = spans =>
     spans.reduce((earliestTime, span) =>
@@ -54,37 +65,6 @@ traceDetailsFormatters.getTimePointers = (totalDuration) => {
         .map(lo => (lo * 100));
     return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
 };
-
-traceDetailsFormatters.spanTreeDepths = (spanTree, initialDepth) => {
-    const initial = {};
-    initial[spanTree.span.spanId] = initialDepth;
-    if (spanTree.children.length === 0) return initial;
-    return (spanTree.children || []).reduce((prevMap, child) => {
-        const childDepths = traceDetailsFormatters.spanTreeDepths(child, initialDepth + 1);
-        return {
-            ...prevMap,
-            ...childDepths
-        };
-    }, initial);
-};
-
-traceDetailsFormatters.calculateSpansDepth = (spans) => {
-    const rootSpan = spans.find(span => !span.parentSpanId);
-    const spanTree = createSpanTree(rootSpan, spans);
-    return traceDetailsFormatters.spanTreeDepths(spanTree, 1);
-};
-
-function createFlattenedSpanTree(spanTree, depth) {
-    return [observable({
-        ...spanTree.span,
-        children: spanTree.children.map(child => child.span.spanId),
-        depth,
-        expandable: !!spanTree.children.length,
-        display: true,
-        expanded: true
-    })]
-        .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
-}
 
 traceDetailsFormatters.createSpanTimeline = (spans, root) => {
     const tree = createSpanTree(root, spans);

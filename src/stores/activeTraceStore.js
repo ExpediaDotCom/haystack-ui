@@ -40,8 +40,8 @@ export class ActiveTraceStore {
     @observable spans = [];
     @observable rootSpan = [];
     @observable timelineSpans = [];
-    @observable startTime = {};
-    @observable totalDuration = {};
+    @observable startTime = null;
+    @observable totalDuration = null;
     @observable timePointers = [];
 
     @action fetchTraceDetails(traceId) {
@@ -57,7 +57,6 @@ export class ActiveTraceStore {
                     this.startTime = traceDetailsFormatters.calculateStartTime(this.spans);
                     this.totalDuration = traceDetailsFormatters.calculateDuration(this.spans, this.startTime);
                     this.timePointers = traceDetailsFormatters.getTimePointers(this.totalDuration);
-                    this.spanTreeDepths = traceDetailsFormatters.calculateSpansDepth(this.spans);
                 })
                 .catch((result) => {
                     throw new TraceException(result);
@@ -67,11 +66,8 @@ export class ActiveTraceStore {
 
     @action toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
-
-        const isExpanded = parent.expanded;
-        parent.expanded = !isExpanded;
-
-        setChildExpandState(this.timelineSpans, selectedParentId, !isExpanded);
+        setChildExpandState(this.timelineSpans, selectedParentId, !parent.expanded);
+        parent.expanded = !parent.expanded;
     }
 }
 
