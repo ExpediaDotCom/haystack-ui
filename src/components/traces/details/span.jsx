@@ -82,15 +82,41 @@ export default class Span extends React.Component {
             depth,
             expandable
         } = span;
-
         const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
         const spanTimestamp = span.startTime;
         const spanDuration = span.duration;
         const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
         const width = ((spanDuration / totalDuration) * 100) * 0.8;
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
+        const invocationLines = [];
+        for (let i = depth; i > 0; i -= 1) {
+            invocationLines.push(<line
+                x1={`${(i * 2) + 10.6}%`}
+                x2={`${(i * 2) + 10.6}%`}
+                y1={topOffset - 18}
+                y2={topOffset + 10}
+                fill="black"
+                strokeWidth="2"
+                strokeDasharray="3, 5"
+                stroke="black"
+                strokeOpacity="0.3"
+                key={Math.random()}
+            />);
+            }
         return (
             <g>
+                <line
+                    x1={`${(depth * 2) + 10.5}%`}
+                    x2={`${leftOffset}%`}
+                    y1={topOffset + 10}
+                    y2={topOffset + 10}
+                    fill="black"
+                    strokeWidth="2"
+                    strokeDasharray="3, 5"
+                    stroke="black"
+                    strokeOpacity="0.3"
+                />
+                {invocationLines}
                 {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
                 <rect
                     className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
@@ -155,7 +181,6 @@ export default class Span extends React.Component {
                 <clipPath id="overflow">
                     <rect x="0" height="100%" width="10.5%"/>
                 </clipPath>
-                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.3" />
             </g>
         );
     }

@@ -56,7 +56,7 @@ export default class Timeline extends React.Component {
         const spans = timelineSpans.filter(s => s.display);
 
         const timelineHeight = (32 * spans.length) + 37;
-        const lineHeight = timelineHeight - 15;
+        const lineHeight = timelineHeight - 5;
         return (
             <svg height={timelineHeight} width="100%">
                 {timePointers.map(tp =>
@@ -66,7 +66,7 @@ export default class Timeline extends React.Component {
                 </g>)
                 )}
                 <rect x="0%" y="30" width="92%" height="1px" fill="#6B7693" fillOpacity="0.3" />
-                <line x1="10.7%" x2="10.5%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.3" />
+                <line x1="11%" x2="11%" y1="58" y2={lineHeight} fill="black" strokeWidth="2" strokeDasharray="3, 7" stroke="black" strokeOpacity="0.3" />
 
               {
                 spans.map((span, index) => (

@@ -234,7 +234,7 @@ store.findTraces = query => Q.fcall(() => {
               error: false
             },
             startTime: 1505914774596000,
-            duration: 3467000,
+            duration: 3500000,
             error: true
           }
         ];
@@ -271,7 +271,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: 1505914774596000,
-        duration: 3467000,
+        duration: 3500000,
         error: true
       },
       {
@@ -305,7 +305,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: 1505914774596000,
-        duration: 3467000,
+        duration: 3500000,
         error: true
       },
       {
@@ -339,7 +339,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: 1505914774596000,
-        duration: 3467000,
+        duration: 3500000,
         error: false
       },
       {
@@ -373,7 +373,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: 1505914774596000,
-        duration: 3467000,
+        duration: 3500000,
         error: false
       },
       {
@@ -407,7 +407,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: 1505914774596000,
-        duration: 3467000,
+        duration: 3500000,
         error: true
       }
     ];
