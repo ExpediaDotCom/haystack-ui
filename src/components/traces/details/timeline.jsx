@@ -31,7 +31,7 @@ export default class Timeline extends React.Component {
             timePointers: PropTypes.object.isRequired,
             startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            activeTraceStore: PropTypes.object.isRequired
+            toggleExpand: PropTypes.func.isRequired
         };
     }
 
@@ -42,7 +42,7 @@ export default class Timeline extends React.Component {
 
     // eslint-disable-next-line class-methods-use-this
     toggleExpand(selectedParentId, expand) {
-        this.props.activeTraceStore.toggleExpand(selectedParentId, expand);
+        this.props.toggleExpand(selectedParentId, expand);
     }
 
     render() {
