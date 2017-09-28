@@ -98,6 +98,17 @@ export default class Span extends React.Component {
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         return (
             <g>
+                <line
+                    x1="10.5%"
+                    x2={`${leftOffset - 0.5}%`}
+                    y1={topOffset + 10}
+                    y2={topOffset + 10}
+                    fill="black"
+                    strokeWidth="2"
+                    strokeDasharray="3, 5"
+                    stroke="black"
+                    strokeOpacity="0.3"
+                />
                 <rect
                     className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
                     height={20}
@@ -169,17 +180,6 @@ export default class Span extends React.Component {
                         width={`${serviceLabelWidthPerc - 1.5}%`}
                     />
                 </clipPath>
-                <line
-                    x1="10.5%"
-                    x2={`${leftOffset - 0.5}%`}
-                    y1={topOffset + 10}
-                    y2={topOffset + 10}
-                    fill="black"
-                    strokeWidth="2"
-                    strokeDasharray="3, 5"
-                    stroke="black"
-                    strokeOpacity="0.3"
-                />
             </g>
         );
     }

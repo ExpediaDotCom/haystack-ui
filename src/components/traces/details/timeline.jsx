@@ -63,7 +63,7 @@ export default class Timeline extends React.Component {
             <svg height={timelineHeight} width="100%">
                 {timePointers.map(tp =>
                 (<g key={Math.random()}>
-                    <text x={`${tp.leftOffset}%`} y="25" fill="#6B7693" xmlSpace="preserve" textAnchor="end" >{`${tp.time} `}</text>
+                    <text className="time-pointer" x={`${tp.leftOffset - 0.2}%`} y="25" fill="#6B7693" xmlSpace="preserve" textAnchor="end" >{`${tp.time}`}</text>
                     <rect x={`${tp.leftOffset}%`} y="5" width=".1%" height="100%" fill="#6B7693" fillOpacity="0.3" />
                 </g>)
                 )}
