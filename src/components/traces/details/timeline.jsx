@@ -54,8 +54,10 @@ export default class Timeline extends React.Component {
         } = this.props;
 
         const spans = timelineSpans.filter(s => s.display);
-
-        const timelineHeight = (32 * spans.length) + 37;
+        const timelineWidthPerc = 80;
+        const timelineBottomPadding = 37;
+        const timelineHeight = (32 * spans.length) + timelineBottomPadding;
+        const timePointersHeight = 30;
         const lineHeight = timelineHeight - 15;
         return (
             <svg height={timelineHeight} width="100%">
@@ -76,6 +78,8 @@ export default class Timeline extends React.Component {
                         startTime={startTime}
                         rowHeight={12}
                         rowPadding={10}
+                        timelineWidthPerc={timelineWidthPerc}
+                        timePointersHeight={timePointersHeight}
                         span={span}
                         totalDuration={totalDuration}
                         toggleExpand={this.toggleExpand}

@@ -354,6 +354,13 @@ describe('<Traces />', () => {
         expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
     });
 
+    // it('renders the descendents on Span Click in the timeline view', () => {
+    //     const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+    //     const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].traceId} activeTraceStore={activeTraceStore} />);
+    //     wrapper.find('[id="test-span-1"]').simulate('click');
+    //     expect(wrapper.find('.span-bar')).to.have.length(1);
+    // });
+
     it('should update URL query params on clicking search');
 
     it('should sort columns');
