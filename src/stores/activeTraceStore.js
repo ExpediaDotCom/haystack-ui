@@ -25,7 +25,7 @@ function TraceException(data) {
     this.data = data;
 }
 
-function setChildExpandState(timelineSpans, parentId, display) {
+export function setChildExpandState(timelineSpans, parentId, display) {
     const parent = timelineSpans.find(s => s.spanId === parentId);
     parent.children.forEach((childId) => {
         const childSpan = timelineSpans.find(s => s.spanId === childId);

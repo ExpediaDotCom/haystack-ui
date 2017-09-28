@@ -52,7 +52,10 @@ ModalView.propTypes = {
     title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
-    children: PropTypes.object.isRequired
+    children: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object
+    ]).isRequired
 };
 
 export default ModalView;

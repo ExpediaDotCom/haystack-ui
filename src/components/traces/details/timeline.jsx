@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
 import Span from './span';
-import activeTraceStore from '../../../stores/activeTraceStore';
 
 @observer
 export default class Timeline extends React.Component {
@@ -31,7 +30,8 @@ export default class Timeline extends React.Component {
             timelineSpans: PropTypes.object.isRequired,
             timePointers: PropTypes.object.isRequired,
             startTime: PropTypes.number.isRequired,
-            totalDuration: PropTypes.number.isRequired
+            totalDuration: PropTypes.number.isRequired,
+            activeTraceStore: PropTypes.object.isRequired
         };
     }
 
@@ -42,7 +42,7 @@ export default class Timeline extends React.Component {
 
     // eslint-disable-next-line class-methods-use-this
     toggleExpand(selectedParentId, expand) {
-        activeTraceStore.toggleExpand(selectedParentId, expand);
+        this.props.activeTraceStore.toggleExpand(selectedParentId, expand);
     }
 
     render() {

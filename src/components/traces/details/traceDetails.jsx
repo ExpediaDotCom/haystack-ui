@@ -82,7 +82,7 @@ export default class TraceDetails extends React.Component {
                                         totalDuration={totalDuration}
                                         startTime={startTime}
                                         timePointers={timePointers}
-                                        toggleExpand={this.props.activeTraceStore.toggleExpand}
+                                        activeTraceStore={this.props.activeTraceStore}
                                     /> :
                                     <Invocations/>;
                             }
