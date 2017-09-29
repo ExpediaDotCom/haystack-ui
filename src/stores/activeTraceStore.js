@@ -16,67 +16,16 @@
  */
 
 import axios from 'axios';
-import _ from 'lodash';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
-import formatters from '../utils/formatters';
+import traceDetailsFormatters from '../components/traces/utils/traceDetailsFormatters';
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
 }
 
-function calculateStartTime(spans) {
-    return spans.reduce((earliestTime, span) =>
-        (earliestTime ? Math.min(earliestTime, span.startTime) : span.startTime), null
-    );
-}
-
-function calculateDuration(spans, start) {
-    const end = spans.reduce((latestTime, span) =>
-        (latestTime ? Math.max(latestTime, (span.startTime + span.duration)) : (span.startTime + span.duration)), null
-    );
-    const difference = end - start;
-     return difference || 1;
-}
-
-function getTimePointers(totalDuration) {
-    const pointerDurations = [0.0, 0.25, 0.50, 0.75, 1.0]
-        .map(dur => (totalDuration * dur));
-    const leftOffset = [0.12, 0.32, 0.52, 0.72, 0.92]
-        .map(lo => (lo * 100));
-    return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
-}
-
-function createSpanTree(span, trace, groupByParentId = null) {
-    const spansWithParent = trace.filter(s => s.parentSpanId);
-    const grouped = groupByParentId !== null ? groupByParentId : _
-        .groupBy(spansWithParent, s => s.parentSpanId);
-    return {
-        span,
-        children: (grouped[span.spanId] || [])
-            .map(s => createSpanTree(s, trace, grouped))
-    };
-}
-
-function createFlattenedSpanTree(spanTree, depth) {
-  return [observable({
-    ...spanTree.span,
-    children: spanTree.children.map(child => child.span.spanId),
-    depth,
-    expandable: !!spanTree.children.length,
-    display: true,
-    expanded: true
-  })]
-  .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
-}
-
-function createSpanTimeline(spans, root) {
-  const tree = createSpanTree(root, spans);
-  return createFlattenedSpanTree(tree, 0);
-}
-
-function setChildExpandState(timelineSpans, parentId, display) {
+export function setChildExpandState(timelineSpans, parentId, display) {
     const parent = timelineSpans.find(s => s.spanId === parentId);
     parent.children.forEach((childId) => {
         const childSpan = timelineSpans.find(s => s.spanId === childId);
@@ -91,8 +40,8 @@ export class ActiveTraceStore {
     @observable spans = [];
     @observable rootSpan = [];
     @observable timelineSpans = [];
-    @observable startTime = {};
-    @observable totalDuration = {};
+    @observable startTime = null;
+    @observable totalDuration = null;
     @observable timePointers = [];
 
     @action fetchTraceDetails(traceId) {
@@ -103,13 +52,12 @@ export class ActiveTraceStore {
                     // raw and process span data
                     this.spans = result.data;
                     this.rootSpan = this.spans.find(span => !span.parentSpanId);
-                    this.timelineSpans = createSpanTimeline(this.spans, this.rootSpan);
-
+                    this.timelineSpans = traceDetailsFormatters.createSpanTimeline(this.spans, this.rootSpan);
                     // timing information
-                    this.startTime = calculateStartTime(this.spans);
-                    this.totalDuration = calculateDuration(this.spans, this.startTime);
-                    this.timePointers = getTimePointers(this.totalDuration);
-             })
+                    this.startTime = traceDetailsFormatters.calculateStartTime(this.spans);
+                    this.totalDuration = traceDetailsFormatters.calculateDuration(this.spans, this.startTime);
+                    this.timePointers = traceDetailsFormatters.getTimePointers(this.totalDuration);
+                })
                 .catch((result) => {
                     throw new TraceException(result);
                 })
@@ -118,11 +66,8 @@ export class ActiveTraceStore {
 
     @action toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
-
-        const isExpanded = parent.expanded;
-        parent.expanded = !isExpanded;
-
-        setChildExpandState(this.timelineSpans, selectedParentId, !isExpanded);
+        setChildExpandState(this.timelineSpans, selectedParentId, !parent.expanded);
+        parent.expanded = !parent.expanded;
     }
 }
 

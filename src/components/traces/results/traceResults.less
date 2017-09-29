@@ -70,7 +70,6 @@ tr.tr-no-border>td {
 }
 
 .react-bs-container-body {
-  /*height: 154px;*/
   overflow: auto;
   width: 100%;
 }
@@ -245,6 +244,19 @@ tr.tr-no-border>td {
   }
 }
 
+@keyframes EXPAND {
+  from {
+    margin-top: -2%;
+  }
+  to {
+    margin-top: 0;
+  }
+}
+
+.react-bs-container-body tr:nth-child(even):not([hidden]) td section div {
+  animation: EXPAND 0.2s;
+}
+
 // CSS For the tentative progress bar
 .percentContainer {
   display: inline-block;
@@ -292,3 +304,4 @@ tr.tr-no-border>td {
   border: 1px solid @gray-mid-lighter;
   background-color: white;
 }
+

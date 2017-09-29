@@ -22,10 +22,14 @@ import React from 'react';
 import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
+
 import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/stores/tracesSearchStore';
+import {ActiveTraceStore} from '../../../src/stores/activeTraceStore';
+import TraceDetails from '../../../src/components/traces/details/traceDetails';
+import traceDetailsFormatters from '../../../src/components/traces/utils/traceDetailsFormatters';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -113,7 +117,96 @@ const stubResults = [{
         error: false,
         startTime: 1499985993,
         duration: 17765
-    }];
+    }
+];
+
+const stubDetails = [
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504784384000,
+        duration: 3500000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                endpoint: {
+                    serviceName: 'test-service'
+                }
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'true'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-2',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-3',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-4',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [{
+            timestamp: 1504784384000,
+            endpoint: {
+                serviceName: 'test-service'
+            }
+        }],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    }
+];
 
 function TracesStubComponent({tracesSearchStore, history, location, match}) {
     return (<section className="traces-panel">
@@ -122,12 +215,31 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
+function TraceDetailsStubComponent({activeTraceStore, traceId, location, baseServiceName}) {
+    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} activeTraceStore={activeTraceStore} />);
+}
+
 function createStubStore(results, promise, searchQuery = {}) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
         store.promiseState = promise;
         store.searchQuery = searchQuery;
+    });
+
+    return store;
+}
+
+function createStubDetailsStore(spans, promise) {
+    const store = new ActiveTraceStore();
+    sinon.stub(store, 'fetchTraceDetails', () => {
+        store.spans = spans;
+        store.promiseState = promise;
+        store.rootSpan = store.spans.find(span => !span.parentSpanId);
+        store.timelineSpans = traceDetailsFormatters.createSpanTimeline(store.spans, store.rootSpan);
+        store.startTime = traceDetailsFormatters.calculateStartTime(store.spans);
+        store.totalDuration = traceDetailsFormatters.calculateDuration(store.spans, store.startTime);
+        store.timePointers = traceDetailsFormatters.getTimePointers(store.totalDuration);
     });
 
     return store;
@@ -159,6 +271,7 @@ describe('<Traces />', () => {
     it('should render error if promise is rejected', () => {
         const tracesSearchStore = createStubStore(stubResults, rejectedPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
     });
@@ -166,6 +279,7 @@ describe('<Traces />', () => {
     it('should render loading while promise is pending', () => {
         const tracesSearchStore = createStubStore(stubResults, pendingPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
     });
@@ -200,18 +314,22 @@ describe('<Traces />', () => {
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing no key value'}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'failure'}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'this=is wrong format ='}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'a=b c d=e'}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
     });
 
@@ -222,19 +340,47 @@ describe('<Traces />', () => {
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key value = pair'}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: '   testing   =   key value   =   pair   '}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key        value = pair '}});
         wrapper.find('.traces-search-button').simulate('click');
+
         expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
+    });
+
+    it('renders the all spans in the trace in the detail view', () => {
+        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+
+        expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+    });
+
+    it('renders the descendents on Span Click in the timeline view', () => {
+        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+        wrapper.find('[id="test-span-1"]').simulate('click');
+
+        expect(wrapper.find('.span-bar')).to.have.length(1);
+    });
+
+    it('properly renders the time pointers to depict duration', () => {
+        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+        const timePointers = wrapper.find('.time-pointer');
+
+        expect(timePointers).to.have.length(5);
+        expect((timePointers).last().text()).to.eq('3.500s');
     });
 
     it('should update URL query params on clicking search');

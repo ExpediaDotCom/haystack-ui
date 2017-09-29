@@ -38,7 +38,7 @@ function mapQueryParams(query) {
         serviceName: query.serviceName,
         spanName: query.operationName,
         annotationQuery: toAnnotationQuery(query),
-        endTs: query.endTime || Date.now() * 1000,
+        endTs: query.endTime || Date.now * 1000,
         lookback: rangeConverter.toDuration(query.timePreset) || (query.endTime - query.startTime),
         limit: 40
     };
