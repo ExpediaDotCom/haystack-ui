@@ -106,7 +106,7 @@ export default class Span extends React.Component {
         return (
             <g>
                 <line
-                    x1={`${(depth * 2) + 10.5}%`}
+                    x1={`${(depth * 2) + 11}%`}
                     x2={`${leftOffset}%`}
                     y1={topOffset + 10}
                     y2={topOffset + 10}
