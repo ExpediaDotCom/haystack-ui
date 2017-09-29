@@ -36,7 +36,9 @@ export default class Span extends React.Component {
             rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            toggleExpand: PropTypes.func.isRequired
+            toggleExpand: PropTypes.func.isRequired,
+            timelineWidthPerc: PropTypes.number.isRequired,
+            timePointersHeight: PropTypes.number.isRequired
         };
     }
 
@@ -74,24 +76,39 @@ export default class Span extends React.Component {
             rowHeight,
             rowPadding,
             span,
-            totalDuration
+            totalDuration,
+            timelineWidthPerc,
+            timePointersHeight
         } = this.props;
 
         const {
             serviceName,
             depth,
-            expandable
+            expandable,
+            expanded
         } = span;
 
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + 30; // Additional 30 px for timepointer
+        const paddingVertical = 4;
+        const serviceLabelWidthPerc = 12;
+        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + timePointersHeight;
         const spanTimestamp = span.startTime;
         const spanDuration = span.duration;
-        const leftOffset = (((((spanTimestamp - startTime) / totalDuration) * 100) * 0.8) + 12); // 0.8 factor is for scaling svg width to 80%
-        const width = ((spanDuration / totalDuration) * 100) * 0.8;
+        const leftOffset = ((((((spanTimestamp - startTime) / totalDuration) * 100) * (timelineWidthPerc / 100)) + serviceLabelWidthPerc));
+        const width = ((spanDuration / totalDuration) * 100) * (timelineWidthPerc / 100);
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         return (
             <g>
-                {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
+                <line
+                    x1="10.5%"
+                    x2={`${leftOffset - 0.5}%`}
+                    y1={topOffset + 10}
+                    y2={topOffset + 10}
+                    fill="black"
+                    strokeWidth="2"
+                    strokeDasharray="3, 5"
+                    stroke="black"
+                    strokeOpacity="0.3"
+                />
                 <rect
                     className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
                     height={20}
@@ -106,7 +123,7 @@ export default class Span extends React.Component {
                 <text
                     className="span-service-label"
                     x={`${depth + 1.5}%`}
-                    y={topOffset + 8}
+                    y={topOffset + (paddingVertical * 2)}
                     clipPath="url(#overflow)"
                 >{serviceName}
                 </text>
@@ -123,27 +140,31 @@ export default class Span extends React.Component {
                     height={rowHeight}
                     width={`${Math.max(width, 0.2)}%`}
                     x={`${leftOffset}%`}
-                    y={topOffset + 4}
+                    y={topOffset + paddingVertical}
                     rx="3.5"
                     ry="3.5"
                     fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
                 />
+                {expandable
+                    ? (<text x={`${depth}%`} y={topOffset + (paddingVertical * 2)}>{expanded ? '-' : '+'}</text>)
+                    : null }
                 {(expandable === true)
                     ? <rect
                         className="span-click"
-                        width="12%"
+                        id={span.spanId}
+                        width={`${serviceLabelWidthPerc}%`}
                         x="0%"
                         y={topOffset - 13}
-                        height={rowHeight + 20}
+                        height={rowHeight + (paddingVertical * 5)}
                         onClick={this.toggleChild}
                     />
                     : null }
                 <rect
                     className="span-click"
-                    width="100%"
-                    x="12%"
+                    width={`${timelineWidthPerc}%`}
+                    x={`${serviceLabelWidthPerc}%`}
                     y={topOffset - 13}
-                    height={rowHeight + 20}
+                    height={rowHeight + (paddingVertical * 5)}
                     onClick={this.openModal}
                 />
                 <SpanDetailsModal
@@ -153,9 +174,12 @@ export default class Span extends React.Component {
                     span={span}
                 />
                 <clipPath id="overflow">
-                    <rect x="0" height="100%" width="10.5%"/>
+                    <rect
+                        x="0"
+                        height="100%"
+                        width={`${serviceLabelWidthPerc - 1.5}%`}
+                    />
                 </clipPath>
-                <line x1="10.5%" x2={`${leftOffset - 0.5}%`} y1={topOffset + 10} y2={topOffset + 10} fill="black" strokeWidth="2" strokeDasharray="3, 5" stroke="black" strokeOpacity="0.3" />
             </g>
         );
     }
