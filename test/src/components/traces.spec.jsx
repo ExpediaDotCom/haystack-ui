@@ -29,7 +29,6 @@ import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/stores/tracesSearchStore';
 import {ActiveTraceStore} from '../../../src/stores/activeTraceStore';
 import TraceDetails from '../../../src/components/traces/details/traceDetails';
-import traceDetailsFormatters from '../../../src/components/traces/utils/traceDetailsFormatters';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -235,11 +234,6 @@ function createStubDetailsStore(spans, promise) {
     sinon.stub(store, 'fetchTraceDetails', () => {
         store.spans = spans;
         store.promiseState = promise;
-        store.rootSpan = store.spans.find(span => !span.parentSpanId);
-        store.timelineSpans = traceDetailsFormatters.createSpanTimeline(store.spans, store.rootSpan);
-        store.startTime = traceDetailsFormatters.calculateStartTime(store.spans);
-        store.totalDuration = traceDetailsFormatters.calculateDuration(store.spans, store.startTime);
-        store.timePointers = traceDetailsFormatters.getTimePointers(store.totalDuration);
     });
 
     return store;
