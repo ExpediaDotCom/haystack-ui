@@ -97,16 +97,6 @@ export class ActiveTraceStore {
     }
 
     @computed
-    get timePointers() {
-        const pointerDurations = [0.0, 0.25, 0.50, 0.75, 1.0]
-            .map(dur => (this.totalDuration * dur));
-        const leftOffset = [0.12, 0.34, 0.56, 0.78, 0.999]
-            .map(lo => (lo * 100));
-
-        return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
-    }
-
-    @computed
     get timelineSpans() {
         if (this.spans.length === 0) return [];
 

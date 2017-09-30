@@ -20,19 +20,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
+import formatters from '../../../utils/formatters';
 
 import Span from './span';
 
 @observer
 export default class Timeline extends React.Component {
-    static get propTypes() {
-        return {
-            timelineSpans: PropTypes.object.isRequired,
-            timePointers: PropTypes.object.isRequired,
-            startTime: PropTypes.number.isRequired,
-            totalDuration: PropTypes.number.isRequired,
-            toggleExpand: PropTypes.func.isRequired
-        };
+    static propTypes = {
+        timelineSpans: PropTypes.array.isRequired,
+        startTime: PropTypes.number.isRequired,
+        totalDuration: PropTypes.number.isRequired,
+        toggleExpand: PropTypes.func.isRequired
+    };
+
+    static getTimePointers(totalDuration) {
+        const pointerDurations = [0.0, 0.25, 0.50, 0.75, 1.0]
+            .map(dur => (totalDuration * dur));
+        const leftOffset = [0.12, 0.32, 0.52, 0.72, 0.92]
+            .map(lo => (lo * 100));
+
+        return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
     }
 
     constructor(props) {
@@ -48,11 +55,11 @@ export default class Timeline extends React.Component {
     render() {
         const {
             timelineSpans,
-            timePointers,
             startTime,
             totalDuration
         } = this.props;
 
+        const timePointers = Timeline.getTimePointers(totalDuration);
         const spans = timelineSpans.filter(s => s.display);
         const timelineWidthPerc = 80;
         const timelineBottomPadding = 37;

@@ -68,7 +68,7 @@ export default class TraceDetails extends React.Component {
         setTimeout(() => this.setState({showCopied: false}), 2000);
     }
 
-    tabViewer({promiseState, timelineSpans, totalDuration, startTime, timePointers}) {
+    tabViewer({promiseState, timelineSpans, totalDuration, startTime}) {
         return (<section>
                 {
                     promiseState && promiseState.case({
@@ -81,7 +81,6 @@ export default class TraceDetails extends React.Component {
                                         timelineSpans={timelineSpans}
                                         totalDuration={totalDuration}
                                         startTime={startTime}
-                                        timePointers={timePointers}
                                         toggleExpand={this.props.activeTraceStore.toggleExpand}
                                     /> :
                                     <Invocations/>;
@@ -127,8 +126,7 @@ export default class TraceDetails extends React.Component {
                     promiseState: this.props.activeTraceStore.promiseState,
                     timelineSpans: this.props.activeTraceStore.timelineSpans,
                     totalDuration: this.props.activeTraceStore.totalDuration,
-                    startTime: this.props.activeTraceStore.startTime,
-                    timePointers: this.props.activeTraceStore.timePointers})}
+                    startTime: this.props.activeTraceStore.startTime})}
 
                 <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={this.props.activeTraceStore.spans}/>
             </section>
