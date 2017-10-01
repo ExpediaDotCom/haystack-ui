@@ -19,7 +19,6 @@ import axios from 'axios';
 import _ from 'lodash';
 import {observable, action, computed} from 'mobx';
 import { fromPromise } from 'mobx-utils';
-import formatters from '../utils/formatters';
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -102,6 +101,11 @@ export class ActiveTraceStore {
 
         const tree = createSpanTree(this.rootSpan, this.spans);
         return createFlattenedSpanTree(tree, 0);
+    }
+
+    @computed
+    get maxDepth() {
+        return this.timelineSpans.reduce((max, span) => Math.max(max, span.depth), 0);
     }
 
     @action toggleExpand(selectedParentId) {

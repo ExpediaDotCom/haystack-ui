@@ -17,11 +17,25 @@
 
 @import (reference) '../../../app';
 
+.time-pointer {
+    fill: @gray-dark;
+}
+
+.time-pointer-line {
+    stroke: @gray-light;
+    stroke-width: 1;
+    stroke-opacity: 0.5;
+}
+
+.timeline-transition {
+    transition: y 0.2s;
+}
+
 .span-label {
-    font-weight: 700;
+    font-weight: 600;
     font-size: @font-size-base;
     cursor: default;
-    fill: #6B7693
+    fill: @gray-dark;
 }
 
 .span-service-label {
@@ -34,7 +48,6 @@
 .span-bar {
     rx: 3.5;
     ry: 3.5;
-    fill: #28a228
 }
 
 .span-click {

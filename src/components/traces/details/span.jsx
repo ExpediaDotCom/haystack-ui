@@ -31,14 +31,14 @@ export default class Span extends React.Component {
     static get propTypes() {
         return {
             index: PropTypes.number.isRequired,
-            startTime: PropTypes.number.isRequired,
-            rowHeight: PropTypes.number.isRequired,
-            rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
+            startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            toggleExpand: PropTypes.func.isRequired,
-            timelineWidthPerc: PropTypes.number.isRequired,
-            timePointersHeight: PropTypes.number.isRequired
+            maxDepth: PropTypes.number.isRequired,
+            spanHeight: PropTypes.number.isRequired,
+            timelineWidthPercent: PropTypes.number.isRequired,
+            timePointersHeight: PropTypes.number.isRequired,
+            toggleExpand: PropTypes.func.isRequired
         };
     }
 
@@ -72,12 +72,12 @@ export default class Span extends React.Component {
     render() {
         const {
             index,
-            startTime,
-            rowHeight,
-            rowPadding,
             span,
+            startTime,
             totalDuration,
-            timelineWidthPerc,
+            spanHeight,
+            maxDepth,
+            timelineWidthPercent,
             timePointersHeight
         } = this.props;
 
@@ -87,17 +87,25 @@ export default class Span extends React.Component {
             expandable,
             expanded
         } = span;
+
+        // coordinates
+        const rowHeight = 10;
+        const rowPadding = 12;
         const paddingVertical = 4;
-        const serviceLabelWidthPerc = 12;
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + timePointersHeight;
+        const topOffset = (index * (rowHeight + (rowPadding * 2))) + rowPadding + timePointersHeight + 2;
+
+
+        //
+        const serviceLabelWidthPerc = 100 - timelineWidthPercent;
         const spanTimestamp = span.startTime;
         const spanDuration = span.duration;
-        const leftOffset = ((((((spanTimestamp - startTime) / totalDuration) * 100) * (timelineWidthPerc / 100)) + serviceLabelWidthPerc));
-        const width = ((spanDuration / totalDuration) * 100) * (timelineWidthPerc / 100);
+        const leftOffset = ((((((spanTimestamp - startTime) / totalDuration) * 100) * (timelineWidthPercent / 100)) + serviceLabelWidthPerc));
+        const width = ((spanDuration / totalDuration) * 100) * (timelineWidthPercent / 100);
         const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
         const invocationLines = [];
         for (let i = depth; i > 0; i -= 1) {
             invocationLines.push(<line
+                className="timeline-transition"
                 x1={`${(i * 2) + 10.6}%`}
                 x2={`${(i * 2) + 10.6}%`}
                 y1={topOffset - 18}
@@ -109,10 +117,40 @@ export default class Span extends React.Component {
                 strokeOpacity="0.3"
                 key={Math.random()}
             />);
-            }
+        }
+
+        // service name text
+        const maxServiceChars = 24 - (maxDepth * 3);
+        const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
+        const serviceLabelWidth = (maxServiceChars * 7);
+        // TODO add tooltip text
+        const ServiceName = (
+            <g>
+                {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
+                <rect
+                    className={`${serviceColor.toFillClass(serviceName)}`}
+                    height={20}
+                    y={topOffset - 6}
+                    x={`${depth + 1}%`}
+                    width={serviceLabelWidth}
+                    rx="3.5"
+                    ry="3.5"
+                    fillOpacity="0.8"
+                    clipPath="url(#overflow)"
+                />
+                <text
+                    className="span-service-label"
+                    x={`${depth + 1.5}%`}
+                    y={topOffset + (paddingVertical * 2)}
+                    clipPath="url(#overflow)"
+                >{trimmedServiceName}
+                </text>
+            </g>);
+
         return (
             <g>
                 <line
+                    className="timeline-transition"
                     x1={`${(depth * 2) + 11}%`}
                     x2={`${leftOffset}%`}
                     y1={topOffset + 10}
@@ -123,26 +161,10 @@ export default class Span extends React.Component {
                     stroke="black"
                     strokeOpacity="0.3"
                 />
+
                 {invocationLines}
-                {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
-                <rect
-                    className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
-                    height={20}
-                    y={topOffset - 6}
-                    x={`${depth + 1}%`}
-                    clipPath="url(#overflow)"
-                    width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
-                    rx="3.5"
-                    ry="3.5"
-                    fillOpacity="0.8"
-                />
-                <text
-                    className="span-service-label"
-                    x={`${depth + 1.5}%`}
-                    y={topOffset + (paddingVertical * 2)}
-                    clipPath="url(#overflow)"
-                >{serviceName}
-                </text>
+                {ServiceName}
+
                 <text
                     className="span-label"
                     x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
@@ -151,22 +173,22 @@ export default class Span extends React.Component {
                 >{span.operationName}:{formattedDuration}
                 </text>
                 <rect
-                    className="btn span-bar"
+                    className="span-bar"
                     id={span.traceId}
-                    height={rowHeight}
+                    height={9}
                     width={`${Math.max(width, 0.2)}%`}
                     x={`${leftOffset}%`}
                     y={topOffset + paddingVertical}
                     rx="3.5"
                     ry="3.5"
-                    fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
+                    fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#3f4d71'}
                 />
                 {expandable
                     ? (<text x={`${depth}%`} y={topOffset + (paddingVertical * 2)}>{expanded ? '-' : '+'}</text>)
                     : null }
                 {(expandable === true)
                     ? <rect
-                        className="span-click"
+                        className="timeline-transition span-click"
                         id={span.spanId}
                         width={`${serviceLabelWidthPerc}%`}
                         x="0%"
@@ -176,8 +198,8 @@ export default class Span extends React.Component {
                     />
                     : null }
                 <rect
-                    className="span-click"
-                    width={`${timelineWidthPerc}%`}
+                    className="timeline-transition span-click"
+                    width={`${timelineWidthPercent}%`}
                     x={`${serviceLabelWidthPerc}%`}
                     y={topOffset - 13}
                     height={rowHeight + (paddingVertical * 5)}
