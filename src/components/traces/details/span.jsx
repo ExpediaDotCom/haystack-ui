@@ -37,8 +37,13 @@ export default class Span extends React.Component {
             timelineWidthPercent: PropTypes.number.isRequired,
             timePointersHeight: PropTypes.number.isRequired,
             parentStartTimePercent: PropTypes.number.isRequired,
+            parentIndex: PropTypes.number.isRequired,
             toggleExpand: PropTypes.func.isRequired
         };
+    }
+
+    static getOffsetPercent(absolutePercent, timelineWidthPercent) {
+        return (((absolutePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)))
     }
 
     static getSpanSuccess(span) {
@@ -77,7 +82,8 @@ export default class Span extends React.Component {
             maxDepth,
             timelineWidthPercent,
             timePointersHeight,
-            parentStartTimePercent
+            parentStartTimePercent,
+            parentIndex
         } = this.props;
 
         const {
@@ -94,24 +100,6 @@ export default class Span extends React.Component {
         const verticalPadding = 6;
         const topY = timePointersHeight + (index * spanHeight);
 
-        // invocation lines
-        const invocationLines = [];
-        for (let i = depth; i > 0; i -= 1) {
-            invocationLines.push(<line
-                className="timeline-transition"
-                x1={`${(i * 2) + 10.6}%`}
-                x2={`${(i * 2) + 10.6}%`}
-                y1={topY}
-                y2={topY + (verticalPadding * 4.5)}
-                fill="black"
-                strokeWidth="2"
-                strokeDasharray="3, 5"
-                stroke="black"
-                strokeOpacity="0.3"
-                key={Math.random()}
-            />);
-        }
-
         // service pills
         const pillHeight = spanHeight - (2 * verticalPadding);
         const maxServiceChars = 24 - (maxDepth * 3);
@@ -125,14 +113,11 @@ export default class Span extends React.Component {
                     ? <text x={`${depth}%`} y={serviceNameBaseline}>{expanded ? '-' : '+'}</text>
                     : null }
                 <rect
-                    className={`${serviceColor.toFillClass(serviceName)}`}
+                    className={`service-pill ${serviceColor.toFillClass(serviceName)}`}
                     height={pillHeight}
+                    width={serviceLabelWidth}
                     y={topY + verticalPadding}
                     x={`${depth + 1}%`}
-                    width={serviceLabelWidth}
-                    rx="3.5"
-                    ry="3.5"
-                    fillOpacity="0.8"
                     clipPath="url(#overflow)"
                 />
                 <text
@@ -156,55 +141,59 @@ export default class Span extends React.Component {
             </g>);
 
         // span bar
-        const leftOffsetPercent = (((startTimePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)));
+        const leftOffsetPercent = Span.getOffsetPercent(startTimePercent, timelineWidthPercent);
         const spanWidthPercent = ((duration / totalDuration) * 100) * (timelineWidthPercent / 100);
         const formattedDuration = `${formatters.toDurationMsString(duration)}`;
         const SpanBar = (<g>
             <text
                 className="span-label"
-                x={leftOffsetPercent > 50 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
+                x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 2)}
-                textAnchor={leftOffsetPercent > 50 ? 'end' : 'start'}
+                textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
             >{operationName}:{formattedDuration}
             </text>
             <rect
-                className="span-bar"
                 id={span.traceId}
+                className={Span.getSpanSuccess(span) === 'false' ? 'span-bar span-bar_failure' : 'span-bar'}
                 height={9}
                 width={`${Math.max(spanWidthPercent, 0.2)}%`}
                 x={`${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 3)}
-                rx="3.5"
-                ry="3.5"
-                fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#3f4d71'}
             />
             <rect
                 className="span-click"
-                x={`${100 - timelineWidthPercent}%`}
-                y={topY}
                 width={`${timelineWidthPercent}%`}
                 height={spanHeight}
+                x={`${100 - timelineWidthPercent}%`}
+                y={topY}
                 onClick={this.openModal}
+            />
+        </g>);
+
+        // invocation lines
+        const horizontalLineY = topY + (verticalPadding * 3.8);
+        const parentOffsetPercent = Span.getOffsetPercent(parentStartTimePercent, timelineWidthPercent);
+        const invocationLines = (<g>
+            <line
+                className="invocation-line"
+                x1={`${parentOffsetPercent}%`}
+                x2={`${parentOffsetPercent}%`}
+                y1={(parentIndex * spanHeight) + timePointersHeight + (verticalPadding * 3.8)}
+                y2={horizontalLineY}
+            />
+            <line
+                className="invocation-line"
+                x1={`${parentOffsetPercent}%`}
+                x2={`${leftOffsetPercent}%`}
+                y1={horizontalLineY}
+                y2={horizontalLineY}
             />
         </g>);
 
         return (
             <g>
-                <line
-                    className="timeline-transition"
-                    x1={`${(depth * 2) + 11}%`}
-                    x2={`${leftOffsetPercent}%`}
-                    y1={topY + (verticalPadding * 4)}
-                    y2={topY + (verticalPadding * 4)}
-                    fill="black"
-                    strokeWidth="2"
-                    strokeDasharray="3, 5"
-                    stroke="black"
-                    strokeOpacity="0.3"
-                />
-
-                {invocationLines}
                 {ServiceName}
+                {invocationLines}
                 {SpanBar}
 
                 <SpanDetailsModal

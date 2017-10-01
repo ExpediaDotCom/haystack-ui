@@ -40,10 +40,21 @@
     opacity: 0;
 }
 
+.span-click_even {
+    fill: @gray-lighter;
+    opacity: 1;
+}
+
 .span-click:hover {
     background-color: @gray-light;
     opacity: 0.1;
     cursor: pointer;
+}
+
+.service-pill {
+    fill-opacity: 0.8;
+    rx: 4;
+    ry: 4;
 }
 
 .span-label {
@@ -54,8 +65,19 @@
 }
 
 .span-bar {
-    rx: 3.5;
-    ry: 3.5;
+    fill: @gray-dark;
+    rx: 4;
+    ry: 4;
+}
+
+.span-bar_failure {
+    fill: @brand-danger;
+}
+
+.invocation-line {
+    stroke: @gray-mid-light;
+    stroke-width: 2;
+    stroke-dasharray: 3, 5;
 }
 
 .trace-details {

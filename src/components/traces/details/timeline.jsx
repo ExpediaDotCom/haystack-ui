@@ -82,14 +82,15 @@ export default class Timeline extends React.Component {
                 {timePointers.map(tp =>
                     (<g key={tp.leftOffset}>
                         <text className="time-pointer" x={`${tp.leftOffset - 0.2}%`} y="15" xmlSpace="preserve" textAnchor="end" >{`${tp.time}`} </text>
-                        <line className="time-pointer-line" x1={`${tp.leftOffset}%`} x2={`${tp.leftOffset}%`} y1="0" y2="100%" />
+                        <line className="time-pointer-line" x1={`${tp.leftOffset}%`} x2={`${tp.leftOffset}%`} y1="0" y2="20" />
                     </g>)
                 )}
                 <line className="time-pointer-line" x1="0%" x2="100%" y1={timePointersHeight} y2={timePointersHeight} />
 
                 {spans.map((span, index) => {
                     const parent = spans.find(s => s.spanId === span.parentSpanId);
-                    const parentStartTimePercent = parent ? parent.startTimePercent : -1;
+                    const parentStartTimePercent = parent ? parent.startTimePercent : 0;
+                    const parentIndex = parent ? spans.indexOf(parent) : 0;
 
                     return (<Span
                         key={span.spanId}
@@ -103,6 +104,7 @@ export default class Timeline extends React.Component {
                         spanHeight={spanHeight}
                         toggleExpand={this.toggleExpand}
                         parentStartTimePercent={parentStartTimePercent}
+                        parentIndex={parentIndex}
                     />);
                     })
                 }
