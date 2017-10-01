@@ -99,6 +99,7 @@ export default class Span extends React.Component {
         // coordinates
         const verticalPadding = 6;
         const topY = timePointersHeight + (index * spanHeight);
+        const isEvenRow = !(index % 2);
 
         // service pills
         const pillHeight = spanHeight - (2 * verticalPadding);
@@ -150,7 +151,7 @@ export default class Span extends React.Component {
                 x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 2)}
                 textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
-            >{operationName}:{formattedDuration}
+            >{operationName}: {formattedDuration}
             </text>
             <rect
                 id={span.traceId}
@@ -192,6 +193,15 @@ export default class Span extends React.Component {
 
         return (
             <g>
+                <rect
+                    className={isEvenRow ? 'span-row_even' : 'span-row_odd'}
+                    width="100%"
+                    height={spanHeight}
+                    x="0"
+                    y={topY}
+                    onClick={this.openModal}
+                />
+
                 {ServiceName}
                 {invocationLines}
                 {SpanBar}

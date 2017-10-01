@@ -108,6 +108,8 @@ export default class Timeline extends React.Component {
                     />);
                     })
                 }
+
+                <line className="time-pointer-line" strokeWidth={2} x1="0%" x2="100%" y1={(spans.length * spanHeight) + timePointersHeight} y2={(spans.length * spanHeight) + timePointersHeight} />
             </svg>
         );
     }
