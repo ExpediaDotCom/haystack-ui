@@ -66,7 +66,7 @@ export default class Timeline extends React.Component {
         } = this.props;
 
         // layout constants
-        const spanHeight = 32;
+        const spanHeight = 34;
         const timelineWidthPercent = 85;
         const timePointersHeight = 20;
 
@@ -75,7 +75,7 @@ export default class Timeline extends React.Component {
         const timePointers = Timeline.getTimePointers(totalDuration, timelineWidthPercent);
 
         // layout derivatives
-        const timelineHeight = timePointersHeight + (spanHeight * spans.length) + 10;
+        const timelineHeight = timePointersHeight + (spanHeight * spans.length);
 
         return (
             <svg height={timelineHeight} width="100%">
@@ -87,8 +87,11 @@ export default class Timeline extends React.Component {
                 )}
                 <line className="time-pointer-line" x1="0%" x2="100%" y1={timePointersHeight} y2={timePointersHeight} />
 
-                {spans.map((span, index) => (
-                    (<Span
+                {spans.map((span, index) => {
+                    const parent = spans.find(s => s.spanId === span.parentSpanId);
+                    const parentStartTimePercent = parent ? parent.startTimePercent : -1;
+
+                    return (<Span
                         key={span.spanId}
                         index={index}
                         span={span}
@@ -99,7 +102,9 @@ export default class Timeline extends React.Component {
                         timePointersHeight={timePointersHeight}
                         spanHeight={spanHeight}
                         toggleExpand={this.toggleExpand}
-                    />)))
+                        parentStartTimePercent={parentStartTimePercent}
+                    />);
+                    })
                 }
             </svg>
         );

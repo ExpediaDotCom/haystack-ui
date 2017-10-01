@@ -45,16 +45,17 @@ function createSpanTree(span, trace, groupByParentId = null) {
     };
 }
 
-function createFlattenedSpanTree(spanTree, depth) {
+function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration) {
     return [observable({
         ...spanTree.span,
         children: spanTree.children.map(child => child.span.spanId),
+        startTimePercent: (((spanTree.span.startTime - traceStartTime) / totalDuration) * 100),
         depth,
         expandable: !!spanTree.children.length,
         display: true,
         expanded: true
     })]
-    .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1)));
+    .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1, traceStartTime, totalDuration)));
 }
 
 export class ActiveTraceStore {
@@ -100,7 +101,7 @@ export class ActiveTraceStore {
         if (this.spans.length === 0) return [];
 
         const tree = createSpanTree(this.rootSpan, this.spans);
-        return createFlattenedSpanTree(tree, 0);
+        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration);
     }
 
     @computed

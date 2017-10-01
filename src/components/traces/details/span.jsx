@@ -27,17 +27,16 @@ import serviceColor from '../../../utils/serviceColorMapper';
 
 @observer
 export default class Span extends React.Component {
-
     static get propTypes() {
         return {
             index: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
-            startTime: PropTypes.number.isRequired,
             totalDuration: PropTypes.number.isRequired,
             maxDepth: PropTypes.number.isRequired,
             spanHeight: PropTypes.number.isRequired,
             timelineWidthPercent: PropTypes.number.isRequired,
             timePointersHeight: PropTypes.number.isRequired,
+            parentStartTimePercent: PropTypes.number.isRequired,
             toggleExpand: PropTypes.func.isRequired
         };
     }
@@ -73,43 +72,37 @@ export default class Span extends React.Component {
         const {
             index,
             span,
-            startTime,
             totalDuration,
             spanHeight,
             maxDepth,
             timelineWidthPercent,
-            timePointersHeight
+            timePointersHeight,
+            parentStartTimePercent
         } = this.props;
 
         const {
             serviceName,
             depth,
             expandable,
-            expanded
+            expanded,
+            startTimePercent,
+            duration,
+            operationName
         } = span;
 
         // coordinates
-        const rowHeight = 10;
-        const rowPadding = 12;
-        const paddingVertical = 4;
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + rowPadding + timePointersHeight + 2;
+        const verticalPadding = 6;
+        const topY = timePointersHeight + (index * spanHeight);
 
-
-        //
-        const serviceLabelWidthPerc = 100 - timelineWidthPercent;
-        const spanTimestamp = span.startTime;
-        const spanDuration = span.duration;
-        const leftOffset = ((((((spanTimestamp - startTime) / totalDuration) * 100) * (timelineWidthPercent / 100)) + serviceLabelWidthPerc));
-        const width = ((spanDuration / totalDuration) * 100) * (timelineWidthPercent / 100);
-        const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
+        // invocation lines
         const invocationLines = [];
         for (let i = depth; i > 0; i -= 1) {
             invocationLines.push(<line
                 className="timeline-transition"
                 x1={`${(i * 2) + 10.6}%`}
                 x2={`${(i * 2) + 10.6}%`}
-                y1={topOffset - 18}
-                y2={topOffset + 10}
+                y1={topY}
+                y2={topY + (verticalPadding * 4.5)}
                 fill="black"
                 strokeWidth="2"
                 strokeDasharray="3, 5"
@@ -119,18 +112,22 @@ export default class Span extends React.Component {
             />);
         }
 
-        // service name text
+        // service pills
+        const pillHeight = spanHeight - (2 * verticalPadding);
         const maxServiceChars = 24 - (maxDepth * 3);
+        const serviceNameBaseline = topY + verticalPadding + (pillHeight - 8);
         const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
         const serviceLabelWidth = (maxServiceChars * 7);
         // TODO add tooltip text
         const ServiceName = (
             <g>
-                {span.expandable ? (<text x={`${depth}%`} y={topOffset + 8}>{span.expanded ? '-' : '+'}</text>) : null}
+                {expandable
+                    ? <text x={`${depth}%`} y={serviceNameBaseline}>{expanded ? '-' : '+'}</text>
+                    : null }
                 <rect
                     className={`${serviceColor.toFillClass(serviceName)}`}
-                    height={20}
-                    y={topOffset - 6}
+                    height={pillHeight}
+                    y={topY + verticalPadding}
                     x={`${depth + 1}%`}
                     width={serviceLabelWidth}
                     rx="3.5"
@@ -141,20 +138,64 @@ export default class Span extends React.Component {
                 <text
                     className="span-service-label"
                     x={`${depth + 1.5}%`}
-                    y={topOffset + (paddingVertical * 2)}
+                    y={serviceNameBaseline}
                     clipPath="url(#overflow)"
                 >{trimmedServiceName}
                 </text>
+                {expandable
+                    ? <rect
+                        className="span-click"
+                        id={span.spanId}
+                        width={`${100 - timelineWidthPercent}%`}
+                        x="0%"
+                        y={topY}
+                        height={spanHeight}
+                        onClick={this.toggleChild}
+                    />
+                    : null }
             </g>);
+
+        // span bar
+        const leftOffsetPercent = (((startTimePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)));
+        const spanWidthPercent = ((duration / totalDuration) * 100) * (timelineWidthPercent / 100);
+        const formattedDuration = `${formatters.toDurationMsString(duration)}`;
+        const SpanBar = (<g>
+            <text
+                className="span-label"
+                x={leftOffsetPercent > 50 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
+                y={topY + (verticalPadding * 2)}
+                textAnchor={leftOffsetPercent > 50 ? 'end' : 'start'}
+            >{operationName}:{formattedDuration}
+            </text>
+            <rect
+                className="span-bar"
+                id={span.traceId}
+                height={9}
+                width={`${Math.max(spanWidthPercent, 0.2)}%`}
+                x={`${leftOffsetPercent}%`}
+                y={topY + (verticalPadding * 3)}
+                rx="3.5"
+                ry="3.5"
+                fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#3f4d71'}
+            />
+            <rect
+                className="span-click"
+                x={`${100 - timelineWidthPercent}%`}
+                y={topY}
+                width={`${timelineWidthPercent}%`}
+                height={spanHeight}
+                onClick={this.openModal}
+            />
+        </g>);
 
         return (
             <g>
                 <line
                     className="timeline-transition"
                     x1={`${(depth * 2) + 11}%`}
-                    x2={`${leftOffset}%`}
-                    y1={topOffset + 10}
-                    y2={topOffset + 10}
+                    x2={`${leftOffsetPercent}%`}
+                    y1={topY + (verticalPadding * 4)}
+                    y2={topY + (verticalPadding * 4)}
                     fill="black"
                     strokeWidth="2"
                     strokeDasharray="3, 5"
@@ -164,47 +205,8 @@ export default class Span extends React.Component {
 
                 {invocationLines}
                 {ServiceName}
+                {SpanBar}
 
-                <text
-                    className="span-label"
-                    x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
-                    y={topOffset}
-                    textAnchor={leftOffset > 50 ? 'end' : 'start'}
-                >{span.operationName}:{formattedDuration}
-                </text>
-                <rect
-                    className="span-bar"
-                    id={span.traceId}
-                    height={9}
-                    width={`${Math.max(width, 0.2)}%`}
-                    x={`${leftOffset}%`}
-                    y={topOffset + paddingVertical}
-                    rx="3.5"
-                    ry="3.5"
-                    fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#3f4d71'}
-                />
-                {expandable
-                    ? (<text x={`${depth}%`} y={topOffset + (paddingVertical * 2)}>{expanded ? '-' : '+'}</text>)
-                    : null }
-                {(expandable === true)
-                    ? <rect
-                        className="timeline-transition span-click"
-                        id={span.spanId}
-                        width={`${serviceLabelWidthPerc}%`}
-                        x="0%"
-                        y={topOffset - 13}
-                        height={rowHeight + (paddingVertical * 5)}
-                        onClick={this.toggleChild}
-                    />
-                    : null }
-                <rect
-                    className="timeline-transition span-click"
-                    width={`${timelineWidthPercent}%`}
-                    x={`${serviceLabelWidthPerc}%`}
-                    y={topOffset - 13}
-                    height={rowHeight + (paddingVertical * 5)}
-                    onClick={this.openModal}
-                />
                 <SpanDetailsModal
                     isOpen={this.state.modalIsOpen}
                     closeModal={this.closeModal}
@@ -215,7 +217,7 @@ export default class Span extends React.Component {
                     <rect
                         x="0"
                         height="100%"
-                        width={`${serviceLabelWidthPerc - 1.5}%`}
+                        width={`${100 - timelineWidthPercent - 1.5}%`}
                     />
                 </clipPath>
             </g>
