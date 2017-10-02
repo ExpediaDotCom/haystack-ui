@@ -374,7 +374,7 @@ describe('<Traces />', () => {
         const timePointers = wrapper.find('.time-pointer');
 
         expect(timePointers).to.have.length(5);
-        expect((timePointers).last().text()).to.eq('3.500s');
+        expect((timePointers).last().text()).to.eq('3.500s ');
     });
 
     it('should update URL query params on clicking search');

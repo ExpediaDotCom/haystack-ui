@@ -43,7 +43,7 @@ export default class Span extends React.Component {
     }
 
     static getOffsetPercent(absolutePercent, timelineWidthPercent) {
-        return (((absolutePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)))
+        return (((absolutePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)));
     }
 
     static getSpanSuccess(span) {
