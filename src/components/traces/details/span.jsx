@@ -181,6 +181,7 @@ export default class Span extends React.Component {
                 x2={`${parentOffsetPercent}%`}
                 y1={(parentIndex * spanHeight) + timePointersHeight + (verticalPadding * 3.8)}
                 y2={horizontalLineY}
+                strokeDasharray="3, 5"
             />
             <line
                 className="invocation-line"
@@ -188,6 +189,7 @@ export default class Span extends React.Component {
                 x2={`${leftOffsetPercent}%`}
                 y1={horizontalLineY}
                 y2={horizontalLineY}
+                strokeDasharray="3, 5"
             />
         </g>);
 
