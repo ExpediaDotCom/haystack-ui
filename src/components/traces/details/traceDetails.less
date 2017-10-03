@@ -31,27 +31,43 @@
     transition: y 0.2s;
 }
 
+.service-expand-pill {
+    fill: white;
+    stroke: @gray-dark;
+    stroke-width: 1.5;
+    opacity: 1;
+    rx: 3;
+    ry: 3;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.service-expand-text {
+    font-weight: 400;
+    font-size: @font-size-h5;
+    fill: @gray-dark;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
 .span-service-label {
     font-weight: 600;
-    fill: #fff;
+    fill: white;
 }
 
 .span-click {
     opacity: 0;
+    fill: @gray;
+    &:hover {
+        opacity: 0.14;
+        cursor: pointer;
+    }
 }
 
-.span-row_even {
-    fill: @gray-lighter;
-}
-
-.span-row_odd {
+.span-row {
     fill: white;
-}
-
-.span-click:hover {
-    background-color: @gray-light;
-    opacity: 0.1;
-    cursor: pointer;
 }
 
 .service-pill {

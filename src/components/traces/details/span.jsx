@@ -99,46 +99,32 @@ export default class Span extends React.Component {
         // coordinates
         const verticalPadding = 6;
         const topY = timePointersHeight + (index * spanHeight);
-        const isEvenRow = !(index % 2);
 
         // service pills
         const pillHeight = spanHeight - (2 * verticalPadding);
-        const maxServiceChars = 24 - (maxDepth * 3);
+        const maxServiceChars = 21 - (maxDepth * 2);
         const serviceNameBaseline = topY + verticalPadding + (pillHeight - 8);
         const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
         const serviceLabelWidth = (maxServiceChars * 7);
         // TODO add tooltip text
         const ServiceName = (
             <g>
-                {expandable
-                    ? <text x={`${depth}%`} y={serviceNameBaseline}>{expanded ? '-' : '+'}</text>
-                    : null }
+
                 <rect
                     className={`service-pill ${serviceColor.toFillClass(serviceName)}`}
                     height={pillHeight}
                     width={serviceLabelWidth}
                     y={topY + verticalPadding}
-                    x={`${depth + 1}%`}
+                    x={`${depth + 2}%`}
                     clipPath="url(#overflow)"
                 />
                 <text
                     className="span-service-label"
-                    x={`${depth + 1.5}%`}
+                    x={`${depth + 2.5}%`}
                     y={serviceNameBaseline}
                     clipPath="url(#overflow)"
                 >{trimmedServiceName}
                 </text>
-                {expandable
-                    ? <rect
-                        className="span-click"
-                        id={span.spanId}
-                        width={`${100 - timelineWidthPercent}%`}
-                        x="0%"
-                        y={topY}
-                        height={spanHeight}
-                        onClick={this.toggleChild}
-                    />
-                    : null }
             </g>);
 
         // span bar
@@ -157,15 +143,15 @@ export default class Span extends React.Component {
                 id={span.traceId}
                 className={Span.getSpanSuccess(span) === 'false' ? 'span-bar span-bar_failure' : 'span-bar'}
                 height={9}
-                width={`${Math.max(spanWidthPercent, 0.2)}%`}
+                width={`${Math.max(spanWidthPercent, 0.4)}%`}
                 x={`${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 3)}
             />
             <rect
                 className="span-click"
-                width={`${timelineWidthPercent}%`}
+                width="100%"
                 height={spanHeight}
-                x={`${100 - timelineWidthPercent}%`}
+                x={0}
                 y={topY}
                 onClick={this.openModal}
             />
@@ -194,7 +180,7 @@ export default class Span extends React.Component {
         return (
             <g>
                 <rect
-                    className={isEvenRow ? 'span-row_even' : 'span-row_odd'}
+                    className="span-row"
                     width="100%"
                     height={spanHeight}
                     x="0"
@@ -202,10 +188,28 @@ export default class Span extends React.Component {
                     onClick={this.openModal}
                 />
 
-                {ServiceName}
                 {invocationLines}
+                {ServiceName}
                 {SpanBar}
-
+                {expandable
+                    ? <g>
+                        <rect
+                            id={span.spanId}
+                            className="service-expand-pill"
+                            height={pillHeight - 4}
+                            width={18}
+                            x={`${depth + 0.1}%`}
+                            y={topY + verticalPadding + 2}
+                            onClick={this.toggleChild}
+                        />
+                        <text
+                            className="service-expand-text"
+                            x={`${depth + 0.4}%`}
+                            y={serviceNameBaseline + 2}
+                            onClick={this.toggleChild}
+                        >{expanded ? '-' : '+'}</text>
+                    </g>
+                    : null }
                 <SpanDetailsModal
                     isOpen={this.state.modalIsOpen}
                     closeModal={this.closeModal}
@@ -216,7 +220,7 @@ export default class Span extends React.Component {
                     <rect
                         x="0"
                         height="100%"
-                        width={`${100 - timelineWidthPercent - 1.5}%`}
+                        width={`${100 - timelineWidthPercent - 0.2}%`}
                     />
                 </clipPath>
             </g>
