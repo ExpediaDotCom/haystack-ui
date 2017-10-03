@@ -197,8 +197,7 @@ store.getTrace = () => Q.fcall(() => [
                 }
             ]
         }
-    ]
-);
+    ]);
 
 store.findTraces = query => Q.fcall(() => {
     if (query.traceId) {
