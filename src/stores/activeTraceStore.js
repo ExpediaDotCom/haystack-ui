@@ -16,9 +16,9 @@
  */
 
 import axios from 'axios';
-import {observable, action} from 'mobx';
+import _ from 'lodash';
+import {observable, action, computed} from 'mobx';
 import { fromPromise } from 'mobx-utils';
-import traceDetailsFormatters from '../components/traces/utils/traceDetailsFormatters';
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -35,33 +35,78 @@ export function setChildExpandState(timelineSpans, parentId, display) {
     });
 }
 
+function createSpanTree(span, trace, groupByParentId = null) {
+    const spansWithParent = _.filter(trace, s => s.parentSpanId);
+    const grouped = groupByParentId !== null ? groupByParentId : _.groupBy(spansWithParent, s => s.parentSpanId);
+    return {
+        span,
+        children: (grouped[span.spanId] || [])
+        .map(s => createSpanTree(s, trace, grouped))
+    };
+}
+
+function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration) {
+    return [observable({
+        ...spanTree.span,
+        children: spanTree.children.map(child => child.span.spanId),
+        startTimePercent: (((spanTree.span.startTime - traceStartTime) / totalDuration) * 100),
+        depth,
+        expandable: !!spanTree.children.length,
+        display: true,
+        expanded: true
+    })]
+    .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1, traceStartTime, totalDuration)));
+}
+
 export class ActiveTraceStore {
     @observable promiseState = null;
     @observable spans = [];
-    @observable rootSpan = [];
-    @observable timelineSpans = [];
-    @observable startTime = null;
-    @observable totalDuration = null;
-    @observable timePointers = [];
 
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/trace/${traceId}`)
                 .then((result) => {
-                    // raw and process span data
                     this.spans = result.data;
-                    this.rootSpan = this.spans.find(span => !span.parentSpanId);
-                    this.timelineSpans = traceDetailsFormatters.createSpanTimeline(this.spans, this.rootSpan);
-                    // timing information
-                    this.startTime = traceDetailsFormatters.calculateStartTime(this.spans);
-                    this.totalDuration = traceDetailsFormatters.calculateDuration(this.spans, this.startTime);
-                    this.timePointers = traceDetailsFormatters.getTimePointers(this.totalDuration);
                 })
                 .catch((result) => {
                     throw new TraceException(result);
                 })
         );
+    }
+
+    @computed
+    get rootSpan() {
+        return this.spans.find(span => !span.parentSpanId);
+    }
+
+    @computed
+    get startTime() {
+        return this.spans.reduce(
+            (earliestTime, span) => (earliestTime ? Math.min(earliestTime, span.startTime) : span.startTime),
+            null);
+    }
+
+    @computed
+    get totalDuration() {
+        const end = this.spans.reduce((latestTime, span) =>
+            (latestTime ? Math.max(latestTime, (span.startTime + span.duration)) : (span.startTime + span.duration)), null
+        );
+        const difference = end - this.startTime;
+        return difference || 1;
+    }
+
+    @computed
+    get timelineSpans() {
+        if (this.spans.length === 0) return [];
+
+        const tree = createSpanTree(this.rootSpan, this.spans);
+        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration);
+    }
+
+    @computed
+    get maxDepth() {
+        return this.timelineSpans.reduce((max, span) => Math.max(max, span.depth), 0);
     }
 
     @action toggleExpand(selectedParentId) {

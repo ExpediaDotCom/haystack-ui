@@ -27,19 +27,23 @@ import serviceColor from '../../../utils/serviceColorMapper';
 
 @observer
 export default class Span extends React.Component {
-
     static get propTypes() {
         return {
             index: PropTypes.number.isRequired,
-            startTime: PropTypes.number.isRequired,
-            rowHeight: PropTypes.number.isRequired,
-            rowPadding: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            toggleExpand: PropTypes.func.isRequired,
-            timelineWidthPerc: PropTypes.number.isRequired,
-            timePointersHeight: PropTypes.number.isRequired
+            maxDepth: PropTypes.number.isRequired,
+            spanHeight: PropTypes.number.isRequired,
+            timelineWidthPercent: PropTypes.number.isRequired,
+            timePointersHeight: PropTypes.number.isRequired,
+            parentStartTimePercent: PropTypes.number.isRequired,
+            parentIndex: PropTypes.number.isRequired,
+            toggleExpand: PropTypes.func.isRequired
         };
+    }
+
+    static getOffsetPercent(absolutePercent, timelineWidthPercent) {
+        return (((absolutePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)));
     }
 
     static getSpanSuccess(span) {
@@ -72,101 +76,136 @@ export default class Span extends React.Component {
     render() {
         const {
             index,
-            startTime,
-            rowHeight,
-            rowPadding,
             span,
             totalDuration,
-            timelineWidthPerc,
-            timePointersHeight
+            spanHeight,
+            maxDepth,
+            timelineWidthPercent,
+            timePointersHeight,
+            parentStartTimePercent,
+            parentIndex
         } = this.props;
 
         const {
             serviceName,
             depth,
             expandable,
-            expanded
+            expanded,
+            startTimePercent,
+            duration,
+            operationName
         } = span;
 
-        const paddingVertical = 4;
-        const serviceLabelWidthPerc = 12;
-        const topOffset = (index * (rowHeight + (rowPadding * 2))) + (rowPadding * 2) + timePointersHeight;
-        const spanTimestamp = span.startTime;
-        const spanDuration = span.duration;
-        const leftOffset = ((((((spanTimestamp - startTime) / totalDuration) * 100) * (timelineWidthPerc / 100)) + serviceLabelWidthPerc));
-        const width = ((spanDuration / totalDuration) * 100) * (timelineWidthPerc / 100);
-        const formattedDuration = `${formatters.toDurationMsString(span.duration)}`;
-        return (
+        // coordinates
+        const verticalPadding = 6;
+        const topY = timePointersHeight + (index * spanHeight);
+        const isEvenRow = !(index % 2);
+
+        // service pills
+        const pillHeight = spanHeight - (2 * verticalPadding);
+        const maxServiceChars = 24 - (maxDepth * 3);
+        const serviceNameBaseline = topY + verticalPadding + (pillHeight - 8);
+        const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
+        const serviceLabelWidth = (maxServiceChars * 7);
+        // TODO add tooltip text
+        const ServiceName = (
             <g>
-                <line
-                    x1="10.5%"
-                    x2={`${leftOffset - 0.5}%`}
-                    y1={topOffset + 10}
-                    y2={topOffset + 10}
-                    fill="black"
-                    strokeWidth="2"
-                    strokeDasharray="3, 5"
-                    stroke="black"
-                    strokeOpacity="0.3"
-                />
+                {expandable
+                    ? <text x={`${depth}%`} y={serviceNameBaseline}>{expanded ? '-' : '+'}</text>
+                    : null }
                 <rect
-                    className={`span-color-bar ${serviceColor.toFillClass(serviceName)}`}
-                    height={20}
-                    y={topOffset - 6}
+                    className={`service-pill ${serviceColor.toFillClass(serviceName)}`}
+                    height={pillHeight}
+                    width={serviceLabelWidth}
+                    y={topY + verticalPadding}
                     x={`${depth + 1}%`}
                     clipPath="url(#overflow)"
-                    width={(serviceName.length * 5) + 30} // TODO: calculate color bar width based on service label width
-                    rx="3.5"
-                    ry="3.5"
-                    fillOpacity="0.8"
                 />
                 <text
                     className="span-service-label"
                     x={`${depth + 1.5}%`}
-                    y={topOffset + (paddingVertical * 2)}
+                    y={serviceNameBaseline}
                     clipPath="url(#overflow)"
-                >{serviceName}
+                >{trimmedServiceName}
                 </text>
-                <text
-                    className="span-label"
-                    x={leftOffset > 50 ? `${leftOffset + width}%` : `${leftOffset}%`}
-                    y={topOffset}
-                    textAnchor={leftOffset > 50 ? 'end' : 'start'}
-                >{span.operationName}:{formattedDuration}
-                </text>
-                <rect
-                    className="btn span-bar"
-                    id={span.traceId}
-                    height={rowHeight}
-                    width={`${Math.max(width, 0.2)}%`}
-                    x={`${leftOffset}%`}
-                    y={topOffset + paddingVertical}
-                    rx="3.5"
-                    ry="3.5"
-                    fill={Span.getSpanSuccess(span) === 'false' ? '#e51c23' : '#4CAF50'}
-                />
                 {expandable
-                    ? (<text x={`${depth}%`} y={topOffset + (paddingVertical * 2)}>{expanded ? '-' : '+'}</text>)
-                    : null }
-                {(expandable === true)
                     ? <rect
                         className="span-click"
                         id={span.spanId}
-                        width={`${serviceLabelWidthPerc}%`}
+                        width={`${100 - timelineWidthPercent}%`}
                         x="0%"
-                        y={topOffset - 13}
-                        height={rowHeight + (paddingVertical * 5)}
+                        y={topY}
+                        height={spanHeight}
                         onClick={this.toggleChild}
                     />
                     : null }
+            </g>);
+
+        // span bar
+        const leftOffsetPercent = Span.getOffsetPercent(startTimePercent, timelineWidthPercent);
+        const spanWidthPercent = ((duration / totalDuration) * 100) * (timelineWidthPercent / 100);
+        const formattedDuration = `${formatters.toDurationMsString(duration)}`;
+        const SpanBar = (<g>
+            <text
+                className="span-label"
+                x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
+                y={topY + (verticalPadding * 2)}
+                textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
+            >{operationName}: {formattedDuration}
+            </text>
+            <rect
+                id={span.traceId}
+                className={Span.getSpanSuccess(span) === 'false' ? 'span-bar span-bar_failure' : 'span-bar'}
+                height={9}
+                width={`${Math.max(spanWidthPercent, 0.2)}%`}
+                x={`${leftOffsetPercent}%`}
+                y={topY + (verticalPadding * 3)}
+            />
+            <rect
+                className="span-click"
+                width={`${timelineWidthPercent}%`}
+                height={spanHeight}
+                x={`${100 - timelineWidthPercent}%`}
+                y={topY}
+                onClick={this.openModal}
+            />
+        </g>);
+
+        // invocation lines
+        const horizontalLineY = topY + (verticalPadding * 3.8);
+        const parentOffsetPercent = Span.getOffsetPercent(parentStartTimePercent, timelineWidthPercent);
+        const invocationLines = (<g>
+            <line
+                className="invocation-line"
+                x1={`${parentOffsetPercent}%`}
+                x2={`${parentOffsetPercent}%`}
+                y1={(parentIndex * spanHeight) + timePointersHeight + (verticalPadding * 3.8)}
+                y2={horizontalLineY}
+            />
+            <line
+                className="invocation-line"
+                x1={`${parentOffsetPercent}%`}
+                x2={`${leftOffsetPercent}%`}
+                y1={horizontalLineY}
+                y2={horizontalLineY}
+            />
+        </g>);
+
+        return (
+            <g>
                 <rect
-                    className="span-click"
-                    width={`${timelineWidthPerc}%`}
-                    x={`${serviceLabelWidthPerc}%`}
-                    y={topOffset - 13}
-                    height={rowHeight + (paddingVertical * 5)}
+                    className={isEvenRow ? 'span-row_even' : 'span-row_odd'}
+                    width="100%"
+                    height={spanHeight}
+                    x="0"
+                    y={topY}
                     onClick={this.openModal}
                 />
+
+                {ServiceName}
+                {invocationLines}
+                {SpanBar}
+
                 <SpanDetailsModal
                     isOpen={this.state.modalIsOpen}
                     closeModal={this.closeModal}
@@ -177,7 +216,7 @@ export default class Span extends React.Component {
                     <rect
                         x="0"
                         height="100%"
-                        width={`${serviceLabelWidthPerc - 1.5}%`}
+                        width={`${100 - timelineWidthPercent - 1.5}%`}
                     />
                 </clipPath>
             </g>
