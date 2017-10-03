@@ -16,7 +16,7 @@
 
 const axios = require('axios');
 const Q = require('q');
-const config = require('../../config/config');
+const config = require('../../../config/config');
 const converter = require('./converter');
 const rangeConverter = require('../utils/rangeConverter');
 

@@ -18,24 +18,29 @@
 const express = require('express');
 const config = require('../config/config');
 
-const store = require(`../stores/${config.store.name}/store`); // eslint-disable-line import/no-dynamic-require
+const traceStore = require(`../stores/traces/${config.traces.store}/store`); // eslint-disable-line import/no-dynamic-require
+const trendStore = require(`../stores/trends/${config.trends.store}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
 router.get('/services', (req, res) => {
-    store.getServices().then(results => res.json(results));
+    traceStore.getServices().then(results => res.json(results));
 });
 
 router.get('/operations', (req, res) => {
-    store.getOperations(req.query.serviceName).then(results => res.json(results));
+    traceStore.getOperations(req.query.serviceName).then(results => res.json(results));
 });
 
 router.get('/traces', (req, res) => {
-    store.findTraces(req.query).then(results => res.json(results));
+    traceStore.findTraces(req.query).then(results => res.json(results));
 });
 
 router.get('/trace/:traceId', (req, res) => {
-    store.getTrace(req.params.traceId).then(results => res.json(results));
+    traceStore.getTrace(req.params.traceId).then(results => res.json(results));
+});
+
+router.get('/trends', (req, res) => {
+    trendStore.getTrends(req.query.serviceName).then(results => res.json(results));
 });
 
 module.exports = router;
