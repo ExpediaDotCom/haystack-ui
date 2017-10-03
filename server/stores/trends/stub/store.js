@@ -42,7 +42,7 @@ store.getTrends = () => Q.fcall(() =>
             summary: {
                 totalSuccessCount: 80,
                 totalFailureCount: 100,
-                successPercent: getValue(10,100),
+                successPercent: getValue(10, 100),
                 avgDuration: 1200,
                 tp95: 1000
             },
