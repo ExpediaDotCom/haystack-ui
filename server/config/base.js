@@ -13,12 +13,20 @@ module.exports = {
     // name of and config store module to use for fetching data from downstream
     // options
     //  - haystack - gets data from haystack query services
-    //  - zipkin   - bridge for an existing zipkin api,
-    //               please note that only tracing sybsystem is supported through zipkinStore
-    //               zipkinBridge store expects a zipkin config field specifying zipking api url,
-    //               eg. zipkin: { url: 'http://<zipkin>/api/v1'}
+    //  - zipkin(for traces)   - bridge for an existing zipkin api,
+    //                          please note that only tracing sybsystem is supported through zipkinStore
+    //                          zipkinBridge store expects a zipkin config field specifying zipking api url,
+    //                          eg. zipkin: { url: 'http://<zipkin>/api/v1'}
     //  - stub      - a stub used during development, will be removed in future
-    store: {
-        name: 'stub'
+
+    traces: {
+        store: 'stub'
+    },
+    trends: {
+        store: 'stub'
+    },
+    // configs for logs
+    logs: {
+        colorize: true
     }
 };
