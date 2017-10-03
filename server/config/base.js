@@ -10,18 +10,24 @@ module.exports = {
     // or,  all for enabling all subsystems
     subsystems: ['all'],
 
-    // name of and config store module to use for fetching data from downstream
-    // options
-    //  - haystack - gets data from haystack query services
-    //  - zipkin(for traces)   - bridge for an existing zipkin api,
-    //                          please note that only tracing sybsystem is supported through zipkinStore
-    //                          zipkinBridge store expects a zipkin config field specifying zipking api url,
-    //                          eg. zipkin: { url: 'http://<zipkin>/api/v1'}
+    // name of config store module to use for fetching traces data from downstream
+    // Options (store) :
+    //  - haystack - gets data from haystack query service
+    //  - zipkin - bridge for an existing zipkin api,
+    //             please note that only tracing sybsystem is supported through zipkinStore
+    //             zipkinBridge store expects a zipkin config field specifying zipking api url,
+    //             eg. zipkin: { url: 'http://<zipkin>/api/v1'}
     //  - stub      - a stub used during development, will be removed in future
 
     traces: {
         store: 'stub'
     },
+
+    // name of config store module to use for fetching trends data from downstream
+    // Options :
+    //  - haystack - gets data from haystack trends
+    //  - stub      - a stub used during development, will be removed in future
+
     trends: {
         store: 'stub'
     },

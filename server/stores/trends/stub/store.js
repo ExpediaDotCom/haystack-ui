@@ -28,9 +28,9 @@ function getTimeStamp(addMin) {
     return _.round(currentTime + (addMin * 60), 0);
 }
 
-function getRandomValues(timeWindow) {
+function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(10).forEach(i => valuesArr.push({values: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach(i => valuesArr.push({values: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
@@ -40,17 +40,21 @@ store.getTrends = () => Q.fcall(() =>
             operationName: 'stark-1',
             timeWindow: '5-min',
             summary: {
-                totalSuccessCount: 80,
-                totalFailureCount: 100,
+                count: 10000,
+                successCount: 8000,
+                failureCount: 1000,
                 successPercent: getValue(10, 100),
-                avgDuration: 1200,
-                tp95: 1000
+                meanDuration: 600,
+                tp95: 900,
+                tp99: 950
             },
             rawValues: {
-                count: getRandomValues(5),
-                success: getRandomValues(5),
-                failure: getRandomValues(5),
-                duration: getRandomValues(5)
+                count: getRandomValues(5, 10),
+                successCount: getRandomValues(5, 10),
+                failureCount: getRandomValues(5, 10),
+                meanDuration: getRandomValues(5, 10),
+                tp95: getRandomValues(5, 10),
+                tp99: getRandomValues(5, 10)
             }
         }
     ]
