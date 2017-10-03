@@ -23,7 +23,8 @@ store.getServices = () => Q.fcall(() => ['lannister-service',
     'tyrell-service',
     'targaryen-service',
     'baratheon-service',
-    'dragon-service'
+    'dragon-service',
+    'westeros-service'
 ]);
 
 store.getOperations = () => Q.fcall(() => ['op1',
@@ -34,170 +35,138 @@ store.getOperations = () => Q.fcall(() => ['op1',
 
 store.getTrace = () => Q.fcall(() => [
         {
-            traceId: 'root-traceid',
+            traceId: 'traceid',
             spanId: 'root-spanid',
             serviceName: 'stark-service',
-            operationName: 'stark1',
+            operationName: 'root-operation-stark',
             startTime: 1504784384000,
-            duration: 3500000,
-            logs: [
-                {
-                    timestamp: 1504784384000,
-                    endpoint: {
-                        serviceName: 'stark-service'
-                    }
-                }
-            ],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'true'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid1',
-            spanId: 'spanid2',
-            parentSpanId: 'root-spanid',
-            serviceName: 'stark-service',
-            operationName: 'stark2',
-            startTime: 1504785384000,
-            duration: 2000000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'stark-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'false'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid2',
-            spanId: 'spanid3',
-            parentSpanId: 'root-spanid',
-            serviceName: 'stark-service',
-            operationName: 'stark2',
-            startTime: 1504785484000,
-            duration: 320000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'stark-service'
-                }
-            }],
+            duration: 3525000,
+            logs: [],
             tags: []
         },
         {
-            traceId: 'traceid3',
-            spanId: 'spanid4',
-            parentSpanId: 'spanid3',
-            serviceName: 'tyrell-service',
-            operationName: 'tyrell1',
-            startTime: 1504785584000,
-            duration: 62000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'tyrell-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'false'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid7',
-            spanId: 'spanid8',
-            parentSpanId: 'spanid4',
-            serviceName: 'tyrell-service',
-            operationName: 'tyrell4',
-            startTime: 1504785684000,
-            duration: 62000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'tyrell-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'true'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid4',
-            spanId: 'spanid5',
-            parentSpanId: 'spanid3',
-            serviceName: 'tyrell-service',
-            operationName: 'tyrell2',
-            startTime: 1504785684000,
-            duration: 520000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'tyrell-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'true'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid5',
-            spanId: 'spanid6',
-            parentSpanId: 'spanid2',
-            serviceName: 'stark-service',
-            operationName: 'stark2',
-            startTime: 1504785784000,
-            duration: 2000000,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'stark-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'true'
-                }
-            ]
-        },
-        {
-            traceId: 'traceid6',
-            spanId: 'spanid7',
+            traceId: 'traceid',
             parentSpanId: 'root-spanid',
+            spanId: 'westeros-1',
+            serviceName: 'westeros-service',
+            operationName: 'operation-1-westeros-service',
+            startTime: 1504784384000 + 250000,
+            duration: 1505000,
+            logs: [],
+            tags: []
+        },
+
+        {
+            traceId: 'traceid',
+            parentSpanId: 'westeros-1',
+            spanId: 'tyrell-1',
+            serviceName: 'tyrell-service',
+            operationName: 'operation-1-tyrell-service',
+            startTime: 1504784384000 + 250000 + 120000,
+            duration: 605000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'westeros-1',
+            spanId: 'dragon-1',
             serviceName: 'dragon-service',
-            operationName: 'dragon1',
-            startTime: 1504786484000,
-            duration: 320,
-            logs: [{
-                timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'dragon-service'
-                }
-            }],
-            tags: [
-                {
-                    key: 'success',
-                    value: 'true'
-                }
-            ]
+            operationName: 'operation-1-dragon-service',
+            startTime: 1504784384000 + 250000 + 680000,
+            duration: 645000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'westeros-1',
+            spanId: 'dragon-2',
+            serviceName: 'dragon-service',
+            operationName: 'operation-2-dragon-service',
+            startTime: 1504784384000 + 250000 + 680000,
+            duration: 805000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'dragon-2',
+            spanId: 'blackwater-2',
+            serviceName: 'blackwater-service',
+            operationName: 'operation-2-blackwater-service',
+            startTime: 1504784384000 + 250000 + 920000,
+            duration: 675000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'root-spanid',
+            spanId: 'baratheon-1',
+            serviceName: 'baratheon-service',
+            operationName: 'operation-1-baratheon-service',
+            startTime: 1504784384000 + 1760000,
+            duration: 834000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'baratheon-1',
+            spanId: 'blackwaters-1',
+            serviceName: 'blackwater-service',
+            operationName: 'operation-1-grayjoy-service',
+            startTime: 1504784384000 + 1960000,
+            duration: 234000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'root-spanid',
+            spanId: 'westeros-2',
+            serviceName: 'westeros-service',
+            operationName: 'operation-2-westeros-service',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 105000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'root-spanid',
+            spanId: 'westeros-3',
+            serviceName: 'westeros-service',
+            operationName: 'operation-3-westeros-service',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 505000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'root-spanid',
+            spanId: 'westeros-4',
+            serviceName: 'westeros-service',
+            operationName: 'operation-4-westeros-service',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 505000 + 225000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId: 'traceid',
+            parentSpanId: 'root-spanid',
+            spanId: 'westeros-5',
+            serviceName: 'westeros-service',
+            operationName: 'operation-5-westeros-service',
+            startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,
+            duration: 150000,
+            logs: [],
+            tags: []
         }
-    ]
+    ],
 );
 
 store.findTraces = query => Q.fcall(() => {
