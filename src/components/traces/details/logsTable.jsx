@@ -37,7 +37,7 @@ const LogsTable = ({logs}) => {
       value: field.value
     }))).reduce((x, y) => x.concat(y), []);
 
-    if (flattenedLogs) {
+    if (flattenedLogs.length) {
         const clientSend = findLogEvent(flattenedLogs, 'cs');
         const serverReceive = findLogEvent(flattenedLogs, 'sr');
         const serverSend = findLogEvent(flattenedLogs, 'ss');

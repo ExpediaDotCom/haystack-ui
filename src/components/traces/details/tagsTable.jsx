@@ -22,22 +22,26 @@ const TagsTable = ({tags}) => {
     const unique = _.uniqBy(tags, tag => tag.key.toLowerCase());
     const sortedTags = _.sortBy(unique, [tag => tag.key.toLowerCase()]);
 
-    return (<table className="table table-striped">
-        <thead>
-        <tr>
-            <th>Key</th>
-            <th>Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        {sortedTags.map(tag =>
-            (<tr key={Math.random()}>
-                <td>{tag.key}</td>
-                <td>{tag.value}</td>
-            </tr>)
-        )}
-        </tbody>
-    </table>);
+    if (sortedTags.length) {
+        return (<table className="table table-striped">
+            <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            {sortedTags.map(tag =>
+                (<tr key={Math.random()}>
+                    <td>{tag.key}</td>
+                    <td>{tag.value}</td>
+                </tr>)
+            )}
+            </tbody>
+        </table>);
+    }
+
+    return <h6>No tags associated with span</h6>;
 };
 
 TagsTable.propTypes = {
