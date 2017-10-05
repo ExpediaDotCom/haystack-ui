@@ -48,7 +48,7 @@ export default class TrendResultsTable extends React.Component {
         return `<div class="trends-table__left">${operation}</div>`;
     }
     static countColumnFormatter(cell) {
-        return `<div class="trends-table__right">${cell.count}</div>`;
+        return `<div class="trends-table__right">${cell.count / 1000}k</div>`;
     }
     static meanDurationColumnFormatter(cell, row) {
         return `<div class="trends-table__right">${row.summary.meanDuration}ms</div>`;
@@ -159,7 +159,7 @@ export default class TrendResultsTable extends React.Component {
                     dataSort
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
-                ><TrendResultsTable.Header name="Operation Name"/></TableHeaderColumn>
+                ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
                     caretRender={TrendResultsTable.getCaret}
                     dataField="summary"
@@ -181,12 +181,12 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="rawValues"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="12"
+                    width="8"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
-                ><TrendResultsTable.Header name="Success Percentage"/></TableHeaderColumn>
+                ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>
             </BootstrapTable>
         );
     }
