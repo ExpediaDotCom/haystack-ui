@@ -187,7 +187,7 @@ export default class TraceResultsTable extends React.Component {
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
             paginationShowsTotal: (start, to, total) =>
-                (<p>Showing traces { start } to { to } out of { total } sample{total > 1 ? 's' : null}</p>),
+                (<p>Showing traces { start } to { to } out of { total } {total > 1 ? 'samples' : 'sample'}</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: query.sortBy || 'startTime',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order

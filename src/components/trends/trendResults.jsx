@@ -31,7 +31,7 @@ export default class TraceResults extends React.Component {
         location: PropTypes.object.isRequired
     };
     componentDidMount() {
-        this.props.trendsSearchStore.fetchSearchResults('asdf');
+        this.props.trendsSearchStore.fetchSearchResults('');
     }
     render() {
         return (
