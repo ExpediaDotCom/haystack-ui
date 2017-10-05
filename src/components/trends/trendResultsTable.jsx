@@ -50,17 +50,42 @@ export default class TrendResultsTable extends React.Component {
     static countColumnFormatter(cell) {
         return `<div class="trends-table__right">${cell.count}</div>`;
     }
-    static meanDurationColumnFormatter(cell) {
-        return `<div class="trends-table__right">${cell.meanDuration}ms</div>`;
+    static meanDurationColumnFormatter(cell, row) {
+        return `<div class="trends-table__right">${row.summary.meanDuration}ms</div>`;
     }
-    static successPercentFormatter(cell) {
+    static successPercentFormatter(cell, row) {
         return (
             <div className="text-right">
                 <div className="percentContainer text-center">
-                    <CircularProgressbar percentage={cell.successPercent} strokeWidth={8}/>
+                    <CircularProgressbar percentage={row.summary.successPercent} strokeWidth={8}/>
                 </div>
             </div>);
     }
+    static sortByName(a, b, order) {
+        if (order === 'desc') {
+            return a.operationName > b.operationName;
+        }
+        return b.operationName > a.operationName;
+    }
+    static sortByCount(a, b, order) {
+        if (order === 'desc') {
+            return b.summary.count > a.summary.count;
+        }
+        return a.summary.count > b.summary.count;
+    }
+    static sortByMean(a, b, order) {
+        if (order === 'desc') {
+            return b.summary.meanDuration > a.summary.meanDuration;
+        }
+        return a.summary.meanDuration > b.summary.meanDuration;
+    }
+    static sortByPercentage(a, b, order) {
+        if (order === 'desc') {
+            return b.summary.successPercent > a.summary.successPercent;
+        }
+        return a.summary.successPercent > b.summary.successPercent;
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -107,13 +132,13 @@ export default class TrendResultsTable extends React.Component {
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
             paginationShowsTotal: (start, to, total) =>
-                (<p>Showing { (to - start) + 1 } out of { total } total {total > 1 ? 'operations' : 'operation'}</p>),
+                (<p>Showing { (to - start) + 1 } out of { total } total {total === 1 ? 'operation' : 'operations'}</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: 'operationName',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
-            expandBodyClass: 'expand-row-body',
             expanding: this.state.expanding,
-            onExpand: this.handleExpand
+            onExpand: this.handleExpand,
+            expandBodyClass: 'expand-row-body'
         };
         return (
             <BootstrapTable
@@ -132,7 +157,7 @@ export default class TrendResultsTable extends React.Component {
                     dataField="operationName"
                     width="60"
                     dataSort
-                    sortFunc={this.sortByTimestamp}
+                    sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
                 ><TrendResultsTable.Header name="Operation Name"/></TableHeaderColumn>
                 <TableHeaderColumn
@@ -141,21 +166,24 @@ export default class TrendResultsTable extends React.Component {
                     dataFormat={TrendResultsTable.countColumnFormatter}
                     width="12"
                     dataSort
+                    sortFunc={TrendResultsTable.sortByCount}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
                     caretRender={TrendResultsTable.getCaret}
-                    dataField="summary"
+                    dataField="timeWindow"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
                     width="12"
                     dataSort
+                    sortFunc={TrendResultsTable.sortByMean}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Mean Duration"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="summary"
+                    dataField="rawValues"
                     dataFormat={TrendResultsTable.successPercentFormatter}
                     width="12"
                     dataSort
+                    sortFunc={TrendResultsTable.sortByPercentage}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Success Percentage"/></TableHeaderColumn>

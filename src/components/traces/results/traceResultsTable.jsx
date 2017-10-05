@@ -90,7 +90,7 @@ export default class TraceResultsTable extends React.Component {
         return `<div class="table__primary-duration text-right">${formatters.toDurationString(duration)}</div>`;
     }
 
-  static durationFormatter(duration) {
+    static durationFormatter(duration) {
         return <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>;
     }
 
@@ -187,7 +187,7 @@ export default class TraceResultsTable extends React.Component {
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
             paginationShowsTotal: (start, to, total) =>
-                (<p>Showing traces { start } to { to } out of { total } {total > 1 ? 'samples' : 'sample'}</p>),
+                (<p>Showing traces { start } to { to } out of { total } {total === 1 ? 'sample' : 'samples'}</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: query.sortBy || 'startTime',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
