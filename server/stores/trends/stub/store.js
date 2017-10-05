@@ -37,14 +37,77 @@ function getRandomValues(timeWindow, dataPoints) {
 store.getTrends = () => Q.fcall(() =>
     [
         {
-            operationName: 'stark-1',
+            operationName: 'seaworth-1',
             timeWindow: '5-min',
             summary: {
                 count: 10000,
                 successCount: 8000,
                 failureCount: 1000,
                 successPercent: getValue(10, 100),
-                meanDuration: 600,
+                meanDuration: 2,
+                tp95: 900,
+                tp99: 950
+            },
+            rawValues: {
+                count: getRandomValues(5, 10),
+                successCount: getRandomValues(5, 10),
+                failureCount: getRandomValues(5, 10),
+                meanDuration: getRandomValues(5, 10),
+                tp95: getRandomValues(5, 10),
+                tp99: getRandomValues(5, 10)
+            }
+        },
+        {
+            operationName: 'bolton-1',
+            timeWindow: '5-min',
+            summary: {
+                count: 15000,
+                successCount: 12000,
+                failureCount: 3000,
+                successPercent: getValue(10, 100),
+                meanDuration: 53,
+                tp95: 900,
+                tp99: 950
+            },
+            rawValues: {
+                count: getRandomValues(5, 10),
+                successCount: getRandomValues(5, 10),
+                failureCount: getRandomValues(5, 10),
+                meanDuration: getRandomValues(5, 10),
+                tp95: getRandomValues(5, 10),
+                tp99: getRandomValues(5, 10)
+            }
+        },
+        {
+            operationName: 'baelish-1',
+            timeWindow: '5-min',
+            summary: {
+                count: 5000,
+                successCount: 4000,
+                failureCount: 1000,
+                successPercent: getValue(10, 100),
+                meanDuration: 11,
+                tp95: 900,
+                tp99: 950
+            },
+            rawValues: {
+                count: getRandomValues(5, 10),
+                successCount: getRandomValues(5, 10),
+                failureCount: getRandomValues(5, 10),
+                meanDuration: getRandomValues(5, 10),
+                tp95: getRandomValues(5, 10),
+                tp99: getRandomValues(5, 10)
+            }
+        },
+        {
+            operationName: 'mormont-1',
+            timeWindow: '5-min',
+            summary: {
+                count: 1000,
+                successCount: 800,
+                failureCount: 200,
+                successPercent: getValue(10, 100),
+                meanDuration: 121,
                 tp95: 900,
                 tp99: 950
             },
