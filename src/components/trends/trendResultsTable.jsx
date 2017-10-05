@@ -107,7 +107,7 @@ export default class TrendResultsTable extends React.Component {
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
             paginationShowsTotal: (start, to, total) =>
-                (<p>Showing { (to - start) + 1 } out of { total } total operation{ total > 1 ? 's' : ''}</p>),
+                (<p>Showing { (to - start) + 1 } out of { total } total {total > 1 ? 'operations' : 'operation'}</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: 'operationName',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
