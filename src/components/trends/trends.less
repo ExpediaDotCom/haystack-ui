@@ -15,21 +15,17 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+@import (reference) '../../app';
 
-import TrendResults from './trendResults';
-import trendsSearchStore from '../../stores/trendsSearchStore';
-import './trends.less';
-
-const Trends = ({location}) => (
-    <section className="trends-panel">
-        <TrendResults trendsSearchStore={trendsSearchStore} location={location}/>
-    </section>
-);
-
-Trends.propTypes = {
-    location: PropTypes.object.isRequired
-};
-
-export default Trends;
+.trends-table__left {
+  text-align: left;
+  font-weight: 600;
+  font-size: 25px;
+  .ellipsis
+}
+.trends-table__right {
+  text-align: right;
+  font-weight: 600;
+  font-size: 25px;
+  .ellipsis
+}

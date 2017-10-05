@@ -16,20 +16,5 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import TrendResults from './trendResults';
-import trendsSearchStore from '../../stores/trendsSearchStore';
-import './trends.less';
-
-const Trends = ({location}) => (
-    <section className="trends-panel">
-        <TrendResults trendsSearchStore={trendsSearchStore} location={location}/>
-    </section>
-);
-
-Trends.propTypes = {
-    location: PropTypes.object.isRequired
-};
-
-export default Trends;
+export default () => <p>Trend graph placeholder</p>;

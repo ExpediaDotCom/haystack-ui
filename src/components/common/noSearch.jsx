@@ -18,7 +18,7 @@
  */
 
 import React from 'react';
-import './traceResults.less';
+import '../../app.less';
 
 
 export default () => (
@@ -28,4 +28,3 @@ export default () => (
         </div>
     </section>
 );
-
