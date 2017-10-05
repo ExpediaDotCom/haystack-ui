@@ -23,7 +23,6 @@
     "grpc": "^1.6.0",
     "lodash": "^4.17.4",
     "moment": "^2.16.0",
-    "node-env-configuration": "^1.0.3",
     "pug": "^2.0.0-beta6",
     "q": "^1.5.0",
     "serve-favicon": "^2.3.2",
