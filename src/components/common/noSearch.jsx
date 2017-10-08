@@ -18,8 +18,6 @@
  */
 
 import React from 'react';
-import './traceResults.less';
-
 
 export default () => (
     <section className="text-center">
@@ -28,4 +26,3 @@ export default () => (
         </div>
     </section>
 );
-
