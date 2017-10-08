@@ -18,8 +18,6 @@
  */
 
 import React from 'react';
-import '../../app.less';
-
 
 export default () => (
     <section className="text-center">

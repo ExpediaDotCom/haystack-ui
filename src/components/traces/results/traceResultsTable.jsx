@@ -24,7 +24,7 @@ import activeTraceStore from '../../../stores/activeTraceStore';
 import TraceDetails from '../details/traceDetails';
 import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
-import './traceResults.less';
+import '../../common/resultsTable.less';
 
 export default class TraceResultsTable extends React.Component {
     static propTypes = {

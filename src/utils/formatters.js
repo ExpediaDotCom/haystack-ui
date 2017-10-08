@@ -34,4 +34,6 @@ formatters.toDurationString = (duration) => {
   return `${(duration / 1000000).toFixed(3)}s`;
 };
 
+formatters.toThousandsString = num => `${(num / 1000).toFixed(3)}k`;
+
 export default formatters;

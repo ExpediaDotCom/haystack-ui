@@ -19,6 +19,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
+import formatters from '../../utils/formatters';
+import '../common/resultsTable.less';
 
 import TrendGraph from './trendGraph';
 
@@ -48,10 +50,10 @@ export default class TrendResultsTable extends React.Component {
         return `<div class="trends-table__left">${operation}</div>`;
     }
     static countColumnFormatter(cell) {
-        return `<div class="trends-table__right">${cell.count / 1000}k</div>`;
+        return `<div class="trends-table__right">${formatters.toThousandsString(cell.count)}</div>`;
     }
     static meanDurationColumnFormatter(cell, row) {
-        return `<div class="trends-table__right">${row.summary.meanDuration}ms</div>`;
+        return `<div class="trends-table__right">${formatters.toDurationString(row.summary.meanDuration * 1000)}</div>`;
     }
     static successPercentFormatter(cell, row) {
         return (
@@ -124,7 +126,7 @@ export default class TrendResultsTable extends React.Component {
         const tableHeaderStyle = { border: 'none' };
         const options = {
             page: 1,  // which page you want to show as default
-            sizePerPage: 15,  // which size per page you want to locate as default
+            sizePerPage: 20,  // which size per page you want to locate as default
             pageStartIndex: 1, // where to start counting the pages
             paginationSize: 3,  // the pagination bar size.
             prePage: 'Prev', // Previous page button text
@@ -155,7 +157,7 @@ export default class TrendResultsTable extends React.Component {
                     dataFormat={TrendResultsTable.columnFormatter}
                     caretRender={TrendResultsTable.getCaret}
                     dataField="operationName"
-                    width="60"
+                    width="50"
                     dataSort
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
@@ -181,7 +183,7 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="rawValues"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="8"
+                    width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     caretRender={TrendResultsTable.getCaret}
