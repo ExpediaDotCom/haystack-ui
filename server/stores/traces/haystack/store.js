@@ -34,111 +34,122 @@ const client = new services.TraceReaderClient(
 
 const reservedField = ['timePreset', 'startTime', 'endTime'];
 
-function createFieldsList(query) {
-  return Object.keys(query)
-      .filter(key => query[key] && !reservedField.includes(key))
-      .map((key) => {
-        const field = new messages.Field();
-        field.setName(key);
-        field.setValue(query[key]);
-
-        return field;
-      });
+function generateCallDeadline() {
+    return new Date().setMilliseconds(new Date().getMilliseconds() + config.upstreamTimeout);
 }
 
-// TODO improve logging, monitoring and return correct status code for endpoints below
+function createFieldsList(query) {
+    return Object.keys(query)
+        .filter(key => query[key] && !reservedField.includes(key))
+        .map((key) => {
+            const field = new messages.Field();
+            field.setName(key);
+            field.setValue(query[key]);
+
+            return field;
+        });
+}
+
+function createTraceSearchRequest(query) {
+    const request = new messages.TracesSearchRequest();
+    request.setFieldsList(createFieldsList(query));
+    request.setStarttime((query.startTime && parseInt(query.startTime, 10)) || ((Date.now() * 1000) - rangeConverter.toDuration(query.timePreset)));
+    request.setEndtime((query.endTime && parseInt(query.endTime, 10)) || Date.now() * 1000);
+    request.setLimit(40);
+
+    return request;
+}
+
 store.getServices = () => {
-  const deferred = Q.defer();
+    const deferred = Q.defer();
 
-  const request = new messages.FieldValuesRequest();
-  request.setFieldname('service');
+    const request = new messages.FieldValuesRequest();
+    request.setFieldname('service');
 
-  client.getFieldValues(request, (result) => {
-    if (result.Error || !result.getFieldValues) {
-      deferred.reject({});
-    } else {
-      deferred.resolve(result.getFieldValues());
-    }
-  });
+    client.getFieldValues(request, {deadline: generateCallDeadline()},
+        (error, result) => {
+            if (error || !result) {
+                deferred.reject({error, result});
+            } else {
+                deferred.resolve(result);
+            }
+        });
 
-  return deferred.promise;
+    return deferred.promise;
 };
 
 store.getOperations = (serviceName) => {
-  const deferred = Q.defer();
+    const deferred = Q.defer();
 
-  const service = new messages.Field();
-  service.setName('service');
-  service.setValue(serviceName);
+    const service = new messages.Field();
+    service.setName('service');
+    service.setValue(serviceName);
 
-  const request = new messages.FieldValuesRequest();
-  request.setFieldname('operation');
-  request.setFiltersList(new messages.Field());
+    const request = new messages.FieldValuesRequest();
+    request.setFieldname('operation');
+    request.setFiltersList(new messages.Field());
 
-  client.getFieldValues(request, (result) => {
-    if (result.Error || !result.getFieldValues) {
-      deferred.reject({});
-    } else {
-      deferred.resolve(result.getFieldValues());
-    }
-  });
+    client.getFieldValues(request, {deadline: generateCallDeadline()},
+        (error, result) => {
+            if (error || !result) {
+                deferred.reject({error, result});
+            } else {
+                deferred.resolve(result.getFieldValues());
+            }
+        });
 
-  return deferred.promise;
+    return deferred.promise;
 };
 
 store.getTrace = (traceId) => {
-  const deferred = Q.defer();
+    const deferred = Q.defer();
 
-  const request = new messages.TraceRequest();
-  request.setTraceid(traceId);
+    const request = new messages.TraceRequest();
+    request.setTraceid(traceId);
 
-  client.getTrace(request, (result) => {
-    if (result.Error || !result.getTrace) {
-      deferred.reject({});
-    } else {
-      deferred.resolve(result.getTrace());
-    }
-  });
+    client.getTrace(request, (error, result) => {
+        if (error || !result) {
+            deferred.reject({error, result});
+        } else {
+            deferred.resolve(result.getTrace());
+        }
+    });
 
-  return deferred.promise;
+    return deferred.promise;
 };
 
 store.findTraces = (query) => {
-  const deferred = Q.defer();
+    const deferred = Q.defer();
 
-  if (query.traceId) {
-    // if search is for a singe trace, perform getTrace instead of search
-    const request = new messages.TraceRequest();
-    request.setTraceid(query.traceId);
+    if (query.traceId) {
+        // if search is for a singe trace, perform getTrace instead of search
+        const request = new messages.TraceRequest();
+        request.setTraceid(query.traceId);
 
-    client.getTrace(request, (result) => {
-      if (result.Error || !result.getTrace) {
-        deferred.reject({});
-      } else {
-        deferred.resolve(
-            searchResultsTransformer.transform([result.getTrace()], query));
-      }
-    });
-  } else {
-    const request = new messages.TracesSearchRequest();
-    request.setFieldsList(createFieldsList(query));
-    request.setStarttime((query.startTime && parseInt(query.startTime, 10))
-        || ((Date.now() * 1000) - rangeConverter.toDuration(query.timePreset)));
-    request.setEndtime((query.endTime && parseInt(query.endTime, 10))
-        || Date.now() * 1000);
-    request.setLimit(40);
+        client.getTrace(request, {deadline: generateCallDeadline()},
+            (error, result) => {
+                if (error || !result) {
+                    deferred.reject({error, result});
+                } else {
+                    deferred.resolve(
+                        searchResultsTransformer.transform([result.getTrace()],
+                            query));
+                }
+            });
+    } else {
+        client.searchTraces(createTraceSearchRequest(query), {deadline: generateCallDeadline()},
+            (error, result) => {
+                if (error || !result) {
+                    deferred.reject({error, result});
+                } else {
+                    deferred.resolve(
+                        searchResultsTransformer.transform(
+                            result.getTracesList(), query));
+                }
+            });
+    }
 
-    client.searchTraces(request, (result) => {
-      if (result.Error || !result.getTrace) {
-        deferred.reject({});
-      } else {
-        deferred.resolve(
-            searchResultsTransformer.transform(result.getTracesList(), query));
-      }
-    });
-  }
-
-  return deferred.promise;
+    return deferred.promise;
 };
 
 module.exports = store;
