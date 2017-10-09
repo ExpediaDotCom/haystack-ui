@@ -13,7 +13,7 @@ build:  clean
 docker_build:
 	docker build -t $(DOCKER_IMAGE_NAME) -f build/docker/Dockerfile .
 
-all: build docker_build
+all: docker_build
 
 # build all and release
 release: all
