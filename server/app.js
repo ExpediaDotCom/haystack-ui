@@ -53,13 +53,9 @@ app.use('/', indexRoute);
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-    const status = err.status || 500;
-    res.status(status);
-    res.render('error', {
-        message: err.message,
-        status,
-        stack: err.stack
-    });
+    console.error(err);
+    res.status(err.status || 500);
+    res.json({err});
 });
 
 module.exports = app;

@@ -7,9 +7,9 @@
     "codegen": "mkdir -p static_codegen && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/  ./haystack-idl/proto/span.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/traceReader.proto",
     "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json --ignore-pattern 'public/*' --ignore-pattern 'static_codegen/*' . && echo 'Done' ",
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-core/register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" ",
-    "build": "npm run clean && npm run codegen && npm test && webpack -p",
+    "build": "npm run clean && npm run codegen && webpack -p",
     "start": "node server/start.js",
-    "start:dev": "npm run clean && npm run codegen && npm test && webpack -d && nodemon --ignore 'public/*' server/start.js",
+    "start:dev": "npm run clean && npm run codegen && npm run eslint && webpack -d && nodemon --ignore 'public/*' server/start.js",
     "watch": "webpack -w -d --progress"
   },
   "engines": {
@@ -17,6 +17,7 @@
     "npm": ">=5.0.3"
   },
   "dependencies": {
+    "axios": "^0.16.1",
     "compression": "^1.6.2",
     "express": "^4.14.1",
     "express-winston": "^2.0.0",
@@ -29,7 +30,6 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
-    "axios": "^0.16.1",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
