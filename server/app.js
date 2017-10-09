@@ -22,6 +22,7 @@ const path = require('path');
 const express = require('express');
 const favicon = require('serve-favicon');
 const compression = require('compression');
+const axios = require('axios');
 
 const indexRoute = require('./routes/index');
 const api = require('./routes/api');
@@ -32,6 +33,7 @@ const logger = require('./support/logger');
 const app = express();
 
 // CONFIGURATIONS
+axios.defaults.timeout = config.upstreamTimeout;
 app.set('port', config.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

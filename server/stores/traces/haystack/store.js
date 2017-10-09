@@ -34,6 +34,8 @@ const client = new services.TraceReaderClient(
 
 const reservedField = ['timePreset', 'startTime', 'endTime'];
 
+const generateCallDeadline = () => new Date().setMilliseconds(new Date().getMilliseconds() + config.upstreamTimeout);
+
 function createFieldsList(query) {
   return Object.keys(query)
       .filter(key => query[key] && !reservedField.includes(key))
@@ -46,22 +48,21 @@ function createFieldsList(query) {
       });
 }
 
-// TODO improve logging, monitoring and return correct status code for endpoints below
 store.getServices = () => {
-  const deferred = Q.defer();
+    const deferred = Q.defer();
 
-  const request = new messages.FieldValuesRequest();
-  request.setFieldname('service');
+    const request = new messages.FieldValuesRequest();
+    request.setFieldname('service');
 
-  client.getFieldValues(request, (result) => {
-    if (result.Error || !result.getFieldValues) {
-      deferred.reject({});
-    } else {
-      deferred.resolve(result.getFieldValues());
-    }
-  });
+    client.getFieldValues(request, {deadline: generateCallDeadline()}, (error, result) => {
+        if (error || !result) {
+            deferred.reject({error, result});
+        } else {
+            deferred.resolve(result);
+        }
+    });
 
-  return deferred.promise;
+    return deferred.promise;
 };
 
 store.getOperations = (serviceName) => {
@@ -75,9 +76,9 @@ store.getOperations = (serviceName) => {
   request.setFieldname('operation');
   request.setFiltersList(new messages.Field());
 
-  client.getFieldValues(request, (result) => {
-    if (result.Error || !result.getFieldValues) {
-      deferred.reject({});
+  client.getFieldValues(request, {deadline: generateCallDeadline()}, (error, result) => {
+    if (error || !result) {
+      deferred.reject({error, result});
     } else {
       deferred.resolve(result.getFieldValues());
     }
@@ -92,9 +93,9 @@ store.getTrace = (traceId) => {
   const request = new messages.TraceRequest();
   request.setTraceid(traceId);
 
-  client.getTrace(request, (result) => {
-    if (result.Error || !result.getTrace) {
-      deferred.reject({});
+  client.getTrace(request, (error, result) => {
+    if (error || !result) {
+        deferred.reject({error, result});
     } else {
       deferred.resolve(result.getTrace());
     }
@@ -111,9 +112,9 @@ store.findTraces = (query) => {
     const request = new messages.TraceRequest();
     request.setTraceid(query.traceId);
 
-    client.getTrace(request, (result) => {
-      if (result.Error || !result.getTrace) {
-        deferred.reject({});
+    client.getTrace(request, {deadline: generateCallDeadline()}, (error, result) => {
+      if (error || !result) {
+            deferred.reject({error, result});
       } else {
         deferred.resolve(
             searchResultsTransformer.transform([result.getTrace()], query));
@@ -128,9 +129,9 @@ store.findTraces = (query) => {
         || Date.now() * 1000);
     request.setLimit(40);
 
-    client.searchTraces(request, (result) => {
-      if (result.Error || !result.getTrace) {
-        deferred.reject({});
+    client.searchTraces(request, {deadline: generateCallDeadline()}, (error, result) => {
+      if (error || !result) {
+        deferred.reject({error, result});
       } else {
         deferred.resolve(
             searchResultsTransformer.transform(result.getTracesList(), query));

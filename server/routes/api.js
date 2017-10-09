@@ -23,24 +23,34 @@ const trendStore = require(`../stores/trends/${config.trends.store}/store`); // 
 
 const router = express.Router();
 
+function handleResponsePromise(response) {
+    return operation => operation().then(
+        result => response.json(result),
+        (error) => {
+            console.error(error);
+            response.status(500);
+            response.json({error});
+        }).done();
+}
+
 router.get('/services', (req, res) => {
-    traceStore.getServices().then(results => res.json(results));
+    handleResponsePromise(res)(() => traceStore.getServices());
 });
 
 router.get('/operations', (req, res) => {
-    traceStore.getOperations(req.query.serviceName).then(results => res.json(results));
+    handleResponsePromise(res)(() => traceStore.getOperations(req.query.serviceName));
 });
 
 router.get('/traces', (req, res) => {
-    traceStore.findTraces(req.query).then(results => res.json(results));
+    handleResponsePromise(res)(() => traceStore.findTraces(req.query));
 });
 
 router.get('/trace/:traceId', (req, res) => {
-    traceStore.getTrace(req.params.traceId).then(results => res.json(results));
+    handleResponsePromise(res)(() => traceStore.getTrace(req.params.traceId));
 });
 
 router.get('/trends', (req, res) => {
-    trendStore.getTrends(req.query.serviceName).then(results => res.json(results));
+    handleResponsePromise(res)(() => trendStore.getTrends(req.query.serviceName));
 });
 
 module.exports = router;
