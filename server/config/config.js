@@ -20,9 +20,9 @@
 const _ = require('lodash');
 const baseConfiguration = require('../config/base');
 
-if (process.env.OVERRIDES_CONFIG_PATH) {
+if (process.env.HAYSTACK_OVERRIDES_CONFIG_PATH) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const environmentSpecificConfiguration = require(process.env.OVERRIDES_CONFIG_PATH);
+    const environmentSpecificConfiguration = require(process.env.HAYSTACK_OVERRIDES_CONFIG_PATH);
     module.exports = _.merge({}, baseConfiguration, environmentSpecificConfiguration);
 } else {
     module.exports = baseConfiguration;
