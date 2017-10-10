@@ -18,6 +18,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { toQueryUrlString } from '../utils/queryParser';
 
 function TrendException(data) {
     this.message = 'Unable to resolve promise';
@@ -29,9 +30,10 @@ export class TrendsSearchStore {
     @observable searchResults = [];
 
     @action fetchSearchResults(query) {
+        const queryUrlString = toQueryUrlString(query);
         this.promiseState = fromPromise(
             axios
-                .get(`/api/trends?${query}`)
+                .get(`/api/trends?${queryUrlString}`)
                 .then((result) => {
                     this.searchResults = result.data;
                 })

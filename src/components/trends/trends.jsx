@@ -22,14 +22,15 @@ import TrendResults from './trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 import './trends.less';
 
-const Trends = ({location}) => (
+const Trends = ({location, match}) => (
     <section className="trends-panel">
-        <TrendResults trendsSearchStore={trendsSearchStore} location={location}/>
+        <TrendResults trendsSearchStore={trendsSearchStore} location={location} match={match}/>
     </section>
 );
 
 Trends.propTypes = {
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired
 };
 
 export default Trends;

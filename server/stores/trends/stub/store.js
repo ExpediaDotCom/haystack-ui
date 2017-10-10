@@ -30,7 +30,7 @@ function getTimeStamp(addMin) {
 
 function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({values: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
@@ -38,7 +38,6 @@ store.getTrends = () => Q.fcall(() =>
     [
         {
             operationName: 'seaworth-1',
-            timeWindow: '5-min',
             summary: {
                 count: 10000,
                 successCount: 8000,
@@ -59,7 +58,6 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'bolton-1',
-            timeWindow: '5-min',
             summary: {
                 count: 15000,
                 successCount: 12000,
@@ -80,7 +78,6 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'baelish-1',
-            timeWindow: '5-min',
             summary: {
                 count: 5000,
                 successCount: 4000,
@@ -101,7 +98,6 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'mormont-1',
-            timeWindow: '5-min',
             summary: {
                 count: 1000,
                 successCount: 800,

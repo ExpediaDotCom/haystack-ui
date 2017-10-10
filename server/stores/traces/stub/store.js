@@ -166,7 +166,7 @@ store.getTrace = () => Q.fcall(() => [
             logs: [],
             tags: []
         }
-    ],
+    ]
 );
 
 store.findTraces = query => Q.fcall(() => {
