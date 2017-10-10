@@ -20,17 +20,23 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
 import formatters from '../../utils/formatters';
+import TrendTimeRangePicker from './trendTimeRangePicker';
 import '../common/resultsTable.less';
+import './trendResultsTable.less';
 
 import TrendGraph from './trendGraph';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
-        results: PropTypes.object.isRequired
-    }
+        results: PropTypes.object.isRequired,
+        trendsSearchStore: PropTypes.object.isRequired,
+        match: PropTypes.object.isRequired
+    };
+
     static Header({name}) {
         return <span className="results-header">{name}</span>;
     }
+
     static getCaret(direction) {
         if (direction === 'asc') {
             return (
@@ -46,15 +52,19 @@ export default class TrendResultsTable extends React.Component {
         }
         return <div/>;
     }
+
     static columnFormatter(operation) {
         return `<div class="trends-table__left">${operation}</div>`;
     }
+
     static countColumnFormatter(cell) {
-        return `<div class="trends-table__right">${formatters.toThousandsString(cell.count)}</div>`;
+        return `<div class="trends-table__right">${cell.count}</div>`;
     }
+
     static meanDurationColumnFormatter(cell, row) {
         return `<div class="trends-table__right">${formatters.toDurationString(row.summary.meanDuration * 1000)}</div>`;
     }
+
     static successPercentFormatter(cell, row) {
         return (
             <div className="text-right">
@@ -63,24 +73,28 @@ export default class TrendResultsTable extends React.Component {
                 </div>
             </div>);
     }
+
     static sortByName(a, b, order) {
         if (order === 'desc') {
-            return a.operationName > b.operationName;
+            return a.operationName.toLowerCase().localeCompare(b.operationName.toLowerCase());
         }
         return b.operationName > a.operationName;
     }
+
     static sortByCount(a, b, order) {
         if (order === 'desc') {
             return b.summary.count > a.summary.count;
         }
         return a.summary.count > b.summary.count;
     }
+
     static sortByMean(a, b, order) {
         if (order === 'desc') {
             return b.summary.meanDuration > a.summary.meanDuration;
         }
         return a.summary.meanDuration > b.summary.meanDuration;
     }
+
     static sortByPercentage(a, b, order) {
         if (order === 'desc') {
             return b.summary.successPercent > a.summary.successPercent;
@@ -96,7 +110,10 @@ export default class TrendResultsTable extends React.Component {
         };
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
+        this.trendsToolBar = this.trendsToolBar.bind(this);
+        this.timeRangeCallback = this.timeRangeCallback.bind(this);
     }
+
     handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
@@ -114,6 +131,7 @@ export default class TrendResultsTable extends React.Component {
             );
         }
     }
+
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
             return <TrendGraph />;
@@ -121,9 +139,30 @@ export default class TrendResultsTable extends React.Component {
         return null;
     }
 
+    timeRangeCallback(timeRange, timeWindow) {
+        const reqQuery = {
+            serviceName: `${this.props.match.params.serviceName}`,
+            timeWindow,
+            from: timeRange.from,
+            until: timeRange.until
+        };
+        this.props.trendsSearchStore.fetchSearchResults(reqQuery);
+    }
+
+    trendsToolBar(props) {
+        return (
+            <section>
+                <div className="toolbar">
+                    <div className="toolbar-search">{props.components.searchPanel}</div>
+                    <TrendTimeRangePicker className="toolbar-timerangepicker btn-group" timeRangeCallback={this.timeRangeCallback}/>
+                </div>
+            </section>
+        );
+    }
+
     render() {
-        const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
-        const tableHeaderStyle = { border: 'none' };
+        const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
+        const tableHeaderStyle = {border: 'none'};
         const options = {
             page: 1,  // which page you want to show as default
             sizePerPage: 20,  // which size per page you want to locate as default
@@ -140,18 +179,23 @@ export default class TrendResultsTable extends React.Component {
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
-            expandBodyClass: 'expand-row-body'
+            expandBodyClass: 'expand-row-body',
+            toolBar: this.trendsToolBar
         };
         return (
             <BootstrapTable
                 data={this.props.results}
-                tableStyle={{ border: 'none' }}
+                tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
                 expandComponent={this.expandComponent}
                 pagination
                 options={options}
+                search
+                searchPlaceholder="Filter Operations..."
+                exportCSV
             >
+
                 <TableHeaderColumn
                     isKey
                     dataFormat={TrendResultsTable.columnFormatter}
