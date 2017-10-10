@@ -58,48 +58,51 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="trends-table__right">${cell.count}</div>`;
+        return `<div class="trends-table__right">${cell.count > 0 ? cell.count : ' '}</div>`;
     }
 
     static meanDurationColumnFormatter(cell, row) {
-        return `<div class="trends-table__right">${formatters.toDurationString(row.summary.meanDuration * 1000)}</div>`;
+        return `<div class="trends-table__right">${row.summary.meanDuration > 0 ? formatters.toDurationString(row.summary.meanDuration * 1000) : ' '}</div>`;
     }
 
     static successPercentFormatter(cell, row) {
         return (
             <div className="text-right">
                 <div className="percentContainer text-center">
-                    <CircularProgressbar percentage={row.summary.successPercent} strokeWidth={8}/>
+                    { row.summary.successPercent !== null ?
+                        <CircularProgressbar percentage={row.summary.successPercent} strokeWidth={8}/> :
+                        null }
                 </div>
-            </div>);
+            </div>
+        );
     }
 
     static sortByName(a, b, order) {
         if (order === 'desc') {
             return a.operationName.toLowerCase().localeCompare(b.operationName.toLowerCase());
         }
-        return b.operationName > a.operationName;
+        return b.operationName.toLowerCase().localeCompare(a.operationName.toLowerCase());
     }
 
     static sortByCount(a, b, order) {
         if (order === 'desc') {
-            return b.summary.count > a.summary.count;
+            return b.summary.count - a.summary.count;
         }
-        return a.summary.count > b.summary.count;
+        return a.summary.count - b.summary.count;
     }
 
     static sortByMean(a, b, order) {
         if (order === 'desc') {
-            return b.summary.meanDuration > a.summary.meanDuration;
+            return b.summary.meanDuration - a.summary.meanDuration;
         }
-        return a.summary.meanDuration > b.summary.meanDuration;
+        return a.summary.meanDuration - b.summary.meanDuration;
     }
 
     static sortByPercentage(a, b, order) {
         if (order === 'desc') {
-            return b.summary.successPercent > a.summary.successPercent;
+            return b.summary.successPercent - a.summary.successPercent;
         }
-        return a.summary.successPercent > b.summary.successPercent;
+        return a.summary.successPercent - b.summary.successPercent;
     }
 
     constructor(props) {
