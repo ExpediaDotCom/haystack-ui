@@ -65,7 +65,7 @@ export default class TrendTimeRangePicker extends React.Component {
 
         return (<div className="btn-group">
             {TrendTimeRangePicker.timePresetOptions.map(preset => (
-                <PresetOption presetLabel={preset.label} presetValue={preset.value} timeWindow={preset.timeWindow}/>))}
+                <PresetOption key={preset.value} presetLabel={preset.label} presetValue={preset.value} timeWindow={preset.timeWindow}/>))}
         </div>);
     }
 }
