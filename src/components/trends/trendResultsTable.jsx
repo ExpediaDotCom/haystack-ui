@@ -24,7 +24,7 @@ import TrendTimeRangePicker from './trendTimeRangePicker';
 import '../common/resultsTable.less';
 import './trendResultsTable.less';
 
-import TrendGraph from './trendGraph';
+import TrendResultExpand from './trendResultExpand';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
@@ -137,7 +137,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendGraph />;
+            return <TrendResultExpand data={row}/>;
         }
         return null;
     }

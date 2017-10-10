@@ -16,5 +16,21 @@
  */
 
 import React from 'react';
+import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip} from 'recharts';
 
-export default () => <p>Trend graph placeholder</p>;
+export default (trend =>
+    (<div className="trend-graph__third">
+        <LineChart
+            width={350}
+            height={300}
+            data={trend.data}
+        >
+            <XAxis label="Time" dataKey="time"/>
+            <YAxis label={<text glyphOrientationVertical="0" dx="10%" dy="30%" style={{writingMode: 'tb'}}>{trend.label}</text>} />
+            <CartesianGrid strokeDasharray="1 3"/>
+            <Tooltip/>
+            <Line type="monotone" dataKey="value" stroke="#2A394F"/>
+        </LineChart>
+    </div>
+    )
+);
