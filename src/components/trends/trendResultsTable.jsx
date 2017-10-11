@@ -34,22 +34,6 @@ export default class TrendResultsTable extends React.Component {
         return <span className="results-header">{name}</span>;
     }
 
-    static getCaret(direction) {
-        if (direction === 'asc') {
-            return (
-                <span className="order dropup">
-                  <span className="caret" style={{margin: '10px 5px'}}/>
-              </span>);
-        }
-        if (direction === 'desc') {
-            return (
-                <span className="order dropdown">
-                  <span className="caret" style={{margin: '10px 5px'}}/>
-              </span>);
-        }
-        return <div/>;
-    }
-
     static columnFormatter(operation) {
         return `<div class="table__left">${operation}</div>`;
     }
@@ -184,7 +168,6 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     isKey
                     dataFormat={TrendResultsTable.columnFormatter}
-                    caretRender={TrendResultsTable.getCaret}
                     dataField="operationName"
                     width="50"
                     sortFunc={TrendResultsTable.sortByName}
@@ -192,7 +175,6 @@ export default class TrendResultsTable extends React.Component {
                     filter={{type: 'TextFilter', placeholder: 'Filter Operations...'}}
                 />
                 <TableHeaderColumn
-                    caretRender={TrendResultsTable.getCaret}
                     dataField="summary"
                     dataFormat={TrendResultsTable.countColumnFormatter}
                     width="12"
@@ -201,7 +183,6 @@ export default class TrendResultsTable extends React.Component {
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    caretRender={TrendResultsTable.getCaret}
                     dataField="timeWindow"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
                     width="12"
@@ -215,7 +196,6 @@ export default class TrendResultsTable extends React.Component {
                     width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
-                    caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>
             </BootstrapTable>

@@ -69,7 +69,7 @@ export default class TrendTimeRangePicker extends React.Component {
 
         return (
             <div className="trend-header-toolbar clearfix">
-                <h3 className="pull-left op_trends_header">Operation Trends</h3>
+                <h3 className="pull-left op_trends_header">Trends</h3>
                 <div className="btn-group pull-right">
                     {TrendTimeRangePicker.timePresetOptions.map(preset => (
                         <PresetOption
