@@ -19,7 +19,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TrendGraph from './trendGraph';
+import CountGraph from './graphs/countGraph';
+import DurationGraph from './graphs/durationGraph';
+import SuccessGraph from './graphs/successGraph';
 
 export default class TrendResultExpand extends React.Component {
     static propTypes = {
@@ -27,34 +29,29 @@ export default class TrendResultExpand extends React.Component {
     }
 
     render() {
-        const calls = [];
-        const meanDuration = [];
-        const success = [];
+        const {
+            count,
+            meanDuration,
+            tp95,
+            tp99,
+            failureCount,
+            successCount
+        } = this.props.data.rawValues;
 
-        this.props.data.rawValues.count.map((items) => {
-            const row = {};
-            row.time = new Date(items.timestamp * 1000);
-            row.value = items.value + 1;
-            calls.push(row);
+        const successPoints = failureCount.map((items, index) => {
+            const point = {};
+            point.timestamp = items.timestamp;
+            point.value = (items.value / (successCount[index].value + items.value)) * 100;
+
+            return point;
         });
-        this.props.data.rawValues.meanDuration.map((items) => {
-            const row = {};
-            row.time = new Date(items.timestamp * 1000);
-            row.value = items.value;
-            meanDuration.push(row);
-        });
-        this.props.data.rawValues.failureCount.map((items, index) => {
-            const row = {};
-            row.time = new Date(items.timestamp * 1000);
-            row.value = (items.value / (this.props.data.rawValues.successCount[index].value + items.value)) * 100;
-            success.push(row);
-        });
+
         return (
             <div className="table-row-details">
                 <div className="row">
-                    <TrendGraph data={calls} label={'Invocation Count'}/>
-                    <TrendGraph data={meanDuration} label={'Duration'} />
-                    <TrendGraph data={success} label={'Success Percentage'}/>
+                    <CountGraph points={count} />
+                    <DurationGraph meanPoints={meanDuration} tp95Points={tp95} tp99Points={tp99} />
+                    <SuccessGraph points={successPoints} />
                 </div>
             </div>
         );
