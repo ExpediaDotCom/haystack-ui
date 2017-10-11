@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
 import formatters from '../../utils/formatters';
-import TrendTimeRangePicker from './trendTimeRangePicker';
 import '../common/resultsTable.less';
 import './trendResultsTable.less';
 
@@ -28,9 +27,7 @@ import TrendResultExpand from './trendResultExpand';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
-        results: PropTypes.object.isRequired,
-        trendsSearchStore: PropTypes.object.isRequired,
-        match: PropTypes.object.isRequired
+        results: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -71,7 +68,7 @@ export default class TrendResultsTable extends React.Component {
                 <div className="percentContainer text-center">
                     { row.summary.successPercent !== null ?
                         <CircularProgressbar percentage={row.summary.successPercent} strokeWidth={8}/> :
-                        null }
+                        'NA' }
                 </div>
             </div>
         );
@@ -113,8 +110,6 @@ export default class TrendResultsTable extends React.Component {
         };
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
-        this.trendsToolBar = this.trendsToolBar.bind(this);
-        this.timeRangeCallback = this.timeRangeCallback.bind(this);
     }
 
     handleExpand(rowKey, isExpand) {
@@ -142,27 +137,6 @@ export default class TrendResultsTable extends React.Component {
         return null;
     }
 
-    timeRangeCallback(timeRange, timeWindow) {
-        const reqQuery = {
-            serviceName: `${this.props.match.params.serviceName}`,
-            timeWindow,
-            from: timeRange.from,
-            until: timeRange.until
-        };
-        this.props.trendsSearchStore.fetchSearchResults(reqQuery);
-    }
-
-    trendsToolBar(props) {
-        return (
-            <section>
-                <div className="toolbar">
-                    <div className="toolbar-search">{props.components.searchPanel}</div>
-                    <TrendTimeRangePicker className="toolbar-timerangepicker btn-group" timeRangeCallback={this.timeRangeCallback}/>
-                </div>
-            </section>
-        );
-    }
-
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
@@ -183,8 +157,7 @@ export default class TrendResultsTable extends React.Component {
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
-            expandBodyClass: 'expand-row-body',
-            toolBar: this.trendsToolBar
+            expandBodyClass: 'expand-row-body'
         };
 
         const selectRowProp = {
@@ -206,9 +179,6 @@ export default class TrendResultsTable extends React.Component {
                 selectRow={selectRowProp}
                 pagination
                 options={options}
-                search
-                searchPlaceholder="Filter Operations..."
-                exportCSV
             >
 
                 <TableHeaderColumn
@@ -217,10 +187,10 @@ export default class TrendResultsTable extends React.Component {
                     caretRender={TrendResultsTable.getCaret}
                     dataField="operationName"
                     width="50"
-                    dataSort
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
-                ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
+                    filter={{type: 'TextFilter', placeholder: 'Filter Operations...'}}
+                />
                 <TableHeaderColumn
                     caretRender={TrendResultsTable.getCaret}
                     dataField="summary"

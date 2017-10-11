@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -17,20 +18,53 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import TrendResults from './trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 import './trends.less';
+import TrendHeaderToolbar from './trendHeaderToolbar';
 
-const Trends = ({location, match}) => (
-    <section className="trends-panel">
-        <TrendResults trendsSearchStore={trendsSearchStore} location={location} match={match}/>
-    </section>
-);
+export default class Trends extends React.Component {
 
-Trends.propTypes = {
-    location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
-};
+    static propTypes = {
+        match: PropTypes.object.isRequired
+    };
 
-export default Trends;
+    constructor(props) {
+        super(props);
+        this.timeRangeCallback = this.timeRangeCallback.bind(this);
+        this.triggerTrendResults = this.triggerTrendResults.bind(this);
+    }
+
+    componentDidMount() {
+        const defaultTimeRange = {
+            from: moment(new Date()).subtract(900, 'seconds').valueOf(),
+            until: moment(new Date()).valueOf()};
+        const defaultTimeWindow = '1min';
+        this.triggerTrendResults(defaultTimeRange, defaultTimeWindow);
+    }
+
+    triggerTrendResults(timeRange, timeWindow) {
+        const query = {
+            serviceName: `${this.props.match.params.serviceName}`,
+            timeWindow,
+            from: timeRange.from,
+            until: timeRange.until
+        };
+        trendsSearchStore.fetchSearchResults(query);
+    }
+
+    timeRangeCallback(timeRange, timeWindow) {
+        this.triggerTrendResults(timeRange, timeWindow);
+    }
+
+    render() {
+        return (
+            <section className="trends-panel">
+                <TrendHeaderToolbar timeRangeCallback={this.timeRangeCallback}/>
+                <TrendResults trendsSearchStore={trendsSearchStore} />
+            </section>
+        );
+    }
+}
