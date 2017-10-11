@@ -6,7 +6,7 @@ module.exports = {
     cluster: false,
 
     // default timeout in ms for all the downlevels from store
-    upstreamTimeout: 60,
+    upstreamTimeout: 60000,
 
     // list of subsystems for which UI should be enabled,
     // options - can be any combination of traces, trends, dependency and alerts
