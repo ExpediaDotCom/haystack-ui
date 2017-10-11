@@ -16,31 +16,20 @@
  */
 
 import React from 'react';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import Loading from '../common/loading';
 import TrendResultsTable from './trendResultsTable';
 import Error from '../common/error';
 import NoSearch from '../common/noSearch';
 
-
 @observer
 export default class TrendResults extends React.Component {
     static propTypes = {
-        trendsSearchStore: PropTypes.object.isRequired,
-        match: PropTypes.object.isRequired
+        trendsSearchStore: PropTypes.object.isRequired
     };
-    componentDidMount() {
-        const defaultQuery = {
-            serviceName: `${this.props.match.params.serviceName}`,
-            timeWindow: '1min',
-            from: moment(new Date()).subtract(900, 'seconds').valueOf(),
-            until: moment(new Date()).valueOf()
-        };
-        this.props.trendsSearchStore.fetchSearchResults(defaultQuery);
-    }
+
     render() {
         return (
             <section>
@@ -49,7 +38,7 @@ export default class TrendResults extends React.Component {
                     rejected: () => <Error />,
                     empty: () => <NoSearch />,
                     fulfilled: () => ((this.props.trendsSearchStore.searchResults && this.props.trendsSearchStore.searchResults.length)
-                        ? <TrendResultsTable trendsSearchStore={this.props.trendsSearchStore} results={this.props.trendsSearchStore.searchResults} match={this.props.match} />
+                        ? <TrendResultsTable results={this.props.trendsSearchStore.searchResults}/>
                         : <Error />)
                 })
                 }

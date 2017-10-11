@@ -18,6 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import './trends.less';
 
 export default class TrendTimeRangePicker extends React.Component {
 
@@ -35,13 +36,16 @@ export default class TrendTimeRangePicker extends React.Component {
     ];
 
     static getTimeRange(presetValue) {
-        return {from: moment(new Date()).subtract(presetValue, 'seconds').valueOf(), until: moment(new Date()).valueOf()};
+        return {
+            from: moment(new Date()).subtract(presetValue, 'seconds').valueOf(),
+            until: moment(new Date()).valueOf()
+        };
     }
 
     constructor(props) {
         super(props);
         this.state = {
-          activePreset: '15m'
+            activePreset: '15m'
         };
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
     }
@@ -63,9 +67,18 @@ export default class TrendTimeRangePicker extends React.Component {
             </button>
         );
 
-        return (<div className="btn-group">
-            {TrendTimeRangePicker.timePresetOptions.map(preset => (
-                <PresetOption key={preset.value} presetLabel={preset.label} presetValue={preset.value} timeWindow={preset.timeWindow}/>))}
-        </div>);
+        return (
+            <div className="trend-header-toolbar clearfix">
+                <h3 className="pull-left op_trends_header">Operation Trends</h3>
+                <div className="btn-group pull-right">
+                    {TrendTimeRangePicker.timePresetOptions.map(preset => (
+                        <PresetOption
+                            presetLabel={preset.label}
+                            presetValue={preset.value}
+                            timeWindow={preset.timeWindow}
+                        />))}
+                </div>
+            </div>
+           );
     }
 }
