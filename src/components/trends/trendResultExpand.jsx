@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function,array-callback-return */
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -49,10 +50,12 @@ export default class TrendResultExpand extends React.Component {
             success.push(row);
         });
         return (
-            <div>
-                <TrendGraph data={calls} label={'Calls'}/>
-                <TrendGraph data={meanDuration} label={'Mean Duration'} />
-                <TrendGraph data={success} label={'Success Percentage'}/>
+            <div className="table-row-details">
+                <div className="row">
+                    <TrendGraph data={calls} label={'Invocation Count'}/>
+                    <TrendGraph data={meanDuration} label={'Duration'} />
+                    <TrendGraph data={success} label={'Success Percentage'}/>
+                </div>
             </div>
         );
     }
