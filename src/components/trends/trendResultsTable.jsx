@@ -54,15 +54,15 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static columnFormatter(operation) {
-        return `<div class="trends-table__left">${operation}</div>`;
+        return `<div class="table__left">${operation}</div>`;
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="trends-table__right">${cell.count > 0 ? cell.count : ' '}</div>`;
+        return `<div class="table__right">${cell.count > 0 ? cell.count : ' '}</div>`;
     }
 
     static meanDurationColumnFormatter(cell, row) {
-        return `<div class="trends-table__right">${row.summary.meanDuration > 0 ? formatters.toDurationString(row.summary.meanDuration * 1000) : ' '}</div>`;
+        return `<div class="table__right">${row.summary.meanDuration > 0 ? formatters.toDurationString(row.summary.meanDuration * 1000) : ' '}</div>`;
     }
 
     static successPercentFormatter(cell, row) {
@@ -166,6 +166,7 @@ export default class TrendResultsTable extends React.Component {
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
+
         const options = {
             page: 1,  // which page you want to show as default
             sizePerPage: 20,  // which size per page you want to locate as default
@@ -185,6 +186,16 @@ export default class TrendResultsTable extends React.Component {
             expandBodyClass: 'expand-row-body',
             toolBar: this.trendsToolBar
         };
+
+        const selectRowProp = {
+            clickToSelect: true,
+            clickToExpand: true,
+            className: 'selected-row',
+            mode: 'checkbox',
+            hideSelectColumn: true,
+            selected: this.state.selected
+        };
+
         return (
             <BootstrapTable
                 data={this.props.results}
@@ -192,6 +203,7 @@ export default class TrendResultsTable extends React.Component {
                 trClassName="tr-no-border"
                 expandableRow={() => true}
                 expandComponent={this.expandComponent}
+                selectRow={selectRowProp}
                 pagination
                 options={options}
                 search

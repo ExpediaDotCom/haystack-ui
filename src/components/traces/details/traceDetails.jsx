@@ -96,7 +96,7 @@ export default class TraceDetails extends React.Component {
 
     render() {
         return (
-            <section className="trace-details">
+            <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
                     <h5 className="pull-left">TraceId: {this.props.traceId}</h5>
                     <ul className="nav nav-tabs pull-left hidden">

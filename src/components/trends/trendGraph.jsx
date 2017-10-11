@@ -16,21 +16,31 @@
  */
 
 import React from 'react';
-import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip} from 'recharts';
+import {CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis} from 'recharts';
 
 export default (trend =>
-    (<div className="trend-graph__third">
-        <LineChart
-            width={350}
-            height={300}
-            data={trend.data}
-        >
-            <XAxis label="Time" dataKey="time"/>
-            <YAxis label={<text glyphOrientationVertical="0" dx="10%" dy="30%" style={{writingMode: 'tb'}}>{trend.label}</text>} />
-            <CartesianGrid strokeDasharray="1 3"/>
-            <Tooltip/>
-            <Line type="monotone" dataKey="value" stroke="#2A394F"/>
-        </LineChart>
-    </div>
-    )
+        (<div className="col-md-4">
+                <h5 className="text-center">{trend.label}</h5>
+                <div className="text-center">
+                    <LineChart
+                        width={380}
+                        height={250}
+                        data={trend.data}
+                    >
+                        <XAxis label="Time" dataKey="time"/>
+                        <YAxis
+                            label={<text
+                                glyphOrientationVertical="0"
+                                dx="10%"
+                                dy="30%"
+                                style={{writingMode: 'tb'}}
+                            >{trend.label}</text>}
+                        />
+                        <CartesianGrid strokeDasharray="1 3"/>
+                        <Tooltip/>
+                        <Line type="monotone" dataKey="value" stroke="#2A394F"/>
+                    </LineChart>
+                </div>
+            </div>
+        )
 );
