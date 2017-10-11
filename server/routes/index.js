@@ -24,7 +24,7 @@ const config = require('../config/config');
 const router = express.Router();
 
 router.get('*', (req, res) => {
-    res.render('index', {subsystems: config.subsystems});
+    res.render('index', {subsystems: Object.keys(config.stores)});
 });
 
 module.exports = router;

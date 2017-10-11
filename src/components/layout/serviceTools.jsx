@@ -26,16 +26,11 @@ import Trends from '../trends/trends';
 import Alerts from '../alerts/alerts';
 
 const subsystems = window.subsystems || [];
-const allSubsystemsEnabled = !subsystems.length || subsystems.includes('all');
 
-function isSubsystemEnabled(sub) {
-  return allSubsystemsEnabled || subsystems.includes(sub);
-}
-
-const isFlowEnabled = isSubsystemEnabled('flow');
-const isTrendsEnabled = isSubsystemEnabled('trends');
-const isTracesEnabled = isSubsystemEnabled('traces');
-const isAlertsEnabled = isSubsystemEnabled('alerts');
+const isFlowEnabled = subsystems.includes('flow');
+const isTrendsEnabled = subsystems.includes('trends');
+const isTracesEnabled = subsystems.includes('traces');
+const isAlertsEnabled = subsystems.includes('alerts');
 const ServiceTools = (props) => {
     const serviceName = props.match.params.serviceName;
     const serviceTitleStyle = serviceName.length > 35 ? {fontSize: 25, lineHeight: 1.5} : {fontSize: 34};
@@ -99,6 +94,7 @@ const ServiceTools = (props) => {
             </nav>
             <article className="serviceToolsContainer container">
                 <Switch>
+                  <Route exact path="/service/:serviceName" component={Trends}/>
                   {isAlertsEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
                   {isTrendsEnabled ? <Route exact path="/service/:serviceName/traces" component={Traces}/> : null}
                   {isTracesEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}

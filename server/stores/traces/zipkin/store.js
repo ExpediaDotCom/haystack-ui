@@ -21,7 +21,7 @@ const converter = require('./converter');
 const rangeConverter = require('../utils/rangeConverter');
 
 const store = {};
-const baseZipkinUrl = config.traces.zipkin.url;
+const baseZipkinUrl = config.stores.traces.zipkinUrl;
 
 const reservedField = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime'];
 
