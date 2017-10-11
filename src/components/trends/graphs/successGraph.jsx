@@ -18,17 +18,18 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
+import {options, graphDateFormatter} from './graphTools';
+
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 
 const SuccessGraph = ({points}) => {
-    const data = points.map(point => ({x: point.timestamp % 100000, y: point.value}));
-    const labels = points.map(point => point.timestamp % 100000); // TODO convert timestamp to time text and reduce number of labels
-
+    const data = points.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
+    const labels = points.map(point => graphDateFormatter(point.timestamp));
     const chartData = {
         labels,
         datasets: [{
-            label: 'Count',
+            label: 'Success Percentage',
             data,
             backgroundColor,
             borderColor,
@@ -40,7 +41,7 @@ const SuccessGraph = ({points}) => {
     return (<div className="col-md-4">
             <h5 className="text-center">Success %</h5>
             <div className="chart-container">
-                <Line data={chartData} options={{maintainAspectRatio: false}} type="line" />
+                <Line data={chartData} options={options} type="line" />
             </div>
         </div>
     );

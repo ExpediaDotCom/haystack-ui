@@ -17,13 +17,14 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import {options, graphDateFormatter} from './graphTools';
 
 const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
 const borderColor = [['rgba(54, 162, 235, 1)']];
 
 const CountGraph = ({points}) => {
-    const data = points.map(point => ({x: point.timestamp, y: point.value % 100000}));
-    const labels = points.map(point => point.timestamp % 100000); // TODO convert timestamp to time text and reduce number of labels
+    const data = points.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
+    const labels = points.map(point => graphDateFormatter(point.timestamp));
 
     const chartData = {
         labels,
@@ -39,7 +40,7 @@ const CountGraph = ({points}) => {
     return (<div className="col-md-4">
             <h5 className="text-center">Invocation Count</h5>
             <div className="chart-container">
-                <Line data={chartData} options={{maintainAspectRatio: false}} type="line" />
+                <Line data={chartData} options={options} type="line" />
             </div>
         </div>
     );

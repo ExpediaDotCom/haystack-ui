@@ -18,6 +18,8 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
+import {options, graphDateFormatter} from './graphTools';
+
 const backgroundColor1 = [['rgba(255, 99, 132, 0.2)']];
 const borderColor1 = [['rgba(255, 99, 132, 1)']];
 
@@ -28,10 +30,10 @@ const backgroundColor3 = [['rgba(255, 206, 86, 0.2)']];
 const borderColor3 = [['rgba(255, 206, 86, 1)']];
 
 const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
-    const meanData = meanPoints.map(point => ({x: point.timestamp % 100000, y: point.value}));
-    const tp95Data = tp95Points.map(point => ({x: point.timestamp % 100000, y: point.value}));
-    const tp99Data = tp99Points.map(point => ({x: point.timestamp % 100000, y: point.value}));
-    const labels = meanPoints.map(point => point.timestamp % 100000); // TODO convert timestamp to time text and reduce number of labels
+    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
+    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
+    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
+    const labels = meanPoints.map(point => graphDateFormatter(point.timestamp));
 
     const chartData = {
         labels,
@@ -59,9 +61,9 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     };
 
     return (<div className="col-md-4">
-            <h5 className="text-center">Invocation Count</h5>
+            <h5 className="text-center">Duration Metrics</h5>
             <div className="chart-container">
-                <Line data={chartData} options={{maintainAspectRatio: false}} type="line" />
+                <Line data={chartData} options={options} type="line" />
             </div>
         </div>
     );
