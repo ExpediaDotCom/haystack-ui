@@ -24,13 +24,19 @@ function getValue(min, max) {
 }
 
 function getTimeStamp(addMin) {
-    const currentTime = ((new Date()).getTime()) / 1000;
-    return _.round(currentTime + (addMin * 60), 0);
+    const currentTime = ((new Date()).getTime());
+    return (currentTime + (addMin * 10000)) * 1000;
 }
 
 function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
     _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
+    return valuesArr;
+}
+
+function getRandomValuesWithRandomTime(timeWindow, dataPoints) {
+    const valuesArr = [];
+    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(10, 1000), timestamp: getTimeStamp(i * (timeWindow + Math.random()))}));
     return valuesArr;
 }
 
@@ -48,12 +54,12 @@ store.getTrends = () => Q.fcall(() =>
                 tp99: 950
             },
             rawValues: {
-                count: getRandomValues(5, 10),
-                successCount: getRandomValues(5, 10),
-                failureCount: getRandomValues(5, 10),
-                meanDuration: getRandomValues(5, 10),
-                tp95: getRandomValues(5, 10),
-                tp99: getRandomValues(5, 10)
+                count: getRandomValues(5, 60),
+                successCount: getRandomValues(5, 50),
+                failureCount: getRandomValues(5, 50),
+                meanDuration: getRandomValues(5, 50),
+                tp95: getRandomValues(5, 60),
+                tp99: getRandomValues(5, 60)
             }
         },
         {
@@ -68,12 +74,12 @@ store.getTrends = () => Q.fcall(() =>
                 tp99: 950
             },
             rawValues: {
-                count: getRandomValues(5, 10),
-                successCount: getRandomValues(5, 10),
-                failureCount: getRandomValues(5, 10),
-                meanDuration: getRandomValues(5, 10),
-                tp95: getRandomValues(5, 10),
-                tp99: getRandomValues(5, 10)
+                count: getRandomValues(120, 10),
+                successCount: getRandomValues(120, 30),
+                failureCount: getRandomValues(120, 30),
+                meanDuration: getRandomValues(120, 30),
+                tp95: getRandomValues(50, 30),
+                tp99: getRandomValues(50, 30)
             }
         },
         {
@@ -108,12 +114,12 @@ store.getTrends = () => Q.fcall(() =>
                 tp99: 950
             },
             rawValues: {
-                count: getRandomValues(5, 10),
-                successCount: getRandomValues(5, 10),
-                failureCount: getRandomValues(5, 10),
-                meanDuration: getRandomValues(5, 10),
-                tp95: getRandomValues(5, 10),
-                tp99: getRandomValues(5, 10)
+                count: getRandomValuesWithRandomTime(5, 10),
+                successCount: getRandomValuesWithRandomTime(5, 10),
+                failureCount: getRandomValuesWithRandomTime(5, 10),
+                meanDuration: getRandomValuesWithRandomTime(5, 10),
+                tp95: getRandomValuesWithRandomTime(5, 10),
+                tp99: getRandomValuesWithRandomTime(5, 10)
             }
         }
     ]

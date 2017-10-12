@@ -18,16 +18,14 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
-import {options, graphDateFormatter} from './graphTools';
+import options from './options';
 
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 
 const SuccessGraph = ({points}) => {
-    const data = points.map(point => ({x: new Date(point.timestamp * 1000), y: point.value}));
-    const labels = points.map(point => graphDateFormatter(point.timestamp));
+    const data = points.map(point => ({x: new Date(point.timestamp / 1000), y: point.value}));
     const chartData = {
-        labels,
         datasets: [{
             label: 'Success Percentage',
             data,
