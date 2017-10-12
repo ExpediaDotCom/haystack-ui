@@ -42,7 +42,14 @@ store.getTrace = () => Q.fcall(() => [
             startTime: 1504784384000,
             duration: 3525000,
             logs: [],
-            tags: []
+            tags: [{
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+            {
+                key: 'url2',
+                value: 'some:data'
+            }]
         },
         {
             traceId: 'traceid',

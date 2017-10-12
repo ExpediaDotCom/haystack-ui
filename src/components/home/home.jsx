@@ -47,4 +47,3 @@ export default class Home extends Component {
 Home.propTypes = {
     history: PropTypes.object.isRequired
 };
-
