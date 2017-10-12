@@ -30,6 +30,8 @@ const api = require('./routes/api');
 const config = require('./config/config');
 const logger = require('./support/logger');
 
+const errorLogger = logger.withIdentifier('invocation:failure');
+
 const app = express();
 
 // CONFIGURATIONS
@@ -53,7 +55,7 @@ app.use('/', indexRoute);
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-    console.error(err);
+    errorLogger.error(err);
     res.status(err.status || 500);
     res.json({err});
 });

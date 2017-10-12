@@ -29,7 +29,7 @@ const rangeConverter = require('../utils/rangeConverter');
 const store = {};
 
 const client = new services.TraceReaderClient(
-    `${config.traces.haystack.host}:${config.traces.haystack.port}`,
+    `${config.stores.traces.haystackHost}:${config.stores.traces.haystackPort}`,
     grpc.credentials.createInsecure());
 
 const reservedField = ['timePreset', 'startTime', 'endTime'];
