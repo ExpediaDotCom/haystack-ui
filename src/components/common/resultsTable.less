@@ -215,22 +215,23 @@ tr.tr-no-border>td {
   .ellipsis
 }
 
+.table__left {
+  text-align: left;
+  font-weight: 600;
+  font-size: @font-size-h5;
+  line-height: 2.6;
+  .ellipsis
+}
+
+.table__right {
+  text-align: right;
+  font-size: 16px;
+  .ellipsis
+}
+
 .table__secondary {
   font-weight: 300;
   font-size: 12px;
-  .ellipsis
-}
-
-.trends-table__left {
-  text-align: left;
-  font-weight: 600;
-  font-size: @font-size-h4;
-  .ellipsis
-}
-
-.trends-table__right {
-  text-align: right;
-  font-size: 16px;
   .ellipsis
 }
 
@@ -253,6 +254,13 @@ tr.tr-no-border>td {
   &:hover {
     color: @brand-primary;
 
+  }
+}
+
+.trends-panel .results-header {
+  color: @gray-dark;
+  &:hover {
+    color: @brand-primary;
   }
 }
 
@@ -309,3 +317,11 @@ tr.tr-no-border>td {
   }
 }
 
+.table-row-details {
+  padding: 18px 18px 24px 18px;
+  border-right: 2px solid @gray-dark ;
+  border-left: 2px solid @gray-dark ;
+  border-bottom: 2px solid @gray-dark;
+  border-radius: 0px 0px 3px 3px;
+  background-color: white;
+}

@@ -46,8 +46,14 @@ router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.getTrace(req.params.traceId));
 });
 
-router.get('/trends', (req, res, next) => {
-    handleResponsePromise(res, next)(() => trendStore.getTrends(req.query.serviceName));
+router.get('/trends', (req, res) => {
+    const {
+        serviceName,
+        timeWindow,
+        from,
+        until
+    } = req.query;
+    trendStore.getTrends(serviceName, timeWindow, from, until).then(results => res.json(results));
 });
 
 module.exports = router;

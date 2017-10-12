@@ -14,5 +14,33 @@
  *       limitations under the License.
  *
  */
-
 @import (reference) '../../app';
+
+.trend-header-toolbar {
+  margin-bottom: @spacing-l;
+}
+
+.op_trends_header {
+  margin: 0;
+}
+
+.trends-panel .react-bs-container-body td {
+  vertical-align: middle;
+}
+
+.chart-container {
+  height: 250px;
+}
+
+// overriding default styling for column filter
+.trends-panel th[data-field="operationName"] {
+  padding: 0 0 @spacing-xs 0;
+
+  input {
+    width: 50%;
+    padding-left: @spacing-xs;
+    border: 1px solid @gray-mid-light;
+    border-radius: 3px;
+    background-color: white;
+  }
+}

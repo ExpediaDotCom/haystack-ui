@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../common/loading';
@@ -25,14 +25,11 @@ import Error from '../common/error';
 import NoSearch from '../common/noSearch';
 
 @observer
-export default class TraceResults extends React.Component {
+export default class TrendResults extends React.Component {
     static propTypes = {
-        trendsSearchStore: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        trendsSearchStore: PropTypes.object.isRequired
     };
-    componentDidMount() {
-        this.props.trendsSearchStore.fetchSearchResults('');
-    }
+
     render() {
         return (
             <section>
@@ -41,7 +38,7 @@ export default class TraceResults extends React.Component {
                     rejected: () => <Error />,
                     empty: () => <NoSearch />,
                     fulfilled: () => ((this.props.trendsSearchStore.searchResults && this.props.trendsSearchStore.searchResults.length)
-                        ? <TrendResultsTable query={this.props.trendsSearchStore.searchQuery} results={this.props.trendsSearchStore.searchResults} location={this.props.location} />
+                        ? <TrendResultsTable results={this.props.trendsSearchStore.searchResults}/>
                         : <Error />)
                 })
                 }

@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -21,15 +22,19 @@ import PropTypes from 'prop-types';
 import TrendResults from './trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 import './trends.less';
+import TrendHeaderToolbar from './trendHeaderToolbar';
 
-const Trends = ({location}) => (
-    <section className="trends-panel">
-        <TrendResults trendsSearchStore={trendsSearchStore} location={location}/>
-    </section>
-);
+const Trends = ({match}) =>
+    (
+        <section className="trends-panel">
+            <TrendHeaderToolbar trendsSearchStore={trendsSearchStore} match={match}/>
+            <TrendResults trendsSearchStore={trendsSearchStore}/>
+        </section>
+    );
+
 
 Trends.propTypes = {
-    location: PropTypes.object.isRequired
+    match: PropTypes.object.isRequired
 };
 
 export default Trends;
