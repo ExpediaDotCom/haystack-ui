@@ -14,26 +14,16 @@
  *         limitations under the License.
  */
 
-export const options = {
+export default {
     maintainAspectRatio: false,
+    legend: {
+        onHover: (e) => { console.log('hovered'); e.target.style.cursor = 'pointer'; }
+    },
     scales: {
         xAxes: [{
             type: 'time',
-            afterTickToLabelConversion: (dataOptions) => {
-                const xLabels = dataOptions.ticks;
-                xLabels.forEach((l, i) => {
-                    if (i % 2 === 1) {
-                        xLabels[i] = '';
-                    }
-                });
-            }
+            bounds: 'data',
+            distribution: 'series'
         }]
     }
 };
-
-export function graphDateFormatter(unixTimestamp) {
-    const date = new Date(unixTimestamp * 1000);
-    const hours = date.getHours();
-    const minutes = `0${date.getMinutes()}`;
-    return `${hours}: ${minutes.substr(-2)}`;
-}
