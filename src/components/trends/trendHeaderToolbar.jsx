@@ -20,20 +20,33 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import './trends.less';
 
-export default class TrendTimeRangePicker extends React.Component {
+export default class TrendHeaderToolbar extends React.Component {
 
     static propTypes = {
         timeRangeCallback: PropTypes.func.isRequired
     };
 
-    static timePresetOptions = [
-        {label: '15m', value: '900', timeWindow: '1min'},
-        {label: '1h', value: '3600', timeWindow: '5min'},
-        {label: '6h', value: '21600', timeWindow: '5min'},
-        {label: '12h', value: '43200', timeWindow: '15min'},
-        {label: '24h', value: '86400', timeWindow: '1hour'},
-        {label: '7d', value: '604800', timeWindow: '1hour'}
-    ];
+    static timePresetOptions = [900, 3600, 21600, 43200, 86400, 604800];
+
+    static getTimeWindowSeconds(timeRangeSec) {
+        if (timeRangeSec <= 900) {
+            return 60;
+        } else if (timeRangeSec <= 21600) {
+            return 300;
+        } else if (timeRangeSec <= 43200) {
+            return 900;
+        }
+        return 3600;
+    }
+
+    static getTimeWindowLabel(timeRangeSec) {
+        if (timeRangeSec <= 900) {
+            return `${timeRangeSec / 60}m`;
+        } else if (timeRangeSec <= 86400) {
+            return `${timeRangeSec / 3600}h`;
+        }
+        return `${timeRangeSec / 86400}d`;
+    }
 
     static getTimeRange(presetValue) {
         return {
@@ -45,23 +58,23 @@ export default class TrendTimeRangePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activePreset: '15m'
+            activePresetValue: TrendHeaderToolbar.timePresetOptions[0]
         };
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
     }
 
-    handlePresetSelection(presetLabel, presetValue, timeWindow) {
-        this.setState({activePreset: presetLabel});
-        this.props.timeRangeCallback(TrendTimeRangePicker.getTimeRange(presetValue), timeWindow);
+    handlePresetSelection(presetValue, timeWindow) {
+        this.setState({activePresetValue: presetValue});
+        this.props.timeRangeCallback(TrendHeaderToolbar.getTimeRange(presetValue), timeWindow);
         event.preventDefault();
     }
 
     render() {
         const PresetOption = ({presetLabel, presetValue, timeWindow}) => (
             <button
-                className={presetLabel === this.state.activePreset ? 'btn btn-primary' : 'btn btn-default'}
+                className={presetValue === this.state.activePresetValue ? 'btn btn-primary' : 'btn btn-default'}
                 key={presetLabel}
-                onClick={() => this.handlePresetSelection(presetLabel, presetValue, timeWindow)}
+                onClick={() => this.handlePresetSelection(presetValue, timeWindow)}
             >
                 {presetLabel}
             </button>
@@ -71,11 +84,11 @@ export default class TrendTimeRangePicker extends React.Component {
             <div className="trend-header-toolbar clearfix">
                 <h3 className="pull-left op_trends_header">Trends</h3>
                 <div className="btn-group pull-right">
-                    {TrendTimeRangePicker.timePresetOptions.map(preset => (
+                    {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
                         <PresetOption
-                            presetLabel={preset.label}
-                            presetValue={preset.value}
-                            timeWindow={preset.timeWindow}
+                            presetLabel={TrendHeaderToolbar.getTimeWindowLabel(presetValue)}
+                            presetValue={presetValue}
+                            timeWindow={TrendHeaderToolbar.getTimeWindowSeconds(presetValue)}
                         />))}
                 </div>
             </div>
