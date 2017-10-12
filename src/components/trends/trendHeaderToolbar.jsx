@@ -30,7 +30,7 @@ export default class TrendHeaderToolbar extends React.Component {
     static timePresetOptions = [900, 3600, 21600, 43200, 86400, 604800];
 
     static getTimespanSeconds(timeRangeSec) {
-        if (timeRangeSec <= 3600) {
+        if (timeRangeSec <= 3000) {
             return 60;
         } else if (timeRangeSec <= 18000) {
             return 300;
