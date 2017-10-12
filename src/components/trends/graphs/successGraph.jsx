@@ -23,11 +23,16 @@ import options from './options';
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 
-const SuccessGraph = ({points}) => {
-    const data = points.map(point => ({x: new Date(point.timestamp / 1000), y: point.value}));
+const SuccessGraph = ({successCount, failureCount}) => {
+    // TODO make sure that success count and failure counts are merging on the right timestamps
+    const data = failureCount.map((items, index) => ({
+        x: new Date(items.timestamp / 1000),
+        y: (items.value / (successCount[index].value + items.value)) * 100
+    }));
+
     const chartData = {
         datasets: [{
-            label: 'Success Percentage',
+            label: 'Success %',
             data,
             backgroundColor,
             borderColor,
@@ -46,7 +51,8 @@ const SuccessGraph = ({points}) => {
 };
 
 SuccessGraph.propTypes = {
-    points: PropTypes.array.isRequired
+    successCount: PropTypes.array.isRequired,
+    failureCount: PropTypes.array.isRequired
 };
 
 export default SuccessGraph;

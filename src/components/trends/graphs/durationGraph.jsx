@@ -59,7 +59,7 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     };
 
     return (<div className="col-md-4">
-            <h5 className="text-center">Duration Metrics</h5>
+            <h5 className="text-center">Duration</h5>
             <div className="chart-container">
                 <Line data={chartData} options={options} type="line" />
             </div>

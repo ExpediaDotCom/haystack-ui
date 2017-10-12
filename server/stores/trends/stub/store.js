@@ -44,15 +44,9 @@ store.getTrends = () => Q.fcall(() =>
     [
         {
             operationName: 'seaworth-1',
-            summary: {
-                count: 10000,
-                successCount: 8000,
-                failureCount: 1000,
-                successPercent: getValue(10, 100),
-                meanDuration: 2,
-                tp95: 900,
-                tp99: 950
-            },
+            count: 10000,
+            meanDuration: 2,
+            successPercent: getValue(10, 100),
             rawValues: {
                 count: getRandomValues(5, 60),
                 successCount: getRandomValues(5, 50),
@@ -64,15 +58,9 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'bolton-1',
-            summary: {
-                count: 15000,
-                successCount: 12000,
-                failureCount: 3000,
-                successPercent: getValue(10, 100),
-                meanDuration: 53,
-                tp95: 900,
-                tp99: 950
-            },
+            count: 15000,
+            successPercent: getValue(10, 100),
+            meanDuration: 53,
             rawValues: {
                 count: getRandomValues(120, 10),
                 successCount: getRandomValues(120, 30),
@@ -84,15 +72,9 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'baelish-1',
-            summary: {
-                count: 5000,
-                successCount: 4000,
-                failureCount: 1000,
-                successPercent: getValue(10, 100),
-                meanDuration: 11,
-                tp95: 900,
-                tp99: 950
-            },
+            count: 5000,
+            successPercent: getValue(10, 100),
+            meanDuration: 11,
             rawValues: {
                 count: getRandomValues(5, 10),
                 successCount: getRandomValues(5, 10),
@@ -104,15 +86,9 @@ store.getTrends = () => Q.fcall(() =>
         },
         {
             operationName: 'mormont-1',
-            summary: {
-                count: 1000,
-                successCount: 800,
-                failureCount: 200,
-                successPercent: getValue(10, 100),
-                meanDuration: 121,
-                tp95: 900,
-                tp99: 950
-            },
+            count: 1000,
+            successPercent: getValue(10, 100),
+            meanDuration: 121,
             rawValues: {
                 count: getRandomValuesWithRandomTime(5, 10),
                 successCount: getRandomValuesWithRandomTime(5, 10),

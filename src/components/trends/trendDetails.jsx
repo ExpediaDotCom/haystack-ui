@@ -38,20 +38,12 @@ export default class TrendResultExpand extends React.Component {
             successCount
         } = this.props.data.rawValues;
 
-        const successPoints = failureCount.map((items, index) => {
-            const point = {};
-            point.timestamp = items.timestamp;
-            point.value = (items.value / (successCount[index].value + items.value)) * 100;
-
-            return point;
-        });
-
         return (
             <div className="table-row-details">
                 <div className="row">
                     <CountGraph points={count} />
                     <DurationGraph meanPoints={meanDuration} tp95Points={tp95} tp99Points={tp99} />
-                    <SuccessGraph points={successPoints} />
+                    <SuccessGraph successCount={successCount} failureCount={failureCount} />
                 </div>
             </div>
         );

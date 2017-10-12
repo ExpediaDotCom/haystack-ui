@@ -23,7 +23,7 @@ import formatters from '../../utils/formatters';
 import '../common/resultsTable.less';
 import './trendResultsTable.less';
 
-import TrendResultExpand from './trendResultExpand';
+import TrendDetails from './trendDetails';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
@@ -39,20 +39,20 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="table__right">${cell.count > 0 ? cell.count : ' '}</div>`;
+        return `<div class="table__right">${cell > 0 ? cell : ' '}</div>`;
     }
 
-    static meanDurationColumnFormatter(cell, row) {
-        return `<div class="table__right">${row.summary.meanDuration > 0 ? formatters.toDurationString(row.summary.meanDuration * 1000) : ' '}</div>`;
+    static meanDurationColumnFormatter(cell) {
+        return `<div class="table__right">${cell ? formatters.toDurationString(cell * 1000) : ' '}</div>`;
     }
 
-    static successPercentFormatter(cell, row) {
+    static successPercentFormatter(cell) {
         return (
             <div className="text-right">
                 <div className="percentContainer text-center">
-                    { row.summary.successPercent !== null ?
-                        <CircularProgressbar percentage={row.summary.successPercent} strokeWidth={8}/> :
-                        'NA' }
+                    { cell ?
+                        <CircularProgressbar percentage={cell} strokeWidth={8}/> :
+                        ' ' }
                 </div>
             </div>
         );
@@ -67,23 +67,23 @@ export default class TrendResultsTable extends React.Component {
 
     static sortByCount(a, b, order) {
         if (order === 'desc') {
-            return b.summary.count - a.summary.count;
+            return b.count - a.count;
         }
-        return a.summary.count - b.summary.count;
+        return a.count - b.count;
     }
 
     static sortByMean(a, b, order) {
         if (order === 'desc') {
-            return b.summary.meanDuration - a.summary.meanDuration;
+            return b.meanDuration - a.meanDuration;
         }
-        return a.summary.meanDuration - b.summary.meanDuration;
+        return a.meanDuration - b.meanDuration;
     }
 
     static sortByPercentage(a, b, order) {
         if (order === 'desc') {
-            return b.summary.successPercent - a.summary.successPercent;
+            return b.successPercent - a.successPercent;
         }
-        return a.summary.successPercent - b.summary.successPercent;
+        return a.successPercent - b.successPercent;
     }
 
     constructor(props) {
@@ -116,7 +116,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendResultExpand data={row}/>;
+            return <TrendDetails data={row}/>;
         }
         return null;
     }
@@ -175,7 +175,7 @@ export default class TrendResultsTable extends React.Component {
                     filter={{type: 'TextFilter', placeholder: 'Filter Operations...'}}
                 />
                 <TableHeaderColumn
-                    dataField="summary"
+                    dataField="count"
                     dataFormat={TrendResultsTable.countColumnFormatter}
                     width="12"
                     dataSort
@@ -183,7 +183,7 @@ export default class TrendResultsTable extends React.Component {
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="timeWindow"
+                    dataField="meanDuration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
                     width="12"
                     dataSort
@@ -191,7 +191,7 @@ export default class TrendResultsTable extends React.Component {
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Mean Duration"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="rawValues"
+                    dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}
                     width="10"
                     dataSort

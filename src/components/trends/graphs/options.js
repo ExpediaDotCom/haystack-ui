@@ -17,7 +17,7 @@
 export default {
     maintainAspectRatio: false,
     legend: {
-        onHover: (e) => { console.log('hovered'); e.target.style.cursor = 'pointer'; }
+        onHover: (e) => { e.target.style.cursor = 'pointer'; }
     },
     scales: {
         xAxes: [{

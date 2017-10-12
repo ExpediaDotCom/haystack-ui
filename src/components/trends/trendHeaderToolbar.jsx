@@ -23,29 +23,31 @@ import './trends.less';
 export default class TrendHeaderToolbar extends React.Component {
 
     static propTypes = {
-        timeRangeCallback: PropTypes.func.isRequired
+        match: PropTypes.object.isRequired,
+        trendsSearchStore: PropTypes.object.isRequired
     };
 
     static timePresetOptions = [900, 3600, 21600, 43200, 86400, 604800];
 
-    static getTimeWindowSeconds(timeRangeSec) {
-        if (timeRangeSec <= 900) {
+    static getTimespanSeconds(timeRangeSec) {
+        if (timeRangeSec <= 3600) {
             return 60;
-        } else if (timeRangeSec <= 21600) {
+        } else if (timeRangeSec <= 18000) {
             return 300;
-        } else if (timeRangeSec <= 43200) {
+        } else if (timeRangeSec <= 54000) {
             return 900;
         }
+
         return 3600;
     }
 
-    static getTimeWindowLabel(timeRangeSec) {
-        if (timeRangeSec <= 900) {
-            return `${timeRangeSec / 60}m`;
-        } else if (timeRangeSec <= 86400) {
-            return `${timeRangeSec / 3600}h`;
+    static getPresetLabel(presetSeconds) {
+        if (presetSeconds <= 900) {
+            return `${presetSeconds / 60}m`;
+        } else if (presetSeconds <= 86400) {
+            return `${presetSeconds / 3600}h`;
         }
-        return `${timeRangeSec / 86400}d`;
+        return `${presetSeconds / 86400}d`;
     }
 
     static getTimeRange(presetValue) {
@@ -57,24 +59,44 @@ export default class TrendHeaderToolbar extends React.Component {
 
     constructor(props) {
         super(props);
+
+        const defaultTimeRange = TrendHeaderToolbar.timePresetOptions[1];
+        const defaultTimespan = TrendHeaderToolbar.getTimespanSeconds(defaultTimeRange);
+
         this.state = {
-            activePresetValue: TrendHeaderToolbar.timePresetOptions[0]
+            activePresetValue: defaultTimeRange
         };
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
+        this.fetchTrends = this.fetchTrends.bind(this);
+
+        this.fetchTrends({
+            from: moment(new Date()).subtract(defaultTimeRange, 'seconds').valueOf(),
+            until: moment(new Date()).valueOf()},
+            defaultTimespan);
     }
 
-    handlePresetSelection(presetValue, timeWindow) {
+    fetchTrends(timeRange, timespan) {
+        const query = {
+            serviceName: `${this.props.match.params.serviceName}`,
+            timespan,
+            from: timeRange.from,
+            until: timeRange.until
+        };
+        this.props.trendsSearchStore.fetchSearchResults(query);
+    }
+
+    handlePresetSelection(presetValue, timespan) {
         this.setState({activePresetValue: presetValue});
-        this.props.timeRangeCallback(TrendHeaderToolbar.getTimeRange(presetValue), timeWindow);
+        this.fetchTrends(TrendHeaderToolbar.getTimeRange(presetValue), timespan);
         event.preventDefault();
     }
 
     render() {
-        const PresetOption = ({presetLabel, presetValue, timeWindow}) => (
+        const PresetOption = ({presetLabel, presetValue, timespan}) => (
             <button
                 className={presetValue === this.state.activePresetValue ? 'btn btn-primary' : 'btn btn-default'}
                 key={presetLabel}
-                onClick={() => this.handlePresetSelection(presetValue, timeWindow)}
+                onClick={() => this.handlePresetSelection(presetValue, timespan)}
             >
                 {presetLabel}
             </button>
@@ -86,9 +108,9 @@ export default class TrendHeaderToolbar extends React.Component {
                 <div className="btn-group pull-right">
                     {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
                         <PresetOption
-                            presetLabel={TrendHeaderToolbar.getTimeWindowLabel(presetValue)}
+                            presetLabel={TrendHeaderToolbar.getPresetLabel(presetValue)}
                             presetValue={presetValue}
-                            timeWindow={TrendHeaderToolbar.getTimeWindowSeconds(presetValue)}
+                            timespan={TrendHeaderToolbar.getTimespanSeconds(presetValue)}
                         />))}
                 </div>
             </div>

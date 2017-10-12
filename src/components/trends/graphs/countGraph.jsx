@@ -36,7 +36,7 @@ const CountGraph = ({points}) => {
     };
 
     return (<div className="col-md-4">
-            <h5 className="text-center">Invocation Count</h5>
+            <h5 className="text-center">Count</h5>
             <div className="chart-container">
                 <Line data={chartData} options={options} type="line" />
             </div>

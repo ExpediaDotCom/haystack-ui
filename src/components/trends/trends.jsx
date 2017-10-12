@@ -18,53 +18,23 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import TrendResults from './trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 import './trends.less';
 import TrendHeaderToolbar from './trendHeaderToolbar';
 
-export default class Trends extends React.Component {
+const Trends = ({match}) =>
+    (
+        <section className="trends-panel">
+            <TrendHeaderToolbar trendsSearchStore={trendsSearchStore} match={match}/>
+            <TrendResults trendsSearchStore={trendsSearchStore}/>
+        </section>
+    );
 
-    static propTypes = {
-        match: PropTypes.object.isRequired
-    };
 
-    constructor(props) {
-        super(props);
-        this.timeRangeCallback = this.timeRangeCallback.bind(this);
-        this.triggerTrendResults = this.triggerTrendResults.bind(this);
-    }
+Trends.propTypes = {
+    match: PropTypes.object.isRequired
+};
 
-    componentDidMount() {
-        const defaultTimeRange = {
-            from: moment(new Date()).subtract(900, 'seconds').valueOf(),
-            until: moment(new Date()).valueOf()};
-        const defaultTimeWindow = '1min';
-        this.triggerTrendResults(defaultTimeRange, defaultTimeWindow);
-    }
-
-    triggerTrendResults(timeRange, timeWindow) {
-        const query = {
-            serviceName: `${this.props.match.params.serviceName}`,
-            timeWindow,
-            from: timeRange.from,
-            until: timeRange.until
-        };
-        trendsSearchStore.fetchSearchResults(query);
-    }
-
-    timeRangeCallback(timeRange, timeWindow) {
-        this.triggerTrendResults(timeRange, timeWindow);
-    }
-
-    render() {
-        return (
-            <section className="trends-panel">
-                <TrendHeaderToolbar timeRangeCallback={this.timeRangeCallback}/>
-                <TrendResults trendsSearchStore={trendsSearchStore} />
-            </section>
-        );
-    }
-}
+export default Trends;
