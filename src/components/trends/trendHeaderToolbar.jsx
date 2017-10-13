@@ -108,6 +108,7 @@ export default class TrendHeaderToolbar extends React.Component {
                 <div className="btn-group pull-right">
                     {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
                         <PresetOption
+                            key={presetValue}
                             presetLabel={TrendHeaderToolbar.getPresetLabel(presetValue)}
                             presetValue={presetValue}
                             timespan={TrendHeaderToolbar.getTimespanSeconds(presetValue)}

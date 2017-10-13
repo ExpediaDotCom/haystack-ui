@@ -21,9 +21,10 @@ export default {
     },
     scales: {
         xAxes: [{
-            type: 'time',
-            bounds: 'data',
-            distribution: 'series'
+            gridLines: {
+                offsetGridLines: true
+            },
+            type: 'time'
         }]
     }
 };

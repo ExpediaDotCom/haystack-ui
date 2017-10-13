@@ -51,8 +51,8 @@ const SuccessGraph = ({successCount, failureCount}) => {
 };
 
 SuccessGraph.propTypes = {
-    successCount: PropTypes.array.isRequired,
-    failureCount: PropTypes.array.isRequired
+    successCount: PropTypes.object.isRequired,
+    failureCount: PropTypes.object.isRequired
 };
 
 export default SuccessGraph;
