@@ -18,14 +18,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 
 import CountGraph from './graphs/countGraph';
 import DurationGraph from './graphs/durationGraph';
 import SuccessGraph from './graphs/successGraph';
+import TrendHeaderToolbar from './trendHeaderToolbar';
 
+@observer
 export default class TrendResultExpand extends React.Component {
     static propTypes = {
-        data: PropTypes.object.isRequired
+        data: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired,
+        match: PropTypes.object.isRequired
     }
 
     render() {
@@ -40,6 +45,7 @@ export default class TrendResultExpand extends React.Component {
 
         return (
             <div className="table-row-details">
+                <TrendHeaderToolbar trendsSearchStore={this.props.store} match={this.props.match}/>
                 <div className="row">
                     <CountGraph points={count} />
                     <DurationGraph meanPoints={meanDuration} tp95Points={tp95} tp99Points={tp99} />

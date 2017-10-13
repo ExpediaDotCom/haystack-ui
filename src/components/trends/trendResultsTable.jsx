@@ -27,7 +27,8 @@ import TrendDetails from './trendDetails';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
-        results: PropTypes.object.isRequired
+        match: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -116,7 +117,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails data={row}/>;
+            return <TrendDetails store={this.props.store} data={row} match={this.props.match} />;
         }
         return null;
     }
@@ -155,7 +156,7 @@ export default class TrendResultsTable extends React.Component {
 
         return (
             <BootstrapTable
-                data={this.props.results}
+                data={this.props.store.searchResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}

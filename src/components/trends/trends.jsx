@@ -22,13 +22,11 @@ import PropTypes from 'prop-types';
 import TrendResults from './trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 import './trends.less';
-import TrendHeaderToolbar from './trendHeaderToolbar';
 
 const Trends = ({match}) =>
     (
         <section className="trends-panel">
-            <TrendHeaderToolbar trendsSearchStore={trendsSearchStore} match={match}/>
-            <TrendResults trendsSearchStore={trendsSearchStore}/>
+            <TrendResults trendsSearchStore={trendsSearchStore} match={match}/>
         </section>
     );
 

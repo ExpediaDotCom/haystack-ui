@@ -16,9 +16,6 @@
 
 export default {
     maintainAspectRatio: false,
-    legend: {
-        onHover: (e) => { e.target.style.cursor = 'pointer'; }
-    },
     scales: {
         xAxes: [{
             gridLines: {

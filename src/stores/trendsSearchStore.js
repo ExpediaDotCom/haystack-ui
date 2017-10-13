@@ -32,16 +32,16 @@ export class TrendsSearchStore {
     @action fetchSearchResults(query) {
         const queryUrlString = toQueryUrlString(query);
         this.promiseState = fromPromise(
-            axios
-                .get(`/api/trends?${queryUrlString}`)
-                .then((result) => {
-                    this.searchResults = result.data;
-                })
-                .catch((result) => {
-                    this.searchQuery = query;
-                    this.searchResults = [];
-                    throw new TrendException(result);
-                })
+                axios
+                    .get(`/api/trends?${queryUrlString}`)
+                    .then((result) => {
+                        this.searchResults = result.data;
+                    })
+                    .catch((result) => {
+                        this.searchQuery = query;
+                        this.searchResults = [];
+                        throw new TrendException(result);
+                    })
         );
     }
 }

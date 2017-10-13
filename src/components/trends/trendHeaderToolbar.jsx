@@ -61,18 +61,12 @@ export default class TrendHeaderToolbar extends React.Component {
         super(props);
 
         const defaultTimeRange = TrendHeaderToolbar.timePresetOptions[1];
-        const defaultTimespan = TrendHeaderToolbar.getTimespanSeconds(defaultTimeRange);
 
         this.state = {
             activePresetValue: defaultTimeRange
         };
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.fetchTrends = this.fetchTrends.bind(this);
-
-        this.fetchTrends({
-            from: moment(new Date()).subtract(defaultTimeRange, 'seconds').valueOf(),
-            until: moment(new Date()).valueOf()},
-            defaultTimespan);
     }
 
     fetchTrends(timeRange, timespan) {
@@ -82,7 +76,7 @@ export default class TrendHeaderToolbar extends React.Component {
             from: timeRange.from,
             until: timeRange.until
         };
-        this.props.trendsSearchStore.fetchSearchResults(query);
+        this.props.trendsSearchStore.fetchTrendResults(query);
     }
 
     handlePresetSelection(presetValue, timespan) {
@@ -104,7 +98,6 @@ export default class TrendHeaderToolbar extends React.Component {
 
         return (
             <div className="trend-header-toolbar clearfix">
-                <h3 className="pull-left op_trends_header">Trends</h3>
                 <div className="btn-group pull-right">
                     {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
                         <PresetOption
