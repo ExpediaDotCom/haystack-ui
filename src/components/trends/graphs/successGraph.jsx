@@ -41,7 +41,7 @@ const SuccessGraph = ({successCount, failureCount}) => {
         fill: 'end'
     };
 
-    return (<div className="col-md-4">
+    return (<div className="col-md-12">
             <h5 className="text-center">Success %</h5>
             <div className="chart-container">
                 <Line data={chartData} options={options} type="line" />

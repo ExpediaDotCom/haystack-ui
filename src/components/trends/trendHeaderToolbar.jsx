@@ -115,6 +115,6 @@ export default class TrendHeaderToolbar extends React.Component {
                         />))}
                 </div>
             </div>
-           );
+       );
     }
 }
