@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import './noSearch.less';
 
 export default () => (
     <section className="text-center">

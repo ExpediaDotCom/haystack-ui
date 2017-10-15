@@ -1,29 +1,28 @@
 /*
  * Copyright 2017 Expedia, Inc.
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
- *       you may not use this file except in compliance with the License.
- *       You may obtain a copy of the License at
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
  *
- *           http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
- *       Unless required by applicable law or agreed to in writing, software
- *       distributed under the License is distributed on an "AS IS" BASIS,
- *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *       See the License for the specific language governing permissions and
- *       limitations under the License.
- *
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import './trends.less';
+import './trendDetailsToolbar.less';
 
 export default class TrendHeaderToolbar extends React.Component {
 
     static propTypes = {
-        match: PropTypes.object.isRequired,
+        serviceName: PropTypes.string.isRequired,
         trendsSearchStore: PropTypes.object.isRequired
     };
 
@@ -71,7 +70,7 @@ export default class TrendHeaderToolbar extends React.Component {
 
     fetchTrends(timeRange, timespan) {
         const query = {
-            serviceName: `${this.props.match.params.serviceName}`,
+            serviceName: `${this.props.serviceName}`,
             timespan,
             from: timeRange.from,
             until: timeRange.until
@@ -97,7 +96,7 @@ export default class TrendHeaderToolbar extends React.Component {
         );
 
         return (
-            <div className="trend-header-toolbar clearfix">
+            <div className="trend-details-toolbar clearfix">
                 <div className="pull-left trend">
                     <div className="">Time Range</div>
                     <div className="btn-group btn-group-sm">
@@ -126,7 +125,7 @@ export default class TrendHeaderToolbar extends React.Component {
                 </div>
 
                 <div className="pull-right">
-                    <a role="button" className="btn btn-sm btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trend</a>
+                    <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                 </div>
             </div>
        );

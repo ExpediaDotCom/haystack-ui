@@ -19,7 +19,7 @@ const express = require('express');
 const config = require('../config/config');
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
-const trendStore = require(`../stores/trends/${config.stores.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const trendStore = config.stores.trends ? require(`../stores/trends/${config.stores.trends.storeName}/store`) : require('../stores/trends/noOp/store'); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 

@@ -1,33 +1,31 @@
 /*
  * Copyright 2017 Expedia, Inc.
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
- *       you may not use this file except in compliance with the License.
- *       You may obtain a copy of the License at
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
  *
- *           http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
- *       Unless required by applicable law or agreed to in writing, software
- *       distributed under the License is distributed on an "AS IS" BASIS,
- *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *       See the License for the specific language governing permissions and
- *       limitations under the License.
- *
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import formatters from '../../utils/formatters';
-import '../common/resultsTable.less';
-import './trendResultsTable.less';
+import formatters from '../../../utils/formatters';
+import TrendDetails from './../details/trendDetails';
 
-import TrendDetails from './trendDetails';
+import './trendResultsTable.less';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
-        match: PropTypes.object.isRequired,
+        serviceName: PropTypes.string.isRequired,
         store: PropTypes.object.isRequired
     };
 
@@ -117,7 +115,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails store={this.props.store} data={row} match={this.props.match} />;
+            return <TrendDetails store={this.props.store} data={row} serviceName={this.props.serviceName} />;
         }
         return null;
     }
@@ -156,6 +154,7 @@ export default class TrendResultsTable extends React.Component {
 
         return (
             <BootstrapTable
+                className="trends-panel"
                 data={this.props.store.searchResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
@@ -173,7 +172,7 @@ export default class TrendResultsTable extends React.Component {
                     width="50"
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
-                    filter={{type: 'TextFilter', placeholder: 'Filter Operations...'}}
+                    filter={{type: 'TextFilter', placeholder: 'Search Operations...'}}
                 />
                 <TableHeaderColumn
                     dataField="count"
