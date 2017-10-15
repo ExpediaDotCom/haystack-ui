@@ -98,7 +98,7 @@ export default class TraceDetails extends React.Component {
         return (
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
-                    <h5 className="pull-left">TraceId: {this.props.traceId}</h5>
+                    <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{this.props.traceId}</span></h5>
                     <ul className="nav nav-tabs pull-left hidden">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
@@ -108,7 +108,7 @@ export default class TraceDetails extends React.Component {
                         </li>
                     </ul>
 
-                    <div className="btn-group-sm pull-right">
+                    <div className="btn-group btn-group-sm pull-right">
                           {
                             this.state.showCopied ? (
                                 <span className="tooltip fade left in" role="tooltip">

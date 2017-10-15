@@ -16,11 +16,11 @@
 
 export default {
     maintainAspectRatio: false,
+    legend: {
+        position: 'right'
+    },
     scales: {
         xAxes: [{
-            gridLines: {
-                offsetGridLines: true
-            },
             type: 'time'
         }]
     }

@@ -98,14 +98,35 @@ export default class TrendHeaderToolbar extends React.Component {
 
         return (
             <div className="trend-header-toolbar clearfix">
-                <div className="btn-group pull-right">
-                    {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
-                        <PresetOption
-                            key={presetValue}
-                            presetLabel={TrendHeaderToolbar.getPresetLabel(presetValue)}
-                            presetValue={presetValue}
-                            timespan={TrendHeaderToolbar.getTimespanSeconds(presetValue)}
-                        />))}
+                <div className="pull-left trend">
+                    <div className="">Time Range</div>
+                    <div className="btn-group btn-group-sm">
+                        {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
+                            <PresetOption
+                                key={presetValue}
+                                presetLabel={TrendHeaderToolbar.getPresetLabel(presetValue)}
+                                presetValue={presetValue}
+                                timespan={TrendHeaderToolbar.getTimespanSeconds(presetValue)}
+                            />))}
+                    </div>
+                </div>
+                <div className="pull-left">
+                    <div className="">Metric Granularity</div>
+                    <div className="dropdown">
+                        <button className="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span>1m </span>
+                            <span className="caret"/>
+                        </button>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li>
+                                <a>1M</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="pull-right">
+                    <a role="button" className="btn btn-sm btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trend</a>
                 </div>
             </div>
        );
