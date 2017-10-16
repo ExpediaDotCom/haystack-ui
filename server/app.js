@@ -24,11 +24,12 @@ const favicon = require('serve-favicon');
 const compression = require('compression');
 const axios = require('axios');
 
-const indexRoute = require('./routes/index');
-const api = require('./routes/api');
-
 const config = require('./config/config');
 const logger = require('./support/logger');
+
+const indexRoute = require('./routes/index');
+const servicesApi = require('./routes/servicesApi');
+const tracesApi = require('./routes/tracesApi');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
 
@@ -50,7 +51,10 @@ app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 
 // ROUTING
-app.use('/api', api);
+const apis = [servicesApi, tracesApi];
+if (config.stores.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
+
+app.use('/api', ...apis);
 app.use('/', indexRoute);
 
 // ERROR-HANDLING

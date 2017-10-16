@@ -14,10 +14,20 @@
  *         limitations under the License.
  */
 
-const Q = require('q');
+const express = require('express');
+const config = require('../config/config');
+const handleResponsePromise = require('./utils/apiResponseHandler');
 
-const store = {};
+const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
-store.getTrends = () => Q.fcall(() => []);
+const router = express.Router();
 
-module.exports = store;
+router.get('/services', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getServices());
+});
+
+router.get('/operations', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getOperations(req.query.serviceName));
+});
+
+module.exports = router;

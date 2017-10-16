@@ -101,4 +101,41 @@ store.getTrends = () => Q.fcall(() =>
     ]
 );
 
+store.getTrendsForService = () => Q.fcall(() => [
+    {
+        operationName: 'seaworth-1',
+        count: 10000,
+        successPercent: getValue(10, 100),
+        tp99Duration: getRandomValues(120, 30)
+    },
+    {
+        operationName: 'bolton-1',
+        count: 15000,
+        successPercent: getValue(10, 100),
+        tp99Duration: getRandomValues(120, 30)
+    },
+    {
+        operationName: 'baelish-1',
+        count: 5000,
+        successPercent: getValue(10, 100),
+        tp99Duration: getRandomValues(120, 30)
+    },
+    {
+        operationName: 'mormont-1',
+        count: 1000,
+        successPercent: getValue(10, 100),
+        tp99Duration: getRandomValues(120, 30)
+    }
+]);
+
+store.getTrendsForOperation = () => Q.fcall(() =>
+    ({
+        count: getRandomValues(5, 60),
+        successCount: getRandomValues(5, 50),
+        failureCount: getRandomValues(5, 50),
+        meanDuration: getRandomValues(5, 50),
+        tp95Duration: getRandomValues(5, 60),
+        tp99Duration: getRandomValues(5, 60)
+    }));
+
 module.exports = store;
