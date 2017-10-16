@@ -97,7 +97,7 @@ export default class TrendHeaderToolbar extends React.Component {
 
         return (
             <div className="trend-details-toolbar clearfix">
-                <div className="pull-left trend">
+                <div className="pull-left trend-details-toolbar__time-range">
                     <div className="">Time Range</div>
                     <div className="btn-group btn-group-sm">
                         {TrendHeaderToolbar.timePresetOptions.map(presetValue => (
@@ -119,12 +119,16 @@ export default class TrendHeaderToolbar extends React.Component {
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li>
                                 <a>1M</a>
+                                <a>5M</a>
+                                <a>15M</a>
+                                <a>1H</a>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                <div className="pull-right">
+                <div className="pull-right btn-group btn-group-sm">
+                    <a role="button" className="btn btn-sm btn-default"><span className="ti-line-double"/> See Traces</a>
                     <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                 </div>
             </div>

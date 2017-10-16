@@ -49,8 +49,7 @@ export default class TrendsHeader extends React.Component {
                 <h3 className="pull-left trend-summary__header-text">Trends</h3>
                 <div className="pull-right">
                     <span>Showing summary for last </span>
-                    <select className="trend-summary__time-range-selector" value="5m">
-                        <option value="5m">5 minutes</option>
+                    <select className="trend-summary__time-range-selector" value="1h">
                         <option value="1h">1 hour</option>
                     </select>
                 </div>
