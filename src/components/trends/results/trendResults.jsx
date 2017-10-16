@@ -33,9 +33,10 @@ export default class TrendResults extends React.Component {
         return (
             <section>
                 { this.props.trendsSearchStore.resultsPromiseState && this.props.trendsSearchStore.resultsPromiseState.case({
+                    empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.trendsSearchStore.searchResults && this.props.trendsSearchStore.searchResults.length)
+                    fulfilled: () => ((this.props.trendsSearchStore.serviceResults && this.props.trendsSearchStore.serviceResults.length)
                         ? <TrendResultsTable store={this.props.trendsSearchStore} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })

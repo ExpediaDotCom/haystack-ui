@@ -18,7 +18,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import formatters from '../../../utils/formatters';
+import { Sparklines, SparklinesLine } from 'react-sparklines';
+
 import TrendDetails from './../details/trendDetails';
 
 import './trendResultsTable.less';
@@ -42,7 +43,13 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static meanDurationColumnFormatter(cell) {
-        return `<div class="table__right">${cell ? formatters.toDurationString(cell * 1000) : ' '}</div>`;
+        const values = [];
+        cell.map(d => values.push(d.value));
+        return (<div>
+                    <Sparklines className="sparkline" data={values}>
+                        <SparklinesLine color="#e23474" />
+                    </Sparklines>
+                </div>);
     }
 
     static successPercentFormatter(cell) {
@@ -69,13 +76,6 @@ export default class TrendResultsTable extends React.Component {
             return b.count - a.count;
         }
         return a.count - b.count;
-    }
-
-    static sortByMean(a, b, order) {
-        if (order === 'desc') {
-            return b.meanDuration - a.meanDuration;
-        }
-        return a.meanDuration - b.meanDuration;
     }
 
     static sortByPercentage(a, b, order) {
@@ -122,6 +122,7 @@ export default class TrendResultsTable extends React.Component {
 
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
+        const tableHeaderCenterAlignedStyle = {border: 'none', textAlign: 'center'};
         const tableHeaderStyle = {border: 'none'};
 
         const options = {
@@ -155,7 +156,7 @@ export default class TrendResultsTable extends React.Component {
         return (
             <BootstrapTable
                 className="trends-panel"
-                data={this.props.store.searchResults}
+                data={this.props.store.serviceResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -177,23 +178,21 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="count"
                     dataFormat={TrendResultsTable.countColumnFormatter}
-                    width="12"
+                    width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByCount}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="meanDuration"
+                    dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
-                    width="12"
-                    dataSort
-                    sortFunc={TrendResultsTable.sortByMean}
-                    thStyle={tableHeaderRightAlignedStyle}
-                ><TrendResultsTable.Header name="Mean Duration"/></TableHeaderColumn>
+                    width="20"
+                    thStyle={tableHeaderCenterAlignedStyle}
+                ><TrendResultsTable.Header name="Mean TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="10"
+                    width="8"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     thStyle={tableHeaderRightAlignedStyle}

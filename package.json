@@ -80,6 +80,7 @@
     "react-modal": "^2.2.4",
     "react-router-dom": "^4.1.1",
     "react-select": "^1.0.0-rc.5",
+    "react-sparklines": "^1.7.0",
     "react-test-renderer": "^15.6.1",
     "sinon": "^1.17.7",
     "style-loader": "^0.18.0",

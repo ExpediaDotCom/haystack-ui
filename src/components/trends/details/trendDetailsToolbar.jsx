@@ -78,7 +78,7 @@ export default class TrendHeaderToolbar extends React.Component {
             from: timeRange.from,
             until: timeRange.until
         };
-        this.props.trendsSearchStore.fetchTrendDetailResults(this.props.serviceName, this.props.opName, query);
+        this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
     }
 
     handlePresetSelection(presetValue, timespan) {

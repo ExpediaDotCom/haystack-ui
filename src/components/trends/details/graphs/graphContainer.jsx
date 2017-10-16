@@ -35,7 +35,7 @@ export default class GraphContainer extends React.Component {
             tp99Duration,
             failureCount,
             successCount
-        } = this.props.store.trendResults;
+        } = this.props.store.operationResults;
         return (
             <div className="row">
                 <CountGraph points={count} />

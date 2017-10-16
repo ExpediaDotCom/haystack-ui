@@ -34,14 +34,14 @@ export default class TrendsHeader extends React.Component {
         this.fetchTrends();
     }
 
+
     fetchTrends() {
         const query = {
-            serviceName: `${this.props.serviceName}`,
-            timespan: 3600,
+            granularity: 3600,
             from: moment(new Date()).subtract(3600, 'seconds').valueOf(),
             until: moment(new Date()).valueOf()
         };
-        this.props.store.fetchTrendSearchResults(query);
+        this.props.store.fetchTrendServiceResults(this.props.serviceName, query);
     }
 
     render() {

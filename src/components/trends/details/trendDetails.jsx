@@ -32,7 +32,7 @@ export default class TrendResultExpand extends React.Component {
         opName: PropTypes.string.isRequired
     }
     componentDidMount() {
-        this.props.store.fetchTrendDetailResults(this.props.serviceName, this.props.opName, 'asdf');
+        this.props.store.fetchTrendOperationResults(this.props.serviceName, this.props.opName, 'asdf');
     }
 
     render() {
@@ -43,7 +43,7 @@ export default class TrendResultExpand extends React.Component {
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => (this.props.store.trendResults && Object.keys(this.props.store.trendResults).length ?
+                    fulfilled: () => (this.props.store.operationResults && Object.keys(this.props.store.operationResults).length ?
                         <GraphContainer store={this.props.store} /> :
                         <Error />)
 
