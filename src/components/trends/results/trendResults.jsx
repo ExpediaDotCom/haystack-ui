@@ -32,7 +32,7 @@ export default class TrendResults extends React.Component {
     render() {
         return (
             <section>
-                { this.props.trendsSearchStore.promiseState && this.props.trendsSearchStore.promiseState.case({
+                { this.props.trendsSearchStore.resultsPromiseState && this.props.trendsSearchStore.resultsPromiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.trendsSearchStore.searchResults && this.props.trendsSearchStore.searchResults.length)

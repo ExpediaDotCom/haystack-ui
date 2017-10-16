@@ -115,7 +115,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails store={this.props.store} data={row} serviceName={this.props.serviceName} />;
+            return <TrendDetails store={this.props.store} serviceName={this.props.serviceName} opName={row.operationName} />;
         }
         return null;
     }

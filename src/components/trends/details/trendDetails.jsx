@@ -18,38 +18,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
-import CountGraph from './graphs/countGraph';
-import DurationGraph from './graphs/durationGraph';
-import SuccessGraph from './graphs/successGraph';
 import TrendDetailsToolbar from './trendDetailsToolbar';
+import GraphContainer from './graphs/graphContainer';
+import Error from '../../common/error';
+import Loading from '../../common/loading';
 import './trendDetails.less';
 
 @observer
 export default class TrendResultExpand extends React.Component {
     static propTypes = {
-        data: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        opName: PropTypes.string.isRequired
+    }
+    componentDidMount() {
+        this.props.store.fetchTrendDetailResults(this.props.serviceName, this.props.opName, 'asdf');
     }
 
     render() {
-        const {
-            count,
-            meanDuration,
-            tp95,
-            tp99,
-            failureCount,
-            successCount
-        } = this.props.data.rawValues;
-
         return (
             <div className="table-row-details">
-                <TrendDetailsToolbar trendsSearchStore={this.props.store} serviceName={this.props.serviceName}/>
-                <div className="row">
-                    <CountGraph points={count} />
-                    <DurationGraph meanPoints={meanDuration} tp95Points={tp95} tp99Points={tp99} />
-                    <SuccessGraph successCount={successCount} failureCount={failureCount} />
-                </div>
+                <TrendDetailsToolbar trendsSearchStore={this.props.store} serviceName={this.props.serviceName} opName={this.props.opName} />
+                { this.props.store.detailsPromiseState && this.props.store.detailsPromiseState.case({
+                    empty: () => <Loading />,
+                    pending: () => <Loading />,
+                    rejected: () => <Error />,
+                    fulfilled: () => (this.props.store.trendResults && Object.keys(this.props.store.trendResults).length ?
+                        <GraphContainer store={this.props.store} /> :
+                        <Error />)
+
+                })
+                }
             </div>
         );
     }

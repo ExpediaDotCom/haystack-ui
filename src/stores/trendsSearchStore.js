@@ -26,12 +26,14 @@ function TrendException(data) {
 }
 
 export class TrendsSearchStore {
-    @observable promiseState = { case: ({empty}) => empty() };
+    @observable resultsPromiseState = { case: ({empty}) => empty() };
+    @observable detailsPromiseState = { case: ({empty}) => empty() };
     @observable searchResults = [];
+    @observable trendResults = [];
 
-    @action fetchSearchResults(query) {
+    @action fetchTrendSearchResults(query) {
         const queryUrlString = toQueryUrlString(query);
-        this.promiseState = fromPromise(
+        this.resultsPromiseState = fromPromise(
                 axios
                     .get(`/api/trends?${queryUrlString}`)
                     .then((result) => {
@@ -42,6 +44,21 @@ export class TrendsSearchStore {
                         this.searchResults = [];
                         throw new TrendException(result);
                     })
+        );
+    }
+    @action fetchTrendDetailResults(service, operation, query) {
+        const queryUrlString = toQueryUrlString(query);
+        this.detailsPromiseState = fromPromise(
+            axios
+                .get(`/api/trends/${service}/${operation}?${queryUrlString}`)
+                .then((result) => {
+                    this.trendResults = result.data;
+                })
+                .catch((result) => {
+                    this.searchQuery = query;
+                    this.trendResults = [];
+                    throw new TrendException(result);
+                })
         );
     }
 }

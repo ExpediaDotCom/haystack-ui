@@ -27,7 +27,7 @@ const SuccessGraph = ({successCount, failureCount}) => {
     // TODO make sure that success count and failure counts are merging on the right timestamps
     const data = failureCount.map((items, index) => ({
         x: new Date(items.timestamp / 1000),
-        y: (items.value / (successCount[index].value + items.value)) * 100
+        y: ((items.value / (successCount[index].value + items.value)) * 100).toFixed(3)
     }));
 
     const chartData = {

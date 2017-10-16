@@ -41,12 +41,11 @@ export default class TrendsHeader extends React.Component {
             from: moment(new Date()).subtract(3600, 'seconds').valueOf(),
             until: moment(new Date()).valueOf()
         };
-        this.props.store.fetchSearchResults(query);
+        this.props.store.fetchTrendSearchResults(query);
     }
 
     render() {
         return (<div className="clearfix">
-                <h3 className="pull-left trend-summary__header-text">Trends</h3>
                 <div className="pull-right">
                     <span>Showing summary for last </span>
                     <select className="trend-summary__time-range-selector" value="1h">

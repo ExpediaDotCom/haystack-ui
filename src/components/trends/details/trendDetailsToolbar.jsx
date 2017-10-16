@@ -23,7 +23,8 @@ export default class TrendHeaderToolbar extends React.Component {
 
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        trendsSearchStore: PropTypes.object.isRequired
+        trendsSearchStore: PropTypes.object.isRequired,
+        opName: PropTypes.string.isRequired
     };
 
     static timePresetOptions = [900, 3600, 21600, 43200, 86400, 604800];
@@ -36,7 +37,6 @@ export default class TrendHeaderToolbar extends React.Component {
         } else if (timeRangeSec <= 54000) {
             return 900;
         }
-
         return 3600;
     }
 
@@ -67,15 +67,18 @@ export default class TrendHeaderToolbar extends React.Component {
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.fetchTrends = this.fetchTrends.bind(this);
     }
+    componentDidMount() {
+        const defaultValue = TrendHeaderToolbar.getTimeRange(3600);
+        this.fetchTrends(TrendHeaderToolbar.getTimeRange(defaultValue), '60');
+    }
 
     fetchTrends(timeRange, timespan) {
         const query = {
-            serviceName: `${this.props.serviceName}`,
-            timespan,
+            granularity: timespan,
             from: timeRange.from,
             until: timeRange.until
         };
-        this.props.trendsSearchStore.fetchTrendResults(query);
+        this.props.trendsSearchStore.fetchTrendDetailResults(this.props.serviceName, this.props.opName, query);
     }
 
     handlePresetSelection(presetValue, timespan) {
