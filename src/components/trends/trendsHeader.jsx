@@ -29,16 +29,22 @@ export default class TrendsHeader extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {granularity: 3600};
 
         this.fetchTrends = this.fetchTrends.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
         this.fetchTrends();
     }
 
+    handleTimeChange(event) {
+        this.setState({granularity: event.target.value});
+        this.fetchTrends();
+    }
 
     fetchTrends() {
         const query = {
-            granularity: 3600,
-            from: moment(new Date()).subtract(3600, 'seconds').valueOf(),
+            granularity: this.state.granularity,
+            from: moment(new Date()).subtract(this.state.granularity, 'seconds').valueOf(),
             until: moment(new Date()).valueOf()
         };
         this.props.store.fetchTrendServiceResults(this.props.serviceName, query);
@@ -48,8 +54,10 @@ export default class TrendsHeader extends React.Component {
         return (<div className="clearfix">
                 <div className="pull-right">
                     <span>Showing summary for last </span>
-                    <select className="trend-summary__time-range-selector" value="1h">
-                        <option value="1h">1 hour</option>
+                    <select className="trend-summary__time-range-selector" value={this.state.value} onChange={this.handleTimeChange}>
+                        <option value={3600}>1 hour</option>
+                        <option value={21600}>6 Hours</option>
+                        <option value={43200}>12 Hours</option>
                     </select>
                 </div>
             </div>
