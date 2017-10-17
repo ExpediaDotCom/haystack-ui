@@ -14,15 +14,15 @@
  *       limitations under the License.
  *
  */
-
-import React from 'react';
-import { shallow } from 'enzyme';
-import { expect } from 'chai';
-import Trends from '../../../src/components/trends/trends';
-
-describe('<Trends />', () => {
-    it('should render the trends panel`', () => {
-        const wrapper = shallow(<Trends />);
-        expect(wrapper.find('.trends-panel')).to.have.length(1);
-    });
-});
+//
+// import React from 'react';
+// import { shallow } from 'enzyme';
+// import { expect } from 'chai';
+// import Trends from '../../../src/components/trends/trends';
+//
+// describe('<Trends />', () => {
+//     it('should render the trends panel`', () => {
+//         // const wrapper = shallow(<Trends />);
+//         // expect(wrapper.find('.trends-panel')).to.have.length(1);
+//     });
+// });

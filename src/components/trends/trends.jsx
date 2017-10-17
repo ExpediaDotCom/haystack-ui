@@ -19,22 +19,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TrendResults from './trendResults';
+import TrendsHeader from './trendsHeader';
+import TrendResults from './results/trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
-import './trends.less';
-import TrendHeaderToolbar from './trendHeaderToolbar';
 
-const Trends = ({match}) =>
-    (
-        <section className="trends-panel">
-            <TrendHeaderToolbar trendsSearchStore={trendsSearchStore} match={match}/>
-            <TrendResults trendsSearchStore={trendsSearchStore}/>
-        </section>
-    );
-
+const Trends = ({match, location}) => (
+    <section className="trends">
+        <TrendsHeader store={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
+        <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
+    </section>);
 
 Trends.propTypes = {
-    match: PropTypes.object.isRequired
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
 };
 
 export default Trends;

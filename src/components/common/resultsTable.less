@@ -246,19 +246,12 @@ tr.tr-no-border>td {
   font-size: @font-size-base !important; // to override bootstrap
 }
 
+// overriding header styles
 .results-header {
   color: @brand-primary;
   &:only-of-type {
     color: inherit;
   }
-  &:hover {
-    color: @brand-primary;
-
-  }
-}
-
-.trends-panel .results-header {
-  color: @gray-dark;
   &:hover {
     color: @brand-primary;
   }
@@ -303,7 +296,6 @@ tr.tr-no-border>td {
 }
 
 .expand-row-body {
-  border-bottom: 15px solid @gray-lighter !important;
   > td {
     padding: 0 !important;
   }

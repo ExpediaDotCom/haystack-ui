@@ -1,33 +1,35 @@
 /*
  * Copyright 2017 Expedia, Inc.
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
- *       you may not use this file except in compliance with the License.
- *       You may obtain a copy of the License at
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
  *
- *           http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
- *       Unless required by applicable law or agreed to in writing, software
- *       distributed under the License is distributed on an "AS IS" BASIS,
- *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *       See the License for the specific language governing permissions and
- *       limitations under the License.
- *
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import formatters from '../../utils/formatters';
-import '../common/resultsTable.less';
-import './trendResultsTable.less';
+import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import {toQuery} from '../../../utils/queryParser';
 
-import TrendDetails from './trendDetails';
+import TrendDetails from './../details/trendDetails';
+
+import './trendResultsTable.less';
 
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
-        results: PropTypes.object.isRequired
+        serviceName: PropTypes.string.isRequired,
+        location: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -43,7 +45,14 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static meanDurationColumnFormatter(cell) {
-        return `<div class="table__right">${cell ? formatters.toDurationString(cell * 1000) : ' '}</div>`;
+        const values = [];
+        cell.map(d => values.push(d.value));
+        return (<div className="duration-sparklines">
+                    <Sparklines className="sparkline" data={values}>
+                        <SparklinesLine color="#e23474" style={{ strokeWidth: 1 }}/>
+                        <SparklinesSpots />
+                    </Sparklines>
+                </div>);
     }
 
     static successPercentFormatter(cell) {
@@ -72,13 +81,6 @@ export default class TrendResultsTable extends React.Component {
         return a.count - b.count;
     }
 
-    static sortByMean(a, b, order) {
-        if (order === 'desc') {
-            return b.meanDuration - a.meanDuration;
-        }
-        return a.meanDuration - b.meanDuration;
-    }
-
     static sortByPercentage(a, b, order) {
         if (order === 'desc') {
             return b.successPercent - a.successPercent;
@@ -94,6 +96,13 @@ export default class TrendResultsTable extends React.Component {
         };
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
+    }
+
+    componentDidMount() {
+        const opName = toQuery(this.props.location.search).operationName;
+        if (opName) {
+            this.handleExpand(opName, true);
+        }
     }
 
     handleExpand(rowKey, isExpand) {
@@ -116,7 +125,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails data={row}/>;
+            return <TrendDetails store={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
         }
         return null;
     }
@@ -124,6 +133,10 @@ export default class TrendResultsTable extends React.Component {
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
+        const operation = toQuery(this.props.location.search).operationName;
+        const filter = operation
+            ? {type: 'TextFilter', defaultValue: operation, placeholder: 'Search Operations...'}
+            : {type: 'TextFilter', placeholder: 'Search Operations...'};
 
         const options = {
             page: 1,  // which page you want to show as default
@@ -155,7 +168,8 @@ export default class TrendResultsTable extends React.Component {
 
         return (
             <BootstrapTable
-                data={this.props.results}
+                className="trends-panel"
+                data={this.props.store.serviceResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -172,28 +186,26 @@ export default class TrendResultsTable extends React.Component {
                     width="50"
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
-                    filter={{type: 'TextFilter', placeholder: 'Filter Operations...'}}
+                    filter={filter}
                 />
                 <TableHeaderColumn
                     dataField="count"
                     dataFormat={TrendResultsTable.countColumnFormatter}
-                    width="12"
+                    width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByCount}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="meanDuration"
+                    dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
                     width="12"
-                    dataSort
-                    sortFunc={TrendResultsTable.sortByMean}
                     thStyle={tableHeaderRightAlignedStyle}
-                ><TrendResultsTable.Header name="Mean Duration"/></TableHeaderColumn>
+                ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="10"
+                    width="8"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     thStyle={tableHeaderRightAlignedStyle}

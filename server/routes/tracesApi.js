@@ -17,26 +17,11 @@
 
 const express = require('express');
 const config = require('../config/config');
+const handleResponsePromise = require('./utils/apiResponseHandler');
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
-const trendStore = require(`../stores/trends/${config.stores.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
-
-function handleResponsePromise(response, next) {
-    return operation => operation().then(
-        result => response.json(result),
-        err => next(err)
-    ).done();
-}
-
-router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getServices());
-});
-
-router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getOperations(req.query.serviceName));
-});
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.findTraces(req.query));
@@ -44,16 +29,6 @@ router.get('/traces', (req, res, next) => {
 
 router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.getTrace(req.params.traceId));
-});
-
-router.get('/trends', (req, res, next) => {
-    const {
-        serviceName,
-        timespan,
-        from,
-        until
-    } = req.query;
-    handleResponsePromise(res, next)(() => trendStore.getTrends(serviceName, timespan, from, until));
 });
 
 module.exports = router;

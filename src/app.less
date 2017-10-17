@@ -27,19 +27,7 @@
 @spacing-l : 30px;
 @spacing-xl : 60px;
 
-.gradient-bg {
-  background: @gradient-bg;
-}
-
-.primary-content {
-  background-color: @gray-lighter;
-}
-
-.primary-content__spacer {
-  padding-top: @spacing-l;
-  padding-bottom: @spacing-l;
-}
-
+// common resets
 td {
   border: none !important;
 }
@@ -52,10 +40,21 @@ table {
   border: none;
 }
 
+// util classes
 .ellipsis {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+// layout
+.primary-content {
+  background-color: @gray-lighter;
+}
+
+.primary-content__spacer {
+  padding-top: @spacing-l;
+  padding-bottom: @spacing-l;
 }
 
 .tabs-nav-container {
@@ -67,12 +66,4 @@ table {
       outline: 0;
     }
   }
-}
-
-.no-search_text {
-  display: inline-block;
-  margin: @spacing-xl;
-  padding: @spacing-s @spacing-l @spacing-s @spacing-l;
-  border: 1px solid @gray-mid-lighter;
-  background-color: white;
 }

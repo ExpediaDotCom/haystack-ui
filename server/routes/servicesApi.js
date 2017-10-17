@@ -14,16 +14,20 @@
  *         limitations under the License.
  */
 
-export default {
-    maintainAspectRatio: false,
-    legend: {
-        onHover: (e) => { e.target.style.cursor = 'pointer'; }
-    },
-    scales: {
-        xAxes: [{
-            type: 'time',
-            bounds: 'data',
-            distribution: 'series'
-        }]
-    }
-};
+const express = require('express');
+const config = require('../config/config');
+const handleResponsePromise = require('./utils/apiResponseHandler');
+
+const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+
+const router = express.Router();
+
+router.get('/services', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getServices());
+});
+
+router.get('/operations', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getOperations(req.query.serviceName));
+});
+
+module.exports = router;

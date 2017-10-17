@@ -26,20 +26,41 @@ function TrendException(data) {
 }
 
 export class TrendsSearchStore {
-    @observable promiseState = { case: ({empty}) => empty() };
-    @observable searchResults = [];
+    @observable resultsPromiseState = { case: ({empty}) => empty() };
+    @observable detailsPromiseState = { case: ({empty}) => empty() };
+    @observable serviceResults = [];
+    @observable serviceQuery = {};
+    @observable operationResults = [];
+    @observable operationQuery = {};
 
-    @action fetchSearchResults(query) {
+    @action fetchTrendServiceResults(service, query) {
         const queryUrlString = toQueryUrlString(query);
-        this.promiseState = fromPromise(
+        this.resultsPromiseState = fromPromise(
+                axios
+                    .get(`/api/trends/${service}?${queryUrlString}`)
+                    .then((result) => {
+                        this.serviceResults = result.data;
+                        this.serviceQuery = query;
+                    })
+                    .catch((result) => {
+                        this.serviceQuery = query;
+                        this.serviceResults = [];
+                        throw new TrendException(result);
+                    })
+        );
+    }
+    @action fetchTrendOperationResults(service, operation, query) {
+        const queryUrlString = toQueryUrlString(query);
+        this.detailsPromiseState = fromPromise(
             axios
-                .get(`/api/trends?${queryUrlString}`)
+                .get(`/api/trends/${service}/${operation}?${queryUrlString}`)
                 .then((result) => {
-                    this.searchResults = result.data;
+                    this.operationResults = result.data;
+                    this.operationQuery = query;
                 })
                 .catch((result) => {
-                    this.searchQuery = query;
-                    this.searchResults = [];
+                    this.operationQuery = query;
+                    this.operationResults = [];
                     throw new TrendException(result);
                 })
         );

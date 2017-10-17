@@ -26,8 +26,8 @@ const borderColor = [['rgba(75, 192, 192, 1)']];
 const SuccessGraph = ({successCount, failureCount}) => {
     // TODO make sure that success count and failure counts are merging on the right timestamps
     const data = failureCount.map((items, index) => ({
-        x: new Date(items.timestamp / 1000),
-        y: (items.value / (successCount[index].value + items.value)) * 100
+        x: new Date(items.timestamp),
+        y: ((items.value / (successCount[index].value + items.value)) * 100).toFixed(3)
     }));
 
     const chartData = {
@@ -41,7 +41,7 @@ const SuccessGraph = ({successCount, failureCount}) => {
         fill: 'end'
     };
 
-    return (<div className="col-md-4">
+    return (<div className="col-md-12">
             <h5 className="text-center">Success %</h5>
             <div className="chart-container">
                 <Line data={chartData} options={options} type="line" />
@@ -51,8 +51,8 @@ const SuccessGraph = ({successCount, failureCount}) => {
 };
 
 SuccessGraph.propTypes = {
-    successCount: PropTypes.array.isRequired,
-    failureCount: PropTypes.array.isRequired
+    successCount: PropTypes.object.isRequired,
+    failureCount: PropTypes.object.isRequired
 };
 
 export default SuccessGraph;
