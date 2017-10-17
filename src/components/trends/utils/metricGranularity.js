@@ -17,27 +17,25 @@
 
 const granularity = {};
 
-granularity.presets = [
+granularity.options = [
     {
-        id: '1m',
         shortName: '1m',
-        value: 60 * 1000 * 1000
+        value: 60 * 1000
     },
     {
-        id: '5m',
         shortName: '5m',
-        value: 5 * 60 * 1000 * 1000
+        value: 5 * 60 * 1000
     },
     {
-        id: '15m',
         shortName: '15m',
-        value: 15 * 60 * 1000 * 1000
+        value: 15 * 60 * 1000
     },
     {
-        id: '1h',
         shortName: '1h',
-        value: 60 * 60 * 1000 * 1000
+        value: 60 * 60 * 1000
     }
 ];
+
+granularity.getMinGranularity = timeInMs => granularity.options.find(option => option.value >= timeInMs) || granularity.options[granularity.options.length - 1];
 
 export default granularity;

@@ -18,7 +18,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesLine } from 'react-sparklines';
+import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import {toQuery} from '../../../utils/queryParser';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -27,6 +28,7 @@ import './trendResultsTable.less';
 export default class TrendResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
+        location: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired
     };
 
@@ -45,9 +47,10 @@ export default class TrendResultsTable extends React.Component {
     static meanDurationColumnFormatter(cell) {
         const values = [];
         cell.map(d => values.push(d.value));
-        return (<div>
+        return (<div className="duration-sparklines">
                     <Sparklines className="sparkline" data={values}>
-                        <SparklinesLine color="#e23474" />
+                        <SparklinesLine color="#e23474" style={{ strokeWidth: 1 }}/>
+                        <SparklinesSpots />
                     </Sparklines>
                 </div>);
     }
@@ -95,6 +98,13 @@ export default class TrendResultsTable extends React.Component {
         this.expandComponent = this.expandComponent.bind(this);
     }
 
+    componentDidMount() {
+        const opName = toQuery(this.props.location.search).operationName;
+        if (opName) {
+            this.handleExpand(opName, true);
+        }
+    }
+
     handleExpand(rowKey, isExpand) {
         if (isExpand) {
             this.setState(
@@ -115,15 +125,18 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails store={this.props.store} serviceName={this.props.serviceName} opName={row.operationName} />;
+            return <TrendDetails store={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
         }
         return null;
     }
 
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
-        const tableHeaderCenterAlignedStyle = {border: 'none', textAlign: 'center'};
         const tableHeaderStyle = {border: 'none'};
+        const operation = toQuery(this.props.location.search).operationName;
+        const filter = operation
+            ? {type: 'TextFilter', defaultValue: operation, placeholder: 'Search Operations...'}
+            : {type: 'TextFilter', placeholder: 'Search Operations...'};
 
         const options = {
             page: 1,  // which page you want to show as default
@@ -173,7 +186,7 @@ export default class TrendResultsTable extends React.Component {
                     width="50"
                     sortFunc={TrendResultsTable.sortByName}
                     thStyle={tableHeaderStyle}
-                    filter={{type: 'TextFilter', placeholder: 'Search Operations...'}}
+                    filter={filter}
                 />
                 <TableHeaderColumn
                     dataField="count"
@@ -186,9 +199,9 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
-                    width="20"
-                    thStyle={tableHeaderCenterAlignedStyle}
-                ><TrendResultsTable.Header name="Mean TP99"/></TableHeaderColumn>
+                    width="12"
+                    thStyle={tableHeaderRightAlignedStyle}
+                ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}

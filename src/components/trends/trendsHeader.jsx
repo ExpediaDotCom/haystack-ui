@@ -17,7 +17,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+
+import timeWindow from './utils/timeWindow';
 
 import './trendsHeader.less';
 
@@ -29,35 +30,46 @@ export default class TrendsHeader extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {granularity: 3600};
 
         this.fetchTrends = this.fetchTrends.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.fetchTrends();
+
+        const defaultWindow = timeWindow.presets[1]; // TODO check and pick time window from url query param
+        const defaultGranularity = timeWindow.getHigherGranularity(defaultWindow.value);
+
+        this.state = {
+            activeWindowValue: defaultWindow.value,
+            activeGranularity: defaultGranularity
+        };
+
+        this.fetchTrends(defaultWindow.value, defaultGranularity.value);
     }
 
     handleTimeChange(event) {
-        this.setState({granularity: event.target.value});
-        this.fetchTrends();
+        const windowValue = event.target.value;
+        this.setState({activeWindowValue: windowValue});
+
+        this.fetchTrends(windowValue, timeWindow.getHigherGranularity(windowValue).value);
     }
 
-    fetchTrends() {
+    fetchTrends(windowValue, granularityValue) {
+        const timeRange = timeWindow.toTimeRange(windowValue);
+
         const query = {
-            granularity: this.state.granularity,
-            from: moment(new Date()).subtract(this.state.granularity, 'seconds').valueOf(),
-            until: moment(new Date()).valueOf()
+            granularity: granularityValue,
+            from: timeRange.from,
+            until: timeRange.until
         };
+
         this.props.store.fetchTrendServiceResults(this.props.serviceName, query);
     }
 
     render() {
         return (<div className="clearfix">
                 <div className="pull-right">
-                    <span>Showing summary for last </span>
-                    <select className="trend-summary__time-range-selector" value={this.state.value} onChange={this.handleTimeChange}>
-                        <option value={3600}>1 hour</option>
-                        <option value={21600}>6 Hours</option>
-                        <option value={43200}>12 Hours</option>
+                    <span>Showing summary for </span>
+                    <select className="trend-summary__time-range-selector" value={this.state.activeWindowValue} onChange={this.handleTimeChange}>
+                        {timeWindow.presets.map(preset => (<option value={preset.value}>last {preset.longName}</option>))}
                     </select>
                 </div>
             </div>

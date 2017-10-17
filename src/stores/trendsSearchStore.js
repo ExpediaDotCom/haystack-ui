@@ -29,7 +29,9 @@ export class TrendsSearchStore {
     @observable resultsPromiseState = { case: ({empty}) => empty() };
     @observable detailsPromiseState = { case: ({empty}) => empty() };
     @observable serviceResults = [];
+    @observable serviceQuery = {};
     @observable operationResults = [];
+    @observable operationQuery = {};
 
     @action fetchTrendServiceResults(service, query) {
         const queryUrlString = toQueryUrlString(query);
@@ -38,9 +40,10 @@ export class TrendsSearchStore {
                     .get(`/api/trends/${service}?${queryUrlString}`)
                     .then((result) => {
                         this.serviceResults = result.data;
+                        this.serviceQuery = query;
                     })
                     .catch((result) => {
-                        this.searchQuery = query;
+                        this.serviceQuery = query;
                         this.serviceResults = [];
                         throw new TrendException(result);
                     })
@@ -53,9 +56,10 @@ export class TrendsSearchStore {
                 .get(`/api/trends/${service}/${operation}?${queryUrlString}`)
                 .then((result) => {
                     this.operationResults = result.data;
+                    this.operationQuery = query;
                 })
                 .catch((result) => {
-                    this.searchQuery = query;
+                    this.operationQuery = query;
                     this.operationResults = [];
                     throw new TrendException(result);
                 })

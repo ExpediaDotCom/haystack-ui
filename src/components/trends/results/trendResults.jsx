@@ -26,6 +26,7 @@ import Error from '../../common/error';
 export default class TrendResults extends React.Component {
     static propTypes = {
         trendsSearchStore: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired
     };
 
@@ -37,7 +38,7 @@ export default class TrendResults extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.trendsSearchStore.serviceResults && this.props.trendsSearchStore.serviceResults.length)
-                        ? <TrendResultsTable store={this.props.trendsSearchStore} serviceName={this.props.serviceName}/>
+                        ? <TrendResultsTable store={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }

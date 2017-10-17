@@ -23,11 +23,11 @@ const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
 const borderColor = [['rgba(54, 162, 235, 1)']];
 
 const CountGraph = ({points}) => {
-    const data = points.map(point => ({x: new Date(point.timestamp / 1000), y: point.value}));
+    const data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
 
     const chartData = {
         datasets: [{
-            label: 'Count',
+            label: 'Count      ',
             data,
             backgroundColor,
             borderColor,

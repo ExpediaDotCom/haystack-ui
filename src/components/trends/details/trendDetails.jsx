@@ -28,17 +28,15 @@ import './trendDetails.less';
 export default class TrendResultExpand extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         opName: PropTypes.string.isRequired
-    }
-    componentDidMount() {
-        this.props.store.fetchTrendOperationResults(this.props.serviceName, this.props.opName, 'asdf');
     }
 
     render() {
         return (
             <div className="table-row-details">
-                <TrendDetailsToolbar trendsSearchStore={this.props.store} serviceName={this.props.serviceName} opName={this.props.opName} />
+                <TrendDetailsToolbar trendsSearchStore={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={this.props.opName} />
                 { this.props.store.detailsPromiseState && this.props.store.detailsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,

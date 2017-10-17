@@ -14,46 +14,68 @@
  *         limitations under the License.
  */
 
+import moment from 'moment';
+import metricGranularity from './metricGranularity';
 
-const presets = {};
+const timeWindow = {};
 
-presets.presets = [
+timeWindow.toTimeRange = (presetValue) => {
+    const datetime = new Date();
+    return {
+        from: moment(datetime).subtract(presetValue, 'milliseconds').valueOf(),
+        until: moment(datetime).valueOf()
+    };
+};
+
+timeWindow.presets = [
     {
         id: '5m',
         shortName: '5m',
         longName: '5 minutes',
-        value: 5 * 60 * 1000 * 1000
+        value: 5 * 60 * 1000
     },
     {
         id: '1h',
         shortName: '1h',
         longName: '1 hour',
-        value: 60 * 60 * 1000 * 1000
+        value: 60 * 60 * 1000
     },
     {
         id: '6h',
         shortName: '6h',
         longName: '6 hours',
-        value: 6 * 60 * 60 * 1000 * 1000
+        value: 6 * 60 * 60 * 1000
     },
     {
         id: '12h',
         shortName: '12h',
         longName: '12 hours',
-        value: 12 * 60 * 60 * 1000 * 1000
+        value: 12 * 60 * 60 * 1000
     },
     {
         id: '24h',
         shortName: '24h',
         longName: '24 hours',
-        value: 24 * 60 * 60 * 1000 * 1000
+        value: 24 * 60 * 60 * 1000
     },
     {
-        id: '24h',
-        shortName: '24h',
-        longName: '24 hours',
-        value: 7 * 24 * 60 * 60 * 1000 * 1000
+        id: '7d',
+        shortName: '7d',
+        longName: '7 days',
+        value: 7 * 24 * 60 * 60 * 1000
     }
 ];
 
-export default presets;
+timeWindow.getLowerGranularity = (timeInMs) => {
+    const maxNumberOfPoints = 100;
+    return metricGranularity.getMinGranularity(timeInMs / maxNumberOfPoints);
+};
+
+timeWindow.getHigherGranularity = (timeInMs) => {
+    const minNumberOfPoints = 4;
+    return metricGranularity.getMinGranularity(timeInMs / minNumberOfPoints);
+};
+
+timeWindow.findMatchingPreset = value => timeWindow.presets.find(preset => preset.value === value);
+
+export default timeWindow;

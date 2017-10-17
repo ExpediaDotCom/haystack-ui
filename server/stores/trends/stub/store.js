@@ -25,7 +25,7 @@ function getValue(min, max) {
 
 function getTimeStamp(addMin) {
     const currentTime = ((new Date()).getTime());
-    return (currentTime + (addMin * 10000)) * 1000;
+    return (currentTime + (addMin * 60 * 1000));
 }
 
 function getRandomValues(timeWindow, dataPoints) {
@@ -34,41 +34,60 @@ function getRandomValues(timeWindow, dataPoints) {
     return valuesArr;
 }
 
-store.getTrendsForService = () => Q.fcall(() => [
-    {
-        operationName: 'seaworth-1',
-        count: 10000,
-        successPercent: getValue(10, 100),
-        tp99Duration: getRandomValues(120, 30)
-    },
-    {
-        operationName: 'bolton-1',
-        count: 15000,
-        successPercent: getValue(10, 100),
-        tp99Duration: getRandomValues(120, 30)
-    },
-    {
-        operationName: 'baelish-1',
-        count: 5000,
-        successPercent: getValue(10, 100),
-        tp99Duration: getRandomValues(120, 30)
-    },
-    {
-        operationName: 'mormont-1',
-        count: 1000,
-        successPercent: getValue(10, 100),
-        tp99Duration: getRandomValues(120, 30)
-    }
-]);
+store.getTrendsForService = (serviceName, granularity, from, until) => {
+    const deffered = Q.defer();
 
-store.getTrendsForOperation = () => Q.fcall(() =>
-    ({
-        count: getRandomValues(5, 60),
-        successCount: getRandomValues(5, 50),
-        failureCount: getRandomValues(5, 50),
-        meanDuration: getRandomValues(5, 50),
-        tp95Duration: getRandomValues(5, 60),
-        tp99Duration: getRandomValues(5, 60)
-    }));
+    const range = until - from;
+    const points = range / granularity;
+    const mins = granularity / (60 * 1000);
+
+    deffered.resolve([
+        {
+            operationName: 'seaworth-1',
+            count: 10000,
+            successPercent: getValue(10, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'bolton-1',
+            count: 15000,
+            successPercent: getValue(10, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'baelish-1',
+            count: 5000,
+            successPercent: getValue(10, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'mormont-1',
+            count: 1000,
+            successPercent: getValue(10, 100),
+            tp99Duration: getRandomValues(mins, points)
+        }
+    ]);
+
+    return deffered.promise;
+};
+
+store.getTrendsForOperation = (serviceName, operationName, granularity, from, until) => {
+    const deffered = Q.defer();
+
+    const range = until - from;
+    const points = range / granularity;
+    const mins = granularity / (60 * 1000);
+
+    deffered.resolve({
+        count: getRandomValues(mins, points),
+        successCount: getRandomValues(mins, points),
+        failureCount: getRandomValues(mins, points),
+        meanDuration: getRandomValues(mins, points),
+        tp95Duration: getRandomValues(mins, points),
+        tp99Duration: getRandomValues(mins, points)
+    });
+
+    return deffered.promise;
+};
 
 module.exports = store;
