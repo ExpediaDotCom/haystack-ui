@@ -41,7 +41,6 @@ export default class TrendHeaderToolbar extends React.Component {
         this.toggleGranularityDropdown = this.toggleGranularityDropdown.bind(this);
         this.updateGranularity = this.updateGranularity.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
-
         const defaultWindow = timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
         const defaultGranularity = timeWindow.getLowerGranularity(defaultWindow.value);
 
@@ -50,8 +49,10 @@ export default class TrendHeaderToolbar extends React.Component {
             activeGranularity: defaultGranularity,
             granularityDropdownOpen: false
         };
+    }
 
-        this.fetchTrends(defaultWindow, defaultGranularity);
+    componentDidMount() {
+        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
     }
 
     handleCopy() {
@@ -91,7 +92,6 @@ export default class TrendHeaderToolbar extends React.Component {
         });
 
         this.fetchTrends(preset, updatedGranularity);
-        event.preventDefault();
     }
 
     render() {
@@ -126,7 +126,7 @@ export default class TrendHeaderToolbar extends React.Component {
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li>
-                                {metricGranularity.options.map(option => (<a tabIndex={-1} role="button" onClick={() => this.updateGranularity(option)}>{option.shortName}</a>))}
+                                {metricGranularity.options.map(option => (<a tabIndex={-1} key={option.shortName} role="button" onClick={() => this.updateGranularity(option)}>{option.shortName}</a>))}
                             </li>
                         </ul>
                     </div>

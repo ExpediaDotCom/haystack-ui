@@ -41,7 +41,6 @@ export default class TrendsHeader extends React.Component {
             activeWindowValue: defaultWindow.value,
             activeGranularity: defaultGranularity
         };
-
         this.fetchTrends(defaultWindow.value, defaultGranularity.value);
     }
 
@@ -69,7 +68,7 @@ export default class TrendsHeader extends React.Component {
                 <div className="pull-right">
                     <span>Showing summary for </span>
                     <select className="trend-summary__time-range-selector" value={this.state.activeWindowValue} onChange={this.handleTimeChange}>
-                        {timeWindow.presets.map(preset => (<option value={preset.value}>last {preset.longName}</option>))}
+                        {timeWindow.presets.map(preset => (<option key={preset.value} value={preset.value}>last {preset.longName}</option>))}
                     </select>
                 </div>
             </div>
