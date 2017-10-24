@@ -19,7 +19,6 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
-import config from '../../../server/config/config';
 import './homeSearchBox.less';
 
 @observer
@@ -39,8 +38,7 @@ export default class HomeSearchBox extends Component {
     }
 
     handleChange(event) {
-        const landingTab = config.stores.trends ? 'trends' : 'traces';
-        this.props.history.push(`/service/${event.value}/${landingTab}`);
+        this.props.history.push(`/service/${event.value}/traces`);
     }
 
     render() {

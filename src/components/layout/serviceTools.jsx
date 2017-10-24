@@ -29,7 +29,6 @@ const subsystems = window.subsystems || [];
 
 const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');
-const isTracesEnabled = subsystems.includes('traces');
 const isAlertsEnabled = subsystems.includes('alerts');
 const ServiceTools = (props) => {
     const serviceName = props.match.params.serviceName;
@@ -55,6 +54,14 @@ const ServiceTools = (props) => {
                               </NavLink>
                               : null
                           }
+                          <NavLink
+                              className={navLinkClass}
+                              activeClassName={navLinkClassActive}
+                              to={`/service/${serviceName}/traces`}
+                          >
+                              <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
+                              Traces
+                          </NavLink>
                           {isTrendsEnabled ?
                               <NavLink
                                   className={navLinkClass}
@@ -63,17 +70,6 @@ const ServiceTools = (props) => {
                               >
                                   <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
                                   Trends
-                              </NavLink>
-                              : null
-                          }
-                          {isTracesEnabled ?
-                              <NavLink
-                                  className={navLinkClass}
-                                  activeClassName={navLinkClassActive}
-                                  to={`/service/${serviceName}/traces`}
-                              >
-                                  <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
-                                  Traces
                               </NavLink>
                               : null
                           }
@@ -95,9 +91,9 @@ const ServiceTools = (props) => {
             <article className="serviceToolsContainer container">
                 <Switch>
                   <Route exact path="/service/:serviceName" component={Trends}/>
-                  {isAlertsEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
-                  {isTrendsEnabled ? <Route exact path="/service/:serviceName/traces" component={Traces}/> : null}
-                  {isTracesEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}
+                  {isFlowEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
+                  <Route exact path="/service/:serviceName/traces" component={Traces}/>
+                  {isTrendsEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}
                   {isAlertsEnabled ? <Route exact path="/service/:serviceName/alerts" component={Alerts}/> : null}
                 </Switch>
             </article>
