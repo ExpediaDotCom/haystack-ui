@@ -21,7 +21,6 @@ import PropTypes from 'prop-types';
 import HomeSearchBox from './homeSearchBox';
 import serviceStore from '../../stores/serviceStore';
 import './home.less';
-import WorkInProgress from '../common/workInProgress';
 
 @observer
 export default class Home extends Component {
@@ -32,13 +31,8 @@ export default class Home extends Component {
 
     render() {
         return (
-            <article>
+            <article className="home-panel">
                 <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
-                <article className="container home-panel">
-                    <section className="row">
-                        <WorkInProgress/>
-                    </section>
-                </article>
             </article>
         );
     }
