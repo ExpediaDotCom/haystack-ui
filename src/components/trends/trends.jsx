@@ -24,7 +24,7 @@ import TrendResults from './results/trendResults';
 import trendsSearchStore from '../../stores/trendsSearchStore';
 
 const Trends = ({match, location}) => (
-    <section className="trends">
+    <section className="trends-panel">
         <TrendsHeader store={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
         <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
     </section>);

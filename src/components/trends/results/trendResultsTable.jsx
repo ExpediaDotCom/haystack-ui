@@ -60,7 +60,7 @@ export default class TrendResultsTable extends React.Component {
             <div className="text-right">
                 <div className="percentContainer text-center">
                     { cell ?
-                        <CircularProgressbar percentage={cell} strokeWidth={8}/> :
+                        <CircularProgressbar percentage={cell.toFixed(0)} strokeWidth={8}/> :
                         ' ' }
                 </div>
             </div>
