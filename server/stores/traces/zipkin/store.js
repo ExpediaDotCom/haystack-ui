@@ -18,7 +18,8 @@ const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
 const converter = require('./converter');
-const rangeConverter = require('../utils/rangeConverter');
+const rangeConverter = require('../../utils/rangeConverter');
+const errorConverter = require('../../utils/errorConverter');
 
 const store = {};
 const baseZipkinUrl = config.stores.traces.zipkinUrl;
@@ -55,7 +56,7 @@ store.getServices = () => {
     axios
         .get(`${baseZipkinUrl}/services`)
         .then(response => deferred.resolve(response.data),
-            error => deferred.reject(new Error(error)));
+            error => deferred.reject(errorConverter.fromAxiosError(error)));
 
     return deferred.promise;
 };
@@ -66,7 +67,7 @@ store.getOperations = (serviceName) => {
     axios
         .get(`${baseZipkinUrl}/spans?serviceName=${serviceName}`)
         .then(response => deferred.resolve(response.data),
-            error => deferred.reject(new Error(error)));
+            error => deferred.reject(errorConverter.fromAxiosError(error)));
 
     return deferred.promise;
 };
@@ -77,7 +78,7 @@ store.getTrace = (traceId) => {
     axios
         .get(`${baseZipkinUrl}/trace/${traceId}`)
         .then(response => deferred.resolve(converter.toHaystackTrace(response.data)),
-            error => deferred.reject(new Error(error)));
+            error => deferred.reject(errorConverter.fromAxiosError(error)));
 
     return deferred.promise;
 };
@@ -90,14 +91,14 @@ store.findTraces = (query) => {
         axios
             .get(`${baseZipkinUrl}/trace/${query.traceId}`)
             .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)),
-                error => deferred.reject(new Error(error)));
+                error => deferred.reject(errorConverter.fromAxiosError(error)));
     } else {
         const queryUrl = mapQueryParams(query);
 
         axios
             .get(`${baseZipkinUrl}/traces?${queryUrl}`)
             .then(response => deferred.resolve(converter.toHaystackSearchResult(response.data, query)),
-                error => deferred.reject(new Error(error)));
+                error => deferred.reject(errorConverter.fromAxiosError(error)));
     }
 
     return deferred.promise;
