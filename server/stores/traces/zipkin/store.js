@@ -54,10 +54,8 @@ store.getServices = () => {
     const deferred = Q.defer();
     axios
         .get(`${baseZipkinUrl}/services`)
-        .then((response) => {
-                deferred.resolve(response.data);
-            }
-        );
+        .then(response => deferred.resolve(response.data),
+            error => deferred.reject(new Error(error)));
 
     return deferred.promise;
 };
@@ -67,7 +65,8 @@ store.getOperations = (serviceName) => {
 
     axios
         .get(`${baseZipkinUrl}/spans?serviceName=${serviceName}`)
-        .then(response => deferred.resolve(response.data));
+        .then(response => deferred.resolve(response.data),
+            error => deferred.reject(new Error(error)));
 
     return deferred.promise;
 };
@@ -77,7 +76,8 @@ store.getTrace = (traceId) => {
 
     axios
         .get(`${baseZipkinUrl}/trace/${traceId}`)
-        .then(response => deferred.resolve(converter.toHaystackTrace(response.data)));
+        .then(response => deferred.resolve(converter.toHaystackTrace(response.data)),
+            error => deferred.reject(new Error(error)));
 
     return deferred.promise;
 };
@@ -89,13 +89,15 @@ store.findTraces = (query) => {
         // if search is for a trace perform getTrace instead of search
         axios
             .get(`${baseZipkinUrl}/trace/${query.traceId}`)
-            .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)));
+            .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)),
+                error => deferred.reject(new Error(error)));
     } else {
         const queryUrl = mapQueryParams(query);
 
         axios
             .get(`${baseZipkinUrl}/traces?${queryUrl}`)
-            .then(response => deferred.resolve(converter.toHaystackSearchResult(response.data, query)));
+            .then(response => deferred.resolve(converter.toHaystackSearchResult(response.data, query)),
+                error => deferred.reject(new Error(error)));
     }
 
     return deferred.promise;
