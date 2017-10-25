@@ -24,7 +24,7 @@ const config = require('../../../config/config');
 const services = require('../../../../static_codegen/traceReader_grpc_pb');
 const messages = require('../../../../static_codegen/traceReader_pb');
 const searchResultsTransformer = require('./searchResultsTransformer');
-const rangeConverter = require('../utils/rangeConverter');
+const rangeConverter = require('../../utils/rangeConverter');
 
 const store = {};
 
