@@ -23,6 +23,7 @@ const express = require('express');
 const favicon = require('serve-favicon');
 const compression = require('compression');
 const axios = require('axios');
+const Q = require('q');
 
 const config = require('./config/config');
 const logger = require('./support/logger');
@@ -37,6 +38,7 @@ const app = express();
 
 // CONFIGURATIONS
 axios.defaults.timeout = config.upstreamTimeout;
+Q.longStackSupport = true;
 app.set('port', config.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -60,8 +62,7 @@ app.use('/', indexRoute);
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     errorLogger.error(err);
-    res.status(err.status || 500);
-    res.json({err});
+    next(err);
 });
 
 module.exports = app;
