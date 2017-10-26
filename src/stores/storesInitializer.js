@@ -20,6 +20,6 @@ import axios from 'axios';
 export default {
     init: () => {
         // axios init
-        axios.defaults.timeout = 30000;
+        axios.defaults.timeout = 60000;
     }
 };
