@@ -18,7 +18,8 @@ const Q = require('q');
 
 const store = {};
 
-store.getServices = () => Q.fcall(() => ['lannister-service',
+store.getServices = () => Q.fcall(() => ['root-service',
+    'lannister-service',
     'stark-service',
     'tyrell-service',
     'targaryen-service',
@@ -37,7 +38,7 @@ store.getTrace = () => Q.fcall(() => [
         {
             traceId: 'traceid',
             spanId: 'root-spanid',
-            serviceName: 'stark-service',
+            serviceName: 'root-service',
             operationName: 'root-operation-stark',
             startTime: 1504784384000,
             duration: 3525000,
