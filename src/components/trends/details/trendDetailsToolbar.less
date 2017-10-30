@@ -13,13 +13,66 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-
 @import (reference) '../../../app';
 
 .trend-details-toolbar {
-  margin-bottom: @spacing-m;
+    margin-bottom: @spacing-m;
 }
 
 .trend-details-toolbar__time-range {
-  margin-right: @spacing-m;
+    position: relative;
+    margin-right: @spacing-m;
+}
+
+
+.custom-timerange-picker {
+    position: absolute;
+    padding: @spacing-s @spacing-l @spacing-s @spacing-l;
+    background-color: white;
+    border : 1px solid #ccc;
+    border-radius : 3px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    animation-duration: 0.1s;
+    animation-name: slideDown;
+    right:0;
+}
+
+.rdtPicker table {
+    width: 100%;
+    margin: 0;
+    table-layout: unset;
+
+}
+
+.rdtPicker td.rdtDay,
+.rdtPicker td.rdtHour,
+.rdtPicker td.rdtMinute,
+.rdtPicker td.rdtSecond,
+.rdtPicker .rdtTimeToggle {
+    background-color: #fff !important;
+    color: @gray-dark !important;
+}
+
+.rdtPicker td.rdtDay:hover,
+.rdtPicker td.rdtHour:hover,
+.rdtPicker td.rdtMinute:hover,
+.rdtPicker td.rdtSecond:hover,
+.rdtPicker .rdtTimeToggle:hover {
+    background: #eeeeee !important;
+}
+
+.custom-timerange-picker__datetime {
+    .form-control {
+        color: @gray-dark;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        margin-top: -1%;
+    }
+    to {
+        margin-top: 0;
+    }
 }
