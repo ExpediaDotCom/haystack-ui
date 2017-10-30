@@ -23,6 +23,7 @@ import moment from 'moment';
 
 import timeWindow from '../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
+import {toQuery} from '../../../utils/queryParser';
 
 import './trendDetailsToolbar.less';
 
@@ -49,8 +50,12 @@ export default class TrendHeaderToolbar extends React.Component {
         this.handleCustomSelection = this.handleCustomSelection.bind(this);
         this.handleCustomTimeRangePicker = this.handleCustomTimeRangePicker.bind(this);
         this.toValid = this.toValid.bind(this);
-        const defaultWindow = timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
-        const defaultGranularity = timeWindow.getLowerGranularity(defaultWindow.value);
+
+        const queryParams = toQuery(this.props.location.search);
+        const from = queryParams.from;
+        const until = queryParams.until;
+        const defaultWindow = this.props.location.search ? 'custom' : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
+        const defaultGranularity = this.props.location.search ? timeWindow.getLowerGranularity(until - from) : timeWindow.getLowerGranularity(defaultWindow.value);
         const timeRange = timeWindow.toTimeRange(defaultWindow.value);
 
         this.state = {
@@ -58,13 +63,18 @@ export default class TrendHeaderToolbar extends React.Component {
             activeGranularity: defaultGranularity,
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
-            startDateTime: timeRange.from,
-            endDateTime: timeRange.until
+            startDateTime: from || timeRange.from,
+            endDateTime: until || timeRange.until
         };
     }
 
     componentDidMount() {
-        this.fetchTrends(this.state.startDateTime, this.state.endDateTime, this.state.activeGranularity);
+        const query = {
+            granularity: this.state.activeGranularity.value,
+            from: this.state.startDateTime,
+            until: this.state.endDateTime
+        };
+        this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
     }
 
     handleCopy() {
@@ -95,13 +105,14 @@ export default class TrendHeaderToolbar extends React.Component {
 
     handlePresetSelection(preset) {
         const updatedGranularity = timeWindow.getLowerGranularity(preset.value);
+        const timeRange = timeWindow.toTimeRange(preset.value);
 
         this.setState({
             activeWindow: preset,
-            activeGranularity: updatedGranularity
+            activeGranularity: updatedGranularity,
+            startDateTime: timeRange.from,
+            endDateTime: timeRange.until
         });
-
-        const timeRange = timeWindow.toTimeRange(preset.value);
 
         this.fetchTrends(timeRange.from, timeRange.until, updatedGranularity);
     }
@@ -111,7 +122,7 @@ export default class TrendHeaderToolbar extends React.Component {
 
         this.setState({
             showCustomTimeRangePicker: false,
-            activeWindow: 'CUSTOM',
+            activeWindow: 'custom',
             activeGranularity: updatedGranularity
         });
 
@@ -131,7 +142,7 @@ export default class TrendHeaderToolbar extends React.Component {
     }
 
     toValid(current) {
-        return current > moment(this.state.startDateTime).subtract(1, 'day') && current < DateTime.moment();
+        return current > moment(parseInt(this.state.endDateTime, 10)).subtract(1, 'day') && current < DateTime.moment();
     }
 
     render() {
@@ -166,11 +177,11 @@ export default class TrendHeaderToolbar extends React.Component {
                                 key={preset.shortName}
                             />))}
                         <button
-                            className={this.state.activeWindow === 'CUSTOM' ? 'btn btn-primary' : 'btn btn-default'}
+                            className={this.state.activeWindow === 'custom' ? 'btn btn-primary' : 'btn btn-default'}
                             type="button"
                             onClick={this.handleCustomTimeRangePicker}
                         >
-                            {this.state.activeWindow === 'CUSTOM' ? getCustomTimeRangeText(this.state.startDateTime, this.state.endDateTime) : 'CUSTOM'}
+                            {this.state.activeWindow === 'custom' ? getCustomTimeRangeText(this.state.startDateTime, this.state.endDateTime) : 'Custom' }
                         </button>
                     </div>
                     { this.state.showCustomTimeRangePicker
@@ -180,14 +191,14 @@ export default class TrendHeaderToolbar extends React.Component {
                                 <DateTime
                                     className="custom-timerange-picker__datetime"
                                     isValidDate={fromValid}
-                                    value={this.state.startDateTime}
+                                    value={moment(parseInt(this.state.startDateTime, 10))}
                                     onChange={this.handleChangeStartDate}
                                 />
                                 <div>To :</div>
                                 <DateTime
                                     className="custom-timerange-picker__datetime"
                                     isValidDate={this.toValid}
-                                    value={this.state.endDateTime}
+                                    value={moment(parseInt(this.state.endDateTime, 10))}
                                     onChange={this.handleChangeEndDate}
                                 />
                             </div>
@@ -242,7 +253,7 @@ export default class TrendHeaderToolbar extends React.Component {
                         className="ti-line-double"
                     /> See Traces</Link>
                     <Clipboard
-                        text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}`}
+                        text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${this.state.startDateTime}&until=${this.state.endDateTime}`}
                         onCopy={this.handleCopy}
                     >
                         <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
