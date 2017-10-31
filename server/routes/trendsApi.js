@@ -22,6 +22,16 @@ const trendStore = require(`../stores/trends/${config.stores.trends.storeName}/s
 
 const router = express.Router();
 
+router.get('/trends', (req, res, next) => {
+    const {
+        serviceName,
+        timespan,
+        from,
+        until
+    } = req.query;
+    handleResponsePromise(res, next)(() => trendStore.getTrends(serviceName, timespan, from, until));
+});
+
 router.get('/trends/:serviceName', (req, res, next) => {
     const {
         granularity,
