@@ -50,6 +50,8 @@ export default class TrendHeaderToolbar extends React.Component {
         this.handleCustomSelection = this.handleCustomSelection.bind(this);
         this.handleCustomTimeRangePicker = this.handleCustomTimeRangePicker.bind(this);
         this.toValid = this.toValid.bind(this);
+        this.hideGranularityDropdown = this.hideGranularityDropdown.bind(this);
+        this.hideCustomTimeRangePicker = this.hideCustomTimeRangePicker.bind(this);
 
         const queryParams = toQuery(this.props.location.search);
         const from = queryParams.from;
@@ -108,6 +110,7 @@ export default class TrendHeaderToolbar extends React.Component {
         const timeRange = timeWindow.toTimeRange(preset.value);
 
         this.setState({
+            showCustomTimeRangePicker: false,
             activeWindow: preset,
             activeGranularity: updatedGranularity,
             startDateTime: timeRange.from,
@@ -145,6 +148,21 @@ export default class TrendHeaderToolbar extends React.Component {
         return current > moment(parseInt(this.state.endDateTime, 10)).subtract(1, 'day') && current < DateTime.moment();
     }
 
+    hideGranularityDropdown(e) {
+        if (e && e.relatedTarget) {
+            e.relatedTarget.click();
+        }
+        this.toggleGranularityDropdown();
+    }
+
+    hideCustomTimeRangePicker(e) {
+        if (e && e.relatedTarget) {
+            e.relatedTarget.click();
+        } else {
+            this.handleCustomTimeRangePicker();
+        }
+    }
+
     render() {
         const PresetOption = ({preset}) => (
             <button
@@ -180,6 +198,7 @@ export default class TrendHeaderToolbar extends React.Component {
                             className={this.state.activeWindow === 'custom' ? 'btn btn-primary' : 'btn btn-default'}
                             type="button"
                             onClick={this.handleCustomTimeRangePicker}
+                            onBlur={this.hideCustomTimeRangePicker}
                         >
                             {this.state.activeWindow === 'custom' ? getCustomTimeRangeText(this.state.startDateTime, this.state.endDateTime) : 'Custom' }
                         </button>
@@ -218,6 +237,7 @@ export default class TrendHeaderToolbar extends React.Component {
                         <button
                             className="btn btn-sm btn-default dropdown-toggle"
                             onClick={() => this.toggleGranularityDropdown()}
+                            onBlur={this.hideGranularityDropdown}
                         >
                             <span>{this.state.activeGranularity.shortName}</span>
                             <span className="caret"/>
