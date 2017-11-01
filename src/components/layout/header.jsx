@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import './header.less';
 import config from '../../../server/config/base';
 
@@ -25,14 +25,26 @@ export default class SearchBar extends React.Component {
     constructor() {
         super();
         this.updateSearchField = this.updateSearchField.bind(this);
+        this.redirect = this.redirect.bind(this);
         this.state = {
-            traceId: ''
+            traceId: '',
+            redirect: false
         };
     }
     updateSearchField(event) {
         this.setState({traceId: event.target.value});
     }
+    redirect() {
+        event.preventDefault();
+        if (this.state.traceId.length > 0) {
+            this.setState({redirect: true});
+        }
+    }
     render() {
+        if (this.state.redirect) {
+            this.setState({redirect: false});
+            return <Redirect to={`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`} />;
+        }
         return (
             <header>
                 <nav className="navbar navbar-default">
@@ -53,29 +65,23 @@ export default class SearchBar extends React.Component {
                                 <span className="icon-bar"/>
                             </button>
                         </div>
-
                         <div className="navbar-collapse collapse" id="navbar-main">
-
-                            <div className="navbar-form navbar-right">
-                                <input
-                                    type="text"
-                                    className="form-control layout__search"
-                                    placeholder="Search TraceId"
-                                    onChange={this.updateSearchField}
-                                />
-                                <Link
-                                    to={`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`}
-                                    className="btn btn-primary search-button"
-                                >
-                                    <span className="ti-search"/>
-                                </Link>
+                            <div className="navbar-form navbar-right header-search">
+                                <form onSubmit={this.redirect}>
+                                    <input
+                                        type="text"
+                                        className="form-control layout__search"
+                                        placeholder="Search TraceId"
+                                        onChange={this.updateSearchField}
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary search-button"
+                                    >
+                                        <span className="ti-search"/>
+                                    </button>
+                                </form>
                             </div>
-
-                            <ul className="nav navbar-nav navbar-right">
-                                <li><Link to="/">Home</Link></li>
-                                <li><Link to="/help">Help</Link></li>
-                            </ul>
-
                         </div>
                     </div>
                 </nav>
