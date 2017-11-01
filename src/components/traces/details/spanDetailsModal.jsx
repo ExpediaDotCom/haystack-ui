@@ -69,10 +69,7 @@ export default class SpanDetailsModal extends React.Component {
                     </ul>
                     <div className="btn-group-sm pull-right">
                         <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/trends?operationName=${this.props.span.operationName}`}>
-                            <span className="ti-stats-up"/> Trends
-                        </Link>
-                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/flow`}>
-                            <span className="ti-vector"/> Dependencies
+                            <span className="ti-stats-up"/> Operation Trends
                         </Link>
                     </div>
                 </div>

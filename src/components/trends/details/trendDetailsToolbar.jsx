@@ -56,8 +56,8 @@ export default class TrendHeaderToolbar extends React.Component {
         const queryParams = toQuery(this.props.location.search);
         const from = queryParams.from;
         const until = queryParams.until;
-        const defaultWindow = this.props.location.search ? 'custom' : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
-        const defaultGranularity = this.props.location.search ? timeWindow.getLowerGranularity(until - from) : timeWindow.getLowerGranularity(defaultWindow.value);
+        const defaultWindow = queryParams && from && until ? 'custom' : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
+        const defaultGranularity = queryParams && from && until ? timeWindow.getLowerGranularity(until - from) : timeWindow.getLowerGranularity(defaultWindow.value);
         const timeRange = timeWindow.toTimeRange(defaultWindow.value);
 
         this.state = {
