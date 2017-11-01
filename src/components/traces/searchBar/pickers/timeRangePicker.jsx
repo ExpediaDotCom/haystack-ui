@@ -85,9 +85,9 @@ export default class TimeRangePicker extends React.Component {
                 <div className="timerange-picker__custom">
                     <h5>Time Range</h5>
                     <div className="form-group">
-                        <h6>Start Date :</h6>
+                        <h6>From :</h6>
                         <DateTime className="datetimerange-picker" isValidDate={fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
-                        <h6>End Date :</h6>
+                        <h6>To :</h6>
                         <DateTime className="datetimerange-picker" isValidDate={this.toValid} value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
                     </div>
                     <button
