@@ -47,11 +47,11 @@ export default class Span extends React.Component {
     }
 
     static getSpanError(span) {
-        const errorTag = (span.tags.find(tag => (tag.key === 'error')));
+        const errorTag = span.tags.find(tag => tag.key === 'error');
         if (errorTag !== undefined) {
             return errorTag.value;
         }
-        return null;
+        return false;
     }
 
     constructor(props) {
