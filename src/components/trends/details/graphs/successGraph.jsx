@@ -67,4 +67,4 @@ SuccessGraph.propTypes = {
     failureCount: PropTypes.object.isRequired
 };
 
-export default SuccessGr
+export default SuccessGraph;
