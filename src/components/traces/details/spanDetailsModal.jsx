@@ -38,9 +38,9 @@ export default class SpanDetailsModal extends React.Component {
     tabViewer(span) {
         switch (this.state.tabSelected) {
             case 1:
-                return <TagsTable tags={span.tags} />;
-            case 2:
                 return <LogsTable logs={span.logs} />;
+            case 2:
+                return <TagsTable tags={span.tags} />;
             case 3:
                 return <pre>{JSON.stringify(span, null, 2)}</pre>;
             default:
@@ -58,10 +58,10 @@ export default class SpanDetailsModal extends React.Component {
                 <div className="tabs-nav-container clearfix">
                     <ul className="nav nav-tabs pull-left">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Tags</a>
+                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Logs</a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" tabIndex="-2" onClick={() => this.toggleTab(2)} >Logs</a>
+                            <a role="button" tabIndex="-2" onClick={() => this.toggleTab(2)} >Tags</a>
                         </li>
                         <li className={this.state.tabSelected === 3 ? 'active' : ''}>
                             <a role="button" tabIndex="-3" onClick={() => this.toggleTab(3)} >Raw Span</a>
