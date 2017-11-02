@@ -223,6 +223,7 @@ export default class TraceResultsTable extends React.Component {
                     caretRender={TraceResultsTable.getCaret}
                     sortFunc={this.sortByTimestamp}
                     thStyle={tableHeaderStyle}
+                    headerText={'Start time of the trace'}
                 ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="rootOperation"
@@ -231,6 +232,7 @@ export default class TraceResultsTable extends React.Component {
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
+                    headerText={'Name of the service'}
                 ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="error"
@@ -239,6 +241,7 @@ export default class TraceResultsTable extends React.Component {
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
+                    headerText={'Status of overall trace / individual operation'}
                 ><TraceResultsTable.Header name="Success"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="spanCount"
@@ -247,6 +250,7 @@ export default class TraceResultsTable extends React.Component {
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
+                    headerText={'Number of spans / operations in the trace'}
                 ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
                 {
                     (query.operationName && query.operationName !== 'all')
@@ -258,6 +262,7 @@ export default class TraceResultsTable extends React.Component {
                         sortFunc={this.sortByDuration}
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
+                        headerText={'Duration of individual operation'}
                     ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
                 }
                 {
@@ -269,6 +274,7 @@ export default class TraceResultsTable extends React.Component {
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
+                        headerText={'Percentage of queried operation duration among total duration of all operations'}
                     ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
                 }
                 <TableHeaderColumn
@@ -279,6 +285,7 @@ export default class TraceResultsTable extends React.Component {
                     sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Sum of all the durations for queried service in the trace'}
                 ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="serviceDurationPercent"
@@ -287,6 +294,7 @@ export default class TraceResultsTable extends React.Component {
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Percentage of queried service duration among total duration of all services'}
                 ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="duration"
@@ -296,6 +304,7 @@ export default class TraceResultsTable extends React.Component {
                     sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Difference between the start time of earliest operation and the end time of last operation in the trace'}
                 ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
             </BootstrapTable>
         );
