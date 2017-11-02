@@ -92,10 +92,4 @@ class SearchBar extends React.Component {
     }
 }
 
-SearchBar.propTypes = {
-    history: React.PropTypes.shape({
-        push: React.PropTypes.func.isRequired
-    }).isRequired
-};
-
 export default withRouter(SearchBar);
