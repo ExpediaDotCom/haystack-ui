@@ -30,7 +30,7 @@ function findLogEvent(logs, eventValue) {
     return _.find(logs, log => log.value.toLowerCase() === eventValue);
 }
 
-const LogsTable = ({logs}) => {
+const LogsTable = ({logs, startTime}) => {
     const flattenedLogs = logs.map(log => log.fields.map(field => ({
       timestamp: log.timestamp,
       key: field.key,
@@ -42,11 +42,6 @@ const LogsTable = ({logs}) => {
         const serverReceive = findLogEvent(flattenedLogs, 'sr');
         const serverSend = findLogEvent(flattenedLogs, 'ss');
         const clientReceive = findLogEvent(flattenedLogs, 'cr');
-
-        const startSpan = (clientSend || serverReceive || serverSend || clientReceive);
-        let startTime = 0;
-        if (startSpan) startTime = startSpan.timestamp;
-
         // display while making sure that logical ordering of events is maintained
         return (<table className="table table-striped">
             <thead>
@@ -74,7 +69,8 @@ const LogsTable = ({logs}) => {
 };
 
 LogsTable.propTypes = {
-    logs: PropTypes.object.isRequired
+    logs: PropTypes.object.isRequired,
+    startTime: PropTypes.number.isRequired
 };
 
 export default LogsTable;
