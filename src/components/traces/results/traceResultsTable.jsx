@@ -48,15 +48,14 @@ export default class TraceResultsTable extends React.Component {
 
     static handleServiceList(services) {
         let serviceList = '';
-        services.map((svc) => {
+        services.slice(0, 2).map((svc) => {
             serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
             return serviceList;
         });
 
         if (services.length > 2) {
-            return `${serviceList} <span>...</span>`;
+            serviceList += '<span>...</span>';
         }
-
         return serviceList;
     }
 
