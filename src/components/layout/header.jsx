@@ -16,35 +16,37 @@
  */
 
 import React from 'react';
-import {Redirect} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 import './header.less';
 import config from '../../../server/config/base';
 
+class SearchBar extends React.Component {
+    static propTypes = {
+        history: PropTypes.shape({
+            push: PropTypes.func.isRequired
+        }).isRequired
+    };
 
-export default class SearchBar extends React.Component {
     constructor() {
         super();
         this.updateSearchField = this.updateSearchField.bind(this);
         this.redirect = this.redirect.bind(this);
         this.state = {
-            traceId: '',
-            redirect: false
+            traceId: ''
         };
     }
     updateSearchField(event) {
         this.setState({traceId: event.target.value});
     }
-    redirect() {
+    redirect(event) {
         event.preventDefault();
         if (this.state.traceId.length > 0) {
-            this.setState({redirect: true});
+            this.props.history.push(`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`);
         }
     }
     render() {
-        if (this.state.redirect) {
-            this.setState({redirect: false});
-            return <Redirect to={`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`} />;
-        }
         return (
             <header>
                 <nav className="navbar navbar-default">
@@ -89,3 +91,11 @@ export default class SearchBar extends React.Component {
         );
     }
 }
+
+SearchBar.propTypes = {
+    history: React.PropTypes.shape({
+        push: React.PropTypes.func.isRequired
+    }).isRequired
+};
+
+export default withRouter(SearchBar);
