@@ -42,21 +42,12 @@ export default class TimeWindowPicker extends React.Component {
 
     this.handleTimeRangePicker = this.handleTimeRangePicker.bind(this);
     this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
-    this.hideTimeRangePicker = this.hideTimeRangePicker.bind(this);
 
     this.state = {showTimeRangePicker: false};
   }
 
   handleTimeRangePicker() {
       this.setState({showTimeRangePicker: !this.state.showTimeRangePicker});
-  }
-
-  hideTimeRangePicker(e) {
-      if (e && e.relatedTarget) {
-          e.relatedTarget.click();
-      } else {
-          this.handleTimeRangePicker();
-      }
   }
 
   timeRangeChangeCallback(timePreset, startTime, endTime) {
@@ -81,7 +72,6 @@ export default class TimeWindowPicker extends React.Component {
                   className="btn btn-primary time-range-picker-toggle btn-lg"
                   type="button"
                   onClick={this.handleTimeRangePicker}
-                  onBlur={this.hideTimeRangePicker}
               >
                   {timeRangePickerToggleText}
               </button>

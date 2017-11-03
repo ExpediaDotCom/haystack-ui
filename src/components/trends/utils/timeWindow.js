@@ -76,6 +76,26 @@ timeWindow.getHigherGranularity = (timeInMs) => {
     return metricGranularity.getMinGranularity(timeInMs / minNumberOfPoints);
 };
 
-timeWindow.findMatchingPreset = value => timeWindow.presets.find(preset => preset.value === value);
+timeWindow.findMatchingPreset = (value) => {
+    const presetWindow = timeWindow.presets.find(preset => preset.value === value);
+    const timeRange = timeWindow.toTimeRange(presetWindow.value);
+    presetWindow.from = timeRange.from;
+    presetWindow.until = timeRange.until;
+    return presetWindow;
+};
+
+timeWindow.getCustomTimeRangeText = (startTime, endTime) => {
+    const start = moment(parseInt(startTime, 10));
+    const end = moment(parseInt(endTime, 10));
+    return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
+};
+
+timeWindow.toCustomTimeRange = (from, until) => (
+    {
+        from,
+        until,
+        value: until - from
+    }
+);
 
 export default timeWindow;

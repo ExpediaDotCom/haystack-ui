@@ -67,6 +67,7 @@ export default class TimeRangePicker extends React.Component {
     handleChangeEndDate(value) {
         this.setState({endDateTime: value});
     }
+
     toValid(current) {
         return current > moment(this.state.startDateTime).subtract(1, 'day') && current < DateTime.moment();
     }
