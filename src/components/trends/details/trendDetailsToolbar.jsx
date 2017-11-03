@@ -23,7 +23,7 @@ import metricGranularity from '../utils/metricGranularity';
 import {toQuery} from '../../../utils/queryParser';
 
 import './trendDetailsToolbar.less';
-import TrendTimeRangePicker from './trendTimeRangePicker';
+import TrendTimeRangePicker from '../../common/timeRangePicker';
 
 export default class TrendHeaderToolbar extends React.Component {
 
@@ -123,7 +123,9 @@ export default class TrendHeaderToolbar extends React.Component {
         this.setState({showCustomTimeRangePicker: !this.state.showCustomTimeRangePicker});
     }
 
-    customTimeRangeChangeCallback(activeWindow) {
+    customTimeRangeChangeCallback(updatedWindow) {
+        const activeWindow = timeWindow.toCustomTimeRange(updatedWindow.from, updatedWindow.to);
+
         const updatedGranularity = timeWindow.getLowerGranularity(activeWindow.value);
 
         this.setState({
@@ -168,7 +170,7 @@ export default class TrendHeaderToolbar extends React.Component {
                     </div>
 
                     { this.state.showCustomTimeRangePicker
-                        ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} activeWindow={this.state.activeWindow}/>
+                        ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} from={parseInt(this.state.activeWindow.from, 10)} to={parseInt(this.state.activeWindow.until, 10)}/>
                         : null
                     }
                 </div>
