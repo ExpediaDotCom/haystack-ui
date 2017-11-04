@@ -38,7 +38,7 @@ export default class SpanDetailsModal extends React.Component {
     tabViewer(span) {
         switch (this.state.tabSelected) {
             case 1:
-                return <LogsTable logs={span.logs} />;
+                return <LogsTable logs={span.logs} startTime={this.props.startTime} />;
             case 2:
                 return <TagsTable tags={span.tags} />;
             case 3:
@@ -86,5 +86,6 @@ SpanDetailsModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
     serviceName: PropTypes.string.isRequired,
-    span: PropTypes.object.isRequired
+    span: PropTypes.object.isRequired,
+    startTime: PropTypes.number.isRequired
 };

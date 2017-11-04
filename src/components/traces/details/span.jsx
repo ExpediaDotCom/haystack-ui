@@ -29,6 +29,7 @@ import serviceColor from '../../../utils/serviceColorMapper';
 export default class Span extends React.Component {
     static get propTypes() {
         return {
+            startTime: PropTypes.number.isRequired,
             index: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
@@ -215,6 +216,7 @@ export default class Span extends React.Component {
                     closeModal={this.closeModal}
                     serviceName={serviceName}
                     span={span}
+                    startTime={this.props.startTime}
                 />
                 <clipPath id="overflow">
                     <rect
