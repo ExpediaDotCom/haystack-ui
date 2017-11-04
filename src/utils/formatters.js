@@ -36,4 +36,11 @@ formatters.toDurationString = (duration) => {
 
 formatters.toThousandsString = num => `${(num / 1000).toFixed(3)}k`;
 
+formatters.toTimeRangeString = (fromInMs, untilInMs) => {
+    const start = moment(fromInMs);
+    const end = moment(untilInMs);
+
+    return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
+};
+
 export default formatters;

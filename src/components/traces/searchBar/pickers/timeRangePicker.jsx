@@ -40,7 +40,7 @@ export default class TimeRangePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            startDateTime: moment().subtract(1, 'day'),
+            startDateTime: moment().subtract(1, 'h'),
             endDateTime: moment()
         };
 

@@ -25,7 +25,7 @@ function getValue(min, max) {
 
 function getTimeStamp(addMin) {
     const currentTime = ((new Date()).getTime());
-    return (currentTime + (addMin * 60 * 1000));
+    return (currentTime - (addMin * 60 * 1000));
 }
 
 function getRandomValues(timeWindow, dataPoints) {

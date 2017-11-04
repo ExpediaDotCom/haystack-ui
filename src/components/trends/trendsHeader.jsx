@@ -60,7 +60,7 @@ export default class TrendsHeader extends React.Component {
             until: timeRange.until
         };
 
-        this.props.store.fetchTrendServiceResults(this.props.serviceName, query);
+        this.props.store.fetchTrendServiceResults(this.props.serviceName, query, false);
     }
 
     render() {

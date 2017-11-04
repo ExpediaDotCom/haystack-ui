@@ -46,9 +46,10 @@ export default class TrendHeaderToolbar extends React.Component {
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
 
         const queryParams = toQuery(this.props.location.search);
-        const from = queryParams.from;
-        const until = queryParams.until;
-        const activeWindow = from && until
+        const from = parseInt(queryParams.from, 10);
+        const until = parseInt(queryParams.until, 10);
+        const isCustomActive = from && until;
+        const activeWindow = isCustomActive
             ? timeWindow.toCustomTimeRange(from, until)
             : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
         const activeGranularity = timeWindow.getLowerGranularity(activeWindow.value);
@@ -56,10 +57,10 @@ export default class TrendHeaderToolbar extends React.Component {
         this.state = {
             activeWindow,
             activeGranularity,
+            isPresetActive: !isCustomActive,
+            customTimeRangePickerText: from && until ? activeWindow.text : 'custom',
             granularityDropdownOpen: false,
-            isPresetActive: !(from && until),
-            showCustomTimeRangePicker: false,
-            customTimeRangePickerText: from && until ? timeWindow.getCustomTimeRangeText(from, until) : 'custom'
+            showCustomTimeRangePicker: false
         };
     }
 
@@ -89,12 +90,10 @@ export default class TrendHeaderToolbar extends React.Component {
     }
 
     fetchTrends(window, granularity) {
-        const timeRange = timeWindow.toTimeRange(window.value);
-
         const query = {
             granularity: granularity.value,
-            from: timeRange.from,
-            until: timeRange.until
+            from: window.from,
+            until: window.until
         };
 
         this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
@@ -133,7 +132,7 @@ export default class TrendHeaderToolbar extends React.Component {
             showCustomTimeRangePicker: false,
             isPresetActive: false,
             activeGranularity: updatedGranularity,
-            customTimeRangePickerText: timeWindow.getCustomTimeRangeText(activeWindow.from, activeWindow.until)
+            customTimeRangePickerText: activeWindow.text
         });
 
         this.fetchTrends(activeWindow, updatedGranularity);

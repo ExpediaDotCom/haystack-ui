@@ -16,55 +16,76 @@
 
 import moment from 'moment';
 import metricGranularity from './metricGranularity';
+import formatters from '../../../utils/formatters';
 
 const timeWindow = {};
 
-timeWindow.toTimeRange = (presetValue) => {
-    const datetime = new Date();
-    return {
-        from: moment(datetime).subtract(presetValue, 'milliseconds').valueOf(),
-        until: moment(datetime).valueOf()
-    };
-};
+const nowInMilliseconds = new Date().getTime();
 
 timeWindow.presets = [
     {
         id: '5m',
         shortName: '5m',
         longName: '5 minutes',
-        value: 5 * 60 * 1000
+        value: 5 * 60 * 1000,
+        from: moment().subtract(5, 'm').valueOf(),
+        until: nowInMilliseconds
     },
     {
         id: '1h',
         shortName: '1h',
         longName: '1 hour',
-        value: 60 * 60 * 1000
+        value: 60 * 60 * 1000,
+        from: moment().subtract(1, 'h').valueOf(),
+        until: nowInMilliseconds
     },
     {
         id: '6h',
         shortName: '6h',
         longName: '6 hours',
-        value: 6 * 60 * 60 * 1000
+        value: 6 * 60 * 60 * 1000,
+        from: moment().subtract(6, 'h').valueOf(),
+        until: nowInMilliseconds
     },
     {
         id: '12h',
         shortName: '12h',
         longName: '12 hours',
-        value: 12 * 60 * 60 * 1000
+        value: 12 * 60 * 60 * 1000,
+        from: moment().subtract(12, 'h').valueOf(),
+        until: nowInMilliseconds
     },
     {
         id: '24h',
         shortName: '24h',
         longName: '24 hours',
-        value: 24 * 60 * 60 * 1000
+        value: 24 * 60 * 60 * 1000,
+        from: moment().subtract(24, 'h').valueOf(),
+        until: nowInMilliseconds
     },
     {
         id: '7d',
         shortName: '7d',
         longName: '7 days',
-        value: 7 * 24 * 60 * 60 * 1000
+        value: 7 * 24 * 60 * 60 * 1000,
+        from: moment().subtract(7, 'd').valueOf(),
+        until: nowInMilliseconds
     }
 ];
+
+timeWindow.toTimeRange = ms => ({
+    from: moment().subtract(ms, 'milliseconds').valueOf(),
+    until: moment().valueOf()
+});
+
+timeWindow.findMatchingPreset = value => timeWindow.presets.find(preset => preset.value === value);
+
+timeWindow.toCustomTimeRange = (from, until) => ({
+    from,
+    until,
+    value: until - from,
+    text: formatters.toTimeRangeString(from, until)
+});
 
 timeWindow.getLowerGranularity = (timeInMs) => {
     const maxNumberOfPoints = 100;
@@ -75,27 +96,5 @@ timeWindow.getHigherGranularity = (timeInMs) => {
     const minNumberOfPoints = 4;
     return metricGranularity.getMinGranularity(timeInMs / minNumberOfPoints);
 };
-
-timeWindow.findMatchingPreset = (value) => {
-    const presetWindow = timeWindow.presets.find(preset => preset.value === value);
-    const timeRange = timeWindow.toTimeRange(presetWindow.value);
-    presetWindow.from = timeRange.from;
-    presetWindow.until = timeRange.until;
-    return presetWindow;
-};
-
-timeWindow.getCustomTimeRangeText = (startTime, endTime) => {
-    const start = moment(parseInt(startTime, 10));
-    const end = moment(parseInt(endTime, 10));
-    return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
-};
-
-timeWindow.toCustomTimeRange = (from, until) => (
-    {
-        from,
-        until,
-        value: until - from
-    }
-);
 
 export default timeWindow;

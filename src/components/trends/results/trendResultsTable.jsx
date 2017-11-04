@@ -49,8 +49,7 @@ export default class TrendResultsTable extends React.Component {
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
                     <Sparklines className="sparkline" data={values}>
-                        <SparklinesCurve style={{ strokeWidth: 3 }} color="#e23474" />
-                        <SparklinesSpots size={3} />
+                        <SparklinesCurve style={{ strokeWidth: 2 }} color="#e23474" />
                     </Sparklines>
                 </div>);
     }
