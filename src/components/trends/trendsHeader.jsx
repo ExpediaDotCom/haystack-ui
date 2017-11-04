@@ -19,13 +19,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import timeWindow from './utils/timeWindow';
+import {toQuery} from '../../utils/queryParser';
 
 import './trendsHeader.less';
 
 export default class TrendsHeader extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -34,41 +36,63 @@ export default class TrendsHeader extends React.Component {
         this.fetchTrends = this.fetchTrends.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
 
-        const defaultWindow = timeWindow.presets[1]; // TODO check and pick time window from url query param
-        const defaultGranularity = timeWindow.getHigherGranularity(defaultWindow.value);
+        const urlQuery = toQuery(this.props.location.search);
+
+        const from = parseInt(urlQuery.from, 10);
+        const until = parseInt(urlQuery.until, 10);
+        const isCustomTimeRange = !!(from && until);
+
+        let activeWindow;
+        let options;
+        if (isCustomTimeRange) {
+            activeWindow = timeWindow.toCustomTimeRange(from, until);
+            options = [...timeWindow.presets, activeWindow];
+        } else {
+            activeWindow = timeWindow.defaultPreset;
+            options = timeWindow.presets;
+        }
 
         this.state = {
-            activeWindowValue: defaultWindow.value,
-            activeGranularity: defaultGranularity
+            options,
+            activeWindow,
+            isCustomTimeRange
         };
-        this.fetchTrends(defaultWindow.value, defaultGranularity.value);
+
+        this.fetchTrends(activeWindow, isCustomTimeRange, urlQuery.operationName);
+    }
+
+    fetchTrends(window, isCustomTimeRange, operationName) {
+        const granularity = timeWindow.getHigherGranularity(window.value);
+        const query = {
+            granularity: granularity.value,
+            from: window.from,
+            until: window.until
+        };
+
+        this.props.store.fetchTrendServiceResults(this.props.serviceName, query, isCustomTimeRange, operationName);
     }
 
     handleTimeChange(event) {
-        const windowValue = event.target.value;
-        this.setState({activeWindowValue: windowValue});
+        const selectedIndex = event.target.value;
+        const selectedWindow = this.state.options[selectedIndex];
 
-        this.fetchTrends(windowValue, timeWindow.getHigherGranularity(windowValue).value);
-    }
-
-    fetchTrends(windowValue, granularityValue) {
-        const timeRange = timeWindow.toTimeRange(windowValue);
-
-        const query = {
-            granularity: granularityValue,
-            from: timeRange.from,
-            until: timeRange.until
-        };
-
-        this.props.store.fetchTrendServiceResults(this.props.serviceName, query, false);
+        this.setState({activeWindow: selectedWindow});
+        this.fetchTrends(selectedWindow, selectedWindow.isCustomTimeRange, null);
     }
 
     render() {
+        const {
+            options,
+            activeWindow
+        } = this.state;
+
+        const selectedIndex = options.indexOf(activeWindow);
+
         return (<div className="clearfix">
                 <div className="pull-right">
                     <span>Showing summary for </span>
-                    <select className="trend-summary__time-range-selector" value={this.state.activeWindowValue} onChange={this.handleTimeChange}>
-                        {timeWindow.presets.map(preset => (<option key={preset.value} value={preset.value}>last {preset.longName}</option>))}
+                    <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
+                        {options.map((window, index) => (<option value={index}>{ window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>
             </div>

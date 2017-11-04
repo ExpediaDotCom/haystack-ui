@@ -33,17 +33,17 @@ export class TrendsSearchStore {
     @observable operationResults = [];
     @observable operationQuery = {};
 
-    @action fetchTrendServiceResults(service, query) {
+    @action fetchTrendServiceResults(service, query, isCustomTimeRange, operationName) {
         const queryUrlString = toQueryUrlString(query);
         this.resultsPromiseState = fromPromise(
                 axios
                     .get(`/api/trends/${service}?${queryUrlString}`)
                     .then((result) => {
+                        this.serviceQuery = {...query, isCustomTimeRange, operationName};
                         this.serviceResults = result.data;
-                        this.serviceQuery = query;
                     })
                     .catch((result) => {
-                        this.serviceQuery = query;
+                        this.serviceQuery = {...query, isCustomTimeRange, operationName};
                         this.serviceResults = [];
                         throw new TrendException(result);
                     })

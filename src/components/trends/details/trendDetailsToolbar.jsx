@@ -20,7 +20,6 @@ import Clipboard from 'react-copy-to-clipboard';
 import {Link} from 'react-router-dom';
 import timeWindow from '../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
-import {toQuery} from '../../../utils/queryParser';
 
 import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
@@ -45,33 +44,25 @@ export default class TrendHeaderToolbar extends React.Component {
         this.handleCustomTimeRangePicker = this.handleCustomTimeRangePicker.bind(this);
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
 
-        const queryParams = toQuery(this.props.location.search);
-        const from = parseInt(queryParams.from, 10);
-        const until = parseInt(queryParams.until, 10);
-        const isCustomActive = from && until;
-        const activeWindow = isCustomActive
+        const {
+            from,
+            until,
+            isCustomTimeRange
+        } = props.trendsSearchStore.serviceQuery;
+
+        const activeWindow = isCustomTimeRange
             ? timeWindow.toCustomTimeRange(from, until)
-            : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
+            : timeWindow.findMatchingPreset(until - from);
         const activeGranularity = timeWindow.getLowerGranularity(activeWindow.value);
 
         this.state = {
             activeWindow,
             activeGranularity,
-            isPresetActive: !isCustomActive,
-            customTimeRangePickerText: from && until ? activeWindow.text : 'custom',
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false
         };
-    }
 
-    componentDidMount() {
-        const timeRange = timeWindow.toTimeRange(this.state.activeWindow.value);
-        const query = {
-            granularity: this.state.activeGranularity.value,
-            from: this.state.activeWindow.from || timeRange.from,
-            until: this.state.activeWindow.until || timeRange.until
-        };
-        this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
+        this.fetchTrends(activeWindow, activeGranularity);
     }
 
     handleCopy() {
@@ -86,7 +77,6 @@ export default class TrendHeaderToolbar extends React.Component {
     updateGranularity(granularity) {
         this.setState({granularityDropdownOpen: false, activeGranularity: granularity});
         this.fetchTrends(this.state.activeWindow, granularity);
-        event.preventDefault();
     }
 
     fetchTrends(window, granularity) {
@@ -109,10 +99,8 @@ export default class TrendHeaderToolbar extends React.Component {
 
         this.setState({
             activeWindow: presetWindow,
-            isPresetActive: true,
             showCustomTimeRangePicker: false,
-            activeGranularity: updatedGranularity,
-            customTimeRangePickerText: 'custom'
+            activeGranularity: updatedGranularity
         });
 
         this.fetchTrends(preset, updatedGranularity);
@@ -130,9 +118,7 @@ export default class TrendHeaderToolbar extends React.Component {
         this.setState({
             activeWindow,
             showCustomTimeRangePicker: false,
-            isPresetActive: false,
-            activeGranularity: updatedGranularity,
-            customTimeRangePickerText: activeWindow.text
+            activeGranularity: updatedGranularity
         });
 
         this.fetchTrends(activeWindow, updatedGranularity);
@@ -141,7 +127,7 @@ export default class TrendHeaderToolbar extends React.Component {
     render() {
         const PresetOption = ({preset}) => (
             <button
-                className={preset.shortName === this.state.activeWindow.shortName && this.state.isPresetActive ? 'btn btn-primary' : 'btn btn-default'}
+                className={preset === this.state.activeWindow ? 'btn btn-primary' : 'btn btn-default'}
                 key={preset.value}
                 onClick={() => this.handlePresetSelection(preset)}
             >
@@ -160,11 +146,11 @@ export default class TrendHeaderToolbar extends React.Component {
                                 key={preset.shortName}
                             />))}
                         <button
-                            className={this.state.isPresetActive ? 'btn btn-default' : 'btn btn-primary'}
+                            className={this.state.activeWindow.isCustomTimeRange ? 'btn btn-primary' : 'btn btn-default'}
                             type="button"
                             onClick={this.handleCustomTimeRangePicker}
                         >
-                            {this.state.customTimeRangePickerText}
+                            {this.state.activeWindow.isCustomTimeRange ? this.state.activeWindow.longName : 'custom'}
                         </button>
                     </div>
 
