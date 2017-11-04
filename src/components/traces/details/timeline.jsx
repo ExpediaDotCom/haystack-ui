@@ -34,12 +34,6 @@ export default class Timeline extends React.Component {
         toggleExpand: PropTypes.func.isRequired
     };
 
-    static timelineLayoutConstatns = {
-        timelineWidthPercent: 85,
-        timePointersHeight: 20,
-        spanHeight: 32
-    }
-
     static getTimePointers(totalDuration, timelineWidthPerc) {
         const offsets = [0.0, 0.25, 0.50, 0.75, 1.0];
         const pointerDurations = offsets.map(dur => (totalDuration * dur));

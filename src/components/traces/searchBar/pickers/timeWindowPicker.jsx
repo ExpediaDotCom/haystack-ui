@@ -47,11 +47,7 @@ export default class TimeWindowPicker extends React.Component {
   }
 
   handleTimeRangePicker() {
-    if (this.state.showTimeRangePicker) {
-      this.setState({showTimeRangePicker: false});
-    } else {
-      this.setState({showTimeRangePicker: true});
-    }
+      this.setState({showTimeRangePicker: !this.state.showTimeRangePicker});
   }
 
   timeRangeChangeCallback(timePreset, startTime, endTime) {

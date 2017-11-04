@@ -18,11 +18,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Clipboard from 'react-copy-to-clipboard';
 import {Link} from 'react-router-dom';
-
 import timeWindow from '../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
+import {toQuery} from '../../../utils/queryParser';
 
 import './trendDetailsToolbar.less';
+import TrendTimeRangePicker from './trendTimeRangePicker';
 
 export default class TrendHeaderToolbar extends React.Component {
 
@@ -41,18 +42,35 @@ export default class TrendHeaderToolbar extends React.Component {
         this.toggleGranularityDropdown = this.toggleGranularityDropdown.bind(this);
         this.updateGranularity = this.updateGranularity.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
-        const defaultWindow = timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
-        const defaultGranularity = timeWindow.getLowerGranularity(defaultWindow.value);
+        this.handleCustomTimeRangePicker = this.handleCustomTimeRangePicker.bind(this);
+        this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
+
+        const queryParams = toQuery(this.props.location.search);
+        const from = queryParams.from;
+        const until = queryParams.until;
+        const activeWindow = from && until
+            ? timeWindow.toCustomTimeRange(from, until)
+            : timeWindow.findMatchingPreset(props.trendsSearchStore.serviceQuery.until - props.trendsSearchStore.serviceQuery.from);
+        const activeGranularity = timeWindow.getLowerGranularity(activeWindow.value);
 
         this.state = {
-            activeWindow: defaultWindow,
-            activeGranularity: defaultGranularity,
-            granularityDropdownOpen: false
+            activeWindow,
+            activeGranularity,
+            granularityDropdownOpen: false,
+            isPresetActive: !(from && until),
+            showCustomTimeRangePicker: false,
+            customTimeRangePickerText: from && until ? timeWindow.getCustomTimeRangeText(from, until) : 'custom'
         };
     }
 
     componentDidMount() {
-        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
+        const timeRange = timeWindow.toTimeRange(this.state.activeWindow.value);
+        const query = {
+            granularity: this.state.activeGranularity.value,
+            from: this.state.activeWindow.from || timeRange.from,
+            until: this.state.activeWindow.until || timeRange.until
+        };
+        this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
     }
 
     handleCopy() {
@@ -66,7 +84,6 @@ export default class TrendHeaderToolbar extends React.Component {
 
     updateGranularity(granularity) {
         this.setState({granularityDropdownOpen: false, activeGranularity: granularity});
-
         this.fetchTrends(this.state.activeWindow, granularity);
         event.preventDefault();
     }
@@ -85,19 +102,45 @@ export default class TrendHeaderToolbar extends React.Component {
 
     handlePresetSelection(preset) {
         const updatedGranularity = timeWindow.getLowerGranularity(preset.value);
+        const timeRange = timeWindow.toTimeRange(preset.value);
+
+        const presetWindow = preset;
+        presetWindow.from = timeRange.from;
+        presetWindow.until = timeRange.until;
 
         this.setState({
-            activeWindow: preset,
-            activeGranularity: updatedGranularity
+            activeWindow: presetWindow,
+            isPresetActive: true,
+            showCustomTimeRangePicker: false,
+            activeGranularity: updatedGranularity,
+            customTimeRangePickerText: 'custom'
         });
 
         this.fetchTrends(preset, updatedGranularity);
     }
 
+    handleCustomTimeRangePicker() {
+        this.setState({showCustomTimeRangePicker: !this.state.showCustomTimeRangePicker});
+    }
+
+    customTimeRangeChangeCallback(activeWindow) {
+        const updatedGranularity = timeWindow.getLowerGranularity(activeWindow.value);
+
+        this.setState({
+            activeWindow,
+            showCustomTimeRangePicker: false,
+            isPresetActive: false,
+            activeGranularity: updatedGranularity,
+            customTimeRangePickerText: timeWindow.getCustomTimeRangeText(activeWindow.from, activeWindow.until)
+        });
+
+        this.fetchTrends(activeWindow, updatedGranularity);
+    }
+
     render() {
         const PresetOption = ({preset}) => (
             <button
-                className={preset.shortName === this.state.activeWindow.shortName ? 'btn btn-primary' : 'btn btn-default'}
+                className={preset.shortName === this.state.activeWindow.shortName && this.state.isPresetActive ? 'btn btn-primary' : 'btn btn-default'}
                 key={preset.value}
                 onClick={() => this.handlePresetSelection(preset)}
             >
@@ -115,18 +158,39 @@ export default class TrendHeaderToolbar extends React.Component {
                                 preset={preset}
                                 key={preset.shortName}
                             />))}
+                        <button
+                            className={this.state.isPresetActive ? 'btn btn-default' : 'btn btn-primary'}
+                            type="button"
+                            onClick={this.handleCustomTimeRangePicker}
+                        >
+                            {this.state.customTimeRangePickerText}
+                        </button>
                     </div>
+
+                    { this.state.showCustomTimeRangePicker
+                        ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} activeWindow={this.state.activeWindow}/>
+                        : null
+                    }
                 </div>
                 <div className="pull-left">
                     <div className="">Metric Granularity</div>
-                    <div className={this.state.granularityDropdownOpen ? 'dropdown open' : 'dropdown'} >
-                        <button className="btn btn-sm btn-default dropdown-toggle" onClick={() => this.toggleGranularityDropdown()}>
+                    <div className={this.state.granularityDropdownOpen ? 'dropdown open' : 'dropdown'}>
+                        <button
+                            className="btn btn-sm btn-default dropdown-toggle"
+                            onClick={() => this.toggleGranularityDropdown()}
+                        >
                             <span>{this.state.activeGranularity.shortName}</span>
                             <span className="caret"/>
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li>
-                                {metricGranularity.options.map(option => (<a tabIndex={-1} key={option.shortName} role="button" onClick={() => this.updateGranularity(option)}>{option.shortName}</a>))}
+                                {metricGranularity.options.map(option => (
+                                    <a
+                                        tabIndex={-1}
+                                        key={option.shortName}
+                                        role="button"
+                                        onClick={() => this.updateGranularity(option)}
+                                    >{option.shortName}</a>))}
                             </li>
                         </ul>
                     </div>
@@ -136,17 +200,28 @@ export default class TrendHeaderToolbar extends React.Component {
                     {
                         this.state.showCopied ? (
                             <span className="tooltip fade left in" role="tooltip">
-                                    <span className="tooltip-arrow" />
+                                    <span className="tooltip-arrow"/>
                                     <span className="tooltip-inner">Link Copied!</span>
                                 </span>
                         ) : null
                     }
-                    <Link role="button" className="btn btn-sm btn-default" to={`/service/${this.props.serviceName}/traces?timePreset=${this.state.activeWindow.shortName}`}><span className="ti-line-double"/> See Traces</Link>
-                    <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}`} onCopy={this.handleCopy} >
+                    <Link
+                        role="button"
+                        className="btn btn-sm btn-default"
+                        to={`/service/${this.props.serviceName}/traces?timePreset=${this.state.activeWindow.shortName}`}
+                    ><span
+                        className="ti-line-double"
+                    /> See Traces</Link>
+                    <Clipboard
+                        text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${this.state.activeWindow.from ||
+                        timeWindow.toTimeRange(this.state.activeWindow.value).from}&until=${this.state.activeWindow.until ||
+                        timeWindow.toTimeRange(this.state.activeWindow.value).until}`}
+                        onCopy={this.handleCopy}
+                    >
                         <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                     </Clipboard>
                 </div>
             </div>
-       );
+        );
     }
 }

@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
 import {toQuery} from '../../../utils/queryParser';
 
 import TrendDetails from './../details/trendDetails';
@@ -49,8 +49,8 @@ export default class TrendResultsTable extends React.Component {
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
                     <Sparklines className="sparkline" data={values}>
-                        <SparklinesLine color="#e23474" style={{ strokeWidth: 1 }}/>
-                        <SparklinesSpots />
+                        <SparklinesCurve style={{ strokeWidth: 3 }} color="#e23474" />
+                        <SparklinesSpots size={3} />
                     </Sparklines>
                 </div>);
     }
