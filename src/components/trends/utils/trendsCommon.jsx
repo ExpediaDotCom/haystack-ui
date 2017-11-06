@@ -14,18 +14,19 @@
  *         limitations under the License.
  */
 
-@import (reference) '../../../app';
+import React from 'react';
 
-.chart-container {
-  height: 200px;
-}
+import './../details/trendDetails.less';
 
-canvas {
-  user-select: none;
-}
+export default class trendsCommon extends React.Component {
 
-.missing-data-point-warn {
-  display: inline-block;
-  padding: @spacing-s;
-  border: 1px solid @gray-mid-light;
+    static displayNoDataPoints() {
+        return (
+            <div className="col-md-12 text-center">
+                <div className="missing-data-point-warn">
+                    No data points found
+                </div>
+            </div>
+        );
+    }
 }
