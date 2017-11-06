@@ -18,8 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
-import {toQuery} from '../../../utils/queryParser';
+import { Sparklines, SparklinesCurve } from 'react-sparklines';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -29,7 +28,7 @@ export default class TrendResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        store: PropTypes.object.isRequired
+        trendsSearchStore: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -49,8 +48,7 @@ export default class TrendResultsTable extends React.Component {
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
                     <Sparklines className="sparkline" data={values}>
-                        <SparklinesLine color="#e23474" style={{ strokeWidth: 1 }}/>
-                        <SparklinesSpots />
+                        <SparklinesCurve style={{ strokeWidth: 2 }} color="#e23474" />
                     </Sparklines>
                 </div>);
     }
@@ -99,7 +97,7 @@ export default class TrendResultsTable extends React.Component {
     }
 
     componentDidMount() {
-        const opName = toQuery(this.props.location.search).operationName;
+        const opName = this.props.trendsSearchStore.serviceQuery.operationName;
         if (opName) {
             this.handleExpand(opName, true);
         }
@@ -125,7 +123,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails store={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
+            return <TrendDetails store={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
         }
         return null;
     }
@@ -133,7 +131,7 @@ export default class TrendResultsTable extends React.Component {
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
-        const operation = toQuery(this.props.location.search).operationName;
+        const operation = this.props.trendsSearchStore.serviceQuery.operationName;
         const filter = operation
             ? {type: 'TextFilter', defaultValue: operation, placeholder: 'Search Operations...'}
             : {type: 'TextFilter', placeholder: 'Search Operations...'};
@@ -169,7 +167,7 @@ export default class TrendResultsTable extends React.Component {
         return (
             <BootstrapTable
                 className="trends-panel"
-                data={this.props.store.serviceResults}
+                data={this.props.trendsSearchStore.serviceResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}

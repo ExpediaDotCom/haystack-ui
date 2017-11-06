@@ -38,7 +38,7 @@ export default class TrendResults extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.trendsSearchStore.serviceResults && this.props.trendsSearchStore.serviceResults.length)
-                        ? <TrendResultsTable store={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName}/>
+                        ? <TrendResultsTable trendsSearchStore={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }

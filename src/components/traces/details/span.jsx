@@ -47,12 +47,12 @@ export default class Span extends React.Component {
         return (((absolutePercent * (timelineWidthPercent / 100)) + (100 - timelineWidthPercent)));
     }
 
-    static getSpanSuccess(span) {
-        const successTag = (span.tags.find(tag => (tag.key === 'success')));
-        if (successTag !== undefined) {
-            return successTag.value;
+    static getSpanError(span) {
+        const errorTag = span.tags.find(tag => tag.key === 'error');
+        if (errorTag !== undefined) {
+            return errorTag.value;
         }
-        return null;
+        return false;
     }
 
     constructor(props) {
@@ -142,7 +142,7 @@ export default class Span extends React.Component {
             </text>
             <rect
                 id={span.traceId}
-                className={Span.getSpanSuccess(span) === 'false' ? 'span-bar span-bar_failure' : 'span-bar'}
+                className={Span.getSpanError(span) === 'true' ? 'span-bar span-bar_failure' : 'span-bar'}
                 height={9}
                 width={`${Math.max(spanWidthPercent, 0.4)}%`}
                 x={`${leftOffsetPercent}%`}

@@ -17,9 +17,9 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import TimeRangePicker from './timeRangePicker';
 import toPresetDisplayText from '../../utils/presets';
+import formatters from '../../../../utils/formatters';
 
 @observer
 export default class TimeWindowPicker extends React.Component {
@@ -32,9 +32,7 @@ export default class TimeWindowPicker extends React.Component {
       return toPresetDisplayText(timePreset);
     }
 
-    const start = moment(parseInt(startTime, 10));
-    const end = moment(parseInt(endTime, 10));
-    return `${start.format('L')} ${start.format('LTS')} - ${end.format('L')} ${end.format('LTS')}`;
+    return formatters.toTimeRangeString(parseInt(startTime, 10), parseInt(endTime, 10));
   }
 
   constructor(props) {
@@ -47,11 +45,7 @@ export default class TimeWindowPicker extends React.Component {
   }
 
   handleTimeRangePicker() {
-    if (this.state.showTimeRangePicker) {
-      this.setState({showTimeRangePicker: false});
-    } else {
-      this.setState({showTimeRangePicker: true});
-    }
+      this.setState({showTimeRangePicker: !this.state.showTimeRangePicker});
   }
 
   timeRangeChangeCallback(timePreset, startTime, endTime) {
