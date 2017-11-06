@@ -22,19 +22,26 @@ import options from './options';
 
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
+const successChartOptions = _.cloneDeep(options);
+successChartOptions.scales.yAxes = [{
+    display: true,
+    ticks: {
+        beginAtZero: true,
+        max: 100
+    }
+}];
 
 const SuccessGraph = ({successCount, failureCount}) => {
-    const data = [];
-    failureCount.map((failItem) => {
+    const data = _.flatMap(failureCount, ((failItem) => {
         const successItem = _.find(successCount, x => (x.timestamp === failItem.timestamp));
         if (successItem) {
-            data.push({
+            return {
                 x: new Date(failItem.timestamp),
                 y: (100 - ((failItem.value / (successItem.value + failItem.value)) * 100)).toFixed(3)
-            });
+            };
         }
         return null;
-    });
+    }));
     const chartData = {
         datasets: [{
             label: 'Success %',
@@ -45,18 +52,11 @@ const SuccessGraph = ({successCount, failureCount}) => {
         }],
         fill: 'end'
     };
-    const opt = _.cloneDeep(options);
-    opt.scales.yAxes = [{
-        display: true,
-        ticks: {
-            beginAtZero: true,
-            max: 100
-        }
-    }];
+
     return (<div className="col-md-12">
             <h5 className="text-center">Success %</h5>
             <div className="chart-container">
-                <Line data={chartData} options={opt} type="line" />
+                <Line data={chartData} options={successChartOptions} type="line" />
             </div>
         </div>
     );
