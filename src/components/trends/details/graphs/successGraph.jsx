@@ -19,16 +19,21 @@ import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
 import options from './options';
+import trendsCommon from '../../utils/trendsCommon';
 
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 
 const SuccessGraph = ({successCount, failureCount}) => {
-    // TODO make sure that success count and failure counts are merging on the right timestamps
-    const data = failureCount.map((items, index) => ({
-        x: new Date(items.timestamp),
-        y: (100 - ((items.value / (successCount[index].value + items.value)) * 100)).toFixed(3)
-    }));
+    let data;
+    let graph;
+    if (successCount && successCount.length && failureCount && failureCount.length) {
+        // TODO make sure that success count and failure counts are merging on the right timestamps
+        data = failureCount.map((items, index) => ({
+            x: new Date(items.timestamp),
+            y: (100 - ((items.value / (successCount[index].value + items.value)) * 100)).toFixed(3)
+        }));
+    }
 
     const chartData = {
         datasets: [{
@@ -41,11 +46,19 @@ const SuccessGraph = ({successCount, failureCount}) => {
         fill: 'end'
     };
 
+    if (data) {
+        graph = (
+            <div className="chart-container">
+                <Line data={chartData} options={options} type="line"/>
+            </div>
+        );
+    } else {
+        graph = trendsCommon.displayNoDataPoints();
+    }
+
     return (<div className="col-md-12">
             <h5 className="text-center">Success %</h5>
-            <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
-            </div>
+            {graph}
         </div>
     );
 };

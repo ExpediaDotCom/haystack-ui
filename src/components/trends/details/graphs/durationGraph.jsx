@@ -19,6 +19,7 @@ import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
 import options from './options';
+import trendsCommon from '../../utils/trendsCommon';
 
 const backgroundColor1 = [['rgba(255, 99, 132, 0.2)']];
 const borderColor1 = [['rgba(255, 99, 132, 1)']];
@@ -30,39 +31,64 @@ const backgroundColor3 = [['rgba(255, 206, 86, 0.2)']];
 const borderColor3 = [['rgba(255, 206, 86, 1)']];
 
 const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
-    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    let noData;
+    let graph;
+    let meanData;
+    let tp95Data;
+    let tp99Data;
+    const stats = [];
+    if (!(meanPoints && meanPoints.length) && !(tp95Points && tp95Points.length) && !(tp99Points && tp99Points.length)) {
+        noData = true;
+    } else {
+        if (meanPoints && meanPoints.length) {
+            meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+            stats.push({
+                label: 'Mean         ',
+                data: meanData,
+                backgroundColor: backgroundColor1,
+                borderColor: borderColor1,
+                borderWidth: 1
+            });
+        }
+        if (tp95Points && tp95Points.length) {
+            tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+            stats.push({
+                label: 'TP95         ',
+                data: tp95Data,
+                backgroundColor: backgroundColor2,
+                borderColor: borderColor2,
+                borderWidth: 1
+            });
+        }
+        if (tp99Points && tp99Points.length) {
+            tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+            stats.push({
+                label: 'TP99         ',
+                data: tp99Data,
+                backgroundColor: backgroundColor3,
+                borderColor: borderColor3,
+                borderWidth: 1
+            });
+        }
+    }
 
     const chartData = {
-        datasets: [{
-            label: 'Mean         ',
-            data: meanData,
-            backgroundColor: backgroundColor1,
-            borderColor: borderColor1,
-            borderWidth: 1
-        },
-        {
-            label: 'TP95         ',
-            data: tp95Data,
-            backgroundColor: backgroundColor2,
-            borderColor: borderColor2,
-            borderWidth: 1
-        },
-        {
-            label: 'TP99         ',
-            data: tp99Data,
-            backgroundColor: backgroundColor3,
-            borderColor: borderColor3,
-            borderWidth: 1
-        }]
+        datasets: stats
     };
+
+    if (noData) {
+        graph = trendsCommon.displayNoDataPoints();
+    } else {
+        graph = (
+            <div className="chart-container">
+                <Line data={chartData} options={options} type="line"/>
+            </div>
+        );
+    }
 
     return (<div className="col-md-12">
             <h5 className="text-center">Duration</h5>
-            <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
-            </div>
+            {graph}
         </div>
     );
 };

@@ -18,12 +18,18 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import options from './options';
+import trendsCommon from '../../utils/trendsCommon';
 
 const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
 const borderColor = [['rgba(54, 162, 235, 1)']];
 
 const CountGraph = ({points}) => {
-    const data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    let data;
+    let graph;
+
+    if (points && points.length) {
+        data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    }
 
     const chartData = {
         datasets: [{
@@ -35,11 +41,20 @@ const CountGraph = ({points}) => {
         }]
     };
 
-    return (<div className="col-md-12">
-            <h5 className="text-center">Count</h5>
+    if (data) {
+        graph = (
             <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
+                <Line data={chartData} options={options} type="line"/>
             </div>
+        );
+    } else {
+        graph = trendsCommon.displayNoDataPoints();
+    }
+
+    return (
+        <div className="col-md-12">
+            <h5 className="text-center">Count</h5>
+            {graph}
         </div>
     );
 };
