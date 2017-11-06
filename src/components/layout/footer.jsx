@@ -16,13 +16,15 @@
  */
 
 import React from 'react';
+import {Link} from 'react-router-dom';
+
 import './footer.less';
 
 export default () => (
     <footer className="primary-footer">
         <div className="container">
             <ul className="footer-links" >
-                <li className="footer-links__item">Haystack</li>
+                <li className="footer-links__item"><Link to="/" className="footer-links__link">Haystack</Link></li>
                 <li className="footer-links__item"><a className="footer-links__link" href="https://github.com/ExpediaDotCom/haystack/"><span className="ti-github"/> Github</a></li>
                 <li className="footer-links__item"><a className="footer-links__link" href="https://github.com/ExpediaDotCom/haystack/"><span className="ti-book"/> Documentation</a></li>
             </ul>

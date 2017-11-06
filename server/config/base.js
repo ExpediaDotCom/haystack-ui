@@ -8,6 +8,9 @@ module.exports = {
     // default timeout in ms for all the downlevels from store
     upstreamTimeout: 60000,
 
+    // root service that traceId searches will be queried against
+    rootService: 'root-service',
+
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled
     // traces store must be there in stores config
