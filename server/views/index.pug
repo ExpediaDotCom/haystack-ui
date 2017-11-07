@@ -13,5 +13,8 @@ html
   body
     #root
     script.
-      var subsystems = !{JSON.stringify(subsystems)}
+        var haystackUiConfig = {
+            subsystems: !{JSON.stringify(subsystems)},
+            rootService: !{JSON.stringify(rootService)}
+        }
     script(async, defer, src='/bundles/js/app.js')

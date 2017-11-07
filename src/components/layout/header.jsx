@@ -20,7 +20,8 @@ import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './header.less';
-import config from '../../../server/config/base';
+
+const rootService = (window.haystackUiConfig && window.haystackUiConfig.rootService) || null;
 
 class SearchBar extends React.Component {
     static propTypes = {
@@ -43,7 +44,7 @@ class SearchBar extends React.Component {
     redirect(event) {
         event.preventDefault();
         if (this.state.traceId.length > 0) {
-            this.props.history.push(`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`);
+            this.props.history.push(`/service/${rootService}/traces?serviceName=${rootService}&traceId=${this.state.traceId}`);
         }
     }
     render() {

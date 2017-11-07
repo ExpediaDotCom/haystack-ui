@@ -25,7 +25,7 @@ import Traces from '../traces/traces';
 import Trends from '../trends/trends';
 import Alerts from '../alerts/alerts';
 
-const subsystems = window.subsystems || [];
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
 const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');

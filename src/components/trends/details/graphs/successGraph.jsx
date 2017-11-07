@@ -26,7 +26,6 @@ const successChartOptions = _.cloneDeep(options);
 successChartOptions.scales.yAxes = [{
     display: true,
     ticks: {
-        beginAtZero: true,
         max: 100
     }
 }];

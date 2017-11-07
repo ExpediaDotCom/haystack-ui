@@ -22,6 +22,11 @@ export default {
     scales: {
         xAxes: [{
             type: 'time'
+        }],
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
         }]
     }
 };
