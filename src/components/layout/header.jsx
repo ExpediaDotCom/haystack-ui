@@ -32,7 +32,8 @@ class SearchBar extends React.Component {
     constructor() {
         super();
         this.updateSearchField = this.updateSearchField.bind(this);
-        this.redirect = this.redirect.bind(this);
+        this.searchRedirect = this.searchRedirect.bind(this);
+        this.homeRedirect = this.homeRedirect.bind(this);
         this.state = {
             traceId: ''
         };
@@ -40,11 +41,15 @@ class SearchBar extends React.Component {
     updateSearchField(event) {
         this.setState({traceId: event.target.value});
     }
-    redirect(event) {
+    searchRedirect(event) {
         event.preventDefault();
-        if (this.state.traceId.length > 0) {
+        if (this.state.traceId.length) {
             this.props.history.push(`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`);
         }
+    }
+    homeRedirect(event) {
+        event.preventDefault();
+        this.props.history.push('/');
     }
     render() {
         return (
@@ -52,38 +57,26 @@ class SearchBar extends React.Component {
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">
-                            <a href="/" className="navbar-brand">
+                            <div className="navbar-brand logo-container" onClick={this.homeRedirect}>
                                 <img src="/images/logo.png" alt="Logo" className="logo"/>
                                 <span>Haystack</span>
-                            </a>
-                            <button
-                                className="navbar-toggle"
-                                type="button"
-                                data-toggle="collapse"
-                                data-target="#navbar-main"
-                            >
-                                <span className="icon-bar"/>
-                                <span className="icon-bar"/>
-                                <span className="icon-bar"/>
-                            </button>
-                        </div>
-                        <div className="navbar-collapse collapse" id="navbar-main">
-                            <div className="navbar-form navbar-right header-search">
-                                <form onSubmit={this.redirect}>
-                                    <input
-                                        type="text"
-                                        className="form-control layout__search"
-                                        placeholder="Search TraceId"
-                                        onChange={this.updateSearchField}
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary search-button"
-                                    >
-                                        <span className="ti-search"/>
-                                    </button>
-                                </form>
                             </div>
+                        </div>
+                        <div className="navbar-form navbar-right header-search">
+                            <form onSubmit={this.searchRedirect}>
+                                <input
+                                    type="text"
+                                    className="form-control layout__search"
+                                    placeholder="Search TraceId"
+                                    onChange={this.updateSearchField}
+                                />
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary search-button"
+                                >
+                                    <span className="ti-search"/>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </nav>
