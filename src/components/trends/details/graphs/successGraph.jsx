@@ -17,19 +17,31 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
-
+import _ from 'lodash';
 import options from './options';
 
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
+const successChartOptions = _.cloneDeep(options);
+successChartOptions.scales.yAxes = [{
+    display: true,
+    ticks: {
+        beginAtZero: true,
+        max: 100
+    }
+}];
 
 const SuccessGraph = ({successCount, failureCount}) => {
-    // TODO make sure that success count and failure counts are merging on the right timestamps
-    const data = failureCount.map((items, index) => ({
-        x: new Date(items.timestamp),
-        y: (100 - ((items.value / (successCount[index].value + items.value)) * 100)).toFixed(3)
+    const data = _.flatMap(failureCount, ((failItem) => {
+        const successItem = _.find(successCount, x => (x.timestamp === failItem.timestamp));
+        if (successItem) {
+            return {
+                x: new Date(failItem.timestamp),
+                y: (100 - ((failItem.value / (successItem.value + failItem.value)) * 100)).toFixed(3)
+            };
+        }
+        return null;
     }));
-
     const chartData = {
         datasets: [{
             label: 'Success %',
@@ -44,7 +56,7 @@ const SuccessGraph = ({successCount, failureCount}) => {
     return (<div className="col-md-12">
             <h5 className="text-center">Success %</h5>
             <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
+                <Line data={chartData} options={successChartOptions} type="line" />
             </div>
         </div>
     );
