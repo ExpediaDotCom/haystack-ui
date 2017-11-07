@@ -14,13 +14,13 @@
  *       limitations under the License.
  *
  */
-
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './header.less';
-import config from '../../../server/config/base';
+
+const rootService = (window.haystackUiConfig && window.haystackUiConfig.rootService) || null;
 
 class SearchBar extends React.Component {
     static propTypes = {
@@ -44,7 +44,7 @@ class SearchBar extends React.Component {
     searchRedirect(event) {
         event.preventDefault();
         if (this.state.traceId.length) {
-            this.props.history.push(`/service/${config.rootService}/traces?serviceName=${config.rootService}&traceId=${this.state.traceId}`);
+            this.props.history.push(`/service/${rootService}/traces?serviceName=${rootService}&traceId=${this.state.traceId}`);
         }
     }
     homeRedirect(event) {
@@ -57,7 +57,7 @@ class SearchBar extends React.Component {
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">
-                            <div className="navbar-brand logo-container" onClick={this.homeRedirect}>
+                            <div className="navbar-brand logo-container" role="presentation" onClick={this.homeRedirect}>
                                 <img src="/images/logo.png" alt="Logo" className="logo"/>
                                 <span>Haystack</span>
                             </div>
