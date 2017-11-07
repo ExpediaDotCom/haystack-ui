@@ -23,61 +23,76 @@ import formatters from '../../../../utils/formatters';
 
 @observer
 export default class TimeWindowPicker extends React.Component {
-  static propTypes = {
-    uiState: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        uiState: PropTypes.object.isRequired
+    };
 
-  static getTimeRangeText(timePreset, startTime, endTime) {
-    if (timePreset) {
-      return toPresetDisplayText(timePreset);
+    static getTimeRangeText(timePreset, startTime, endTime) {
+        if (timePreset) {
+            return toPresetDisplayText(timePreset);
+        }
+
+        return formatters.toTimeRangeString(parseInt(startTime, 10), parseInt(endTime, 10));
     }
 
-    return formatters.toTimeRangeString(parseInt(startTime, 10), parseInt(endTime, 10));
-  }
+    constructor(props) {
+        super(props);
 
-  constructor(props) {
-    super(props);
+        this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
+        this.hideTimePicker = this.hideTimePicker.bind(this);
+        this.showTimePicker = this.showTimePicker.bind(this);
+        this.state = {showTimeRangePicker: false};
+    }
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+    hideTimePicker() {
+        document.removeEventListener('mousedown', this.handleOutsideClick);
+        this.setState({showTimeRangePicker: false});
+    }
+    showTimePicker() {
+        document.addEventListener('mousedown', this.handleOutsideClick);
+        this.setState({showTimeRangePicker: true});
+    }
 
-    this.handleTimeRangePicker = this.handleTimeRangePicker.bind(this);
-    this.timeRangeChangeCallback = this.timeRangeChangeCallback.bind(this);
+    timeRangeChangeCallback(timePreset, startTime, endTime) {
+        this.props.uiState.setTimeWindow({timePreset, startTime, endTime});
+        this.setState({timeRangePickerToggleText: TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime)});
+        this.hideTimePicker();
+    }
 
-    this.state = {showTimeRangePicker: false};
-  }
+    handleOutsideClick(e) {
+        if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+            this.hideTimePicker();
+        }
+    }
 
-  handleTimeRangePicker() {
-      this.setState({showTimeRangePicker: !this.state.showTimeRangePicker});
-  }
+    render() {
+        const {
+            timePreset,
+            startTime,
+            endTime
+        } = this.props.uiState.timeWindow;
 
-  timeRangeChangeCallback(timePreset, startTime, endTime) {
-    this.props.uiState.setTimeWindow({timePreset, startTime, endTime});
-    this.setState({timeRangePickerToggleText: TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime)});
-    this.setState({showTimeRangePicker: false});
-  }
+        const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
 
-  render() {
-    const {
-          timePreset,
-          startTime,
-          endTime
-      } = this.props.uiState.timeWindow;
-
-    const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
-
-    return (
-        <div className="search-bar-pickers_time-window">
-          <span>
-              <button
-                  className="btn btn-primary time-range-picker-toggle btn-lg"
-                  type="button"
-                  onClick={this.handleTimeRangePicker}
-              >
-                  {timeRangePickerToggleText}
-              </button>
-          </span>
-          { this.state.showTimeRangePicker
-              ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
-              : null }
-        </div>
-    );
-  }
+        return (
+            <div ref={this.setWrapperRef} className="search-bar-pickers_time-window">
+                <span>
+                    <button
+                        className="btn btn-primary time-range-picker-toggle btn-lg"
+                        type="button"
+                        onClick={this.state.showTimeRangePicker ? this.hideTimePicker : this.showTimePicker}
+                    >
+                        {timeRangePickerToggleText}
+                    </button>
+                </span>
+                { this.state.showTimeRangePicker
+                    ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
+                    : null }
+            </div>
+        );
+    }
 }
