@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 
 import './header.less';
 
-const rootService = window.haystackUiConfig ? window.haystackUiConfig.rootService : undefined;
+const rootService = (window.haystackUiConfig && window.haystackUiConfig.rootService) || null;
 
 class SearchBar extends React.Component {
     static propTypes = {
