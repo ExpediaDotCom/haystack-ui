@@ -43,27 +43,51 @@ store.getTrendsForService = (serviceName, granularity, from, until) => {
 
     deffered.resolve([
         {
-            operationName: 'seaworth-1',
-            count: 10000,
-            successPercent: getValue(10, 100),
+            operationName: 'seaworth-operation',
+            count: 18800,
+            successPercent: getValue(80, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'bolton-1',
-            count: 15000,
-            successPercent: getValue(10, 100),
+            operationName: 'bolton-op-1',
+            count: 15075,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'baelish-1',
-            count: 5000,
-            successPercent: getValue(10, 100),
+            operationName: 'baelish-operation-lorem',
+            count: 299,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
             operationName: 'mormont-1',
-            count: 1000,
-            successPercent: getValue(10, 100),
+            count: 58859,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'seaworth-operation',
+            count: 18800,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'bolton-op-lorem',
+            count: 15075,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'baelish-operation-ipsum',
+            count: 5750,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'mormont-1',
+            count: 5899,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         }
     ]);

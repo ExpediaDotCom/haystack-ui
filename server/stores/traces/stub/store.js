@@ -38,7 +38,7 @@ store.getTrace = () => Q.fcall(() => [
         {
             traceId: 'traceid',
             spanId: 'root-spanid',
-            serviceName: 'root-service',
+            serviceName: 'stark-service',
             operationName: 'root-operation-stark',
             startTime: 1504784384000,
             duration: 3525000,
@@ -182,7 +182,7 @@ store.findTraces = query => Q.fcall(() => {
         return [
           {
             traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
-            spanCount: 30,
+            spanCount: 12,
             services: [
               {
                 name: 'stark-service',
@@ -201,7 +201,7 @@ store.findTraces = query => Q.fcall(() => {
               error: false
             },
             queriedService: {
-              duration: 5990000,
+              duration: 31000,
               durationPercent: 64,
               error: true
             },
@@ -210,14 +210,113 @@ store.findTraces = query => Q.fcall(() => {
               durationPercent: 0,
               error: false
             },
-            startTime: 1505914774596000,
-            duration: 3500000,
+            startTime: new Date().getTime() * 1000,
+            duration: 390000,
             error: true
           }
         ];
     }
     return [
       {
+        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        spanCount: 34,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 16
+          },
+          {
+            name: 'targaryen-service',
+            spanCount: 18
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
+        },
+        queriedService: {
+          duration: 23000,
+          durationPercent: 99,
+          error: false
+        },
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
+        },
+        startTime: (new Date().getTime() * 1000) - (10 * 1000 * 1000),
+        duration: 240000,
+        error: false
+      }, {
+        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        spanCount: 9,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'rob-service',
+            spanCount: 8
+          }
+        ],
+        root: {
+          url: '/rob/endpoint',
+          serviceName: 'rob-service',
+          operationName: 'rob-svc-operation',
+          duration: 3404000,
+          error: false
+        },
+        queriedService: {
+          duration: 590000,
+          durationPercent: 64,
+          error: false
+        },
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
+        },
+        startTime: (new Date().getTime() * 1000) - (15 * 1000 * 1000),
+        duration: 850000,
+        error: false
+      }, {
+        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        spanCount: 44,
+        services: [
+          {
+            name: 'tyrell-service',
+            spanCount: 22
+          },
+          {
+                name: 'lorem-service',
+                spanCount: 22
+          }
+        ],
+        root: {
+          url: '/ayres/ipsum/endpoint',
+          serviceName: 'lorem-service',
+          operationName: 'ipsum-operation',
+          duration: 3404000,
+          error: false
+        },
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 64,
+          error: true
+        },
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
+        },
+        startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
+        duration: 3500000,
+        error: false
+      }, {
         traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
         spanCount: 30,
         services: [
@@ -238,7 +337,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         queriedService: {
-          duration: 5990000,
+          duration: 120000,
           durationPercent: 64,
           error: true
         },
@@ -247,33 +346,66 @@ store.findTraces = query => Q.fcall(() => {
           durationPercent: 0,
           error: false
         },
-        startTime: 1505914774596000,
+        startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
+        duration: 126000,
+        error: false
+      }, {
+        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        spanCount: 30,
+        services: [
+          {
+            name: 'stark-service',
+            spanCount: 1
+          },
+          {
+            name: 'jon-service',
+            spanCount: 29
+          }
+        ],
+        root: {
+          url: '/stark/endpoint',
+          serviceName: 'stark-service',
+          operationName: 'svc-operation',
+          duration: 3404000,
+          error: false
+        },
+        queriedService: {
+          duration: 5990000,
+          durationPercent: 88,
+          error: true
+        },
+        queriedOperation: {
+          duration: 1,
+          durationPercent: 0,
+          error: false
+        },
+        startTime: (new Date().getTime() * 1000) - (30 * 1000 * 1000),
         duration: 3500000,
         error: true
       },
       {
         traceId: 'b80965e5-e0c4-4c37-91a7-da79def7597b',
-        spanCount: 30,
+        spanCount: 25,
         services: [
           {
-            name: 'stark-service',
+            name: 'ipsum-service',
             spanCount: 1
           },
           {
-            name: 'tyrell-service',
+            name: 'stark-service',
             spanCount: 29
           }
         ],
         root: {
-          url: '/stark/endpoint',
-          serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          url: '/lorem/endpoint/123',
+          serviceName: 'lorem-service',
+          operationName: 'lorem-svc-operation',
           duration: 3404000,
           error: false
         },
         queriedService: {
-          duration: 5990000,
-          durationPercent: 64,
+          duration: 2450000,
+          durationPercent: 94,
           error: true
         },
         queriedOperation: {
@@ -281,13 +413,13 @@ store.findTraces = query => Q.fcall(() => {
           durationPercent: 0,
           error: false
         },
-        startTime: 1505914774596000,
-        duration: 3500000,
+        startTime: (new Date().getTime() * 1000) - (44 * 1000 * 1000),
+        duration: 2450000,
         error: true
       },
       {
         traceId: 'c80965e5-e0c4-4c37-91a7-da79def7597b',
-        spanCount: 30,
+        spanCount: 19,
         services: [
           {
             name: 'stark-service',
@@ -307,7 +439,7 @@ store.findTraces = query => Q.fcall(() => {
         },
         queriedService: {
           duration: 5990000,
-          durationPercent: 64,
+          durationPercent: 76,
           error: false
         },
         queriedOperation: {
@@ -315,13 +447,13 @@ store.findTraces = query => Q.fcall(() => {
           durationPercent: 0,
           error: false
         },
-        startTime: 1505914774596000,
+          startTime: (new Date().getTime() * 1000) - (56 * 1000 * 1000),
         duration: 3500000,
         error: false
       },
       {
         traceId: 'd80965e5-e0c4-4c37-91a7-da79def7597b',
-        spanCount: 30,
+        spanCount: 88,
         services: [
           {
             name: 'stark-service',
@@ -349,21 +481,20 @@ store.findTraces = query => Q.fcall(() => {
           durationPercent: 0,
           error: false
         },
-        startTime: 1505914774596000,
+        startTime: (new Date().getTime() * 1000) - (90 * 1000 * 1000),
         duration: 3500000,
         error: false
-      },
-      {
+      }, {
         traceId: 'e80965e5-e0c4-4c37-91a7-da79def7597b',
-        spanCount: 30,
+        spanCount: 12,
         services: [
           {
             name: 'stark-service',
             spanCount: 1
           },
           {
-            name: 'tyrell-service',
-            spanCount: 29
+            name: 'westeros-service',
+            spanCount: 5
           }
         ],
         root: {
@@ -374,7 +505,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         queriedService: {
-          duration: 5990000,
+          duration: 1260000,
           durationPercent: 64,
           error: true
         },
@@ -383,9 +514,9 @@ store.findTraces = query => Q.fcall(() => {
           durationPercent: 0,
           error: false
         },
-        startTime: 1505914774596000,
-        duration: 3500000,
-        error: true
+        startTime: (new Date().getTime() * 1000) - (2 * 1000 * 1000),
+        duration: 3545000,
+        error: false
       }
     ];
 });
