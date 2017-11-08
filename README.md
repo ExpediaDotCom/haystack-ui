@@ -25,7 +25,7 @@ This application uses [webpack](https://webpack.github.io/) as the UI module bun
 
 ```
 $ npm install                # install dependencies
-$ npm run start:dev          # start server in hot-reload mode
+$ npm run start:dev          # start server in hot-reload server side 
 ```
 
 Once start is successful you can visit [http://localhost:8080/](http://localhost:8080/)
