@@ -13,13 +13,14 @@ Visualization tools in haystack-ui include -
 
 Haystack-ui's navigation is pivoted around services. On selecting a service, you will get various visualizations tools each corresponding to a haystack sub-systems.
 
+
 ## Development
 It is a expressjs based single page client side app written in ES6 + React and using Mobx for data flow. 
 
-#### Pre-requisites
+### Pre-requisites
 Ensure you have `node >= 8.6` and `npm >= 5.3` installed.
 
-#### Build and Run
+### Build and Run
 This application uses [webpack](https://webpack.github.io/) as the UI module bundler. To build + bundle all the required UI assets (CSS/JS) and run expressjs server, use:
 
 ```
@@ -41,17 +42,17 @@ You might have to install Cairo dependencies separately for tests to work.
 - **Others**: Refer [https://www.npmjs.com/package/canvas#installation](https://www.npmjs.com/package/canvas#installation)
 
 
-#### Docker 
+### Docker 
 We have provided `make` commands to facilitate building. For creating docker image use -
 ```
 $ make all 
 
 ```
 
-#### Configuration
+## Configuration
 Haystack UI can be configured to use one or more stores, each providing user interface for one subsystem in Haystack. Based on what subsystems you have available in your haystack cluster, you can configure corresponding stores and UI will adapt to show interfaces only for the configured subsystems. 
 For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores)
 
-#### Haystack-ui as drop-in replacement for Zipkin UI
+## Haystack-ui as drop-in replacement for Zipkin UI
 If you have an existing zipkin cluster you can use haystack UI as a drop-in replacement for zipkin's UI.
 For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store)
