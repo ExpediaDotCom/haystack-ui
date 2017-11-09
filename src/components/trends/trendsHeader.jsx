@@ -80,8 +80,6 @@ export default class TrendsHeader extends React.Component {
         this.setState({activeWindow: selectedWindow});
         this.fetchTrends(selectedWindow, selectedWindow.isCustomTimeRange, null);
 
-        console.log(selectedWindow);
-
         ReactGA.event({
             category: 'Trend Summary',
             action: 'summary change',

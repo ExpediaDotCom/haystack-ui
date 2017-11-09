@@ -19,15 +19,15 @@ import React, {Component} from 'react';
 import ReactGA from 'react-ga';
 import PropTypes from 'prop-types';
 
-const withTracker = (WrappedComponent, options = {}) => {
-    const trackPage = (page) => {
-        ReactGA.set({
-            page,
-            ...options
-        });
-        ReactGA.pageview(page);
-    };
+const gaTrackingID = (window.haystackUiConfig && window.haystackUiConfig.gaTrackingID) || null;
+ReactGA.initialize(gaTrackingID);
 
+const trackPage = (page) => {
+    ReactGA.set({ page });
+    ReactGA.pageview(page);
+};
+
+const withTracker = (WrappedComponent) => {
     class Wrapper extends Component {
 
         propTypes = {
