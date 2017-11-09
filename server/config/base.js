@@ -11,6 +11,9 @@ module.exports = {
     // root service that traceId searches will be queried against
     rootService: 'root-service',
 
+    // Google Analytics Tracking ID
+    gaTrackingID: 'UA-XXXXXXXX-X',
+
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled
     // traces store must be there in stores config

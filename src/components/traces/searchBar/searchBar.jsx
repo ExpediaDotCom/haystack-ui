@@ -17,9 +17,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactGA from 'react-ga';
 
 import SearchQueryBar from './searchQueryBar';
 import {toQueryUrlString, toQuery} from '../../../utils/queryParser';
+import {toFieldsKvString} from '../../traces/utils/traceQueryParser';
 import './searchBar.less';
 
 export default class SearchBar extends React.Component {
@@ -88,6 +90,12 @@ export default class SearchBar extends React.Component {
                 search: queryUrl
             });
         }
+
+        ReactGA.event({
+            category: 'Trace Search',
+            action: 'via Search Bar',
+            label: `${toFieldsKvString(query)}`
+        });
 
         this.fetchSearchResults(query);
     }
