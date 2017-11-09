@@ -17,19 +17,25 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router} from 'react-router-dom';
+import {Route, BrowserRouter as Router} from 'react-router-dom';
 import Perf from 'react-addons-perf';
+import ReactGA from 'react-ga';
 import Main from './main';
 import storesInitializer from './stores/storesInitializer';
+import withTracker from './components/common/withTracker';
 
 // app initializers
 Perf.start();
 storesInitializer.init();
 
+// google analytics initializer
+const gaTrackingID = (window.haystackUiConfig && window.haystackUiConfig.gaTrackingID) || null;
+ReactGA.initialize(gaTrackingID);
+
 // mount react components
 ReactDOM.render(
     <Router history={history}>
-        <Main/>
+        <Route component={withTracker(Main)}/>
     </Router>
     , document.getElementById('root')
 );

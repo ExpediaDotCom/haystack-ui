@@ -17,6 +17,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactGA from 'react-ga';
 
 import timeWindow from './utils/timeWindow';
 import {toQuery} from '../../utils/queryParser';
@@ -78,6 +79,14 @@ export default class TrendsHeader extends React.Component {
 
         this.setState({activeWindow: selectedWindow});
         this.fetchTrends(selectedWindow, selectedWindow.isCustomTimeRange, null);
+
+        console.log(selectedWindow);
+
+        ReactGA.event({
+            category: 'Trend Summary',
+            action: 'summary change',
+            label: `changed to ${selectedWindow.shortName || selectedWindow.longName}`
+        });
     }
 
     render() {

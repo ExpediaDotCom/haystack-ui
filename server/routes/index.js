@@ -26,7 +26,8 @@ const router = express.Router();
 router.get('*', (req, res) => {
     res.render('index', {
         subsystems: Object.keys(config.stores),
-        rootService: config.rootService
+        rootService: config.rootService,
+        gaTrackingID: config.gaTrackingID
     });
 });
 

@@ -9,7 +9,10 @@ module.exports = {
     upstreamTimeout: 60000,
 
     // root service that traceId searches will be queried against
-    rootService: 'root-service',
+    rootService: 'cloud-gate-proxy',
+
+    // Google Analytics Tracking ID
+    gaTrackingID: 'UA-XXXXXXXX-X',
 
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled
