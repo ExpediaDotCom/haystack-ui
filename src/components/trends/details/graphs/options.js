@@ -14,6 +14,11 @@
  *         limitations under the License.
  */
 
+import {Chart} from 'react-chartjs-2';
+import formatters from '../../../../utils/formatters';
+
+Chart.defaults.global.defaultFontFamily = 'monospace';
+
 export default {
     maintainAspectRatio: false,
     legend: {
@@ -25,7 +30,14 @@ export default {
         }],
         yAxes: [{
             ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                callback(value) {
+                    const kFormatValue = value > 999 ? formatters.toThousandsString(value) : value.toString();
+                    if (kFormatValue.length < 8) {
+                        return `${' '.repeat(8 - kFormatValue.length) + kFormatValue}`;
+                    }
+                    return kFormatValue;
+                }
             }
         }]
     }

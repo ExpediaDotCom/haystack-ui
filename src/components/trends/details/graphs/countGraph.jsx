@@ -27,7 +27,7 @@ const CountGraph = ({points}) => {
 
     const chartData = {
         datasets: [{
-            label: 'Count        ',
+            label: 'Count    ',
             data,
             backgroundColor,
             borderColor,

@@ -23,10 +23,14 @@ import options from './options';
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 const successChartOptions = _.cloneDeep(options);
+
 successChartOptions.scales.yAxes = [{
     display: true,
     ticks: {
-        max: 100
+        max: 100,
+        callback(value) {
+            return `${' '.repeat(8 - value.toString().length) + value}`;
+        }
     }
 }];
 
