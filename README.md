@@ -1,5 +1,6 @@
 
 [![Build Status](https://travis-ci.org/ExpediaDotCom/haystack-ui.svg?branch=master)](https://travis-ci.org/ExpediaDotCom/haystack-ui)
+[![Coverage Status](https://coveralls.io/repos/github/ExpediaDotCom/haystack-ui/badge.svg?branch=code-coverage)](https://coveralls.io/github/ExpediaDotCom/haystack-ui?branch=code-coverage)
 
 <img src="/public/images/assets/logo_with_title_transparent.png" width="300" />
 
@@ -36,8 +37,17 @@ To continuously re-build the assets while you are developing, use this command i
 $ npm run watch
 ```
 
-**Note**
-You might have to install Cairo dependencies separately for tests to work.
+## Testing
+
+Haystack-ui utilizes [Mocha](https://github.com/mochajs/mocha) as it's testing framework, with [Chai](https://github.com/chaijs/chai) as the assertation library, [Enzyme](https://github.com/airbnb/enzyme) for utility, and [JSDOM](https://github.com/tmpvar/jsdom) as a headless browser for rendering React components.
+[ESLint](https://github.com/eslint/eslint) is used as a linter and insurance of code quality. 
+
+To run the test suite, enter the command ```npm test```.
+
+To check code coverage, run ```npm run coverage``` and open the generated index.html in the created coverage folder
+
+**Note**-
+You may have to install Cairo dependencies separately for tests to work.
 - **OS X Users** : `brew install pkg-config cairo pango libpng jpeg giflib`
 - **Others**: Refer [https://www.npmjs.com/package/canvas#installation](https://www.npmjs.com/package/canvas#installation)
 
