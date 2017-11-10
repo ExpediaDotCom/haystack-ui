@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesCurve } from 'react-sparklines';
+import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -47,8 +47,9 @@ export default class TrendResultsTable extends React.Component {
         const values = [];
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
-                    <Sparklines className="sparkline" data={values}>
+                    <Sparklines className="sparkline" data={values} min={0}>
                         <SparklinesCurve style={{ strokeWidth: 2 }} color="#e23474" />
+                        <SparklinesSpots />
                     </Sparklines>
                 </div>);
     }
@@ -77,6 +78,17 @@ export default class TrendResultsTable extends React.Component {
             return b.count - a.count;
         }
         return a.count - b.count;
+    }
+
+    static sortByDuration(a, b, order) {
+        const aObj = a.tp99Duration[a.tp99Duration.length - 1];
+        const bObj = b.tp99Duration[b.tp99Duration.length - 1];
+        const aValue = (aObj && aObj.value) || 0;
+        const bValue = (bObj && bObj.value) || 0;
+        if (order === 'desc') {
+            return bValue - aValue;
+        }
+        return aValue - bValue;
     }
 
     static sortByPercentage(a, b, order) {
@@ -198,6 +210,8 @@ export default class TrendResultsTable extends React.Component {
                     dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
                     width="12"
+                    dataSort
+                    sortFunc={TrendResultsTable.sortByDuration}
                     thStyle={tableHeaderRightAlignedStyle}
                 ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn

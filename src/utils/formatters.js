@@ -34,7 +34,26 @@ formatters.toDurationString = (duration) => {
   return `${(duration / 1000000).toFixed(3)}s`;
 };
 
-formatters.toThousandsString = num => `${(num / 1000).toFixed(3)}k`;
+formatters.toDurationStringFromMs = (duration) => {
+  if (duration === 0) {
+    return '0';
+  } else if (duration < 1000) {
+    return `${duration}ms`;
+  }
+  return `${(duration / 1000).toFixed()}s`;
+};
+
+formatters.toNumberString = (num) => {
+    if (num === 0) {
+        return '0';
+    } else if (num < 1000) {
+        return `${num}`;
+    } else if (num < 1000000) {
+        return `${(num / 1000).toFixed(1)}k`;
+    }
+    return `${(num / 1000000).toFixed(1)}mil`;
+};
+
 
 formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     const start = moment(fromInMs);
