@@ -17,7 +17,9 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
+import formatters from '../../../../utils/formatters';
 import options from './options';
 
 const backgroundColor1 = [['rgba(255, 99, 132, 0.2)']];
@@ -28,6 +30,21 @@ const borderColor2 = [['rgba(255, 159, 64, 1)']];
 
 const backgroundColor3 = [['rgba(255, 206, 86, 0.2)']];
 const borderColor3 = [['rgba(255, 206, 86, 1)']];
+
+const durationChartOptions = _.cloneDeep(options);
+
+durationChartOptions.scales.yAxes = [{
+    display: true,
+    ticks: {
+        callback(value) {
+            const formattedValue = formatters.toDurationStringFromMs(value);
+            if (formattedValue.length < 8) {
+                return `${' '.repeat(8 - formattedValue.length) + formattedValue}`;
+            }
+            return formattedValue;
+        }
+    }
+}];
 
 const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
@@ -61,7 +78,7 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     return (<div className="col-md-12">
             <h5 className="text-center">Duration</h5>
             <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
+                <Line data={chartData} options={durationChartOptions} type="line" />
             </div>
         </div>
     );
