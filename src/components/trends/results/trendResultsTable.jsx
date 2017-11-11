@@ -215,6 +215,7 @@ export default class TrendResultsTable extends React.Component {
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
                     filter={filter}
+                    headerText={'All operations for the service'}
                 ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="count"
@@ -224,6 +225,7 @@ export default class TrendResultsTable extends React.Component {
                     sortFunc={TrendResultsTable.sortByCount}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Total invocation count of the operation for summary duration'}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="tp99Duration"
@@ -233,6 +235,7 @@ export default class TrendResultsTable extends React.Component {
                     sortFunc={TrendResultsTable.sortByDuration}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
                 ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
@@ -242,6 +245,7 @@ export default class TrendResultsTable extends React.Component {
                     sortFunc={TrendResultsTable.sortByPercentage}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Success % for the operation'}
                 ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>
             </BootstrapTable>
         );
