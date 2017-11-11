@@ -105,7 +105,7 @@ converter.toHaystackTrace = (zipkinTrace) => {
         startTime: zipkinSpan.timestamp,
         duration: zipkinSpan.duration,
         tags: toHaystackTags(zipkinSpan.binaryAnnotations),
-        logs: toHaystackLogs(zipkinSpan.annotations),
+        logs: toHaystackLogs(zipkinSpan.annotations)
     }));
 
     return fixClockSkew(haystackTrace);
