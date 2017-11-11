@@ -21,16 +21,11 @@
     color: @gray-darker;
   }
 
+  .react-bs-table .react-bs-container-header > table > thead > tr > th {
+    vertical-align: bottom;
+  }
   .react-bs-container-body td {
     vertical-align: middle;
-  }
-
-  // overriding default styling for headers
-  .results-header {
-    color: @gray-dark;
-    &:hover {
-      color: @brand-primary;
-    }
   }
 
   // overriding default styling for column filter
@@ -38,7 +33,7 @@
     padding: 0 0 @spacing-xs 0;
 
     input {
-      width: 50%;
+      width: 100%;
       padding-left: @spacing-xs;
       border: 1px solid @gray-mid-light;
       border-radius: 3px;
