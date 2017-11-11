@@ -63,7 +63,7 @@ export default class TrendsHeader extends React.Component {
     }
 
     fetchTrends(window, isCustomTimeRange, operationName) {
-        const granularity = timeWindow.getHigherGranularity(window.value);
+        const granularity = timeWindow.getLowerGranularity(window.value);
         const query = {
             granularity: granularity.value,
             from: window.from,

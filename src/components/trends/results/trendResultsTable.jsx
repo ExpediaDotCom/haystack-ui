@@ -64,7 +64,7 @@ export default class TrendResultsTable extends React.Component {
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
                     <Sparklines className="sparkline" data={values} min={0}>
-                        <SparklinesCurve style={{ strokeWidth: 2 }} color="#e23474" />
+                        <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
                         <SparklinesSpots />
                     </Sparklines>
                 </div>);
@@ -228,7 +228,7 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
-                    width="15"
+                    width="18"
                     dataSort
                     sortFunc={TrendResultsTable.sortByDuration}
                     caretRender={TrendResultsTable.getCaret}
