@@ -29,7 +29,8 @@ successChartOptions.scales.yAxes = [{
     ticks: {
         max: 100,
         callback(value) {
-            return `${' '.repeat(8 - value.toString().length) + value}`;
+            const fixedValue = value.toFixed(3);
+            return `${' '.repeat(8 - fixedValue.toString().length)}${fixedValue}`;
         }
     }
 }];

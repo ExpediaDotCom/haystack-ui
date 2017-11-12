@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
 import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
+import formatters from '../../../utils/formatters';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -56,7 +57,7 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="table__right">${cell > 0 ? cell : ' '}</div>`;
+        return `<div class="table__right">${cell > 0 ? formatters.toNumberString(cell) : ' '}</div>`;
     }
 
     static meanDurationColumnFormatter(cell) {

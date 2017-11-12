@@ -39,7 +39,7 @@ durationChartOptions.scales.yAxes = [{
         callback(value) {
             const formattedValue = formatters.toDurationStringFromMs(value);
             if (formattedValue.length < 8) {
-                return `${' '.repeat(8 - formattedValue.length) + formattedValue}`;
+                return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
             }
             return formattedValue;
         }
