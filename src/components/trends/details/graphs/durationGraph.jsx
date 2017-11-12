@@ -47,9 +47,9 @@ durationChartOptions.scales.yAxes = [{
 }];
 
 const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
-    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
+    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
+    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
 
     const chartData = {
         datasets: [{

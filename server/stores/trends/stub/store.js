@@ -30,7 +30,7 @@ function getTimeStamp(addMin) {
 
 function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(1000, 10000000), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
