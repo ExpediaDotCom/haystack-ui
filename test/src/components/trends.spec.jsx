@@ -26,7 +26,7 @@ import Trends from '../../../src/components/trends/trends';
 import TrendsHeader from '../../../src/components/trends/trendsHeader';
 import TrendResults from '../../../src/components/trends/results/trendResults';
 import TrendDetails from '../../../src/components/trends/details/trendDetails';
-import {TrendsSearchStore} from '../../../src/stores/trendsSearchStore';
+import {TrendsSearchStore} from '../../../src/components/trends/stores/trendsSearchStore';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -156,7 +156,7 @@ const stubOperation = 'test-operation-1';
 
 function TrendsStubComponent({trendsSearchStore, location, match}) {
     return (<section className="trends-panel">
-        <TrendsHeader store={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
+        <TrendsHeader trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
         <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
     </section>);
 }

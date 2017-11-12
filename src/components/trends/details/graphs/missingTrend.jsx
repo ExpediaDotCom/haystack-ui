@@ -15,10 +15,11 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './missingTrend.less';
 
-export default ({title}) =>
+const MissingTrend = ({title}) =>
     (
         <div className="col-md-12">
             <h5 className="text-center">{title}</h5>
@@ -29,3 +30,9 @@ export default ({title}) =>
             </div>
         </div>
     );
+
+MissingTrend.propTypes = {
+    title: PropTypes.string.isRequired
+};
+
+export default MissingTrend;

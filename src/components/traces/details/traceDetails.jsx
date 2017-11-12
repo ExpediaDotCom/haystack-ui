@@ -31,8 +31,8 @@ export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        baseServiceName: PropTypes.string.isRequired,
-        activeTraceStore: PropTypes.object.isRequired
+        serviceName: PropTypes.string.isRequired,
+        traceDetailsStore: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -48,7 +48,7 @@ export default class TraceDetails extends React.Component {
     }
 
     componentDidMount() {
-        this.props.activeTraceStore.fetchTraceDetails(this.props.traceId);
+        this.props.traceDetailsStore.fetchTraceDetails(this.props.traceId);
     }
 
     openModal() {
@@ -82,7 +82,7 @@ export default class TraceDetails extends React.Component {
                                         totalDuration={totalDuration}
                                         startTime={startTime}
                                         maxDepth={maxDepth}
-                                        toggleExpand={this.props.activeTraceStore.toggleExpand}
+                                        toggleExpand={this.props.traceDetailsStore.toggleExpand}
                                     /> :
                                     <Invocations/>;
                             }
@@ -118,20 +118,20 @@ export default class TraceDetails extends React.Component {
                             ) : null
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
-                        <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?serviceName=${this.props.baseServiceName}&traceId=${this.props.traceId}`} onCopy={this.handleCopy} >
+                        <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?serviceName=${this.props.serviceName}&traceId=${this.props.traceId}`} onCopy={this.handleCopy} >
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
                 </div>
                 {this.tabViewer({
-                    promiseState: this.props.activeTraceStore.promiseState,
-                    timelineSpans: this.props.activeTraceStore.timelineSpans,
-                    totalDuration: this.props.activeTraceStore.totalDuration,
-                    startTime: this.props.activeTraceStore.startTime,
-                    maxDepth: this.props.activeTraceStore.maxDepth
+                    promiseState: this.props.traceDetailsStore.promiseState,
+                    timelineSpans: this.props.traceDetailsStore.timelineSpans,
+                    totalDuration: this.props.traceDetailsStore.totalDuration,
+                    startTime: this.props.traceDetailsStore.startTime,
+                    maxDepth: this.props.traceDetailsStore.maxDepth
                 })}
 
-                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={this.props.activeTraceStore.spans}/>
+                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={this.props.traceDetailsStore.spans}/>
             </section>
         );
     }

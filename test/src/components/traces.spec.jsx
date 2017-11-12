@@ -26,8 +26,8 @@ import {expect} from 'chai';
 import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../src/components/traces/results/traceResults';
-import {TracesSearchStore} from '../../../src/stores/tracesSearchStore';
-import {ActiveTraceStore} from '../../../src/stores/activeTraceStore';
+import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
+import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
 import TraceDetails from '../../../src/components/traces/details/traceDetails';
 
 const stubLocation = {
@@ -214,8 +214,8 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
     </section>);
 }
 
-function TraceDetailsStubComponent({activeTraceStore, traceId, location, baseServiceName}) {
-    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} activeTraceStore={activeTraceStore} />);
+function TraceDetailsStubComponent({traceDetailsStore, traceId, location, baseServiceName}) {
+    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} traceDetailsStore={traceDetailsStore} />);
 }
 
 function createStubStore(results, promise, searchQuery = {}) {
@@ -230,7 +230,7 @@ function createStubStore(results, promise, searchQuery = {}) {
 }
 
 function createStubDetailsStore(spans, promise) {
-    const store = new ActiveTraceStore();
+    const store = new TraceDetailsStore();
     sinon.stub(store, 'fetchTraceDetails', () => {
         store.spans = spans;
         store.promiseState = promise;
@@ -354,23 +354,23 @@ describe('<Traces />', () => {
     });
 
     it('renders the all spans in the trace in the detail view', () => {
-        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
         expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
     });
 
     it('renders the descendents on Span Click in the timeline view', () => {
-        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
         wrapper.find('[id="test-span-1"]').simulate('click');
 
         expect(wrapper.find('.span-bar')).to.have.length(1);
     });
 
     it('properly renders the time pointers to depict duration', () => {
-        const activeTraceStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} activeTraceStore={activeTraceStore} />);
+        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
         const timePointers = wrapper.find('.time-pointer');
 
         expect(timePointers).to.have.length(5);
