@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import formatters from '../../../../utils/formatters';
+import MissingTrendGraph from './missingTrend';
 import options from './options';
 
 const backgroundColor1 = [['rgba(255, 99, 132, 0.2)']];
@@ -50,6 +51,10 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
     const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
     const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
+
+    if (!meanData.length && !tp95Data.length && !tp99Data.length) {
+        return (<MissingTrendGraph title="Duration"/>);
+    }
 
     const chartData = {
         datasets: [{

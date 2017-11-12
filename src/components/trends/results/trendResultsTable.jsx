@@ -57,7 +57,7 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="table__right">${cell > 0 ? formatters.toNumberString(cell) : ' '}</div>`;
+        return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
     }
 
     static meanDurationColumnFormatter(cell) {

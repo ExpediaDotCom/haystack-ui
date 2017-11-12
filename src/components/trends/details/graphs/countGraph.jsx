@@ -21,6 +21,7 @@ import _ from 'lodash';
 
 import formatters from '../../../../utils/formatters';
 import options from './options';
+import MissingTrendGraph from './missingTrend';
 
 const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
 const borderColor = [['rgba(54, 162, 235, 1)']];
@@ -42,6 +43,10 @@ countChartOptions.scales.yAxes = [{
 
 const CountGraph = ({points}) => {
     const data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+
+    if (!data.length) {
+        return (<MissingTrendGraph title="Count"/>);
+    }
 
     const chartData = {
         datasets: [{
