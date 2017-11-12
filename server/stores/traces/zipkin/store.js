@@ -83,6 +83,28 @@ store.getTrace = (traceId) => {
     return deferred.promise;
 };
 
+store.getRawTrace = (traceId) => {
+    const deferred = Q.defer();
+
+    axios
+        .get(`${baseZipkinUrl}/trace/raw/${traceId}`)
+        .then(response => deferred.resolve(response.data),
+            error => deferred.reject(errorConverter.fromAxiosError(error)));
+
+    return deferred.promise;
+};
+
+store.getRawSpan = (traceId, spanId) => {
+    const deferred = Q.defer();
+
+    axios
+        .get(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`)
+        .then(response => deferred.resolve(response.data),
+            error => deferred.reject(errorConverter.fromAxiosError(error)));
+
+    return deferred.promise;
+};
+
 store.findTraces = (query) => {
     const deferred = Q.defer();
 

@@ -82,19 +82,34 @@ function getServiceName(zipkinSpan) {
       || 'not_found';
 }
 
+function fixClockSkew(spans) {
+  const root = spans.find(span => !span.parentSpanId);
+
+  return spans.map((span) => {
+    if (span.startTime < root.startTime) {
+        return {...span, startTime: root.startTime};
+    }
+    return span;
+  });
+}
+
 const converter = {};
 
-converter.toHaystackTrace = zipkinTrace => zipkinTrace.map(zipkinSpan => ({
-  traceId: zipkinSpan.traceId,
-  spanId: zipkinSpan.id,
-  parentSpanId: zipkinSpan.parentId || null,
-  serviceName: getServiceName(zipkinSpan),
-  operationName: zipkinSpan.name || 'not_found',
-  startTime: zipkinSpan.timestamp,
-  duration: zipkinSpan.duration,
-  tags: toHaystackTags(zipkinSpan.binaryAnnotations),
-  logs: toHaystackLogs(zipkinSpan.annotations)
-}));
+converter.toHaystackTrace = (zipkinTrace) => {
+    const haystackTrace = zipkinTrace.map(zipkinSpan => ({
+        traceId: zipkinSpan.traceId,
+        spanId: zipkinSpan.id,
+        parentSpanId: zipkinSpan.parentId || null,
+        serviceName: getServiceName(zipkinSpan),
+        operationName: zipkinSpan.name || 'not_found',
+        startTime: zipkinSpan.timestamp,
+        duration: zipkinSpan.duration,
+        tags: toHaystackTags(zipkinSpan.binaryAnnotations),
+        logs: toHaystackLogs(zipkinSpan.annotations)
+    }));
+
+    return fixClockSkew(haystackTrace);
+};
 
 converter.toHaystackSearchResult = (zipkinTraces, query) => {
   const haystackTraces = zipkinTraces.map(zipkinTrace => converter.toHaystackTrace(zipkinTrace));

@@ -76,6 +76,8 @@ timeWindow.toTimeRange = ms => ({
 
 timeWindow.findMatchingPreset = value => timeWindow.presets.find(preset => preset.value === value);
 
+timeWindow.findMatchingPresetByShortName = shortName => timeWindow.presets.find(preset => preset.shortName === shortName);
+
 timeWindow.toCustomTimeRange = (from, until) => ({
     from,
     until,

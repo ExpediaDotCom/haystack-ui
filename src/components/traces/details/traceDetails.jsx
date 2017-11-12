@@ -25,14 +25,15 @@ import Error from '../../common/error';
 import RawTraceModal from './rawTraceModal';
 import Timeline from './timeline';
 import Invocations from './invocations';
+import rawTraceStore from '../stores/rawTraceStore';
 
 @observer
 export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        baseServiceName: PropTypes.string.isRequired,
-        activeTraceStore: PropTypes.object.isRequired
+        serviceName: PropTypes.string.isRequired,
+        traceDetailsStore: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -48,7 +49,7 @@ export default class TraceDetails extends React.Component {
     }
 
     componentDidMount() {
-        this.props.activeTraceStore.fetchTraceDetails(this.props.traceId);
+        this.props.traceDetailsStore.fetchTraceDetails(this.props.traceId);
     }
 
     openModal() {
@@ -82,7 +83,7 @@ export default class TraceDetails extends React.Component {
                                         totalDuration={totalDuration}
                                         startTime={startTime}
                                         maxDepth={maxDepth}
-                                        toggleExpand={this.props.activeTraceStore.toggleExpand}
+                                        toggleExpand={this.props.traceDetailsStore.toggleExpand}
                                     /> :
                                     <Invocations/>;
                             }
@@ -95,10 +96,12 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
+        const {traceId, serviceName, location, traceDetailsStore} = this.props;
+
         return (
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
-                    <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{this.props.traceId}</span></h5>
+                    <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
                     <ul className="nav nav-tabs pull-left hidden">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
@@ -118,20 +121,20 @@ export default class TraceDetails extends React.Component {
                             ) : null
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
-                        <Clipboard text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?serviceName=${this.props.baseServiceName}&traceId=${this.props.traceId}`} onCopy={this.handleCopy} >
+                        <Clipboard text={`${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${serviceName}&traceId=${traceId}`} onCopy={this.handleCopy} >
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
                 </div>
                 {this.tabViewer({
-                    promiseState: this.props.activeTraceStore.promiseState,
-                    timelineSpans: this.props.activeTraceStore.timelineSpans,
-                    totalDuration: this.props.activeTraceStore.totalDuration,
-                    startTime: this.props.activeTraceStore.startTime,
-                    maxDepth: this.props.activeTraceStore.maxDepth
+                    promiseState: traceDetailsStore.promiseState,
+                    timelineSpans: traceDetailsStore.timelineSpans,
+                    totalDuration: traceDetailsStore.totalDuration,
+                    startTime: traceDetailsStore.startTime,
+                    maxDepth: traceDetailsStore.maxDepth
                 })}
 
-                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} spans={this.props.activeTraceStore.spans}/>
+                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
             </section>
         );
     }

@@ -21,16 +21,17 @@ import PropTypes from 'prop-types';
 
 import TrendsHeader from './trendsHeader';
 import TrendResults from './results/trendResults';
-import trendsSearchStore from '../../stores/trendsSearchStore';
+import trendsSearchStore from './stores/trendsSearchStore';
 
-const Trends = ({match, location}) => (
+const Trends = ({match, location, history}) => (
     <section className="trends-panel">
-        <TrendsHeader store={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
+        <TrendsHeader trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location} history={history}/>
         <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
     </section>);
 
 Trends.propTypes = {
     match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired
 };
 
