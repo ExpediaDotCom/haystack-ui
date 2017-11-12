@@ -170,7 +170,7 @@ store.findTraces = (query) => {
                     const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
                     const jsonTraceResults = pbTraceResult.tracesList.map(pbTrace => protobufConverter.toTraceJson(pbTrace));
 
-                    deferred.resolve(searchResultsTransformer.transform(jsonTraceResults), query);
+                    deferred.resolve(searchResultsTransformer.transform(jsonTraceResults, query));
                 }
             });
     }
