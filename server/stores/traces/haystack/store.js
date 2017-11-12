@@ -42,7 +42,7 @@ store.getServices = () => {
     const deferred = Q.defer();
 
     const request = new messages.FieldValuesRequest();
-    request.setFieldname('service');
+    request.setFieldname('serviceName');
 
     client.getFieldValues(request,
         {deadline: generateCallDeadline()},
@@ -61,11 +61,11 @@ store.getOperations = (serviceName) => {
     const deferred = Q.defer();
 
     const service = new messages.Field();
-    service.setName('service');
+    service.setName('serviceName');
     service.setValue(serviceName);
 
     const request = new messages.FieldValuesRequest();
-    request.setFieldname('operation');
+    request.setFieldname('operationName');
     request.setFiltersList(new messages.Field());
     request.setFiltersList([service]);
 
