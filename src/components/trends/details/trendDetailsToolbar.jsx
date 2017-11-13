@@ -208,7 +208,7 @@ export default class TrendHeaderToolbar extends React.Component {
                     <Link
                         role="button"
                         className="btn btn-sm btn-default"
-                        to={`/service/${this.props.serviceName}/traces?timePreset=${this.state.activeWindow.shortName}`}
+                        to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
                     ><span
                         className="ti-line-double"
                     /> See Traces</Link>
