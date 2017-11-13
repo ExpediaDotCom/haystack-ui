@@ -31,7 +31,7 @@ export default class TrendsHeader extends React.Component {
         location: PropTypes.object.isRequired
     };
 
-    static fetchState(search) {
+   static fetchState(search) {
         const urlQuery = toQuery(search);
         const from = parseInt(urlQuery.from, 10);
         const until = parseInt(urlQuery.until, 10);
