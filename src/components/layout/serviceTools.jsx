@@ -33,7 +33,8 @@ const isAlertsEnabled = subsystems.includes('alerts');
 export default class ServiceTools extends Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     static convertToValueLabelMap(serviceList) {
@@ -66,7 +67,9 @@ export default class ServiceTools extends Component {
     }
 
     handleServiceChange(event) {
-        this.props.history.push(`/service/${event.value}/traces`);
+        const pathname = this.props.location.pathname;
+        const activeView = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length);
+        this.props.history.push(`/service/${event.value}/${activeView}`);
         this.setState({serviceChangeToggleOpen: false});
     }
 
@@ -174,7 +177,7 @@ export default class ServiceTools extends Component {
 
                 { serviceChangeToggleOpen ? <ServiceChange/> : null }
 
-                <ServiceToolsContainer serviceName={serviceName}/>
+                <ServiceToolsContainer serviceName={serviceName} location={this.props.location}/>
             </article>
         );
     }

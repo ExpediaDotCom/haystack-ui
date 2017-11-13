@@ -32,11 +32,12 @@ const isAlertsEnabled = subsystems.includes('alerts');
 
 export default class ServiceToolsContainer extends Component {
     static propTypes = {
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     shouldComponentUpdate(nextProps) {
-        return this.props.serviceName !== nextProps.serviceName;
+        return this.props.serviceName !== nextProps.serviceName || this.props.location.pathname !== nextProps.location.pathname;
     }
 
     render() {
