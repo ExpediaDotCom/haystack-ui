@@ -31,14 +31,8 @@ export default class TrendsHeader extends React.Component {
         location: PropTypes.object.isRequired
     };
 
-    constructor(props) {
-        super(props);
-
-        this.fetchTrends = this.fetchTrends.bind(this);
-        this.handleTimeChange = this.handleTimeChange.bind(this);
-
-        const urlQuery = toQuery(this.props.location.search);
-
+   static fetchState(search) {
+        const urlQuery = toQuery(search);
         const from = parseInt(urlQuery.from, 10);
         const until = parseInt(urlQuery.until, 10);
         const isCustomTimeRange = !!(from && until);
@@ -52,6 +46,20 @@ export default class TrendsHeader extends React.Component {
             activeWindow = timeWindow.defaultPreset;
             options = timeWindow.presets;
         }
+        return {options, activeWindow, isCustomTimeRange, urlQuery};
+    }
+
+    constructor(props) {
+        super(props);
+
+        this.fetchTrends = this.fetchTrends.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
+
+        const stateParams = TrendsHeader.fetchState(this.props.location.search);
+        const options = stateParams.options;
+        const activeWindow = stateParams.activeWindow;
+        const isCustomTimeRange = stateParams.isCustomTimeRange;
+        const urlQuery = stateParams.urlQuery;
 
         this.state = {
             options,
@@ -59,10 +67,15 @@ export default class TrendsHeader extends React.Component {
             isCustomTimeRange
         };
 
-        this.fetchTrends(activeWindow, isCustomTimeRange, urlQuery.operationName);
+        this.fetchTrends(this.props.serviceName, activeWindow, isCustomTimeRange, urlQuery.operationName);
     }
 
-    fetchTrends(window, isCustomTimeRange, operationName) {
+    componentWillReceiveProps(nextProps) {
+        const stateParams = TrendsHeader.fetchState(nextProps.location.search);
+        this.fetchTrends(nextProps.serviceName, stateParams.activeWindow, stateParams.isCustomTimeRange, stateParams.urlQuery.operationName);
+    }
+
+    fetchTrends(serviceName, window, isCustomTimeRange, operationName) {
         const granularity = timeWindow.getHigherGranularity(window.value);
         const query = {
             granularity: granularity.value,
@@ -70,7 +83,7 @@ export default class TrendsHeader extends React.Component {
             until: window.until
         };
 
-        this.props.store.fetchTrendServiceResults(this.props.serviceName, query, isCustomTimeRange, operationName);
+        this.props.store.fetchTrendServiceResults(serviceName, query, isCustomTimeRange, operationName);
     }
 
     handleTimeChange(event) {
@@ -78,7 +91,7 @@ export default class TrendsHeader extends React.Component {
         const selectedWindow = this.state.options[selectedIndex];
 
         this.setState({activeWindow: selectedWindow});
-        this.fetchTrends(selectedWindow, selectedWindow.isCustomTimeRange, null);
+        this.fetchTrends(this.props.serviceName, selectedWindow, selectedWindow.isCustomTimeRange, null);
 
         ReactGA.event({
             category: 'Trend Summary',
