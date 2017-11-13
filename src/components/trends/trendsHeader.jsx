@@ -26,7 +26,7 @@ import './trendsHeader.less';
 
 export default class TrendsHeader extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired,
+        trendsSearchStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired
     };
@@ -83,7 +83,7 @@ export default class TrendsHeader extends React.Component {
             until: window.until
         };
 
-        this.props.store.fetchTrendServiceResults(serviceName, query, isCustomTimeRange, operationName);
+        this.props.trendsSearchStore.fetchTrendServiceResults(serviceName, query, isCustomTimeRange, operationName);
     }
 
     handleTimeChange(event) {

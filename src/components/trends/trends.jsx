@@ -43,7 +43,7 @@ export default class Trends extends React.Component {
         return (
             <section className="trends-panel">
                 <TrendsHeader
-                    store={trendsSearchStore}
+                    trendsSearchStore={trendsSearchStore}
                     serviceName={this.state.serviceName}
                     location={location}
                 />
