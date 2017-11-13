@@ -20,6 +20,10 @@ import {observable, action} from 'mobx';
 export class ServiceStore {
     @observable services = [];
     @action fetchServices() {
+        if (this.services.length) {
+            return; // services already available, don't retrigger
+        }
+
         axios({
             method: 'get',
             url: '/api/services'

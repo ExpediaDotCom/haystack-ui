@@ -23,16 +23,37 @@ import TrendsHeader from './trendsHeader';
 import TrendResults from './results/trendResults';
 import trendsSearchStore from './stores/trendsSearchStore';
 
-const Trends = ({match, location, history}) => (
-    <section className="trends-panel">
-        <TrendsHeader trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location} history={history}/>
-        <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
-    </section>);
+export default class Trends extends React.Component {
+    static propTypes = {
+        match: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
+    };
 
-Trends.propTypes = {
-    match: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired
-};
+    constructor(props) {
+        super(props);
+        this.state = {serviceName: this.props.match.params.serviceName};
+    }
 
-export default Trends;
+    componentWillReceiveProps(nextProps) {
+        this.setState({serviceName: nextProps.match.params.serviceName});
+    }
+
+    render() {
+        const { location } = this.props;
+        return (
+            <section className="trends-panel">
+                <TrendsHeader
+                    trendsSearchStore={trendsSearchStore}
+                    serviceName={this.state.serviceName}
+                    location={location}
+                />
+                <TrendResults
+                    trendsSearchStore={trendsSearchStore}
+                    serviceName={this.state.serviceName}
+                    location={location}
+                />
+            </section>
+
+        );
+    }
+}

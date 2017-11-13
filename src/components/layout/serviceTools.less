@@ -24,15 +24,55 @@
   padding-bottom: @spacing-m;
 }
 
+.serviceChangeContainer {
+  padding-top: @spacing-m;
+  padding-bottom: @spacing-m;
+  background-color: white;
+  border-bottom: 1px solid @gray-mid-lighter;
+}
+
+.serviceChangeContainer__select {
+  padding-left: @spacing-s;
+  display: inline-block;
+  width: 300px;
+
+  .Select-input > input {
+    color: @gray-dark;
+  }
+
+  .Select-placeholder {
+    color: @gray-light;
+  }
+}
+
+.serviceChangeContainer__title {
+  vertical-align: top;
+  line-height: 1.9;
+  font-weight: 600;
+  font-size: @font-size-large;
+}
+
 .serviceToolsTab {
   background-color: @gray-darker;
 }
 
 .serviceToolsTab__title {
+  display: inline-block;
   color: @gray-lighter;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
+}
+
+.serviceToolsTab__title-toggle {
+  font-size: @font-size-h4;
+  font-weight: 800;
+  margin-left: @spacing-m;
 }
 
 .serviceToolsTab__tab-option {
