@@ -15,6 +15,8 @@ node_modules
 # generated scripts/css in public should not be commited
 public/bundles
 static_codegen
+
+# Code coverage reports
 .nyc_output/
 coverage
 
