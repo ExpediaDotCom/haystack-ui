@@ -43,43 +43,43 @@ store.getTrendsForService = (serviceName, granularity, from, until) => {
 
     deffered.resolve([
         {
-            operationName: 'seaworth-operation',
+            operationName: 'tarley-1',
             count: 18800,
             successPercent: getValue(80, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'bolton-op-1',
+            operationName: 'snow-1',
             count: 15075,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'baelish-operation-lorem',
+            operationName: 'grayjoy-1',
             count: 299,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'mormont-1',
+            operationName: 'tully-1',
             count: 58859,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'seaworth-operation',
+            operationName: 'clegane-1',
             count: 18800,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'bolton-op-lorem',
+            operationName: 'drogo-1',
             count: 15075,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'baelish-operation-ipsum',
+            operationName: 'dondarrion-1',
             count: 5750,
             successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
