@@ -37,7 +37,7 @@ export default class ServiceToolsContainer extends Component {
     };
 
     shouldComponentUpdate(nextProps) {
-        return this.props.serviceName !== nextProps.serviceName || this.props.location.pathname !== nextProps.location.pathname;
+        return (this.props.serviceName !== nextProps.serviceName) || (this.props.location.pathname !== nextProps.location.pathname);
     }
 
     render() {
