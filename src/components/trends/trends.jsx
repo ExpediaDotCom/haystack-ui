@@ -26,7 +26,8 @@ import trendsSearchStore from './stores/trendsSearchStore';
 export default class Trends extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        location: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -39,13 +40,14 @@ export default class Trends extends React.Component {
     }
 
     render() {
-        const { location } = this.props;
+        const { location, history } = this.props;
         return (
             <section className="trends-panel">
                 <TrendsHeader
                     trendsSearchStore={trendsSearchStore}
                     serviceName={this.state.serviceName}
                     location={location}
+                    history={history}
                 />
                 <TrendResults
                     trendsSearchStore={trendsSearchStore}
