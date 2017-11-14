@@ -20,25 +20,25 @@ import Traces from '../traces/traces';
 
 const TracesHome = ({history, location, match}) => (
     <article className="primary-content">
-      <article className="serviceTools">
-        <nav className="serviceToolsTab">
-          <div className="container">
-            <h3 className="serviceToolsTab__title">
-              Traces
-            </h3>
-          </div>
-        </nav>
-        <article className="serviceToolsContainer container">
-          <Traces history={history} location={location} match={match}/>
+        <article className="serviceTools">
+            <nav className="serviceToolsTab">
+                <div className="container">
+                    <h3 className="serviceToolsTab__title">
+                        Traces
+                    </h3>
+                </div>
+            </nav>
+            <article className="serviceToolsContainer container">
+                <Traces history={history} location={location} match={match}/>
+            </article>
         </article>
-      </article>
     </article>
 );
 
 TracesHome.propTypes = {
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired
 };
 
 export default TracesHome;

@@ -26,21 +26,21 @@ formatters.toTimeago = startTime => timeago().format(Math.floor(startTime / 1000
 formatters.toDurationMsString = duration => `${Math.floor(duration / 1000)}ms`;
 
 formatters.toDurationString = (duration) => {
-  if (duration === 0) {
-    return '0';
-  } else if (duration < 1000000) {
-    return `${Math.floor(duration / 1000)}ms`;
-  }
-  return `${(duration / 1000000).toFixed(3)}s`;
+    if (duration === 0) {
+        return '0';
+    } else if (duration < 1000000) {
+        return `${Math.floor(duration / 1000)}ms`;
+    }
+    return `${(duration / 1000000).toFixed(3)}s`;
 };
 
 formatters.toDurationStringFromMs = (duration) => {
-  if (duration === 0) {
-    return '0';
-  } else if (duration < 1000) {
-    return `${duration}ms`;
-  }
-  return `${(duration / 1000).toFixed()}s`;
+    if (duration === 0) {
+        return '0';
+    } else if (duration < 1000) {
+        return `${duration}ms`;
+    }
+    return `${(duration / 1000).toFixed()}s`;
 };
 
 formatters.toNumberString = (num) => {

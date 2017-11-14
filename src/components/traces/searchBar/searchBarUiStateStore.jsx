@@ -19,45 +19,45 @@ import {observable, action} from 'mobx';
 import {toFieldsKvString, extractSecondaryFields} from '../utils/traceQueryParser';
 
 export class SearchBarUiStateStore {
-  @observable serviceName = null;
-  @observable operationName = null;
-  @observable fieldsKvString = null;
-  @observable timeWindow = null;
+    @observable serviceName = null;
+    @observable operationName = null;
+    @observable fieldsKvString = null;
+    @observable timeWindow = null;
 
-  @observable displayErrors = {};
+    @observable displayErrors = {};
 
-  @action setServiceName(serviceName) {
-    this.serviceName = serviceName;
-  }
+    @action setServiceName(serviceName) {
+        this.serviceName = serviceName;
+    }
 
-  @action setOperationName(operationName) {
-    this.operationName = operationName;
-  }
+    @action setOperationName(operationName) {
+        this.operationName = operationName;
+    }
 
-  @action setTimeWindow(timeWindow) {
-    this.timeWindow = timeWindow;
-  }
+    @action setTimeWindow(timeWindow) {
+        this.timeWindow = timeWindow;
+    }
 
-  @action setFieldsUsingKvString(fieldsKvString) {
-    this.fieldsKvString = fieldsKvString;
-  }
+    @action setFieldsUsingKvString(fieldsKvString) {
+        this.fieldsKvString = fieldsKvString;
+    }
 
-  @action setDisplayErrors(displayErrors) {
-    this.displayErrors = displayErrors;
-  }
+    @action setDisplayErrors(displayErrors) {
+        this.displayErrors = displayErrors;
+    }
 
-  @action initUsingQuery(query) {
-    this.displayErrors = {};
+    @action initUsingQuery(query) {
+        this.displayErrors = {};
 
-    this.serviceName = query.serviceName;
-    this.operationName = query.operationName;
-    this.fieldsKvString = toFieldsKvString(extractSecondaryFields(query));
-    this.timeWindow = {
-      timePreset: query.timePreset,
-      startTime: query.startTime,
-      endTime: query.endTime
-    };
-  }
+        this.serviceName = query.serviceName;
+        this.operationName = query.operationName;
+        this.fieldsKvString = toFieldsKvString(extractSecondaryFields(query));
+        this.timeWindow = {
+            timePreset: query.timePreset,
+            startTime: query.startTime,
+            endTime: query.endTime
+        };
+    }
 }
 
 export default new SearchBarUiStateStore();
