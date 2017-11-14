@@ -15,3 +15,4 @@ node_modules
 # generated scripts/css in public should not be commited
 public/bundles
 static_codegen
+.nyc_output/
