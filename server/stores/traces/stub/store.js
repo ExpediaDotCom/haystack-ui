@@ -21,7 +21,7 @@ const trace = [
         traceId: 'traceid',
         spanId: 'root-spanid',
         serviceName: 'stark-service',
-        operationName: 'root-operation-stark',
+        operationName: 'snow-1',
         startTime: 1504784384000,
         duration: 3525000,
         logs: [],
@@ -39,7 +39,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'westeros-1',
         serviceName: 'westeros-service',
-        operationName: 'operation-1-westeros-service',
+        operationName: 'mormont-1',
         startTime: 1504784384000 + 250000,
         duration: 1505000,
         logs: [],
@@ -51,7 +51,7 @@ const trace = [
         parentSpanId: 'westeros-1',
         spanId: 'tyrell-1',
         serviceName: 'tyrell-service',
-        operationName: 'operation-1-tyrell-service',
+        operationName: 'tully-1',
         startTime: 1504784384000 + 250000 + 120000,
         duration: 605000,
         logs: [],
@@ -62,7 +62,7 @@ const trace = [
         parentSpanId: 'westeros-1',
         spanId: 'dragon-1',
         serviceName: 'dragon-service',
-        operationName: 'operation-1-dragon-service',
+        operationName: 'drogo-1',
         startTime: 1504784384000 + 250000 + 680000,
         duration: 645000,
         logs: [],
@@ -73,7 +73,7 @@ const trace = [
         parentSpanId: 'westeros-1',
         spanId: 'dragon-2',
         serviceName: 'dragon-service',
-        operationName: 'operation-2-dragon-service',
+        operationName: 'grayjoy-1',
         startTime: 1504784384000 + 250000 + 680000,
         duration: 805000,
         logs: [],
@@ -84,7 +84,7 @@ const trace = [
         parentSpanId: 'dragon-2',
         spanId: 'blackwater-2',
         serviceName: 'blackwater-service',
-        operationName: 'operation-2-blackwater-service',
+        operationName: 'clegane-1',
         startTime: 1504784384000 + 250000 + 920000,
         duration: 675000,
         logs: [],
@@ -95,7 +95,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'baratheon-1',
         serviceName: 'baratheon-service',
-        operationName: 'operation-1-baratheon-service',
+        operationName: 'dondarrion-1',
         startTime: 1504784384000 + 1760000,
         duration: 834000,
         logs: [],
@@ -106,7 +106,7 @@ const trace = [
         parentSpanId: 'baratheon-1',
         spanId: 'blackwaters-1',
         serviceName: 'blackwater-service',
-        operationName: 'operation-1-grayjoy-service',
+        operationName: 'grayjoy-1',
         startTime: 1504784384000 + 1960000,
         duration: 234000,
         logs: [],
@@ -117,7 +117,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'westeros-2',
         serviceName: 'westeros-service',
-        operationName: 'operation-2-westeros-service',
+        operationName: 'tarley-1',
         startTime: 1504784384000 + 2560000 + 105000,
         duration: 105000,
         logs: [],
@@ -128,7 +128,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'westeros-3',
         serviceName: 'westeros-service',
-        operationName: 'operation-3-westeros-service',
+        operationName: 'snow-1',
         startTime: 1504784384000 + 2560000 + 105000,
         duration: 505000,
         logs: [],
@@ -139,7 +139,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'westeros-4',
         serviceName: 'westeros-service',
-        operationName: 'operation-4-westeros-service',
+        operationName: 'tarley-1',
         startTime: 1504784384000 + 2560000 + 105000,
         duration: 505000 + 225000,
         logs: [],
@@ -150,7 +150,7 @@ const trace = [
         parentSpanId: 'root-spanid',
         spanId: 'westeros-5',
         serviceName: 'westeros-service',
-        operationName: 'operation-5-westeros-service',
+        operationName: 'dondarrion-1',
         startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,
         duration: 150000,
         logs: [],
@@ -170,10 +170,17 @@ store.getServices = () => Q.fcall(() => ['root-service',
     'westeros-service'
 ]);
 
-store.getOperations = () => Q.fcall(() => ['op1',
-    'op2',
-    'op3',
-    'op4'
+store.getOperations = () => Q.fcall(() => ['mormont-1',
+    'seaworth-1',
+    'bolton-1',
+    'baelish-1',
+    'snow-1',
+    'tully-1',
+    'dondarrion-1',
+    'grayjoy-1',
+    'clegane-1',
+    'drogo-1',
+    'tarley-1'
 ]);
 
 store.getTrace = () => Q.fcall(() => trace);
@@ -201,7 +208,7 @@ store.findTraces = query => Q.fcall(() => {
             root: {
               url: '/stark/endpoint',
               serviceName: 'stark-service',
-              operationName: 'svc-operation',
+              operationName: 'snow-1',
               duration: 3404000,
               error: false
             },
@@ -223,7 +230,7 @@ store.findTraces = query => Q.fcall(() => {
     }
     return [
       {
-        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        traceId: 'x00245a5-g0c4-4c37-55a7-da83def7127a',
         spanCount: 34,
         services: [
           {
@@ -238,7 +245,7 @@ store.findTraces = query => Q.fcall(() => {
         root: {
           url: '/stark/endpoint',
           serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          operationName: 'snow-1',
           duration: 3404000,
           error: false
         },
@@ -256,7 +263,7 @@ store.findTraces = query => Q.fcall(() => {
         duration: 240000,
         error: false
       }, {
-        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        traceId: 'a40165e5-e0c4-4c51-11x7-bb79def7597a',
         spanCount: 9,
         services: [
           {
@@ -271,7 +278,7 @@ store.findTraces = query => Q.fcall(() => {
         root: {
           url: '/rob/endpoint',
           serviceName: 'rob-service',
-          operationName: 'rob-svc-operation',
+          operationName: 'mormont-1',
           duration: 3404000,
           error: false
         },
@@ -289,7 +296,7 @@ store.findTraces = query => Q.fcall(() => {
         duration: 850000,
         error: false
       }, {
-        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        traceId: 'a80921e5-e0c4-4c37-91a7-da79def7597a',
         spanCount: 44,
         services: [
           {
@@ -297,14 +304,14 @@ store.findTraces = query => Q.fcall(() => {
             spanCount: 22
           },
           {
-                name: 'lorem-service',
+                name: 'renly-service',
                 spanCount: 22
           }
         ],
         root: {
-          url: '/ayres/ipsum/endpoint',
-          serviceName: 'lorem-service',
-          operationName: 'ipsum-operation',
+          url: '/baratheon/endpoint',
+          serviceName: 'gendry-service',
+          operationName: 'dondarrion-1',
           duration: 3404000,
           error: false
         },
@@ -322,7 +329,7 @@ store.findTraces = query => Q.fcall(() => {
         duration: 3500000,
         error: false
       }, {
-        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        traceId: 'a55965e5-e0c4-4a37-91a7-da79def7597a',
         spanCount: 30,
         services: [
           {
@@ -337,7 +344,7 @@ store.findTraces = query => Q.fcall(() => {
         root: {
           url: '/stark/endpoint',
           serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          operationName: 'clegane-1',
           duration: 3404000,
           error: false
         },
@@ -355,7 +362,7 @@ store.findTraces = query => Q.fcall(() => {
         duration: 126000,
         error: false
       }, {
-        traceId: 'a80965e5-e0c4-4c37-91a7-da79def7597a',
+        traceId: 'wb651a1b-146x-4c37-91a7-6r61v513r1v11',
         spanCount: 30,
         services: [
           {
@@ -368,9 +375,9 @@ store.findTraces = query => Q.fcall(() => {
           }
         ],
         root: {
-          url: '/stark/endpoint',
+          url: '/east/endpoint',
           serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          operationName: 'grayjoy-1',
           duration: 3404000,
           error: false
         },
@@ -389,11 +396,11 @@ store.findTraces = query => Q.fcall(() => {
         error: true
       },
       {
-        traceId: 'b80965e5-e0c4-4c37-91a7-da79def7597b',
+        traceId: 'b44165e5-xx14-4c37-91a7-da79def7597b',
         spanCount: 25,
         services: [
           {
-            name: 'ipsum-service',
+            name: 'randall-service',
             spanCount: 1
           },
           {
@@ -402,9 +409,9 @@ store.findTraces = query => Q.fcall(() => {
           }
         ],
         root: {
-          url: '/lorem/endpoint/123',
-          serviceName: 'lorem-service',
-          operationName: 'lorem-svc-operation',
+          url: '/tarley/endpoint',
+          serviceName: 'randall-service',
+          operationName: 'tarley-1',
           duration: 3404000,
           error: false
         },
@@ -436,9 +443,9 @@ store.findTraces = query => Q.fcall(() => {
           }
         ],
         root: {
-          url: '/stark/endpoint',
-          serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          url: '/targaryen/endpoint',
+          serviceName: 'targaryen-service',
+          operationName: 'drogo-1',
           duration: 3404000,
           error: false
         },
@@ -472,7 +479,7 @@ store.findTraces = query => Q.fcall(() => {
         root: {
           url: '/stark/endpoint',
           serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          operationName: 'tully-1',
           duration: 3404000,
           error: false
         },
@@ -505,7 +512,7 @@ store.findTraces = query => Q.fcall(() => {
         root: {
           url: '/stark/endpoint',
           serviceName: 'stark-service',
-          operationName: 'svc-operation',
+          operationName: 'snow-1',
           duration: 3404000,
           error: false
         },
