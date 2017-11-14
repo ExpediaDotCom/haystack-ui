@@ -15,7 +15,7 @@
  *
  */
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, no-unused-expressions */
 
 
 import React from 'react';
@@ -222,7 +222,7 @@ function createStubStore(results, promise, searchQuery = {}) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
-        store.promiseState = promise;
+        promise ? store.promiseState = promise : null;
         store.searchQuery = searchQuery;
     });
 
@@ -243,6 +243,35 @@ describe('<Traces />', () => {
     it('should render Traces panel container', () => {
         const wrapper = shallow(<Traces history={stubHistory} location={stubLocation} match={stubMatch} />);
         expect(wrapper.find('.traces-panel')).to.have.length(1);
+    });
+
+    it('has custom time range picker functionality', () => {
+        const tracesSearchStore = createStubStore([]);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        // Clicking modal
+        expect(wrapper.find('.timerange-picker')).to.have.length(0);
+        wrapper.find('.time-range-picker-toggle').simulate('click');
+        expect(wrapper.find('.timerange-picker')).to.have.length(1);
+
+        // Changing presets
+        wrapper.find('.timerange-picker__preset').first().simulate('click');
+        expect(wrapper.find('.time-range-picker-toggle')).to.have.length(1);
+        expect(wrapper.find('.timerange-picker')).to.have.length(0);
+
+        // Custom time picker
+        wrapper.find('.time-range-picker-toggle').simulate('click');
+        wrapper.find('.datetimerange-picker').first().simulate('click');
+        wrapper.find('.rdtOld').first().simulate('click');
+        wrapper.find('.timerange-picker__presets__listblock').simulate('click');
+        wrapper.find('.custom-timerange-apply').simulate('click');
+        expect(wrapper.find('.timerange-picker')).to.have.length(0);
+
+        // Clicking off hides modal
+        wrapper.find('.time-range-picker-toggle').simulate('click');
+        expect(wrapper.find('.timerange-picker')).to.have.length(1);
+        wrapper.find('.search-bar-headers_service').simulate('click');
+        expect(wrapper.find('.timerange-picker')).to.have.length(1);
     });
 
     it('should trigger fetchSearchResults on mount', () => {
@@ -281,6 +310,7 @@ describe('<Traces />', () => {
     it('should update search results on clicking search', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         wrapper.find('.traces-search-button').simulate('click');
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(2);
@@ -288,9 +318,18 @@ describe('<Traces />', () => {
         expect(wrapper.find('.tr-no-border')).to.have.length(2);
     });
 
+    it('should not show search results list on empty promise', () => {
+        const tracesSearchStore = createStubStore(stubResults);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        expect(wrapper.find('.no-search_text')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+    });
+
     it('should not show search results list on empty results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         tracesSearchStore.fetchSearchResults.restore();
         sinon.stub(tracesSearchStore, 'fetchSearchResults', () => {
             tracesSearchStore.searchResults = [];
@@ -329,7 +368,6 @@ describe('<Traces />', () => {
 
     it('should accept valid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});

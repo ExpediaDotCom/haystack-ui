@@ -57,7 +57,6 @@ export default class TimeRangePicker extends React.Component {
 
     handlePresetSelection(preset) {
         this.props.timeRangeChangeCallback(preset);
-        event.preventDefault();
     }
 
     handleChangeStartDate(value) {
@@ -74,7 +73,7 @@ export default class TimeRangePicker extends React.Component {
 
     render() {
         const PresetOption = ({preset}) => (<li key={preset}>
-            <a key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
+            <a className="timerange-picker__preset" key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
         </li>);
 
         function fromValid(current) {
@@ -93,7 +92,7 @@ export default class TimeRangePicker extends React.Component {
                     </div>
                     <button
                         type="button"
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm custom-timerange-apply"
                         onClick={this.handleCustomTimeRange}
                     >
                         Apply

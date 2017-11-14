@@ -159,7 +159,7 @@ export default class TrendHeaderToolbar extends React.Component {
                                     key={preset.shortName}
                                 />))}
                             <button
-                                className={this.state.activeWindow.isCustomTimeRange ? 'btn btn-primary' : 'btn btn-default'}
+                                className={this.state.activeWindow.isCustomTimeRange ? 'custom-btn btn btn-primary' : 'custom-btn btn btn-default'}
                                 type="button"
                                 onClick={this.state.showCustomTimeRangePicker ? this.hideTimePicker : this.showTimePicker}
                             >
@@ -186,6 +186,7 @@ export default class TrendHeaderToolbar extends React.Component {
                             <li>
                                 {metricGranularity.options.map(option => (
                                     <a
+                                        className="granularity-button"
                                         tabIndex={-1}
                                         key={option.shortName}
                                         role="button"
