@@ -17,6 +17,7 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import ReactGA from 'react-ga';
 
 import './header.less';
 
@@ -46,6 +47,11 @@ class SearchBar extends React.Component {
         if (this.state.traceId.length) {
             this.props.history.push(`/service/${rootService}/traces?serviceName=${rootService}&traceId=${this.state.traceId}`);
         }
+        ReactGA.event({
+            category: 'Trace Search',
+            action: 'via Header',
+            label: `${this.state.traceId}`
+        });
     }
     homeRedirect(event) {
         event.preventDefault();

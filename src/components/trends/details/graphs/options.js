@@ -14,6 +14,10 @@
  *         limitations under the License.
  */
 
+import {Chart} from 'react-chartjs-2';
+
+Chart.defaults.global.defaultFontFamily = 'monospace';
+
 export default {
     maintainAspectRatio: false,
     legend: {

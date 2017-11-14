@@ -16,3 +16,5 @@ node_modules
 public/bundles
 static_codegen
 .nyc_output/
+coverage
+

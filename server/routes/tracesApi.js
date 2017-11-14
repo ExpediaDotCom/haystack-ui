@@ -31,4 +31,12 @@ router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.getTrace(req.params.traceId));
 });
 
+router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
+});
+
+router.get('/trace/raw/:traceId', (req, res, next) => {
+    handleResponsePromise(res, next)(() => traceStore.getRawTrace(req.params.traceId));
+});
+
 module.exports = router;

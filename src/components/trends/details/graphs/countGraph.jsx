@@ -17,17 +17,40 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+
+import formatters from '../../../../utils/formatters';
 import options from './options';
+import MissingTrendGraph from './missingTrend';
 
 const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
 const borderColor = [['rgba(54, 162, 235, 1)']];
 
+const countChartOptions = _.cloneDeep(options);
+
+countChartOptions.scales.yAxes = [{
+    display: true,
+    ticks: {
+        callback(value) {
+            const formattedValue = formatters.toNumberString(value);
+            if (formattedValue.length < 8) {
+                return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
+            }
+            return formattedValue;
+        }
+    }
+}];
+
 const CountGraph = ({points}) => {
     const data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
 
+    if (!data.length) {
+        return (<MissingTrendGraph title="Count"/>);
+    }
+
     const chartData = {
         datasets: [{
-            label: 'Count        ',
+            label: 'Count    ',
             data,
             backgroundColor,
             borderColor,
@@ -38,7 +61,7 @@ const CountGraph = ({points}) => {
     return (<div className="col-md-12">
             <h5 className="text-center">Count</h5>
             <div className="chart-container">
-                <Line data={chartData} options={options} type="line" />
+                <Line data={chartData} options={countChartOptions} type="line" />
             </div>
         </div>
     );

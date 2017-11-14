@@ -18,7 +18,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesCurve } from 'react-sparklines';
+import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
+import formatters from '../../../utils/formatters';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -35,20 +36,37 @@ export default class TrendResultsTable extends React.Component {
         return <span className="results-header">{name}</span>;
     }
 
+    static getCaret(direction) {
+        if (direction === 'asc') {
+            return (
+                <span className="order dropup">
+                  <span className="caret" style={{margin: '10px 5px'}}/>
+              </span>);
+        }
+        if (direction === 'desc') {
+            return (
+                <span className="order dropdown">
+                  <span className="caret" style={{margin: '10px 5px'}}/>
+              </span>);
+        }
+        return <div/>;
+    }
+
     static columnFormatter(operation) {
         return `<div class="table__left">${operation}</div>`;
     }
 
     static countColumnFormatter(cell) {
-        return `<div class="table__right">${cell > 0 ? cell : ' '}</div>`;
+        return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
     }
 
     static meanDurationColumnFormatter(cell) {
         const values = [];
         cell.map(d => values.push(d.value));
         return (<div className="duration-sparklines">
-                    <Sparklines className="sparkline" data={values}>
-                        <SparklinesCurve style={{ strokeWidth: 2 }} color="#e23474" />
+                    <Sparklines className="sparkline" data={values} min={0}>
+                        <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
+                        <SparklinesSpots />
                     </Sparklines>
                 </div>);
     }
@@ -77,6 +95,17 @@ export default class TrendResultsTable extends React.Component {
             return b.count - a.count;
         }
         return a.count - b.count;
+    }
+
+    static sortByDuration(a, b, order) {
+        const aObj = a.tp99Duration[a.tp99Duration.length - 1];
+        const bObj = b.tp99Duration[b.tp99Duration.length - 1];
+        const aValue = (aObj && aObj.value) || 0;
+        const bValue = (bObj && bObj.value) || 0;
+        if (order === 'desc') {
+            return bValue - aValue;
+        }
+        return aValue - bValue;
     }
 
     static sortByPercentage(a, b, order) {
@@ -148,7 +177,7 @@ export default class TrendResultsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing { (to - start) + 1 } out of { total } total {total === 1 ? 'operation' : 'operations'}</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: 'operationName',  // default sort column name
+            defaultSortName: 'count',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
@@ -182,23 +211,32 @@ export default class TrendResultsTable extends React.Component {
                     dataFormat={TrendResultsTable.columnFormatter}
                     dataField="operationName"
                     width="50"
+                    dataSort
                     sortFunc={TrendResultsTable.sortByName}
+                    caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
                     filter={filter}
-                />
+                    headerText={'All operations for the service'}
+                ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="count"
                     dataFormat={TrendResultsTable.countColumnFormatter}
                     width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByCount}
+                    caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Total invocation count of the operation for summary duration'}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
-                    width="12"
+                    width="18"
+                    dataSort
+                    sortFunc={TrendResultsTable.sortByDuration}
+                    caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
                 ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
@@ -206,7 +244,9 @@ export default class TrendResultsTable extends React.Component {
                     width="8"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
+                    caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Success % for the operation'}
                 ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>
             </BootstrapTable>
         );

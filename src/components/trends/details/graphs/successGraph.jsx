@@ -19,14 +19,20 @@ import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import options from './options';
+import MissingTrendGraph from './missingTrend';
 
 const backgroundColor = [['rgba(75, 192, 192, 0.2)']];
 const borderColor = [['rgba(75, 192, 192, 1)']];
 const successChartOptions = _.cloneDeep(options);
+
 successChartOptions.scales.yAxes = [{
     display: true,
     ticks: {
-        max: 100
+        max: 100,
+        callback(value) {
+            const fixedValue = value.toFixed(3);
+            return `${' '.repeat(8 - fixedValue.toString().length)}${fixedValue}`;
+        }
     }
 }];
 
@@ -41,6 +47,11 @@ const SuccessGraph = ({successCount, failureCount}) => {
         }
         return null;
     }));
+
+    if (!data.length) {
+        return (<MissingTrendGraph title="Success %"/>);
+    }
+
     const chartData = {
         datasets: [{
             label: 'Success %',

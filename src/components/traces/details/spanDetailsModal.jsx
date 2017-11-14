@@ -20,7 +20,9 @@ import {Link} from 'react-router-dom';
 
 import TagsTable from './tagsTable';
 import LogsTable from './logsTable';
+import RawSpan from './rawSpan';
 import Modal from '../../common/modal';
+import rawSpanStore from '../stores/rawSpanStore';
 import formatters from '../../../utils/formatters';
 
 export default class SpanDetailsModal extends React.Component {
@@ -42,7 +44,7 @@ export default class SpanDetailsModal extends React.Component {
             case 2:
                 return <TagsTable tags={span.tags} />;
             case 3:
-                return <pre>{JSON.stringify(span, null, 2)}</pre>;
+                return <RawSpan traceId={span.traceId} spanId={span.spanId} rawSpanStore={rawSpanStore}/>;
             default:
                 return null;
         }

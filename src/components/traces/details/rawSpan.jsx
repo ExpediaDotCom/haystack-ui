@@ -20,44 +20,38 @@ import {observer} from 'mobx-react';
 import Loading from '../../common/loading';
 import Error from '../../common/error';
 
-import Modal from '../../common/modal';
-
 @observer
-export default class RawTraceModal extends React.Component {
+export default class RawSpan extends React.Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        closeModal: PropTypes.func.isRequired,
         traceId: PropTypes.string.isRequired,
-        rawTraceStore: PropTypes.object.isRequired
+        spanId: PropTypes.string.isRequired,
+        rawSpanStore: PropTypes.object.isRequired
     };
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen) {
-            this.props.rawTraceStore.fetchRawTrace(this.props.traceId);
-        }
+    constructor(props) {
+        super(props);
+        props.rawSpanStore.fetchRawSpan(props.traceId, props.spanId);
     }
 
     render() {
-        const {isOpen, closeModal, rawTraceStore} = this.props;
+        const {rawSpanStore} = this.props;
 
         return (
-            <Modal isOpen={isOpen} closeModal={closeModal} title={'Raw Trace'}>
                 <div>
                     {
-                        rawTraceStore.promiseState &&
-                        rawTraceStore.promiseState.case({
+                        rawSpanStore.promiseState &&
+                        rawSpanStore.promiseState.case({
                             pending: () => <Loading />,
                             rejected: () => <Error />,
                             fulfilled: () => {
-                                if (rawTraceStore.rawTrace) {
-                                    return <pre>{JSON.stringify(rawTraceStore.rawTrace, null, 2)}</pre>;
+                                if (rawSpanStore.rawSpan) {
+                                    return <pre>{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>;
                                 }
 
                                 return <Error />;
                             }
                         })
                     }
-                </div>
-            </Modal>);
+                </div>);
     }
 }

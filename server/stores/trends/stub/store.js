@@ -30,7 +30,7 @@ function getTimeStamp(addMin) {
 
 function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(10, 1000), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(1000, 10000000), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
@@ -43,27 +43,51 @@ store.getTrendsForService = (serviceName, granularity, from, until) => {
 
     deffered.resolve([
         {
-            operationName: 'seaworth-1',
-            count: 10000,
-            successPercent: getValue(10, 100),
+            operationName: 'tarley-1',
+            count: 18800,
+            successPercent: getValue(80, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'bolton-1',
-            count: 15000,
-            successPercent: getValue(10, 100),
+            operationName: 'snow-1',
+            count: 15075,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
-            operationName: 'baelish-1',
-            count: 5000,
-            successPercent: getValue(10, 100),
+            operationName: 'grayjoy-1',
+            count: 299,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'tully-1',
+            count: 58859,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'clegane-1',
+            count: 18800,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'drogo-1',
+            count: 15075,
+            successPercent: getValue(90, 100),
+            tp99Duration: getRandomValues(mins, points)
+        },
+        {
+            operationName: 'dondarrion-1',
+            count: 5750,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         },
         {
             operationName: 'mormont-1',
-            count: 1000,
-            successPercent: getValue(10, 100),
+            count: 5899,
+            successPercent: getValue(90, 100),
             tp99Duration: getRandomValues(mins, points)
         }
     ]);

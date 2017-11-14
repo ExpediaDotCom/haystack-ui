@@ -36,12 +36,15 @@ export default class TrendHeaderToolbar extends React.Component {
     constructor(props) {
         super(props);
 
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.hideTimePicker = this.hideTimePicker.bind(this);
+        this.showTimePicker = this.showTimePicker.bind(this);
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.fetchTrends = this.fetchTrends.bind(this);
         this.toggleGranularityDropdown = this.toggleGranularityDropdown.bind(this);
         this.updateGranularity = this.updateGranularity.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
-        this.handleCustomTimeRangePicker = this.handleCustomTimeRangePicker.bind(this);
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
 
         const {
@@ -64,7 +67,22 @@ export default class TrendHeaderToolbar extends React.Component {
 
         this.fetchTrends(activeWindow, activeGranularity);
     }
-
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+    hideTimePicker() {
+        document.removeEventListener('mousedown', this.handleOutsideClick);
+        this.setState({showCustomTimeRangePicker: false});
+    }
+    showTimePicker() {
+        document.addEventListener('mousedown', this.handleOutsideClick);
+        this.setState({showCustomTimeRangePicker: true});
+    }
+    handleOutsideClick(e) {
+        if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+            this.hideTimePicker();
+        }
+    }
     handleCopy() {
         this.setState({showCopied: true});
         setTimeout(() => this.setState({showCopied: false}), 2000);
@@ -96,28 +114,22 @@ export default class TrendHeaderToolbar extends React.Component {
         const presetWindow = preset;
         presetWindow.from = timeRange.from;
         presetWindow.until = timeRange.until;
-
+        this.hideTimePicker();
         this.setState({
             activeWindow: presetWindow,
-            showCustomTimeRangePicker: false,
             activeGranularity: updatedGranularity
         });
 
         this.fetchTrends(preset, updatedGranularity);
     }
 
-    handleCustomTimeRangePicker() {
-        this.setState({showCustomTimeRangePicker: !this.state.showCustomTimeRangePicker});
-    }
-
     customTimeRangeChangeCallback(updatedWindow) {
         const activeWindow = timeWindow.toCustomTimeRange(updatedWindow.from, updatedWindow.to);
 
         const updatedGranularity = timeWindow.getLowerGranularity(activeWindow.value);
-
+        this.hideTimePicker();
         this.setState({
             activeWindow,
-            showCustomTimeRangePicker: false,
             activeGranularity: updatedGranularity
         });
 
@@ -138,26 +150,27 @@ export default class TrendHeaderToolbar extends React.Component {
         return (
             <div className="trend-details-toolbar clearfix">
                 <div className="pull-left trend-details-toolbar__time-range">
-                    <div className="">Time Range</div>
-                    <div className="btn-group btn-group-sm">
-                        {timeWindow.presets.map(preset => (
-                            <PresetOption
-                                preset={preset}
-                                key={preset.shortName}
-                            />))}
-                        <button
-                            className={this.state.activeWindow.isCustomTimeRange ? 'btn btn-primary' : 'btn btn-default'}
-                            type="button"
-                            onClick={this.handleCustomTimeRangePicker}
-                        >
-                            {this.state.activeWindow.isCustomTimeRange ? this.state.activeWindow.longName : 'custom'}
-                        </button>
+                    <div>Time Range</div>
+                    <div ref={this.setWrapperRef}>
+                        <div className="btn-group btn-group-sm">
+                            {timeWindow.presets.map(preset => (
+                                <PresetOption
+                                    preset={preset}
+                                    key={preset.shortName}
+                                />))}
+                            <button
+                                className={this.state.activeWindow.isCustomTimeRange ? 'btn btn-primary' : 'btn btn-default'}
+                                type="button"
+                                onClick={this.state.showCustomTimeRangePicker ? this.hideTimePicker : this.showTimePicker}
+                            >
+                                {this.state.activeWindow.isCustomTimeRange ? this.state.activeWindow.longName : 'custom'}
+                            </button>
+                        </div>
+                        { this.state.showCustomTimeRangePicker
+                            ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} from={parseInt(this.state.activeWindow.from, 10)} to={parseInt(this.state.activeWindow.until, 10)}/>
+                            : null
+                        }
                     </div>
-
-                    { this.state.showCustomTimeRangePicker
-                        ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} from={parseInt(this.state.activeWindow.from, 10)} to={parseInt(this.state.activeWindow.until, 10)}/>
-                        : null
-                    }
                 </div>
                 <div className="pull-left">
                     <div className="">Metric Granularity</div>
@@ -195,7 +208,7 @@ export default class TrendHeaderToolbar extends React.Component {
                     <Link
                         role="button"
                         className="btn btn-sm btn-default"
-                        to={`/service/${this.props.serviceName}/traces?timePreset=${this.state.activeWindow.shortName}`}
+                        to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
                     ><span
                         className="ti-line-double"
                     /> See Traces</Link>
