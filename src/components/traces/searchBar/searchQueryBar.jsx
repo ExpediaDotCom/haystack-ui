@@ -18,7 +18,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import ServicePicker from './pickers/servicePicker';
 import OperationPicker from './pickers/operationPicker';
 import FieldsPicker from './pickers/fieldsPicker';
 import TimeWindowPicker from './pickers/timeWindowPicker';
@@ -73,12 +72,10 @@ export default class SearchQueryBar extends React.Component {
                 <section>
                     <form onSubmit={this.handleSubmit}>
                       <div className="search-bar-headers">
-                        <div className="search-bar-headers_service">Service</div>
                         <div className="search-bar-headers_operation">Operation</div>
                         <div className="search-bar-headers_fields">Fields <i>(in key=value format)</i></div>
                       </div>
                       <div className="search-bar-pickers">
-                          <ServicePicker uiState={uiState}/>
                           <OperationPicker uiState={uiState}/>
                           <FieldsPicker uiState={uiState}/>
                           <TimeWindowPicker uiState={uiState}/>
