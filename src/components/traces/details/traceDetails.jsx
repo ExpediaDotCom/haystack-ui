@@ -33,7 +33,6 @@ export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired,
         traceDetailsStore: PropTypes.object.isRequired
     };
 
