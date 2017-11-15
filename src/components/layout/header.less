@@ -26,16 +26,24 @@
 .logo {
   display: inline-block;
   width: 36px;
-  margin-top: -6px;
-  margin-right: 3px;
+  margin-top: -@spacing-xs;
+  margin-right: @spacing-xxs;
 }
 
 .header-search {
   border: 1px solid @gray-light !important;
   border-radius: 4px !important;
-  padding: 0px !important;
+  padding: 0 !important;
+  margin-right: 0 !important;
+  @media (max-width: @grid-float-breakpoint) {
+    display: none;
+  }
 }
 
 .search-button {
-  border: 1px solid #e23474 !important;
+  border: 1px solid @brand-primary !important;
+}
+
+.logo-container {
+  cursor: pointer;
 }

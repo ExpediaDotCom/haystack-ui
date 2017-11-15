@@ -20,28 +20,29 @@ import PropTypes from 'prop-types';
 
 @observer
 export default class TimeWindowPicker extends React.Component {
-  static propTypes = {
-    uiState: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        uiState: PropTypes.object.isRequired
+    };
 
-  constructor(props) {
-    super(props);
-    this.updateFieldKv = this.updateFieldKv.bind(this);
-  }
+    constructor(props) {
+        super(props);
+        this.updateFieldKv = this.updateFieldKv.bind(this);
+    }
 
-  updateFieldKv(event) {
-    this.props.uiState.setFieldsUsingKvString(event.target.value);
-  }
+    updateFieldKv(event) {
+        this.props.uiState.setFieldsUsingKvString(event.target.value);
+    }
 
-  render() {
-    return (
-      <div className="search-bar-pickers_fields">
-        <input
-            type="text"
-            className="search-bar-text-box"
-            value={this.props.uiState.fieldsKvString}
-            onChange={this.updateFieldKv}
-        />
-      </div>);
-  }
+    render() {
+        return (
+            <div className="search-bar-pickers_fields">
+                <input
+                    type="text"
+                    className="search-bar-text-box"
+                    value={this.props.uiState.fieldsKvString}
+                    onChange={this.updateFieldKv}
+                />
+            </div>
+        );
+    }
 }

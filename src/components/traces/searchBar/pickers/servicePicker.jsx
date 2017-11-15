@@ -22,44 +22,45 @@ import serviceStore from '../../../../stores/serviceStore';
 
 @observer
 export default class ServicePicker extends React.Component {
-  static propTypes = {
-    uiState: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        uiState: PropTypes.object.isRequired
+    };
 
-  static convertToValueLabelMap(serviceList) {
-    return serviceList.map(service => ({value: service, label: service}));
-  }
+    static convertToValueLabelMap(serviceList) {
+        return serviceList.map(service => ({value: service, label: service}));
+    }
 
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
+    constructor(props) {
+        super(props);
+        this.handleChange = this.handleChange.bind(this);
 
-    serviceStore.fetchServices();
-  }
+        serviceStore.fetchServices();
+    }
 
-  handleChange(event) {
-    this.props.uiState.setServiceName(event.value);
-  }
+    handleChange(event) {
+        this.props.uiState.setServiceName(event.value);
+    }
 
-  render() {
-    const serviceName = this.props.uiState.serviceName;
+    render() {
+        const serviceName = this.props.uiState.serviceName;
 
-    // default to current service if there is not operation in store
-    const options = serviceStore.services.length
-        ? ServicePicker.convertToValueLabelMap(serviceStore.services)
-        : ServicePicker.convertToValueLabelMap([serviceName]);
+        // default to current service if there is not operation in store
+        const options = serviceStore.services.length
+            ? ServicePicker.convertToValueLabelMap(serviceStore.services)
+            : ServicePicker.convertToValueLabelMap([serviceName]);
 
-    return (
-        <div className="search-bar-pickers_service">
-          <Select
-              name="service-list"
-              className="search-bar-picker-select"
-              options={options}
-              onChange={this.handleChange}
-              value={serviceName}
-              clearable={false}
-              placeholder=""
-          />
-        </div>);
-  }
+        return (
+            <div className="search-bar-pickers_service">
+                <Select
+                    name="service-list"
+                    className="search-bar-picker-select"
+                    options={options}
+                    onChange={this.handleChange}
+                    value={serviceName}
+                    clearable={false}
+                    placeholder=""
+                />
+          </div>
+        );
+    }
 }

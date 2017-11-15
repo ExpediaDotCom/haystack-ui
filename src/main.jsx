@@ -29,26 +29,26 @@ import NoMatch from './components/common/noMatch';
 
 export default () => (
     <Route>
-      <div className="layout">
-        <Header/>
-        <article className="primary-content">
-          { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
-              <Switch>
-                <Route exact path="/" component={TracesHome}/>
-                <Route exact path="/search" component={Traces}/>
-                <Route exact path="/help" component={Help}/>
-                <Route path="*" component={NoMatch}/>
-              </Switch> :
-              <Switch>
-                <Route exact path="/" component={Home}/>
-                <Route exact path="/search" component={Traces}/>
-                <Route exact path="/help" component={Help}/>
-                <Route path="/service/:serviceName" component={ServiceTools}/>
-                <Route path="*" component={NoMatch}/>
-              </Switch>
-          }
-        </article>
-        <Footer/>
-      </div>
+        <div className="layout">
+            <Header/>
+            <article className="primary-content">
+            { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
+                <Switch>
+                    <Route exact path="/" component={TracesHome}/>
+                    <Route exact path="/search" component={Traces}/>
+                    <Route exact path="/help" component={Help}/>
+                    <Route path="*" component={NoMatch}/>
+                </Switch> :
+                <Switch>
+                    <Route exact path="/" component={Home}/>
+                    <Route exact path="/search" component={Traces}/>
+                    <Route exact path="/help" component={Help}/>
+                    <Route path="/service/:serviceName" component={ServiceTools}/>
+                    <Route path="*" component={NoMatch}/>
+                </Switch>
+            }
+            </article>
+            <Footer/>
+        </div>
     </Route>
 );

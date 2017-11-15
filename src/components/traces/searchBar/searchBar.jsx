@@ -34,13 +34,13 @@ export default class SearchBar extends React.Component {
 
     static addDefaultParams(query, serviceNameParam) {
         const augmentedQuery = {...query};
-      if (!(query.timePreset || (query.startTime && query.endTime))) {
-        augmentedQuery.timePreset = '1h';
-      }
-      augmentedQuery.serviceName = query.serviceName || serviceNameParam;
-      augmentedQuery.operationName = query.operationName;
+        if (!(query.timePreset || (query.startTime && query.endTime))) {
+            augmentedQuery.timePreset = '1h';
+        }
+        augmentedQuery.serviceName = query.serviceName || serviceNameParam;
+        augmentedQuery.operationName = query.operationName;
 
-      return augmentedQuery;
+        return augmentedQuery;
     }
 
     constructor(props) {
