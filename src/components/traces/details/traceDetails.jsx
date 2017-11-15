@@ -26,6 +26,7 @@ import RawTraceModal from './rawTraceModal';
 import Timeline from './timeline';
 import Invocations from './invocations';
 import rawTraceStore from '../stores/rawTraceStore';
+import uiState from '../searchBar/searchBarUiStateStore';
 
 @observer
 export default class TraceDetails extends React.Component {
@@ -96,7 +97,7 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
-        const {traceId, serviceName, location, traceDetailsStore} = this.props;
+        const {traceId, location, traceDetailsStore} = this.props;
 
         return (
             <section className="table-row-details">
@@ -121,7 +122,10 @@ export default class TraceDetails extends React.Component {
                             ) : null
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
-                        <Clipboard text={`${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${serviceName}&traceId=${traceId}`} onCopy={this.handleCopy} >
+                        <Clipboard
+                            text={`${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${uiState.serviceName}&operationName=${uiState.operationName}&traceId=${traceId}`}
+                            onCopy={this.handleCopy}
+                        >
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
