@@ -21,8 +21,6 @@ import ReactGA from 'react-ga';
 
 import './header.less';
 
-const rootService = (window.haystackUiConfig && window.haystackUiConfig.rootService) || null;
-
 class SearchBar extends React.Component {
     static propTypes = {
         history: PropTypes.shape({
@@ -45,7 +43,7 @@ class SearchBar extends React.Component {
     searchRedirect(event) {
         event.preventDefault();
         if (this.state.traceId.length) {
-            this.props.history.push(`/service/${rootService}/traces?serviceName=${rootService}&traceId=${this.state.traceId}`);
+            this.props.history.push(`/traces/${this.state.traceId}`);
         }
         ReactGA.event({
             category: 'Trace Search',
