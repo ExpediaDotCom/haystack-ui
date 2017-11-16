@@ -8,9 +8,6 @@ module.exports = {
     // default timeout in ms for all the downlevels from store
     upstreamTimeout: 60000,
 
-    // root service that traceId searches will be queried against
-    rootService: 'root-service',
-
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
