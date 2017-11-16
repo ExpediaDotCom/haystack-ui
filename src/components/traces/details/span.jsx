@@ -145,7 +145,7 @@ export default class Span extends React.Component {
                 className={Span.getSpanError(span) === 'true' ? 'span-bar span-bar_failure' : 'span-bar'}
                 height={9}
                 width={`${Math.max(spanWidthPercent, 0.4)}%`}
-                x={`${leftOffsetPercent}%`}
+                x={leftOffsetPercent < 99.6 ? `${leftOffsetPercent}%` : '99.6%'}
                 y={topY + (verticalPadding * 3)}
             />
             <rect

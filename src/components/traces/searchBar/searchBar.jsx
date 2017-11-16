@@ -34,13 +34,13 @@ export default class SearchBar extends React.Component {
 
     static addDefaultParams(query, serviceNameParam) {
         const augmentedQuery = {...query};
-      if (!(query.timePreset || (query.startTime && query.endTime))) {
-        augmentedQuery.timePreset = '1h';
-      }
-      augmentedQuery.serviceName = query.serviceName || serviceNameParam;
-      augmentedQuery.operationName = query.operationName;
+        if (!(query.timePreset || (query.startTime && query.endTime))) {
+            augmentedQuery.timePreset = '1h';
+        }
+        augmentedQuery.serviceName = query.serviceName || serviceNameParam;
+        augmentedQuery.operationName = query.operationName;
 
-      return augmentedQuery;
+        return augmentedQuery;
     }
 
     constructor(props) {
@@ -63,16 +63,12 @@ export default class SearchBar extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.isTriggeredThroughSearchBar) {
-            this.isTriggeredThroughSearchBar = false;
-        } else {
-            const query = SearchBar.addDefaultParams(
-                toQuery(nextProps.location.search),
-                nextProps.match.params.serviceName);
+        const query = SearchBar.addDefaultParams(
+            toQuery(nextProps.location.search),
+            nextProps.match.params.serviceName);
 
-            this.setState({query});
-            this.fetchSearchResults(query);
-        }
+        this.setState({query});
+        this.fetchSearchResults(query);
     }
 
     fetchSearchResults(query) {
@@ -85,7 +81,6 @@ export default class SearchBar extends React.Component {
         const queryUrl = `?${toQueryUrlString(query)}`;
         // push to history only if it is not the same search as the current one
         if (queryUrl !== this.props.location.search) {
-            this.isTriggeredThroughSearchBar = true;
             this.props.history.push({
                 search: queryUrl
             });

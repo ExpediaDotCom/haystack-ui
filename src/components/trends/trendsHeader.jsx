@@ -61,7 +61,7 @@ export default class TrendsHeader extends React.Component {
         const urlQuery = toQuery(this.props.location.search);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(state.activeWindow, urlQuery.operationName);
+        this.fetchTrends(this.props.serviceName, state.activeWindow, urlQuery.operationName);
 
         this.state = state;
     }
@@ -70,20 +70,19 @@ export default class TrendsHeader extends React.Component {
         const urlQuery = toQuery(nextProps.location.search);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(state.activeWindow, urlQuery.operationName);
+        this.fetchTrends(nextProps.serviceName, state.activeWindow, urlQuery.operationName);
 
         this.setState(state);
     }
 
-    fetchTrends(window, operationName) {
+    fetchTrends(serviceName, window, operationName) {
         const granularity = timeWindow.getLowerGranularity(window.value);
         const query = {
             granularity: granularity.value,
             from: window.from,
             until: window.until
         };
-
-        this.props.trendsSearchStore.fetchTrendServiceResults(this.props.serviceName, query, timeWindow.isCustomTimeRange, operationName);
+        this.props.trendsSearchStore.fetchTrendServiceResults(serviceName, query, window.isCustomTimeRange, operationName);
     }
 
     handleTimeChange(event) {
@@ -91,7 +90,7 @@ export default class TrendsHeader extends React.Component {
         const selectedWindow = this.state.options[selectedIndex];
 
         this.setState({activeWindow: selectedWindow});
-        this.fetchTrends(selectedWindow, null);
+        this.fetchTrends(this.props.serviceName, selectedWindow, null);
 
         let query = {};
         if (selectedWindow.isCustomTimeRange) {
@@ -107,7 +106,6 @@ export default class TrendsHeader extends React.Component {
         const queryUrl = `?${toQueryUrlString(query)}`;
         // push to history only if it is not the same search as the current one
         if (queryUrl !== this.props.location.search) {
-            this.isTriggeredThroughSearchBar = true;
             this.props.history.push({
                 search: queryUrl
             });
@@ -132,7 +130,7 @@ export default class TrendsHeader extends React.Component {
                 <div className="pull-right">
                     <span>Showing summary for </span>
                     <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
-                        {options.map((window, index) => (<option key={window.value} value={index}>{ window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
+                        {options.map((window, index) => (<option value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>
             </div>

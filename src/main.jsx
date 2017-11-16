@@ -24,31 +24,31 @@ import Home from './components/home/home';
 import TracesHome from './components/home/TracesHome';
 import Help from './components/docs/help';
 import ServiceTools from './components/layout/serviceTools';
-import Traces from './components/traces/traces';
+import HeaderSearch from './components/layout/headerSearch';
 import NoMatch from './components/common/noMatch';
 
 export default () => (
     <Route>
-      <div className="layout">
-        <Header/>
-        <article className="primary-content">
-          { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
-              <Switch>
-                <Route exact path="/" component={TracesHome}/>
-                <Route exact path="/search" component={Traces}/>
-                <Route exact path="/help" component={Help}/>
-                <Route path="*" component={NoMatch}/>
-              </Switch> :
-              <Switch>
-                <Route exact path="/" component={Home}/>
-                <Route exact path="/search" component={Traces}/>
-                <Route exact path="/help" component={Help}/>
-                <Route path="/service/:serviceName" component={ServiceTools}/>
-                <Route path="*" component={NoMatch}/>
-              </Switch>
-          }
-        </article>
-        <Footer/>
-      </div>
+        <div className="layout">
+            <Header/>
+            <article className="primary-content">
+            { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
+                <Switch>
+                    <Route exact path="/" component={TracesHome}/>
+                    <Route path="/traces/:traceId" component={HeaderSearch}/>
+                    <Route exact path="/help" component={Help}/>
+                    <Route path="*" component={NoMatch}/>
+                </Switch> :
+                <Switch>
+                    <Route exact path="/" component={Home}/>
+                    <Route path="/traces/:traceId" component={HeaderSearch}/>
+                    <Route exact path="/help" component={Help}/>
+                    <Route path="/service/:serviceName" component={ServiceTools}/>
+                    <Route path="*" component={NoMatch}/>
+                </Switch>
+            }
+            </article>
+            <Footer/>
+        </div>
     </Route>
 );

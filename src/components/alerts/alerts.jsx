@@ -21,7 +21,7 @@ import WorkInProgress from '../common/workInProgress';
 
 export default () => (
     <section className="alerts-panel">
-            <WorkInProgress/>
+        <WorkInProgress/>
     </section>
 );
 

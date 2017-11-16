@@ -32,15 +32,6 @@ const stubLocation = {
     search: '?key1=value&key2=value'
 };
 
-const stubHistory = {
-    location: {
-        search: '?key1=value&key2=value'
-    },
-    push: (location) => {
-        stubLocation.search = location.search;
-    }
-};
-
 const stubMatch = {
     params: {
         serviceName: 'abc-service'
@@ -154,10 +145,10 @@ const stubService = 'test-service';
 const stubOperation = 'test-operation-1';
 
 
-function TrendsStubComponent({trendsSearchStore, location, match}) {
+function TrendsStubComponent({trendsSearchStore, location, serviceName}) {
     return (<section className="trends-panel">
-        <TrendsHeader trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
-        <TrendResults trendsSearchStore={trendsSearchStore} serviceName={match.params.serviceName} location={location}/>
+        <TrendsHeader trendsSearchStore={trendsSearchStore} serviceName={serviceName} location={location} />
+        <TrendResults trendsSearchStore={trendsSearchStore} serviceName={serviceName} location={location}/>
     </section>);
 }
 
@@ -192,7 +183,7 @@ describe('<Trends />', () => {
 
     it('should trigger fetchSearchResults on mount', () => {
         const trendsSearchStore = createStubStore([]);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.trends-panel')).to.have.length(1);
         expect(trendsSearchStore.fetchTrendServiceResults.calledOnce);
@@ -200,7 +191,7 @@ describe('<Trends />', () => {
 
     it('should render results after getting search results', () => {
         const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(trendsSearchStore.fetchTrendServiceResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
@@ -209,7 +200,7 @@ describe('<Trends />', () => {
 
     it('should render error if promise is rejected', () => {
         const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, rejectedPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -217,7 +208,7 @@ describe('<Trends />', () => {
 
     it('should render loading if promise is pending', () => {
         const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, pendingPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -226,7 +217,7 @@ describe('<Trends />', () => {
 
     it('should render sparklines on each row of search results', () => {
         const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.duration-sparklines')).to.have.length(4);
     });
