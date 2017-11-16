@@ -22,6 +22,7 @@ import React from 'react';
 import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
+import { MemoryRouter } from 'react-router-dom';
 
 import Traces from '../../../src/components/traces/traces';
 import SearchBar from '../../../src/components/traces/searchBar/searchBar';
@@ -130,9 +131,15 @@ const stubDetails = [
         logs: [
             {
                 timestamp: 1504784384000,
-                endpoint: {
-                    serviceName: 'test-service'
-                }
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                    },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
             }
         ],
         tags: [
@@ -150,12 +157,20 @@ const stubDetails = [
         operationName: 'test',
         startTime: 1504785384000,
         duration: 2000000,
-        logs: [{
-            timestamp: 1504784384000,
-            endpoint: {
-                serviceName: 'test-service'
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                    },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
             }
-        }],
+        ],
         tags: [
             {
                 key: 'success',
@@ -171,12 +186,20 @@ const stubDetails = [
         operationName: 'test',
         startTime: 1504785384000,
         duration: 2000000,
-        logs: [{
-            timestamp: 1504784384000,
-            endpoint: {
-                serviceName: 'test-service'
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                    },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
             }
-        }],
+        ],
         tags: [
             {
                 key: 'success',
@@ -192,12 +215,20 @@ const stubDetails = [
         operationName: 'test',
         startTime: 1504785384000,
         duration: 2000000,
-        logs: [{
-            timestamp: 1504784384000,
-            endpoint: {
-                serviceName: 'test-service'
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                    },
+                    {
+                    key: 'event',
+                    value: 'cs'
+                    }
+                ]
             }
-        }],
+        ],
         tags: [
             {
                 key: 'success',
@@ -270,7 +301,7 @@ describe('<Traces />', () => {
         // Clicking off hides modal
         wrapper.find('.time-range-picker-toggle').simulate('click');
         expect(wrapper.find('.timerange-picker')).to.have.length(1);
-        wrapper.find('.search-bar-headers_service').simulate('click');
+        wrapper.find('.search-bar-headers_fields').simulate('click');
         expect(wrapper.find('.timerange-picker')).to.have.length(1);
     });
 
@@ -413,6 +444,16 @@ describe('<Traces />', () => {
 
         expect(timePointers).to.have.length(5);
         expect((timePointers).last().text()).to.eq('3.500s ');
+    });
+
+    it('has a modal upon clicking a span', () => {
+        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<MemoryRouter>
+            <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
+        </MemoryRouter>);
+        wrapper.find('.span-click').first().simulate('click');
+        const modal = wrapper.find('SpanDetailsModal').first();
+        expect(modal.props().isOpen).to.be.true;
     });
 
     it('should update URL query params on clicking search');

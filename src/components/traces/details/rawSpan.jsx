@@ -45,7 +45,7 @@ export default class RawSpan extends React.Component {
                             rejected: () => <Error />,
                             fulfilled: () => {
                                 if (rawSpanStore.rawSpan) {
-                                    return <pre>{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>;
+                                    return <pre className="raw-span">{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>;
                                 }
 
                                 return <Error />;
