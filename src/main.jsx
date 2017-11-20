@@ -22,7 +22,6 @@ import Header from './components/layout/header';
 import Footer from './components/layout/footer';
 import Home from './components/home/home';
 import TracesHome from './components/home/TracesHome';
-import Help from './components/docs/help';
 import ServiceTools from './components/layout/serviceTools';
 import HeaderSearchInterstitial from './components/layout/headerSearchInterstitial';
 import NoMatch from './components/common/noMatch';
@@ -36,14 +35,11 @@ export default () => (
                 <Switch>
                     <Route exact path="/" component={TracesHome}/>
                     <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
-                    <Route exact path="/help" component={Help}/>
-                    <Route path="/service/:serviceName" component={ServiceTools}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch> :
                 <Switch>
                     <Route exact path="/" component={Home}/>
                     <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
-                    <Route exact path="/help" component={Help}/>
                     <Route path="/service/:serviceName" component={ServiceTools}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch>
