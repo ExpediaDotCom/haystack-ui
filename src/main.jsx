@@ -22,9 +22,8 @@ import Header from './components/layout/header';
 import Footer from './components/layout/footer';
 import Home from './components/home/home';
 import TracesHome from './components/home/TracesHome';
-import Help from './components/docs/help';
 import ServiceTools from './components/layout/serviceTools';
-import HeaderSearch from './components/layout/headerSearch';
+import HeaderSearchInterstitial from './components/layout/headerSearchInterstitial';
 import NoMatch from './components/common/noMatch';
 
 export default () => (
@@ -32,17 +31,15 @@ export default () => (
         <div className="layout">
             <Header/>
             <article className="primary-content">
-            { window.subsystems && window.subsystems.length === 1 && window.subsystems[0] === 'traces' ?
+            { window.haystackUiConfig.subsystems && window.haystackUiConfig.subsystems.length === 1 && window.haystackUiConfig.subsystems[0] === 'traces' ?
                 <Switch>
                     <Route exact path="/" component={TracesHome}/>
-                    <Route path="/traces/:traceId" component={HeaderSearch}/>
-                    <Route exact path="/help" component={Help}/>
+                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch> :
                 <Switch>
                     <Route exact path="/" component={Home}/>
-                    <Route path="/traces/:traceId" component={HeaderSearch}/>
-                    <Route exact path="/help" component={Help}/>
+                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
                     <Route path="/service/:serviceName" component={ServiceTools}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch>

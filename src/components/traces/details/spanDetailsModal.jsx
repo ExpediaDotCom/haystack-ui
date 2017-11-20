@@ -52,6 +52,7 @@ export default class SpanDetailsModal extends React.Component {
     }
 
     render() {
+        const subsystems = window.haystackUiConfig.subsystems;
         return (
             <Modal
                 title={`[${this.props.serviceName}] ${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`}
@@ -70,11 +71,16 @@ export default class SpanDetailsModal extends React.Component {
                             <a role="button" tabIndex="-3" className="raw-tab" onClick={() => this.toggleTab(3)} >Raw Span</a>
                         </li>
                     </ul>
-                    <div className="btn-group-sm pull-right">
-                        <Link className="btn btn-primary" to={`/service/${this.props.serviceName}/trends?operationName=${this.props.span.operationName}`}>
-                            <span className="ti-stats-up"/> Operation Trends
-                        </Link>
-                    </div>
+                    { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
+                    ? null
+                    : (<div className="btn-group-sm pull-right">
+                            <Link
+                                className="btn btn-primary"
+                                to={`/service/${this.props.serviceName}/trends?operationName=${this.props.span.operationName}`}
+                            >
+                                <span className="ti-stats-up"/> Operation Trends
+                            </Link>
+                        </div>)}
                 </div>
                 {this.tabViewer(this.props.span)}
             </Modal>

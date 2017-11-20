@@ -25,7 +25,7 @@ import Loading from '../common/loading';
 import Error from '../common/error';
 
 @observer
-export default class HeaderSearch extends React.Component {
+export default class HeaderSearchInterstitial extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired
     };
@@ -40,7 +40,7 @@ export default class HeaderSearch extends React.Component {
             return (
                 traceDetailsStore.promiseState && traceDetailsStore.promiseState.case({
                     pending: () => <Loading />,
-                    rejected: () => <Error />,
+                    rejected: () => <Error errorMessage={`TraceId ${this.props.match.params.traceId} not found.`}/>,
                     fulfilled: () => {
                         if (traceDetailsStore.spans && traceDetailsStore.spans.length) {
                             const rootSpan = (traceDetailsStore.spans.find(span => !span.parentSpanId));
@@ -48,7 +48,7 @@ export default class HeaderSearch extends React.Component {
                                 to={`/service/${rootSpan.serviceName}/traces?serviceName=${rootSpan.serviceName}&operationName=${rootSpan.operationName}&traceId=${this.props.match.params.traceId}`}
                             />);
                         }
-                        return <Error />;
+                        return <Error errorMessage={`TraceId ${this.props.match.params.traceId} not found.`}/>;
                     }
                 })
             );
