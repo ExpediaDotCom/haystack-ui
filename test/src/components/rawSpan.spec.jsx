@@ -42,7 +42,7 @@ const pendingPromise = {
 };
 
 const stubTrace = [{
-    traceId: 'test-stub',
+    traceId: 'test-stub'
 }];
 
 function createStubStore(results, promise) {
@@ -106,5 +106,4 @@ describe('RawSpan', () => {
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.raw-span')).to.have.length(0);
     });
-
 });
