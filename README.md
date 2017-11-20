@@ -1,6 +1,6 @@
 
 [![Build Status](https://travis-ci.org/ExpediaDotCom/haystack-ui.svg?branch=master)](https://travis-ci.org/ExpediaDotCom/haystack-ui)
-[![Coverage Status](https://coveralls.io/repos/github/ExpediaDotCom/haystack-ui/badge.svg?branch=code-coverage)](https://coveralls.io/github/ExpediaDotCom/haystack-ui?branch=code-coverage)
+[![Coverage Status](https://coveralls.io/repos/github/ExpediaDotCom/haystack-ui/badge.svg?branch=code-coverage)](https://coveralls.io/github/ExpediaDotCom/haystack-ui?branch=master)
 
 <img src="/public/images/assets/logo_with_title_transparent.png" width="300" />
 
