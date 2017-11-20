@@ -15,14 +15,39 @@
  *
  */
 
-import { assert } from 'chai';
+import { expect } from 'chai';
+import axios from 'axios';
+import { when } from 'mobx';
+import MockAdapter from 'axios-mock-adapter';
+
+
 import {ServiceStore} from '../../../src/stores/serviceStore';
 
-describe('OperationStore', () => {
-    it('contacts the api', () => {
-        const store = ServiceStore;
-        store.services = ['lannister-service']; // placeholder until we implement api
-        const serviceCount = store.services.length;
-        assert.isAbove(serviceCount, 0, 'Services Available');
+describe('ServiceStore', () => {
+    let server = null;
+    const store = new ServiceStore();
+
+    beforeEach(() => {
+        server = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+        server = null;
+    });
+
+    it('fetches services off the api', (done) => {
+        server.onGet('/api/services').reply(200, '["test-service"]');
+
+        store.fetchServices();
+
+        when(
+            () => store.services.length > 0,
+            () => {
+                expect(store.services).to.have.length(1);
+                done();
+            });
+
+        store.fetchServices();
+        expect(store.services).to.have.length(0);
     });
 });

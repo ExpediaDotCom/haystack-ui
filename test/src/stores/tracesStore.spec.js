@@ -17,10 +17,13 @@
 
 /* eslint-disable react/prop-types, no-unused-expressions */
 
-import {expect} from 'chai';
+import { expect } from 'chai';
+import axios from 'axios';
+import { when } from 'mobx';
+import MockAdapter from 'axios-mock-adapter';
 
 
-import {formatResults} from '../../../src/components/traces/stores/tracesSearchStore';
+import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
 
 
 const stubTrace = [{
@@ -58,9 +61,29 @@ const stubTrace = [{
     error: false
 }];
 
-describe('TraceSearchStore', () => {
-        it('can format a flattened reponse to be used in the UI', () => {
-            const results = formatResults(stubTrace);
-            expect(results[0].serviceDuration).to.equal(23000);
-        });
+describe('TracesSearchStore', () => {
+    let server = null;
+    const store = new TracesSearchStore();
+
+    beforeEach(() => {
+        server = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+        server = null;
+    });
+
+    it('fetches traces from the api with a query', (done) => {
+        server.onGet('/api/traces?serviceName=test-query').reply(200, stubTrace);
+
+        store.fetchSearchResults({serviceName: 'test-query'});
+
+        when(
+            () => store.searchResults.length > 0,
+            () => {
+                expect(store.searchResults).to.have.length(1);
+                done();
+            });
+    });
 });
+
