@@ -62,7 +62,6 @@
     "html-loader": "^0.4.5",
     "ignore-styles": "^5.0.1",
     "jsdom": "^11.0.0",
-    "jsdom-global": "^3.0.2",
     "less": "^2.3.1",
     "less-loader": "^4.0.3",
     "lodash-webpack-plugin": "^0.11.3",
@@ -107,7 +106,7 @@
       "coverage",
       "haystack-idl",
       "public",
-      "static_codegen ",
+      "static_codegen",
       "server/stores/trends/stub/*",
       "server/stores/traces/stub/*"
     ]
