@@ -83,7 +83,7 @@ export default class TrendTimeRangePicker extends React.Component {
                 </div>
                 <button
                     type="button"
-                    className="btn btn-primary btn-sm pull-right"
+                    className="btn-apply btn btn-primary btn-sm pull-right"
                     onClick={this.handleApply}
                 >
                     Apply

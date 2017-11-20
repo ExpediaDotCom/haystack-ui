@@ -248,4 +248,38 @@ describe('<Trends />', () => {
         expect(trendsSearchStore.fetchTrendOperationResults.callCount).to.equal(2);
         expect(wrapper.find('.chart-container')).to.have.length(3);
     });
+
+    it('trend custom time picker should be responsive and change the date parameter', () => {
+        const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const wrapper = mount(<MemoryRouter>
+            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+        </MemoryRouter>);
+
+        // Clicking modal
+        expect(wrapper.find('.custom-timerange-picker')).to.have.length(0);
+        wrapper.find('.custom-btn').simulate('click');
+        expect(wrapper.find('.custom-timerange-picker')).to.have.length(1);
+        wrapper.find('.custom-btn').simulate('click');
+        expect(wrapper.find('.custom-timerange-picker')).to.have.length(0);
+
+        // Custom time picker
+        wrapper.find('.custom-btn').simulate('click');
+        wrapper.find('.custom-timerange-picker__datetime-from').simulate('click');
+        wrapper.find('.rdtOld').first().simulate('click');
+        wrapper.find('.custom-timerange-picker').simulate('click');
+        wrapper.find('.btn-apply').simulate('click');
+        expect(wrapper.find('.timerange-picker')).to.have.length(0);
+    });
+
+    it('trend custom time picker should be responsive and change the date parameter', () => {
+        const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const wrapper = mount(<MemoryRouter>
+            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+        </MemoryRouter>);
+
+        // Clicking granularity button
+        wrapper.find('.dropdown-toggle').simulate('click');
+        expect(wrapper.find('.granularity-button')).to.have.length(4);
+        wrapper.find('.granularity-button').last().simulate('click');
+    });
 });

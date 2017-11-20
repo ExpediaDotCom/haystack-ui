@@ -31,6 +31,7 @@ export default class SpanDetailsModal extends React.Component {
         this.state = {
             tabSelected: 1
         };
+
         this.tabViewer = this.tabViewer.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
     }
@@ -60,13 +61,13 @@ export default class SpanDetailsModal extends React.Component {
                 <div className="tabs-nav-container clearfix">
                     <ul className="nav nav-tabs pull-left">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Logs</a>
+                            <a role="button" className="log-tab" tabIndex="-1" onClick={() => this.toggleTab(1)} >Logs</a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" tabIndex="-2" onClick={() => this.toggleTab(2)} >Tags</a>
+                            <a role="button" tabIndex="-2" className="tags-tab" onClick={() => this.toggleTab(2)} >Tags</a>
                         </li>
                         <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                            <a role="button" tabIndex="-3" onClick={() => this.toggleTab(3)} >Raw Span</a>
+                            <a role="button" tabIndex="-3" className="raw-tab" onClick={() => this.toggleTab(3)} >Raw Span</a>
                         </li>
                     </ul>
                     <div className="btn-group-sm pull-right">

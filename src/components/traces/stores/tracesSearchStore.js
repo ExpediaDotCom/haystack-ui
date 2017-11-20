@@ -24,7 +24,7 @@ function TraceException(data) {
     this.data = data;
 }
 
-function formatResults(results) {
+export function formatResults(results) {
     return results.map((result) => {
         const flattenedResult = {...result};
         flattenedResult.rootUrl = result.root.url;
