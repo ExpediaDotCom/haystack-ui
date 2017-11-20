@@ -20,30 +20,30 @@ import PropTypes from 'prop-types';
 import {Redirect} from 'react-router-dom';
 import {observer} from 'mobx-react';
 
-import traceDetailsStore from '../traces/stores/traceDetailsStore';
 import Loading from '../common/loading';
 import Error from '../common/error';
 
 @observer
 export default class HeaderSearchInterstitial extends React.Component {
     static propTypes = {
+        traceDetailsStore: PropTypes.object.isRequired,
         match: PropTypes.object.isRequired
     };
 
     constructor(props) {
         super(props);
 
-        traceDetailsStore.fetchTraceDetails(this.props.match.params.traceId);
+        this.props.traceDetailsStore.fetchTraceDetails(this.props.match.params.traceId);
     }
 
     render() {
             return (
-                traceDetailsStore.promiseState && traceDetailsStore.promiseState.case({
+                this.props.traceDetailsStore.promiseState && this.props.traceDetailsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error errorMessage={`TraceId ${this.props.match.params.traceId} not found.`}/>,
                     fulfilled: () => {
-                        if (traceDetailsStore.spans && traceDetailsStore.spans.length) {
-                            const rootSpan = (traceDetailsStore.spans.find(span => !span.parentSpanId));
+                        if (this.props.traceDetailsStore.spans && this.props.traceDetailsStore.spans.length) {
+                            const rootSpan = (this.props.traceDetailsStore.spans.find(span => !span.parentSpanId));
                             return (<Redirect
                                 to={`/service/${rootSpan.serviceName}/traces?serviceName=${rootSpan.serviceName}&operationName=${rootSpan.operationName}&traceId=${this.props.match.params.traceId}`}
                             />);

@@ -24,6 +24,7 @@ import Home from './components/home/home';
 import TracesHome from './components/home/TracesHome';
 import ServiceTools from './components/layout/serviceTools';
 import HeaderSearchInterstitial from './components/layout/headerSearchInterstitial';
+import traceDetailsStore from './components/traces/stores/traceDetailsStore';
 import NoMatch from './components/common/noMatch';
 
 export default () => (
@@ -34,12 +35,12 @@ export default () => (
             { window.haystackUiConfig.subsystems && window.haystackUiConfig.subsystems.length === 1 && window.haystackUiConfig.subsystems[0] === 'traces' ?
                 <Switch>
                     <Route exact path="/" component={TracesHome}/>
-                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
+                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial} traceDetailsStore={traceDetailsStore}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch> :
                 <Switch>
                     <Route exact path="/" component={Home}/>
-                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial}/>
+                    <Route path="/traces/:traceId" component={HeaderSearchInterstitial} traceDetailsStore={traceDetailsStore}/>
                     <Route path="/service/:serviceName" component={ServiceTools}/>
                     <Route path="*" component={NoMatch}/>
                 </Switch>
