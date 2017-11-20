@@ -110,14 +110,6 @@ export default class ServiceTools extends Component {
                 </NavLink>
                 : null
             }
-            <NavLink
-                className={navLinkClass}
-                activeClassName={navLinkClassActive}
-                to={`/service/${serviceName}/traces`}
-            >
-                <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
-                Traces
-            </NavLink>
             {isTrendsEnabled ?
                 <NavLink
                     className={navLinkClass}
@@ -129,6 +121,14 @@ export default class ServiceTools extends Component {
                 </NavLink>
                 : null
             }
+            <NavLink
+                className={navLinkClass}
+                activeClassName={navLinkClassActive}
+                to={`/service/${serviceName}/traces`}
+            >
+                <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
+                Traces
+            </NavLink>
             {isAlertsEnabled ?
                 <NavLink
                     className={navLinkClass}
