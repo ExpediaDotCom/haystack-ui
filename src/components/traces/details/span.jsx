@@ -134,7 +134,7 @@ export default class Span extends React.Component {
         const formattedDuration = `${formatters.toDurationMsString(duration)}`;
         const SpanBar = (<g>
             <text
-                className="span-label"
+                className={Span.getSpanError(span) === 'true' ? 'span-label span-label_failure' : 'span-label'}
                 x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 2)}
                 textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
