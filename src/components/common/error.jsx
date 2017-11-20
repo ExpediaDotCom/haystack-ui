@@ -18,15 +18,25 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import './error.less';
 
-
-export default () => (
+const Error = ({errorMessage}) => (
     <section className="text-center">
         <div className="error-message_text">
             <h5>{"Oops! Couldn't find the needle"}</h5>
-            <p>Please try again later</p>
+            <p>{errorMessage}</p>
         </div>
     </section>
 );
 
+Error.defaultProps = {
+    errorMessage: 'Please try again later'
+};
+
+Error.propTypes = {
+    errorMessage: PropTypes.string
+};
+
+export default Error;
