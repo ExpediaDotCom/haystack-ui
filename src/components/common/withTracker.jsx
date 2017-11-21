@@ -29,9 +29,8 @@ const trackPage = (page) => {
 
 const withTracker = (WrappedComponent) => {
     class Wrapper extends Component {
-
-        propTypes = {
-        location: PropTypes.objectOf(PropTypes.string)
+        static propTypes = {
+            location: PropTypes.objectOf(PropTypes.string).isRequired
         };
 
         componentDidMount() {
