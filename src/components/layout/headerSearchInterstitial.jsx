@@ -36,6 +36,10 @@ export default class HeaderSearchInterstitial extends React.Component {
         this.props.traceDetailsStore.fetchTraceDetails(this.props.match.params.traceId);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.props.traceDetailsStore.fetchTraceDetails(nextProps.match.params.traceId);
+    }
+
     render() {
             return (
                 this.props.traceDetailsStore.promiseState && this.props.traceDetailsStore.promiseState.case({
