@@ -130,7 +130,7 @@ export default class TrendsHeader extends React.Component {
                 <div className="pull-right">
                     <span>Showing summary for </span>
                     <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
-                        {options.map((window, index) => (<option value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
+                        {options.map((window, index) => (<option key={window.longName} value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>
             </div>

@@ -64,8 +64,9 @@ export default class TrendHeaderToolbar extends React.Component {
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false
         };
-
-        this.fetchTrends(activeWindow, activeGranularity);
+    }
+    componentDidMount() {
+        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
     }
     setWrapperRef(node) {
         this.wrapperRef = node;
