@@ -19,10 +19,26 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { expect } from 'chai';
 import { MemoryRouter } from 'react-router-dom';
+import sinon from 'sinon';
 
 import Header from '../../../src/components/layout/header';
 import Footer from '../../../src/components/layout/footer';
 import ServiceTools from '../../../src/components/layout/serviceTools';
+import HeaderSearchInterstitial from '../../../src/components/layout/headerSearchInterstitial';
+import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
+
+
+const fulfilledPromise = {
+    case: ({fulfilled}) => fulfilled()
+};
+
+const rejectedPromise = {
+    case: ({rejected}) => rejected()
+};
+
+const pendingPromise = {
+    case: ({pending}) => pending()
+};
 
 const stubLocation = {
     search: '/'
@@ -42,6 +58,156 @@ const stubMatch = {
         serviceName: 'abc-service'
     }
 };
+
+const stubDetails = [
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504784384000,
+        duration: 3500000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'true'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-2',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-3',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    },
+    {
+        traceId: 'test-trace-id',
+        spanId: 'test-span-4',
+        parentSpanId: 'test-span-1',
+        serviceName: 'test-service',
+        operationName: 'test',
+        startTime: 1504785384000,
+        duration: 2000000,
+        logs: [
+            {
+                timestamp: 1504784384000,
+                fields: [{
+                    key: 'event',
+                    value: 'sr'
+                },
+                    {
+                        key: 'event',
+                        value: 'cs'
+                    }
+                ]
+            }
+        ],
+        tags: [
+            {
+                key: 'success',
+                value: 'false'
+            }
+        ]
+    }
+];
+
+function createStubDetailsStore(spans, promise) {
+    const store = new TraceDetailsStore();
+    sinon.stub(store, 'fetchTraceDetails', () => {
+        store.spans = spans;
+        store.promiseState = promise;
+    });
+
+    return store;
+}
+
+describe('<HeaderSearchInterstitial />', () => {
+    it('should successfully redirect upon receiving successful trace details', () => {
+        const store = createStubDetailsStore(stubDetails, fulfilledPromise);
+        const wrapper = mount(<MemoryRouter><HeaderSearchInterstitial match={stubMatch} traceDetailsStore={store} /></MemoryRouter>);
+        expect(wrapper.find('Redirect')).to.have.length(1);
+    });
+
+    it('should not redirect upon pending trace details', () => {
+        const store = createStubDetailsStore(stubDetails, pendingPromise);
+        const wrapper = mount(<MemoryRouter><HeaderSearchInterstitial match={stubMatch} traceDetailsStore={store} /></MemoryRouter>);
+        expect(wrapper.find('.loading')).to.have.length(1);
+        expect(wrapper.find('Redirect')).to.have.length(0);
+    });
+
+    it('should not redirect upon receiving a failed trace', () => {
+        const store = createStubDetailsStore(stubDetails, rejectedPromise);
+        const wrapper = mount(<MemoryRouter><HeaderSearchInterstitial match={stubMatch} traceDetailsStore={store} /></MemoryRouter>);
+        expect(wrapper.find('.error-message_text')).to.have.length(1);
+        expect(wrapper.find('Redirect')).to.have.length(0);
+    });
+});
 
 describe('<Header />', () => {
     it('should render the Header with functioning search bar', () => {

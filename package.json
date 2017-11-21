@@ -33,6 +33,7 @@
     "react-ga": "^2.3.5"
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.10.0",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
