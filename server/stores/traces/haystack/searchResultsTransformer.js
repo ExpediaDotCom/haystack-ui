@@ -30,6 +30,8 @@ function calculateEndToEndDuration(spans) {
 }
 
 function calculateShadowDuration(spans) {
+  if (!spans.length) return 0;
+
   const shadows = _.flatMap(spans, span => [{time: span.startTime, value: 1}, {time: span.startTime + span.duration, value: -1}]);
 
   const sortedShadows = shadows.sort((a, b) => a.time - b.time);
