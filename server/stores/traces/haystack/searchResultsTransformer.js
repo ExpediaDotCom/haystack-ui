@@ -39,7 +39,7 @@ function findTag(tags, tagName) {
 }
 
 function isSpanError(span) {
-  return findTag(span.tags, 'error') === 'true';
+  return findTag(span.tags, 'error') === 'true' || findTag(span.tags, 'error') === true;
 }
 
 function createServicesSummary(trace) {
@@ -102,9 +102,7 @@ function toSearchResult(trace, query) {
     queriedOperation,
     startTime: rootSpan.startTime,               // start time of the root span
     duration: calculateEndToEndDuration(trace),  // end-to-end duration
-    error: root.error
-    || (queriedService && queriedService.error)
-    || (queriedOperation && queriedOperation.error)  // error on root or queried service or queried operation
+    error: trace.some(span => isSpanError(span))
   };
 }
 
