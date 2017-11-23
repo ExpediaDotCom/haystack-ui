@@ -17,6 +17,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { toDurationMicroseconds } from '../utils/presets';
 import { toQueryUrlString } from '../../../utils/queryParser';
 
 function TraceException(data) {
@@ -44,7 +45,14 @@ export class TracesSearchStore {
     @observable searchResults = [];
 
     @action fetchSearchResults(query) {
-        const queryUrlString = toQueryUrlString(query);
+        const queryUrlString = toQueryUrlString({...query,
+            serviceName: query.serviceName,
+            operationName: query.operationName === 'all' ? null : query.operationName,
+            startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
+            endTime: query.endTime ? query.endTime * 1000 : (Date.now() * 1000),
+            timePreset: null
+        });
+
         this.promiseState = fromPromise(
             axios
                 .get(`/api/traces?${queryUrlString}`)

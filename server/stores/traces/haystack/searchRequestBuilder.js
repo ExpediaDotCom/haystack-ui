@@ -16,10 +16,9 @@
 
 const requestBuilder = {};
 const messages = require('../../../../static_codegen/traceReader_pb');
-const rangeConverter = require('../../utils/rangeConverter');
 
-const reservedField = ['timePreset', 'startTime', 'endTime'];
-const RESULTS_LIMIT = 40;
+const reservedField = ['startTime', 'endTime', 'limit'];
+const DEFAULT_RESULTS_LIMIT = 40;
 
 function createFieldsList(query) {
     return Object.keys(query)
@@ -36,9 +35,9 @@ function createFieldsList(query) {
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
     request.setFieldsList(createFieldsList(query));
-    request.setStarttime((query.startTime && parseInt(query.startTime, 10)) || ((Date.now() * 1000) - rangeConverter.toDuration(query.timePreset)));
-    request.setEndtime((query.endTime && parseInt(query.endTime, 10)) || Date.now() * 1000);
-    request.setLimit(RESULTS_LIMIT);
+    request.setStarttime(parseInt(query.startTime, 10));
+    request.setEndtime(parseInt(query.endTime, 10));
+    request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);
 
     return request;
 };
