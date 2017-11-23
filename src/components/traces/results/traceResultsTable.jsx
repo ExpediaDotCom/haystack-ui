@@ -261,7 +261,7 @@ export default class TraceResultsTable extends React.Component {
                         sortFunc={this.sortByDuration}
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Total duration for the queried operation. Sum of duration of all spans of the queried operation'}
+                        headerText={'Total busy time in timeline for the queried operation'}
                     ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
                 }
                 {
@@ -273,7 +273,7 @@ export default class TraceResultsTable extends React.Component {
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Percentage of total duration for the queried operation as compared to duration of the trace. Could be > 100% if there are parallel calls.'}
+                        headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
                     ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
                 }
                 <TableHeaderColumn
@@ -284,7 +284,7 @@ export default class TraceResultsTable extends React.Component {
                     sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Total duration for the queried service. Sum of duration of all spans of the queried service'}
+                    headerText={'Total busy time in timeline for the queried service'}
                 ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="serviceDurationPercent"
@@ -293,7 +293,7 @@ export default class TraceResultsTable extends React.Component {
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Percentage of total duration for the queried service as compared to duration of the trace. Could be > 100% if there are parallel calls.'}
+                    headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
                 ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="duration"
