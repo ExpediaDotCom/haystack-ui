@@ -27,7 +27,7 @@ export class OperationStore {
             url: `/api/operations?serviceName=${serviceName}`
             })
             .then((response) => {
-                this.operations = ['all', ...response.data];
+                this.operations = ['all', ...response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))];
             });
     }
 }

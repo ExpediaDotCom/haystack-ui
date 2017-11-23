@@ -55,10 +55,11 @@ export default class SearchBar extends React.Component {
         // bind functions
         this.fetchSearchResults = this.fetchSearchResults.bind(this);
         this.searchCallback = this.searchCallback.bind(this);
+    }
 
-        // trigger search if service name is present
-        if (query.serviceName) {
-            this.fetchSearchResults(query);
+    componentDidMount() {
+        if (this.state.query.serviceName) {
+            this.fetchSearchResults(this.state.query);
         }
     }
 

@@ -29,7 +29,7 @@ export class ServiceStore {
             url: '/api/services'
         })
         .then((response) => {
-            this.services = response.data;
+            this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         });
     }
 }
