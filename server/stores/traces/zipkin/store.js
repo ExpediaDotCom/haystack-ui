@@ -18,13 +18,13 @@ const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
 const converter = require('./converter');
-const rangeConverter = require('../../utils/rangeConverter');
 const errorConverter = require('../../utils/errorConverter');
 
 const store = {};
 const baseZipkinUrl = config.stores.traces.zipkinUrl;
 
-const reservedField = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime'];
+const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
+const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
   return Object
@@ -37,11 +37,11 @@ function toAnnotationQuery(query) {
 function mapQueryParams(query) {
     const mappedQuery = {
         serviceName: query.serviceName,
-        spanName: query.operationName,
+        spanName: query.operationName ? query.operationName : 'all',
         annotationQuery: toAnnotationQuery(query),
-        endTs: query.endTime || Date.now() - 30000,
-        lookback: rangeConverter.toDuration(query.timePreset) || (query.endTime - query.startTime),
-        limit: 40
+        endTs: (parseInt(query.endTime, 10) - (30 * 1000 * 1000)) / 1000,
+        lookback: (parseInt(query.endTime, 10) - parseInt(query.startTime, 10)) / 1000,
+        limit: parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT
     };
 
     return Object

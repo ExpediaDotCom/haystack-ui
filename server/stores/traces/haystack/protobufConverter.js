@@ -33,6 +33,7 @@ function toLogJson(pbLog) {
 converter.toSpanJson = pbSpan => ({
     traceId: pbSpan.traceid,
     spanId: pbSpan.spanid,
+    parentSpanId: pbSpan.parentspanid,
     serviceName: pbSpan.servicename,
     operationName: pbSpan.operationname,
     startTime: pbSpan.starttime,

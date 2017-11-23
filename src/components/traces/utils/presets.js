@@ -21,9 +21,35 @@ function getUnitText(unit) {
     return 'minute';
 }
 
-export default function toPresetDisplayText(preset) {
+export function toPresetDisplayText(preset) {
     const count = preset.substr(0, preset.length - 1);
     const unit = getUnitText(preset[preset.length - 1]);
 
     return `last ${count} ${unit}${count > 1 ? 's' : ''}`;
+}
+
+export function toDurationMicroseconds(preset) {
+    if (preset) {
+        const count = preset.substr(0, preset.length - 1);
+        const unit = preset[preset.length - 1];
+        let multiplier;
+
+        switch (unit) {
+            case 's':
+                multiplier = 60;
+                break;
+            case 'h':
+                multiplier = 60 * 60;
+                break;
+            case 'd':
+                multiplier = 60 * 60 * 24;
+                break;
+            default:
+                multiplier = 60;
+        }
+
+        return parseInt(count, 10) * multiplier * 1000 * 1000;
+    }
+
+    return null;
 }

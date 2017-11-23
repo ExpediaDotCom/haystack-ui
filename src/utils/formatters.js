@@ -54,7 +54,6 @@ formatters.toNumberString = (num) => {
     return `${(num / 1000000).toFixed(1)}m`;
 };
 
-
 formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     const start = moment(fromInMs);
     const end = moment(untilInMs);

@@ -18,7 +18,7 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import TimeRangePicker from './timeRangePicker';
-import toPresetDisplayText from '../../utils/presets';
+import { toPresetDisplayText } from '../../utils/presets';
 import formatters from '../../../../utils/formatters';
 
 @observer
