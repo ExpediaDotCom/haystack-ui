@@ -29,8 +29,30 @@ function calculateEndToEndDuration(spans) {
   return difference || 1;
 }
 
-function calculateCumulativeDuration(spans) {
-  return spans.reduce((running, span) => running + span.duration, 0) || 1;
+function calculateShadowDuration(spans) {
+  if (!spans.length) return 0;
+
+  const shadows = _.flatMap(spans, span => [{time: span.startTime, value: 1}, {time: span.startTime + span.duration, value: -1}]);
+
+  const sortedShadows = shadows.sort((a, b) => a.time - b.time);
+
+  let runningCount = 0;
+  let lastStartTimestamp = sortedShadows[0].time;
+  let runningShadowDuration = 0;
+
+  for (let i = 0; i < sortedShadows.length; i += 1) {
+      if (runningCount === 1 && sortedShadows[i].value === -1) {
+          runningShadowDuration += sortedShadows[i].time - lastStartTimestamp;
+      }
+
+      if (runningCount === 0 && sortedShadows[i].value === 1) {
+          lastStartTimestamp = sortedShadows[i].time;
+      }
+
+      runningCount += sortedShadows[i].value;
+  }
+
+  return runningShadowDuration;
 }
 
 function findTag(tags, tagName) {
@@ -39,7 +61,7 @@ function findTag(tags, tagName) {
 }
 
 function isSpanError(span) {
-  return findTag(span.tags, 'error') === 'true';
+  return findTag(span.tags, 'error') === 'true' || findTag(span.tags, 'error') === true;
 }
 
 function createServicesSummary(trace) {
@@ -51,27 +73,26 @@ function createServicesSummary(trace) {
   }));
 }
 
-// TODO instead of cumulative time, use shadow time on total timeline
-function createQueriedServiceSummary(trace, serviceName, totalCumulativeDuration) {
+function createQueriedServiceSummary(trace, serviceName, endToEndDuration) {
   const serviceSpans = trace.filter(span => span.serviceName === serviceName);
-  const cumulativeDuration = calculateCumulativeDuration(serviceSpans);
-  const percent = Math.ceil((cumulativeDuration / totalCumulativeDuration) * 100);
+
+  const serviceShadowDuration = calculateShadowDuration(serviceSpans);
+  const percent = Math.ceil((serviceShadowDuration / endToEndDuration) * 100);
 
   return serviceName && serviceSpans && {
-        duration: cumulativeDuration,
+        duration: serviceShadowDuration,
         durationPercent: percent,
         error: serviceSpans.some(span => isSpanError(span))
       };
 }
 
-// TODO instead of cumulative time, use shadow time on total timeline
-function createQueriedOperationSummary(trace, operationName, totalCumulativeDuration) {
+function createQueriedOperationSummary(trace, operationName, endToEndDuration) {
   const operationSpans = trace.filter(span => span.operationName === operationName);
-  const cumulativeDuration = calculateCumulativeDuration(operationSpans);
-  const percent = Math.floor((cumulativeDuration / totalCumulativeDuration) * 100);
+  const operationShadowDuration = calculateShadowDuration(operationSpans);
+  const percent = Math.floor((operationShadowDuration / endToEndDuration) * 100);
 
   return operationName && operationSpans && {
-        duration: cumulativeDuration,
+        duration: operationShadowDuration,
         durationPercent: percent,
         error: operationSpans.some(span => isSpanError(span))
       };
@@ -89,9 +110,9 @@ function toSearchResult(trace, query) {
 
   const services = createServicesSummary(trace);
 
-  const totalCumulativeDuration = calculateCumulativeDuration(trace);
-  const queriedService = createQueriedServiceSummary(trace, query.serviceName, totalCumulativeDuration);
-  const queriedOperation = createQueriedOperationSummary(trace, query.operationName, totalCumulativeDuration);
+  const endToEndDuration = calculateEndToEndDuration(trace);
+  const queriedService = createQueriedServiceSummary(trace, query.serviceName, endToEndDuration);
+  const queriedOperation = createQueriedOperationSummary(trace, query.operationName, endToEndDuration);
 
   return {
     traceId: rootSpan.traceId,
@@ -101,10 +122,8 @@ function toSearchResult(trace, query) {
     queriedService,
     queriedOperation,
     startTime: rootSpan.startTime,               // start time of the root span
-    duration: calculateEndToEndDuration(trace),  // end-to-end duration
-    error: root.error
-    || (queriedService && queriedService.error)
-    || (queriedOperation && queriedOperation.error)  // error on root or queried service or queried operation
+    duration: endToEndDuration,                  // end-to-end duration
+    error: trace.some(span => isSpanError(span))
   };
 }
 
