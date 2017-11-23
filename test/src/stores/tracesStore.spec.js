@@ -15,16 +15,12 @@
  *
  */
 
-/* eslint-disable react/prop-types, no-unused-expressions */
-
 import { expect } from 'chai';
 import axios from 'axios';
 import { when } from 'mobx';
 import MockAdapter from 'axios-mock-adapter';
 
-
 import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
-
 
 const stubTrace = [{
     traceId: 'test-stub',
@@ -74,9 +70,9 @@ describe('TracesSearchStore', () => {
     });
 
     it('fetches traces from the api with a query', (done) => {
-        server.onGet('/api/traces?serviceName=test-query').reply(200, stubTrace);
+        server.onGet('/api/traces?serviceName=test-query&startTime=1000&endTime=1000').reply(200, stubTrace);
 
-        store.fetchSearchResults({serviceName: 'test-query'});
+        store.fetchSearchResults({serviceName: 'test-query', startTime: 1, endTime: 1});
 
         when(
             () => store.searchResults.length > 0,
