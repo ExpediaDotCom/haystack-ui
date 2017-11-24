@@ -39,16 +39,16 @@ export default class TraceResultsTable extends React.Component {
         }
         return a.startTime - b.startTime;
     }
-    static sortByRootAndTime(a, b, order, extraField) {
+    static sortByRootAndTime(a, b, order) {
         if (a.rootOperation === b.rootOperation) {
             return TraceResultsTable.sortByStartTime(a, b, 'desc');
         }
         if (order === 'desc') {
-            return a.rootOperation.localeCompare(b.rootOperation)
+            return a.rootOperation.localeCompare(b.rootOperation);
         }
         return b.rootOperation.localeCompare(a.rootOperation);
     }
-    static sortBySvcDurPcAndTime(a, b, order, extraField) {
+    static sortBySvcDurPcAndTime(a, b, order) {
         if (a.serviceDurationPercent === b.serviceDurationPercent) {
             return TraceResultsTable.sortByStartTime(a, b, 'desc');
         }
