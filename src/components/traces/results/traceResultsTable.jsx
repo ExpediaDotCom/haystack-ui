@@ -33,17 +33,56 @@ export default class TraceResultsTable extends React.Component {
         location: PropTypes.object.isRequired
     };
 
-    static sortByTimestamp(a, b, order) {
+    static sortByStartTime(a, b, order) {
         if (order === 'desc') {
-            return b - a;
+            return b.startTime - a.startTime;
         }
-        return a - b;
+        return a.startTime - b.startTime;
     }
-    static sortByDuration(a, b, order) {
-        if (order === 'desc') {
-            return b.duration - a.duration;
+    static sortByRootAndTime(a, b, order, extraField) {
+        if (a.rootOperation === b.rootOperation) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
         }
-        return a.duration - b.duration;
+        if (order === 'desc') {
+            return a.rootOperation.localeCompare(b.rootOperation)
+        }
+        return b.rootOperation.localeCompare(a.rootOperation);
+    }
+    static sortBySvcDurPcAndTime(a, b, order, extraField) {
+        if (a.serviceDurationPercent === b.serviceDurationPercent) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
+        }
+        if (order === 'desc') {
+            return b.serviceDurationPercent - a.serviceDurationPercent;
+        }
+        return a.serviceDurationPercent - b.serviceDurationPercent;
+    }
+    static sortByOperDurPcAndTime(a, b, order) {
+        if (a.operationDurationPercent === b.operationDurationPercent) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
+        }
+        if (order === 'desc') {
+            return b.operationDurationPercent - a.operationDurationPercent;
+        }
+        return a.operationDurationPercent - b.operationDurationPercent;
+    }
+    static sortBySuccessAndTime(a, b, order) {
+        if (a.error === b.error) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
+        }
+        if (order === 'desc') {
+            return (a.error ? 1 : -1);
+        }
+        return (b.error ? 1 : -1);
+    }
+    static sortBySpansAndTime(a, b, order) {
+        if (a.spanCount === b.spanCount) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
+        }
+        if (order === 'desc') {
+            return b.spanCount - a.spanCount;
+        }
+        return a.spanCount - b.spanCount;
     }
 
     static handleServiceList(services) {
@@ -220,7 +259,6 @@ export default class TraceResultsTable extends React.Component {
                     width="15"
                     dataSort
                     caretRender={TraceResultsTable.getCaret}
-                    sortFunc={this.sortByTimestamp}
                     thStyle={tableHeaderStyle}
                     headerText={'Start time of the first span in local timezone'}
                 ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
@@ -229,6 +267,7 @@ export default class TraceResultsTable extends React.Component {
                     dataFormat={TraceResultsTable.rootColumnFormatter}
                     width="25"
                     dataSort
+                    sortFunc={TraceResultsTable.sortByRootAndTime}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
                     headerText={'Operation name of the root span'}
@@ -238,6 +277,7 @@ export default class TraceResultsTable extends React.Component {
                     width="10"
                     dataFormat={TraceResultsTable.errorFormatter}
                     dataSort
+                    sortFunc={TraceResultsTable.sortBySuccessAndTime}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
                     headerText={'Status of trace. Is marked failure if any spans in trace have success marked as false.'}
@@ -247,6 +287,7 @@ export default class TraceResultsTable extends React.Component {
                     dataFormat={TraceResultsTable.spanColumnFormatter}
                     width="25"
                     dataSort
+                    sortFunc={TraceResultsTable.sortBySpansAndTime}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
                     headerText={'Total number of spans across all services in the trace'}
@@ -258,7 +299,6 @@ export default class TraceResultsTable extends React.Component {
                         dataFormat={TraceResultsTable.durationFormatter}
                         width="10"
                         dataSort
-                        sortFunc={this.sortByDuration}
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
                         headerText={'Total duration for the queried operation. Sum of duration of all spans of the queried operation'}
@@ -271,6 +311,7 @@ export default class TraceResultsTable extends React.Component {
                         dataFormat={TraceResultsTable.durationPercentFormatter}
                         width="10"
                         dataSort
+                        sortFunc={TraceResultsTable.sortByOperDurPcAndTime}
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
                         headerText={'Percentage of total duration for the queried operation as compared to duration of the trace. Could be > 100% if there are parallel calls.'}
@@ -281,7 +322,6 @@ export default class TraceResultsTable extends React.Component {
                     dataFormat={TraceResultsTable.durationFormatter}
                     width="10"
                     dataSort
-                    sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Total duration for the queried service. Sum of duration of all spans of the queried service'}
@@ -291,6 +331,7 @@ export default class TraceResultsTable extends React.Component {
                     dataFormat={TraceResultsTable.durationPercentFormatter}
                     width="10"
                     dataSort
+                    sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Percentage of total duration for the queried service as compared to duration of the trace. Could be > 100% if there are parallel calls.'}
@@ -300,7 +341,6 @@ export default class TraceResultsTable extends React.Component {
                     dataFormat={TraceResultsTable.totalDurationColumnFormatter}
                     width="10"
                     dataSort
-                    sortFunc={this.sortByDuration}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
