@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -15,6 +14,7 @@
  *       limitations under the License.
  *
  */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-static-element-interactions */
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
@@ -50,20 +50,14 @@ export default class ServiceTools extends Component {
 
         this.handleServiceChange = this.handleServiceChange.bind(this);
         this.showServiceChanger = this.showServiceChanger.bind(this);
-        this.hideServiceChanger = this.hideServiceChanger.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
-        this.setToggleRef = this.setToggleRef.bind(this);
 
         serviceStore.fetchServices();
     }
 
     setWrapperRef(node) {
         this.wrapperRef = node;
-    }
-
-    setToggleRef(node) {
-        this.toggleRef = node;
     }
 
     handleServiceChange(event) {
@@ -73,31 +67,25 @@ export default class ServiceTools extends Component {
         this.setState({serviceChangeToggleOpen: false});
     }
 
-    hideServiceChanger() {
-        document.removeEventListener('mousedown', this.handleOutsideClick);
-        this.setState({serviceChangeToggleOpen: false});
-    }
-
     showServiceChanger() {
         document.addEventListener('mousedown', this.handleOutsideClick);
         this.setState({serviceChangeToggleOpen: true});
     }
 
     handleOutsideClick(e) {
-        if ((this.wrapperRef && !this.wrapperRef.contains(e.target))
-            && (this.toggleRef && !this.toggleRef.contains(e.target))) {
-            this.hideServiceChanger();
+        if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+            document.removeEventListener('mousedown', this.handleOutsideClick);
+            this.setState({serviceChangeToggleOpen: false});
         }
     }
 
     render() {
         const serviceName = this.props.match.params.serviceName;
-        const serviceTitleStyle = serviceName.length > 35 ? {fontSize: 24, lineHeight: 1.5} : {fontSize: 34};
         const navLinkClass = 'serviceToolsTab__tab-option col-xs-3';
         const navLinkClassActive = 'serviceToolsTab__tab-option col-xs-3 tab-active';
         const serviceChangeToggleOpen = this.state.serviceChangeToggleOpen;
 
-        const Tabs = () => (<nav className="serviceToolsTab__tabs col-md-7">
+        const Tabs = () => (<nav className="serviceToolsTab__tabs col-md-6">
             {isFlowEnabled ?
                 <NavLink
                     className={navLinkClass}
@@ -143,40 +131,41 @@ export default class ServiceTools extends Component {
         </nav>);
 
         const ServiceChange = () => ((
-            <article ref={this.setWrapperRef} className="serviceChangeContainer">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <span className="serviceChangeContainer__title">Change Service:</span>
-                            <Select
-                                className="serviceChangeContainer__select"
-                                options={ServiceTools.convertToValueLabelMap(serviceStore.services)}
-                                onChange={this.handleServiceChange}
-                                placeholder="Select..."
-                            />
-                        </div>
-                    </div>
-                </div>
-            </article>
+            <div ref={this.setWrapperRef} className="serviceChangeContainer">
+                <Select
+                    className="serviceChangeContainer__select"
+                    options={ServiceTools.convertToValueLabelMap(serviceStore.services)}
+                    onChange={this.handleServiceChange}
+                    placeholder="Change Service..."
+                    autofocus
+                    openOnFocus
+                />
+            </div>
         ));
 
         return (<article className="serviceTools">
                 <nav className="serviceToolsTab">
                     <div className="container">
                         <div className="row">
-                            <div className="col-md-5">
-                                <h3 ref={this.setToggleRef} style={serviceTitleStyle} className="serviceToolsTab__title" onClick={serviceChangeToggleOpen ? this.hideServiceChanger : this.showServiceChanger}>
-                                    <span className="serviceToolsTab__title-name">{serviceName}</span>
-                                    <span className={serviceChangeToggleOpen ? 'serviceToolsTab__title-toggle ti-arrow-circle-up' : 'serviceToolsTab__title-toggle ti-arrow-circle-down'} />
+                            <div className="col-md-6">
+                                <h3 className="serviceToolsTab__title">
+                                    {
+                                        serviceChangeToggleOpen ?
+                                            <ServiceChange/> :
+                                            <span className="serviceToolsTab__title-name">{serviceName}</span>
+                                    }
+                                    <span
+                                        onClick={this.showServiceChanger}
+                                        className={serviceChangeToggleOpen ?
+                                            'serviceToolsTab__title-toggle active ti-pencil' :
+                                            'serviceToolsTab__title-toggle ti-pencil'}
+                                    />
                                 </h3>
                             </div>
                             <Tabs/>
                         </div>
                     </div>
                 </nav>
-
-                { serviceChangeToggleOpen ? <ServiceChange/> : null }
-
                 <ServiceToolsContainer serviceName={serviceName} location={this.props.location}/>
             </article>
         );
