@@ -48,7 +48,8 @@ app.set('x-powered-by', false);
 // MIDDLEWARE
 app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
+app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
 app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 
