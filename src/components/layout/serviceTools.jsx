@@ -143,6 +143,8 @@ export default class ServiceTools extends Component {
             </div>
         ));
 
+        const trimmedServiceName = serviceName.length > 25 ? `${serviceName.substring(0, 25)}...` : serviceName;
+
         return (<article className="serviceTools">
                 <nav className="serviceToolsTab">
                     <div className="container">
@@ -152,7 +154,7 @@ export default class ServiceTools extends Component {
                                     {
                                         serviceChangeToggleOpen ?
                                             <ServiceChange/> :
-                                            <span className="serviceToolsTab__title-name">{serviceName}</span>
+                                            <span className="serviceToolsTab__title-name">{trimmedServiceName}</span>
                                     }
                                     <span
                                         onClick={this.showServiceChanger}
