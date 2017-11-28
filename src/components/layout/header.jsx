@@ -38,7 +38,7 @@ class SearchBar extends React.Component {
         };
     }
     updateSearchField(event) {
-        this.setState({traceId: event.target.value});
+        this.setState({traceId: event.target.value.trim()});
     }
     searchRedirect(event) {
         event.preventDefault();
