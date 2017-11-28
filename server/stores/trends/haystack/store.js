@@ -25,10 +25,11 @@ const logger = require('../../../support/logger').withIdentifier('support:haysta
 const store = {};
 const metricTankUrl = config.stores.trends.metricTankUrl;
 
-function getTargetStat(service, operationName, timeWindow, metricStat) {
-    if (operationName === 'all') {
-        return `serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
-    }
+function getServiceTargetStat(service, timeWindow, metricStat) {
+    return `serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
+}
+
+function getOperationTargetStat(service, operationName, timeWindow, metricStat) {
     return `serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.${metricStat}`;
 }
 
@@ -37,7 +38,7 @@ function toMetricTankOperationName(operationName) {
 }
 
 function fromMetricTankOperationName(operationName) {
-    return operationName.includes('___') ? operationName.replace(/___/gi, '.') : operationName;
+    return operationName.replace(/___/gi, '.');
 }
 
 function parseServiceResponse(data) {
@@ -113,10 +114,10 @@ function groupByOperation({countValues, successValues, failureValues, tp99Values
 }
 
 function getServiceTrendResults(service, timeWindow, from, until) {
-    const CountTarget = getTargetStat(service, 'all', timeWindow, 'count.received-span');
-    const SuccessTarget = getTargetStat(service, 'all', timeWindow, 'count.success-span');
-    const FailureTarget = getTargetStat(service, 'all', timeWindow, 'count.failure-span');
-    const tp99Target = getTargetStat(service, 'all', timeWindow, '*_99.duration');
+    const CountTarget = getServiceTargetStat(service, timeWindow, 'count.received-span');
+    const SuccessTarget = getServiceTargetStat(service, timeWindow, 'count.success-span');
+    const FailureTarget = getServiceTargetStat(service, timeWindow, 'count.failure-span');
+    const tp99Target = getServiceTargetStat(service, timeWindow, '*_99.duration');
 
     return Q.all([
         getTrendValues(CountTarget, from, until),
@@ -167,12 +168,12 @@ function fetchOperationTrendValues(target, from, until) {
 }
 
 function getOperationTrendResults(serviceName, operationName, timeWindow, from, until) {
-    const CountTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.received-span');
-    const SuccessTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.success-span');
-    const FailureTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.failure-span');
-    const meanTarget = getTargetStat(serviceName, operationName, timeWindow, 'mean.duration');
-    const tp95Target = getTargetStat(serviceName, operationName, timeWindow, '*_95.duration');
-    const tp99Target = getTargetStat(serviceName, operationName, timeWindow, '*_99.duration');
+    const CountTarget = getOperationTargetStat(serviceName, operationName, timeWindow, 'count.received-span');
+    const SuccessTarget = getOperationTargetStat(serviceName, operationName, timeWindow, 'count.success-span');
+    const FailureTarget = getOperationTargetStat(serviceName, operationName, timeWindow, 'count.failure-span');
+    const meanTarget = getOperationTargetStat(serviceName, operationName, timeWindow, 'mean.duration');
+    const tp95Target = getOperationTargetStat(serviceName, operationName, timeWindow, '*_95.duration');
+    const tp99Target = getOperationTargetStat(serviceName, operationName, timeWindow, '*_99.duration');
 
 
     return Q.all([
