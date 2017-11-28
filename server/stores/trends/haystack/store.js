@@ -17,6 +17,7 @@
 const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
+const errorConverter = require('../../utils/errorConverter');
 const _ = require('lodash');
 const logger = require('../../../support/logger').withIdentifier('support:haystack_trends');
 
@@ -26,16 +27,27 @@ const metricTankUrl = config.stores.trends.metricTankUrl;
 
 function getTargetStat(service, operationName, timeWindow, metricStat) {
     if (operationName === 'all') {
-        return `operationName:*.host:${service}.interval:${timeWindow}.stat:${metricStat}`;
+        return `serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
     }
-    return `operationName:${operationName}.host:${service}.interval:${timeWindow}.stat:${metricStat}`;
+    return `serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.${metricStat}`;
+}
+
+function toMetricTankOperationName(operationName) {
+    return operationName.replace(/\./gi, '___');
+}
+
+function fromMetricTankOperationName(operationName) {
+    return operationName.includes('___') ? operationName.replace(/___/gi, '.') : operationName;
 }
 
 function parseServiceResponse(data) {
     const parsedData = [];
     JSON.parse(data).forEach((op) => {
-        const operationName = op.target.substring(op.target.indexOf(':') + 1, op.target.indexOf('.host'));
-        const trendStat = op.target.substring(op.target.lastIndexOf(':') + 1, op.target.length);
+        const targetSplit = op.target.split('.');
+        const operationNameTagIndex = targetSplit.indexOf('operationName');
+        const operationName = fromMetricTankOperationName(targetSplit[operationNameTagIndex + 1]);
+        const trendStatTagIndex = targetSplit.indexOf('stat');
+        const trendStat = `${targetSplit[trendStatTagIndex + 1]}.${targetSplit[trendStatTagIndex + 2]}`;
         const opKV = {
             operationName,
             [trendStat]: op.datapoints.map(datapoint => ({value: datapoint[0], timestamp: datapoint[1]}))
@@ -47,15 +59,16 @@ function parseServiceResponse(data) {
 
 function getTrendValues(target, from, until) {
     const deferred = Q.defer();
-    const postConfig = {
+    const requestConfig = {
         transformResponse: [data => parseServiceResponse(data, target)]
     };
 
     axios
-        .get(`${metricTankUrl}/metrictank/render?target=${target}&from=${from}&to=${until}`, postConfig)
-        .then(response => deferred.resolve(response.data))
+        .get(`${metricTankUrl}/metrictank/render?target=${target}&from=${from}&to=${until}`, requestConfig)
+        .then(response => deferred.resolve(response.data),
+            error => deferred.reject(new Error(error)))
         .catch((error) => {
-            logger.log(error);
+            logger.log(errorConverter.fromAxiosError(error));
         });
 
     return deferred.promise;
@@ -80,7 +93,6 @@ function toSuccessPercent(successPoints, failurePoints) {
 function groupByOperation({countValues, successValues, failureValues, tp99Values}) {
     const trendResults = [];
     const groupedByOperationName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.operationName);
-
     Object.keys(groupedByOperationName).forEach((operationName) => {
         const operationTrends = groupedByOperationName[operationName];
         const count = fetchOperationDataPoints(operationTrends, 'count.received-span');
@@ -135,7 +147,6 @@ store.getTrendsForService = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
     deffered.resolve(getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10)),
         error => deffered.reject(new Error(error)));
-
     return deffered.promise;
 };
 
@@ -146,15 +157,16 @@ function fetchOperationTrendValues(target, from, until) {
         .get(`${metricTankUrl}/metrictank/render?target=${target}&from=${from}&to=${until}`)
         .then(response => deferred.resolve(response.data[0]
             ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: datapoint[1]}))
-            : []))
+            : []),
+            error => deferred.reject(new Error(error)))
         .catch((error) => {
-            logger.log(error);
+            logger.log(errorConverter.fromAxiosError(error));
         });
 
     return deferred.promise;
 }
 
-function getDopplerOperationTrendResults(serviceName, operationName, timeWindow, from, until) {
+function getOperationTrendResults(serviceName, operationName, timeWindow, from, until) {
     const CountTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.received-span');
     const SuccessTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.success-span');
     const FailureTarget = getTargetStat(serviceName, operationName, timeWindow, 'count.failure-span');
@@ -185,11 +197,10 @@ function getDopplerOperationTrendResults(serviceName, operationName, timeWindow,
 store.getTrendsForOperation = (serviceName, operationName, granularity, from, until) => {
     const deffered = Q.defer();
 
-    getDopplerOperationTrendResults(serviceName, operationName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
+    getOperationTrendResults(serviceName, toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
         .then(results => deffered.resolve(results));
 
     return deffered.promise;
 };
-
 
 module.exports = store;
