@@ -28,6 +28,8 @@ module.exports = {
         trends: {
             // name of config store module to use for fetching trends data from downstream
             // Options :
+            //  - haystack - gets data from Haystack Metric Tank Setup
+            //               haystack store also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
             storeName: 'stub'
         }
