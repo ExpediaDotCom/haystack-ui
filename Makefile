@@ -7,13 +7,16 @@ export DOCKER_IMAGE_NAME := haystack-ui
 clean:
 	npm run clean
 
-build:  clean
+install:
+	npm install
+
+build: clean install
 	npm run build
 
 docker_build:
 	docker build -t $(DOCKER_IMAGE_NAME) -f build/docker/Dockerfile .
 
-all: docker_build
+all: build docker_build
 
 # build all and release
 release: all
