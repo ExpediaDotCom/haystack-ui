@@ -16,7 +16,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import formatters from '../../../utils/formatters';
 
 const LogEnum = {
@@ -26,23 +25,18 @@ const LogEnum = {
     cr: 'Client Receive'
 };
 
-function findLogEvent(logs, eventValue) {
-    return _.find(logs, log => log.value.toLowerCase() === eventValue);
-}
-
 const LogsTable = ({logs, startTime}) => {
-    const flattenedLogs = logs.map(log => log.fields.map(field => ({
-      timestamp: log.timestamp,
-      key: field.key,
-      value: field.value
-    }))).reduce((x, y) => x.concat(y), []);
+    const flattenedLogs =
+        logs
+        .map(log => log.fields.map(field => ({
+            timestamp: log.timestamp,
+            key: field.key,
+            value: field.value
+        })))
+        .reduce((x, y) => x.concat(y), [])
+        .sort((a, b) => a.timestamp - b.timestamp);
 
     if (flattenedLogs.length) {
-        const clientSend = findLogEvent(flattenedLogs, 'cs');
-        const serverReceive = findLogEvent(flattenedLogs, 'sr');
-        const serverSend = findLogEvent(flattenedLogs, 'ss');
-        const clientReceive = findLogEvent(flattenedLogs, 'cr');
-        // display while making sure that logical ordering of events is maintained
         return (<table className="table table-striped">
             <thead>
             <tr>
@@ -54,8 +48,8 @@ const LogsTable = ({logs, startTime}) => {
             </thead>
             <tbody>
 
-            {_.compact(_.union([clientSend, serverReceive, serverSend, clientReceive, ...flattenedLogs])).map(log =>
-                (<tr key={log.value}>
+            {flattenedLogs.map(log =>
+                (<tr>
                     <td>{log.key}</td>
                     <td>{LogEnum[log.value]}</td>
                     <td>{formatters.toDurationString(log.timestamp - startTime)}</td>
