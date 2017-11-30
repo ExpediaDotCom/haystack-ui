@@ -122,8 +122,7 @@ function toSearchResult(trace, query) {
     queriedService,
     queriedOperation,
     startTime: rootSpan.startTime,               // start time of the root span
-    duration: endToEndDuration,                  // end-to-end duration
-    error: root.error
+    duration: endToEndDuration                  // end-to-end duration
   };
 }
 
