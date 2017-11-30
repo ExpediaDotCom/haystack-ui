@@ -15,6 +15,7 @@
  */
 
 const Q = require('q');
+const objectUtils = require('../../utils/objectUtils');
 
 const trace = [
     {
@@ -190,7 +191,9 @@ store.getRawTrace = () => Q.fcall(() => trace);
 store.getRawSpan = () => Q.fcall(() => trace[0]);
 
 store.findTraces = query => Q.fcall(() => {
-    if (query.traceId) {
+    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+
+    if (traceId) {
         return [
           {
             traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
