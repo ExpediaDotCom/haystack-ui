@@ -67,13 +67,13 @@ export default class TraceResultsTable extends React.Component {
         return a.operationDurationPercent - b.operationDurationPercent;
     }
     static sortBySuccessAndTime(a, b, order) {
-        if (a.error === b.error) {
+        if (a.root.error === b.root.error) {
             return TraceResultsTable.sortByStartTime(a, b, 'desc');
         }
         if (order === 'desc') {
-            return (a.error ? 1 : -1);
+            return (a.root.error ? 1 : -1);
         }
-        return (b.error ? 1 : -1);
+        return (b.root.error ? 1 : -1);
     }
     static sortBySpansAndTime(a, b, order) {
         if (a.spanCount === b.spanCount) {
@@ -273,7 +273,7 @@ export default class TraceResultsTable extends React.Component {
                     headerText={'Operation name of the root span'}
                 ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="error"
+                    dataField="root.error"
                     width="10"
                     dataFormat={TraceResultsTable.errorFormatter}
                     dataSort

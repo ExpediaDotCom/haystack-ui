@@ -223,8 +223,7 @@ store.findTraces = query => Q.fcall(() => {
               error: false
             },
             startTime: new Date().getTime() * 1000,
-            duration: 390000,
-            error: true
+            duration: 390000
           }
         ];
     }
@@ -260,8 +259,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (10 * 1000 * 1000),
-        duration: 240000,
-        error: false
+        duration: 240000
       }, {
         traceId: 'a40165e5-e0c4-4c51-11x7-bb79def7597a',
         spanCount: 9,
@@ -293,8 +291,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (15 * 1000 * 1000),
-        duration: 850000,
-        error: false
+        duration: 850000
       }, {
         traceId: 'a80921e5-e0c4-4c37-91a7-da79def7597a',
         spanCount: 44,
@@ -326,8 +323,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
-        duration: 3500000,
-        error: false
+        duration: 3500000
       }, {
         traceId: 'a55965e5-e0c4-4a37-91a7-da79def7597a',
         spanCount: 30,
@@ -359,8 +355,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
-        duration: 126000,
-        error: false
+        duration: 126000
       }, {
         traceId: 'wb651a1b-146x-4c37-91a7-6r61v513r1v11',
         spanCount: 30,
@@ -392,8 +387,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (30 * 1000 * 1000),
-        duration: 3500000,
-        error: true
+        duration: 3500000
       },
       {
         traceId: 'b44165e5-xx14-4c37-91a7-da79def7597b',
@@ -426,8 +420,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (44 * 1000 * 1000),
-        duration: 2450000,
-        error: true
+        duration: 2450000
       },
       {
         traceId: 'c80965e5-e0c4-4c37-91a7-da79def7597b',
@@ -460,8 +453,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
           startTime: (new Date().getTime() * 1000) - (56 * 1000 * 1000),
-        duration: 3500000,
-        error: false
+        duration: 3500000
       },
       {
         traceId: 'd80965e5-e0c4-4c37-91a7-da79def7597b',
@@ -494,8 +486,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (90 * 1000 * 1000),
-        duration: 3500000,
-        error: false
+        duration: 3500000
       }, {
         traceId: 'e80965e5-e0c4-4c37-91a7-da79def7597b',
         spanCount: 12,
@@ -527,8 +518,7 @@ store.findTraces = query => Q.fcall(() => {
           error: false
         },
         startTime: (new Date().getTime() * 1000) - (2 * 1000 * 1000),
-        duration: 3545000,
-        error: false
+        duration: 3545000
       }
     ];
 });
