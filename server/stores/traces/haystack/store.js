@@ -27,6 +27,7 @@ const searchResultsTransformer = require('./searchResultsTransformer');
 const errorConverter = require('../../utils/errorConverter');
 const protobufConverter = require('./protobufConverter');
 const searchRequestBuilder = require('./searchRequestBuilder');
+const objectUtils = require('../../utils/objectUtils');
 
 const store = {};
 
@@ -142,11 +143,12 @@ store.getRawSpan = (traceId, spanId) => {
 
 store.findTraces = (query) => {
     const deferred = Q.defer();
+    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
-    if (query.traceId) {
+    if (traceId) {
         // if search is for a singe trace, perform getTrace instead of search
         const request = new messages.TraceRequest();
-        request.setTraceid(query.traceId);
+        request.setTraceid(traceId);
 
         client.getTrace(request,
             {deadline: generateCallDeadline()},

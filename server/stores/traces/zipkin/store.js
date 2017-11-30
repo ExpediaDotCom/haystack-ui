@@ -19,6 +19,7 @@ const Q = require('q');
 const config = require('../../../config/config');
 const converter = require('./converter');
 const errorConverter = require('../../utils/errorConverter');
+const objectUtils = require('../../utils/objectUtils');
 
 const store = {};
 const baseZipkinUrl = config.stores.traces.zipkinUrl;
@@ -107,11 +108,12 @@ store.getRawSpan = (traceId, spanId) => {
 
 store.findTraces = (query) => {
     const deferred = Q.defer();
+    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
-    if (query.traceId) {
+    if (traceId) {
         // if search is for a trace perform getTrace instead of search
         axios
-            .get(`${baseZipkinUrl}/trace/${query.traceId}`)
+            .get(`${baseZipkinUrl}/trace/${traceId}`)
             .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)),
                 error => deferred.reject(errorConverter.fromAxiosError(error)));
     } else {
