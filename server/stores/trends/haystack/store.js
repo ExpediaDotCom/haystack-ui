@@ -65,7 +65,7 @@ function getTrendValues(target, from, until) {
     };
 
     axios
-        .get(`${metricTankUrl}/metrictank/render?target=${target}&from=${from}&to=${until}`, requestConfig)
+        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, requestConfig)
         .then(response => deferred.resolve(response.data),
             error => deferred.reject(new Error(error)))
         .catch((error) => {
@@ -155,7 +155,7 @@ function fetchOperationTrendValues(target, from, until) {
     const deferred = Q.defer();
 
     axios
-        .get(`${metricTankUrl}/metrictank/render?target=${target}&from=${from}&to=${until}`)
+        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
         .then(response => deferred.resolve(response.data[0]
             ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: datapoint[1]}))
             : []),
