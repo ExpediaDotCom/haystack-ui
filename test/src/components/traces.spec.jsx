@@ -397,6 +397,17 @@ describe('<Traces />', () => {
         expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
     });
 
+    it('should have an autosuggest feature for keys in traces header search', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 65});
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
+
+        wrapper.find('.autofill-suggestion').first().simulate('click');
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
+    });
+
     it('should accept valid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
