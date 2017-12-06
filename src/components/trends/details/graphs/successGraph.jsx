@@ -37,12 +37,21 @@ successChartOptions.scales.yAxes = [{
 }];
 
 const SuccessGraph = ({successCount, failureCount}) => {
-    const data = _.flatMap(failureCount, ((failItem) => {
-        const successItem = _.find(successCount, x => (x.timestamp === failItem.timestamp));
-        if (successItem) {
+    const successTimestamps = successCount.map(point => point.timestamp);
+    const failureTimestamps = failureCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+
+    const data = _.compact(timestamps.map((timestamp) => {
+        const successItem = _.find(successCount, x => (x.timestamp === timestamp));
+        const successVal = (successItem && successItem.value) ? successItem.value : 0;
+
+        const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
+        const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
+
+        if (successVal + failureVal) {
             return {
-                x: new Date(failItem.timestamp),
-                y: (100 - ((failItem.value / (successItem.value + failItem.value)) * 100)).toFixed(3)
+                x: new Date(timestamp),
+                y: (100 - ((failureVal / (successVal + failureVal)) * 100)).toFixed(3)
             };
         }
         return null;

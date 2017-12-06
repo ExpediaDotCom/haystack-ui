@@ -73,12 +73,8 @@ export default class TrendResultsTable extends React.Component {
 
     static successPercentFormatter(cell) {
         return (
-            <div className="text-right">
-                <div className="percentContainer text-center">
-                    { cell ?
-                        <CircularProgressbar percentage={cell.toFixed(0)} strokeWidth={8}/> :
-                        ' ' }
-                </div>
+            <div className="percentContainer text-right">
+                { cell === null ? '' : `${cell.toFixed(2)}%`}
             </div>
         );
     }
