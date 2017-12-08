@@ -144,7 +144,7 @@ export default class TraceResultsTable extends React.Component {
     static durationPercentFormatter(cell) {
         return (
             <div className="text-right">
-                <div className="percentContainer text-center">
+                <div className="percentDialContainer text-center">
                     <CircularProgressbar percentage={cell} strokeWidth={8}/>
                 </div>
             </div>);
