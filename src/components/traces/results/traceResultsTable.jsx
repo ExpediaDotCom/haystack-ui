@@ -66,14 +66,23 @@ export default class TraceResultsTable extends React.Component {
         }
         return a.operationDurationPercent - b.operationDurationPercent;
     }
-    static sortBySuccessAndTime(a, b, order) {
-        if (a.root.error === b.root.error) {
+    static sortByRootSuccessAndTime(a, b, order) {
+        if (a.rootError === b.rootError) {
             return TraceResultsTable.sortByStartTime(a, b, 'desc');
         }
         if (order === 'desc') {
-            return (a.root.error ? 1 : -1);
+            return (a.rootError ? 1 : -1);
         }
-        return (b.root.error ? 1 : -1);
+        return (b.rootError ? 1 : -1);
+    }
+    static sortByOperationSuccessAndTime(a, b, order) {
+        if (a.operationError === b.operationError) {
+            return TraceResultsTable.sortByStartTime(a, b, 'desc');
+        }
+        if (order === 'desc') {
+            return (a.operationError ? 1 : -1);
+        }
+        return (b.operationError ? 1 : -1);
     }
     static sortBySpansAndTime(a, b, order) {
         if (a.spanCount === b.spanCount) {
@@ -135,7 +144,7 @@ export default class TraceResultsTable extends React.Component {
     static durationPercentFormatter(cell) {
         return (
             <div className="text-right">
-                <div className="percentContainer text-center">
+                <div className="percentDialContainer text-center">
                     <CircularProgressbar percentage={cell} strokeWidth={8}/>
                 </div>
             </div>);
@@ -273,15 +282,15 @@ export default class TraceResultsTable extends React.Component {
                     headerText={'Operation name of the root span'}
                 ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="root.error"
+                    dataField="rootError"
                     width="10"
                     dataFormat={TraceResultsTable.errorFormatter}
                     dataSort
-                    sortFunc={TraceResultsTable.sortBySuccessAndTime}
+                    sortFunc={TraceResultsTable.sortByRootSuccessAndTime}
                     caretRender={TraceResultsTable.getCaret}
                     thStyle={tableHeaderStyle}
-                    headerText={'Status of trace. Is marked failure if any spans in trace have success marked as false.'}
-                ><TraceResultsTable.Header name="Success"/></TableHeaderColumn>
+                    headerText={'Success of the root service'}
+                ><TraceResultsTable.Header name="Root Success"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="spanCount"
                     dataFormat={TraceResultsTable.spanColumnFormatter}
@@ -292,6 +301,19 @@ export default class TraceResultsTable extends React.Component {
                     thStyle={tableHeaderStyle}
                     headerText={'Total number of spans across all services in the trace'}
                 ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
+                {
+                    (query.operationName && query.operationName !== 'all')
+                    && <TableHeaderColumn
+                        dataField="operationError"
+                        dataFormat={TraceResultsTable.errorFormatter}
+                        width="10"
+                        dataSort
+                        caretRender={TraceResultsTable.getCaret}
+                        sortFunc={TraceResultsTable.sortByOperationSuccessAndTime}
+                        thStyle={tableHeaderRightAlignedStyle}
+                        headerText={'Success of the searched operation'}
+                    ><TraceResultsTable.Header name="Op Success"/></TableHeaderColumn>
+                }
                 {
                     (query.operationName && query.operationName !== 'all')
                     && <TableHeaderColumn

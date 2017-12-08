@@ -271,10 +271,26 @@ tr.tr-no-border>td {
 }
 
 // CSS For the tentative progress bar
-.percentContainer {
+.percentDialContainer {
   display: inline-block;
-  margin-top: 5px;
-  width:40px;
+  margin-top: @spacing-xs;
+  width: 40px;
+}
+
+// CSS For the tentative progress bar
+.percentContainer {
+  font-weight: 600;
+  .table__right;
+
+  &.green {
+    color: @brand-success;
+  }
+  &.orange {
+    color: darken(@brand-warning, 10%);
+  }
+  &.red {
+    color: @brand-danger;
+  }
 }
 
 .CircularProgressbar .CircularProgressbar-path {
