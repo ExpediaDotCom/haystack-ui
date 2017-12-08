@@ -17,7 +17,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import CircularProgressbar from 'react-circular-progressbar';
 import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
 import formatters from '../../../utils/formatters';
 
@@ -72,11 +71,18 @@ export default class TrendResultsTable extends React.Component {
     }
 
     static successPercentFormatter(cell) {
-        return (
-            <div className="percentContainer text-right">
-                { cell === null ? '' : `${cell.toFixed(2)}%`}
-            </div>
-        );
+        if (cell === null) {
+            return null;
+        }
+
+        let stateColor = 'green';
+        if (cell < 95) {
+            stateColor = 'red';
+        } else if (cell < 99) {
+            stateColor = 'orange';
+        }
+
+        return <div className={`percentContainer text-right ${stateColor}`}>{cell.toFixed(2)}%</div>;
     }
 
     static sortByName(a, b, order) {
@@ -237,7 +243,7 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="8"
+                    width="10"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     caretRender={TrendResultsTable.getCaret}
