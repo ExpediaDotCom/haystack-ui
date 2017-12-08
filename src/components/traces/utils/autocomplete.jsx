@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
+
 @observer
 export default class Autocomplete extends React.Component {
     static propTypes = {
@@ -27,7 +28,7 @@ export default class Autocomplete extends React.Component {
     };
 
     static defaultProps = {
-        options: ['traceId', 'spanId', 'serviceName', 'operationName', 'error']
+        options: []
     };
 
     constructor(props) {
@@ -45,6 +46,7 @@ export default class Autocomplete extends React.Component {
         this.higherSuggestion = this.higherSuggestion.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
+        this.handleFocus = this.handleFocus.bind(this);
         this.handleSelection = this.handleSelection.bind(this);
         this.handleSelectionFill = this.handleSelectionFill.bind(this);
         this.handleHover = this.handleHover.bind(this);
@@ -136,6 +138,12 @@ export default class Autocomplete extends React.Component {
         document.removeEventListener('mousedown', this.handleOutsideClick);
     }
 
+    handleFocus(e) {
+        if (!this.state.fieldsString.length) {
+            this.setSuggestions(e.target.value);
+        }
+    }
+
     // Changes active suggestion which will cause a rerender for hovered object
     handleHover(index) {
         this.setState({
@@ -170,7 +178,7 @@ export default class Autocomplete extends React.Component {
 
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
-        if (e.nativeEvent.keyCode === 13 || e.nativeEvent.keyCode === 9) {
+        if ((e.nativeEvent.keyCode === 13 && this.state.fieldsString.length) || e.nativeEvent.keyCode === 9) {
             e.preventDefault();
             this.handleSelection();
             this.handleBlur();
@@ -191,7 +199,7 @@ export default class Autocomplete extends React.Component {
     render() {
         const sIndex = this.state.suggestionIndex;
         return (
-            <div>
+            <div className="autosuggestion-box">
                 <input
                     type="text"
                     className="search-bar-text-box"
@@ -199,6 +207,7 @@ export default class Autocomplete extends React.Component {
                     onKeyDown={this.handleKeyPress}
                     onChange={this.updateFieldKv}
                     ref={(input) => { this.autosuggestInput = input; }}
+                    onFocus={this.handleFocus}
                 />
                 <ul ref={this.setWrapperRef} className={this.state.fieldsString.length ? 'autofill-suggestions' : 'hidden'}>
                     {this.state.fieldsString.map((item, i) => (
