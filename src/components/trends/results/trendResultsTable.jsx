@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
+import {Sparklines, SparklinesCurve, SparklinesSpots} from 'react-sparklines';
 import formatters from '../../../utils/formatters';
 
 import TrendDetails from './../details/trendDetails';
@@ -59,14 +59,22 @@ export default class TrendResultsTable extends React.Component {
         return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
     }
 
-    static meanDurationColumnFormatter(cell) {
+    static durationColumnFormatter(cell, row) {
         const values = [];
-        cell.map(d => values.push(d.value));
-        return (<div className="duration-sparklines">
-                    <Sparklines className="sparkline" data={values} min={0}>
-                        <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
-                        <SparklinesSpots />
-                    </Sparklines>
+        row.tp99Duration.map(d => values.push(d.value));
+
+        return (<div className="sparkline-container">
+                    { cell !== null ?
+                        <div className="sparkline-title">
+                            last <b>{formatters.toDurationString(cell)}</b>
+                        </div>
+                        : null}
+                    <div className="sparkline-graph">
+                        <Sparklines className="sparkline" data={values} min={0} height={48}>
+                            <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
+                            <SparklinesSpots />
+                        </Sparklines>
+                    </div>
                 </div>);
     }
 
@@ -99,22 +107,22 @@ export default class TrendResultsTable extends React.Component {
         return a.count - b.count;
     }
 
-    static sortByDuration(a, b, order) {
-        const aObj = a.tp99Duration[a.tp99Duration.length - 1];
-        const bObj = b.tp99Duration[b.tp99Duration.length - 1];
-        const aValue = (aObj && aObj.value) || 0;
-        const bValue = (bObj && bObj.value) || 0;
-        if (order === 'desc') {
-            return bValue - aValue;
-        }
-        return aValue - bValue;
-    }
-
     static sortByPercentage(a, b, order) {
         if (order === 'desc') {
             return b.successPercent - a.successPercent;
         }
         return a.successPercent - b.successPercent;
+    }
+
+    static enrichTrends(serviceTrends) {
+        return serviceTrends.map((opTrends) => {
+            const lastPoint = opTrends.tp99Duration[opTrends.tp99Duration.length - 1];
+
+            return {
+                ...opTrends,
+                lastTp99Duration: lastPoint ? lastPoint.value : null
+            };
+        });
     }
 
     constructor(props) {
@@ -164,8 +172,8 @@ export default class TrendResultsTable extends React.Component {
         const tableHeaderStyle = {border: 'none'};
         const operation = this.props.trendsSearchStore.serviceQuery.operationName;
         const filter = operation
-            ? {type: 'TextFilter', defaultValue: operation, placeholder: 'Search Operations...'}
-            : {type: 'TextFilter', placeholder: 'Search Operations...'};
+            ? {type: 'TextFilter', defaultValue: operation, delay: 500, placeholder: 'Search Operations...'}
+            : {type: 'TextFilter', delay: 500, placeholder: 'Search Operations...'};
 
         const options = {
             page: 1,  // which page you want to show as default
@@ -195,10 +203,18 @@ export default class TrendResultsTable extends React.Component {
             selected: this.state.selected
         };
 
+        const numberFilterFormatter = {
+            type: 'NumberFilter',
+            delay: 500,
+            numberComparators: ['>', '<='],
+            defaultValue: { comparator: '>' }
+        };
+
+        const trendsWithLastDuration = TrendResultsTable.enrichTrends(this.props.trendsSearchStore.serviceResults);
         return (
             <BootstrapTable
                 className="trends-panel"
-                data={this.props.trendsSearchStore.serviceResults}
+                data={trendsWithLastDuration}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -238,17 +254,13 @@ export default class TrendResultsTable extends React.Component {
                     headerText={'Total invocation count of the operation for summary duration'}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="tp99Duration"
-                    dataFormat={TrendResultsTable.meanDurationColumnFormatter}
+                    dataField="lastTp99Duration"
+                    dataFormat={TrendResultsTable.durationColumnFormatter}
                     width="20"
                     dataSort
-                    sortFunc={TrendResultsTable.sortByDuration}
                     filter={{
-                        type: 'NumberFilter',
-                        delay: 500,
-                        numberComparators: ['>', '<='],
-                        defaultValue: { comparator: '>' },
-                        placeholder: 'Duration'
+                        ...numberFilterFormatter,
+                        placeholder: 'Last duration in milliseconds'
                     }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -261,11 +273,8 @@ export default class TrendResultsTable extends React.Component {
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
                     filter={{
-                        type: 'NumberFilter',
-                        delay: 500,
-                        numberComparators: ['>', '<='],
-                        defaultValue: { comparator: '>' },
-                        placeholder: 'Percent'
+                        ...numberFilterFormatter,
+                        placeholder: 'Success percent'
                     }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
