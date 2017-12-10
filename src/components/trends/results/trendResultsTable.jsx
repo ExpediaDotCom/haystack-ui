@@ -223,9 +223,16 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="count"
                     dataFormat={TrendResultsTable.countColumnFormatter}
-                    width="10"
+                    width="12"
                     dataSort
                     sortFunc={TrendResultsTable.sortByCount}
+                    filter={{
+                        type: 'NumberFilter',
+                        delay: 500,
+                        numberComparators: ['>', '<='],
+                        defaultValue: { comparator: '>' },
+                        placeholder: 'Count'
+                    }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Total invocation count of the operation for summary duration'}
@@ -233,9 +240,16 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="tp99Duration"
                     dataFormat={TrendResultsTable.meanDurationColumnFormatter}
-                    width="18"
+                    width="20"
                     dataSort
                     sortFunc={TrendResultsTable.sortByDuration}
+                    filter={{
+                        type: 'NumberFilter',
+                        delay: 500,
+                        numberComparators: ['>', '<='],
+                        defaultValue: { comparator: '>' },
+                        placeholder: 'Duration'
+                    }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
@@ -243,9 +257,16 @@ export default class TrendResultsTable extends React.Component {
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={TrendResultsTable.successPercentFormatter}
-                    width="10"
+                    width="12"
                     dataSort
                     sortFunc={TrendResultsTable.sortByPercentage}
+                    filter={{
+                        type: 'NumberFilter',
+                        delay: 500,
+                        numberComparators: ['>', '<='],
+                        defaultValue: { comparator: '>' },
+                        placeholder: 'Percent'
+                    }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Success % for the operation'}
