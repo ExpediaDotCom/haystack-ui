@@ -35,6 +35,6 @@ global.document = window.document;
 global.navigator = {
     userAgent: 'node.js'
 };
-global.window.haystackUiConfig = { subsystems: ['traces', 'trends'] };
+global.window.haystackUiConfig = { subsystems: ['traces', 'trends'], fieldKeys: ['traceId', 'spanId', 'serviceName', 'operationName', 'error'] };
 
 copyProps(window, global);
