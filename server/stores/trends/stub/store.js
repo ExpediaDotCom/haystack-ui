@@ -34,6 +34,44 @@ function getRandomValues(timeWindow, dataPoints) {
     return valuesArr;
 }
 
+store.getServiceSummary = (serviceName, granularity, from, until) => {
+    const deffered = Q.defer();
+
+    const range = until - from;
+    const points = range / granularity;
+    const mins = granularity / (60 * 1000);
+
+    deffered.resolve([
+        {
+            Type: 'All Incoming Requests',
+            count: 50000,
+            successPercent: getValue(80, 100),
+            tp99Duration: getRandomValues(mins, points)
+        }]);
+
+    return deffered.promise;
+};
+
+store.getTrendsForServiceSummary = (serviceName, granularity, from, until) => {
+    const deffered = Q.defer();
+
+    const range = until - from;
+    const points = range / granularity;
+    const mins = granularity / (60 * 1000);
+
+    deffered.resolve({
+        count: getRandomValues(mins, points),
+        successCount: getRandomValues(mins, points),
+        failureCount: getRandomValues(mins, points),
+        meanDuration: getRandomValues(mins, points),
+        tp95Duration: getRandomValues(mins, points),
+        tp99Duration: getRandomValues(mins, points)
+    });
+
+    return deffered.promise;
+};
+
+
 store.getTrendsForService = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 

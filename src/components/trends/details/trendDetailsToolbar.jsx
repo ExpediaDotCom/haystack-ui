@@ -24,13 +24,18 @@ import metricGranularity from '../utils/metricGranularity';
 import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
 
-export default class TrendHeaderToolbar extends React.Component {
+export default class TrendDetailsToolbar extends React.Component {
 
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        trendsSearchStore: PropTypes.object.isRequired,
+        trendsStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
-        opName: PropTypes.string.isRequired
+        opName: PropTypes.string,
+        serviceSummary: PropTypes.bool.isRequired
+    };
+
+    static defaultProps = {
+        opName: null
     };
 
     constructor(props) {
@@ -51,7 +56,7 @@ export default class TrendHeaderToolbar extends React.Component {
             from,
             until,
             isCustomTimeRange
-        } = props.trendsSearchStore.serviceQuery;
+        } = props.trendsStore.summaryQuery;
 
         const activeWindow = isCustomTimeRange
             ? timeWindow.toCustomTimeRange(from, until)
@@ -62,28 +67,42 @@ export default class TrendHeaderToolbar extends React.Component {
             activeWindow,
             activeGranularity,
             granularityDropdownOpen: false,
-            showCustomTimeRangePicker: false
+            showCustomTimeRangePicker: false,
+            clipboardText: this.props.serviceSummary === true
+                ? `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?from=${activeWindow.from ||
+                timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
+                timeWindow.toTimeRange(activeWindow.value).until}`
+                : `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${activeWindow.from ||
+                timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
+                timeWindow.toTimeRange(activeWindow.value).until}`
         };
     }
+
     componentDidMount() {
         this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
     }
+
     setWrapperRef(node) {
         this.wrapperRef = node;
     }
+
     hideTimePicker() {
         document.removeEventListener('mousedown', this.handleOutsideClick);
         this.setState({showCustomTimeRangePicker: false});
     }
+
     showTimePicker() {
         document.addEventListener('mousedown', this.handleOutsideClick);
         this.setState({showCustomTimeRangePicker: true});
     }
+
+
     handleOutsideClick(e) {
         if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
             this.hideTimePicker();
         }
     }
+
     handleCopy() {
         this.setState({showCopied: true});
         setTimeout(() => this.setState({showCopied: false}), 2000);
@@ -105,7 +124,12 @@ export default class TrendHeaderToolbar extends React.Component {
             until: window.until
         };
 
-        this.props.trendsSearchStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
+
+        if (this.props.opName) {
+            this.props.trendsStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
+        } else {
+            this.props.trendsStore.fetchTrendOperationResults(this.props.serviceName, query);
+        }
     }
 
     handlePresetSelection(preset) {
@@ -147,10 +171,6 @@ export default class TrendHeaderToolbar extends React.Component {
                 {preset.shortName}
             </button>
         );
-
-        const trendUrl = `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${this.state.activeWindow.from ||
-        timeWindow.toTimeRange(this.state.activeWindow.value).from}&until=${this.state.activeWindow.until ||
-        timeWindow.toTimeRange(this.state.activeWindow.value).until}`;
 
         return (
             <div className="trend-details-toolbar clearfix">
@@ -201,33 +221,39 @@ export default class TrendHeaderToolbar extends React.Component {
                         </ul>
                     </div>
                 </div>
-
                 <div className="pull-right btn-group btn-group-sm">
                     {
-                        this.state.showCopied ? (
+                        this.state.showCopied && (
                             <span className="tooltip fade left in" role="tooltip">
                                     <span className="tooltip-arrow"/>
                                     <span className="tooltip-inner">Link Copied!</span>
                                 </span>
-                        ) : null
+                        )
                     }
-                    <Link
-                        role="button"
-                        className="btn btn-sm btn-default"
-                        to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
-                    ><span
-                        className="ti-line-double"
-                    /> See Traces</Link>
+                    {
+                        this.props.serviceSummary === false && (
+                            <Link
+                                role="button"
+                                className="btn btn-sm btn-default"
+                                to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
+                            ><span
+                                className="ti-line-double"
+                            /> See Traces</Link>
+
+                        )
+                    }
                     <a
                         role="button"
                         className="btn btn-sm btn-default"
                         target="_blank"
-                        href={trendUrl}
+                        href={this.state.clipboardText}
                     ><span
                         className="ti-new-window"
                     /> Open in new tab</a>
+
                     <Clipboard
-                        text={trendUrl}
+                        text={this.state.clipboardText}
+                        onCopy={this.handleCopy}
                     >
                         <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                     </Clipboard>

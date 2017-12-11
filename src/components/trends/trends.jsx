@@ -21,7 +21,9 @@ import PropTypes from 'prop-types';
 
 import TrendsHeader from './trendsHeader';
 import TrendResults from './results/trendResults';
+import SummaryResults from './summary/summaryResults';
 import trendsSearchStore from './stores/trendsSearchStore';
+import serviceSummaryStore from './stores/serviceSummaryStore';
 
 export default class Trends extends React.Component {
     static propTypes = {
@@ -45,12 +47,18 @@ export default class Trends extends React.Component {
             <section className="trends-panel">
                 <TrendsHeader
                     trendsSearchStore={trendsSearchStore}
+                    serviceSummaryStore={serviceSummaryStore}
                     serviceName={this.state.serviceName}
                     location={location}
                     history={history}
                 />
+                <SummaryResults
+                    summaryResultsStore={serviceSummaryStore}
+                    serviceName={this.state.serviceName}
+                    location={location}
+                />
                 <TrendResults
-                    trendsSearchStore={trendsSearchStore}
+                    trendResultsStore={trendsSearchStore}
                     serviceName={this.state.serviceName}
                     location={location}
                 />

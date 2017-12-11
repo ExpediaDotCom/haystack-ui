@@ -61,9 +61,9 @@ describe('TrendsSearchStore', () => {
         store.fetchTrendServiceResults(stubService, stubTime);
 
         when(
-            () => store.serviceResults.length > 0,
+            () => store.summaryResults.length > 0,
             () => {
-                expect(store.serviceResults).to.have.length(1);
+                expect(store.summaryResults).to.have.length(1);
                 done();
             });
     });
@@ -74,9 +74,9 @@ describe('TrendsSearchStore', () => {
         store.fetchTrendOperationResults(stubService, stubOperation, stubTime);
 
         when(
-            () => store.operationResults.length > 0,
+            () => store.trendsResults.length > 0,
             () => {
-                expect(store.operationResults).to.have.length(1);
+                expect(store.trendsResults).to.have.length(1);
                 done();
             });
     });

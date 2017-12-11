@@ -22,14 +22,24 @@ const trendStore = require(`../stores/trends/${config.stores.trends.storeName}/s
 
 const router = express.Router();
 
-router.get('/trends/:serviceName', (req, res, next) => {
+router.get('/trends/:serviceName/summary/getTrends', (req, res, next) => {
     const {
         granularity,
         from,
         until
     } = req.query;
 
-    handleResponsePromise(res, next)(() => trendStore.getTrendsForService(req.params.serviceName, granularity, from, until));
+    handleResponsePromise(res, next)(() => trendStore.getTrendsForServiceSummary(req.params.serviceName, granularity, from, until));
+});
+
+router.get('/trends/:serviceName/summary', (req, res, next) => {
+    const {
+        granularity,
+        from,
+        until
+    } = req.query;
+
+    handleResponsePromise(res, next)(() => trendStore.getServiceSummary(req.params.serviceName, granularity, from, until));
 });
 
 router.get('/trends/:serviceName/:operationName', (req, res, next) => {
@@ -40,6 +50,16 @@ router.get('/trends/:serviceName/:operationName', (req, res, next) => {
     } = req.query;
 
     handleResponsePromise(res, next)(() => trendStore.getTrendsForOperation(req.params.serviceName, req.params.operationName, granularity, from, until));
+});
+
+router.get('/trends/:serviceName', (req, res, next) => {
+    const {
+        granularity,
+        from,
+        until
+    } = req.query;
+
+    handleResponsePromise(res, next)(() => trendStore.getTrendsForService(req.params.serviceName, granularity, from, until));
 });
 
 module.exports = router;
