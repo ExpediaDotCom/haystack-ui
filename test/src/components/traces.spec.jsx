@@ -425,11 +425,16 @@ describe('<Traces />', () => {
     it('should have an autosuggest feature for keys in traces header search', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        wrapper.find('.search-bar-text-box').simulate('click');
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 65});
         expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
-
-        wrapper.find('.autofill-suggestion').first().simulate('click');
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
+        wrapper.find('.search-bar-text-box').simulate('click');
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
+        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 40});
+        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 38});
+        wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
         expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
     });
 
