@@ -148,6 +148,10 @@ export default class TrendHeaderToolbar extends React.Component {
             </button>
         );
 
+        const trendUrl = `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${this.state.activeWindow.from ||
+        timeWindow.toTimeRange(this.state.activeWindow.value).from}&until=${this.state.activeWindow.until ||
+        timeWindow.toTimeRange(this.state.activeWindow.value).until}`;
+
         return (
             <div className="trend-details-toolbar clearfix">
                 <div className="pull-left trend-details-toolbar__time-range">
@@ -214,11 +218,16 @@ export default class TrendHeaderToolbar extends React.Component {
                     ><span
                         className="ti-line-double"
                     /> See Traces</Link>
+                    <a
+                        role="button"
+                        className="btn btn-sm btn-default"
+                        target="_blank"
+                        href={trendUrl}
+                    ><span
+                        className="ti-new-window"
+                    /> Open in new tab</a>
                     <Clipboard
-                        text={`${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${this.state.activeWindow.from ||
-                        timeWindow.toTimeRange(this.state.activeWindow.value).from}&until=${this.state.activeWindow.until ||
-                        timeWindow.toTimeRange(this.state.activeWindow.value).until}`}
-                        onCopy={this.handleCopy}
+                        text={trendUrl}
                     >
                         <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                     </Clipboard>
