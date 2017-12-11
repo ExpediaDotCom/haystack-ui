@@ -128,15 +128,13 @@ export default class TrendsHeader extends React.Component {
 
         const selectedIndex = options.indexOf(activeWindow);
 
-        return (<div className="clearfix">
+        return (
                 <div className="pull-right trend-summary__header-text">
                     <span>Service trends for </span>
                     <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
                         {options.map((window, index) => (<option key={window.longName} value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>
-
-            </div>
         );
     }
 }

@@ -17,8 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import {Sparklines, SparklinesCurve, SparklinesSpots} from 'react-sparklines';
-import formatters from '../../../utils/formatters';
+import trendTableFormatters from '../utils/trendsTableFormatters';
 
 import TrendDetails from './../details/trendDetails';
 
@@ -33,96 +32,6 @@ export default class TrendResultsTable extends React.Component {
 
     static Header({name}) {
         return <span className="results-header">{name}</span>;
-    }
-
-    static getCaret(direction) {
-        if (direction === 'asc') {
-            return (
-                <span className="order dropup">
-                  <span className="caret" style={{margin: '10px 5px'}}/>
-              </span>);
-        }
-        if (direction === 'desc') {
-            return (
-                <span className="order dropdown">
-                  <span className="caret" style={{margin: '10px 5px'}}/>
-              </span>);
-        }
-        return <div/>;
-    }
-
-    static columnFormatter(operation) {
-        return `<div class="table__left">${operation}</div>`;
-    }
-
-    static countColumnFormatter(cell) {
-        return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
-    }
-
-    static durationColumnFormatter(cell, row) {
-        const values = [];
-        row.tp99Duration.map(d => values.push(d.value));
-
-        return (<div className="sparkline-container">
-                    { cell !== null ?
-                        <div className="sparkline-title">
-                            latest duration <b>{formatters.toDurationStringFromMs(cell)}</b>
-                        </div>
-                        : null}
-                    <div className="sparkline-graph">
-                        <Sparklines className="sparkline" data={values} min={0} height={48}>
-                            <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
-                            <SparklinesSpots />
-                        </Sparklines>
-                    </div>
-                </div>);
-    }
-
-    static successPercentFormatter(cell) {
-        if (cell === null) {
-            return null;
-        }
-
-        let stateColor = 'green';
-        if (cell < 95) {
-            stateColor = 'red';
-        } else if (cell < 99) {
-            stateColor = 'orange';
-        }
-
-        return <div className={`percentContainer text-right ${stateColor}`}>{cell.toFixed(2)}%</div>;
-    }
-
-    static sortByName(a, b, order) {
-        if (order === 'desc') {
-            return a.operationName.toLowerCase().localeCompare(b.operationName.toLowerCase());
-        }
-        return b.operationName.toLowerCase().localeCompare(a.operationName.toLowerCase());
-    }
-
-    static sortByCount(a, b, order) {
-        if (order === 'desc') {
-            return b.count - a.count;
-        }
-        return a.count - b.count;
-    }
-
-    static sortByPercentage(a, b, order) {
-        if (order === 'desc') {
-            return b.successPercent - a.successPercent;
-        }
-        return a.successPercent - b.successPercent;
-    }
-
-    static enrichTrends(serviceTrends) {
-        return serviceTrends.map((opTrends) => {
-            const lastPoint = opTrends.tp99Duration[opTrends.tp99Duration.length - 1];
-
-            return {
-                ...opTrends,
-                lastTp99Duration: lastPoint ? lastPoint.value / 1000 : null
-            };
-        });
     }
 
     constructor(props) {
@@ -210,7 +119,7 @@ export default class TrendResultsTable extends React.Component {
             defaultValue: { comparator: '>' }
         };
 
-        const trendsWithLastDuration = TrendResultsTable.enrichTrends(this.props.trendsSearchStore.serviceResults);
+        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.trendsSearchStore.summaryResults);
         return (
             <BootstrapTable
                 className="trends-panel"
@@ -226,55 +135,55 @@ export default class TrendResultsTable extends React.Component {
 
                 <TableHeaderColumn
                     isKey
-                    dataFormat={TrendResultsTable.columnFormatter}
+                    dataFormat={trendTableFormatters.columnFormatter}
                     dataField="operationName"
                     width="50"
                     dataSort
-                    sortFunc={TrendResultsTable.sortByName}
-                    caretRender={TrendResultsTable.getCaret}
+                    sortFunc={trendTableFormatters.sortByName}
+                    caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderStyle}
                     filter={filter}
                     headerText={'All operations for the service'}
                 ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="count"
-                    dataFormat={TrendResultsTable.countColumnFormatter}
+                    dataFormat={trendTableFormatters.countColumnFormatter}
                     width="12"
                     dataSort
-                    sortFunc={TrendResultsTable.sortByCount}
+                    sortFunc={trendTableFormatters.sortByCount}
                     filter={{
                         ...numberFilterFormatter,
                         placeholder: 'Count...'
                     }}
-                    caretRender={TrendResultsTable.getCaret}
+                    caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Total invocation count of the operation for summary duration'}
                 ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="lastTp99Duration"
-                    dataFormat={TrendResultsTable.durationColumnFormatter}
+                    dataFormat={trendTableFormatters.durationColumnFormatter}
                     width="20"
                     dataSort
                     filter={{
                         ...numberFilterFormatter,
                         placeholder: 'Last duration in milliseconds...'
                     }}
-                    caretRender={TrendResultsTable.getCaret}
+                    caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
                 ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
-                    dataFormat={TrendResultsTable.successPercentFormatter}
+                    dataFormat={trendTableFormatters.successPercentFormatter}
                     width="12"
                     dataSort
-                    sortFunc={TrendResultsTable.sortByPercentage}
+                    sortFunc={trendTableFormatters.sortByPercentage}
                     filter={{
                         ...numberFilterFormatter,
                         defaultValue: { comparator: '<' },
                         placeholder: 'Success %...'
                     }}
-                    caretRender={TrendResultsTable.getCaret}
+                    caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Success % for the operation'}
                 ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>

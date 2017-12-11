@@ -42,8 +42,14 @@ export default class TrendDetails extends React.Component {
     render() {
         return (
             <div className="table-row-details">
-                <TrendDetailsToolbar serviceSummary={this.props.serviceSummary} trendsStore={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={this.props.opName} />
-                { this.props.store.summaryPromiseState && this.props.store.summaryPromiseState.case({
+                <TrendDetailsToolbar
+                    serviceSummary={this.props.serviceSummary}
+                    trendsStore={this.props.store}
+                    location={this.props.location}
+                    serviceName={this.props.serviceName}
+                    opName={this.props.opName}
+                />
+                { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,

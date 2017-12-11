@@ -17,10 +17,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import CircularProgressbar from 'react-circular-progressbar';
-import { Sparklines, SparklinesCurve, SparklinesSpots } from 'react-sparklines';
-import formatters from '../../../utils/formatters';
 import TrendDetails from '../details/trendDetails';
+import trendTableFormatters from '../utils/trendsTableFormatters';
 
 export default class SummaryResultsTable extends React.Component {
     static propTypes = {
@@ -28,41 +26,6 @@ export default class SummaryResultsTable extends React.Component {
         location: PropTypes.object.isRequired,
         serviceSummaryStore: PropTypes.object.isRequired
     };
-
-    static Header({name}) {
-        return <span className="results-header">{name}</span>;
-    }
-
-    static columnFormatter(requestType) {
-        return `<div class="table__left">${requestType}</div>`;
-    }
-
-    static countColumnFormatter(cell) {
-        return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
-    }
-
-    static meanDurationColumnFormatter(cell) {
-        const values = [];
-        cell.map(d => values.push(d.value));
-        return (<div className="duration-sparklines">
-            <Sparklines className="sparkline" data={values} min={0}>
-                <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
-                <SparklinesSpots />
-            </Sparklines>
-        </div>);
-    }
-
-    static successPercentFormatter(cell) {
-        return (
-            <div className="text-right">
-                <div className="percentContainer text-center">
-                    { cell ?
-                        <CircularProgressbar percentage={cell.toFixed(0)} strokeWidth={8}/> :
-                        ' ' }
-                </div>
-            </div>
-        );
-    }
 
     constructor(props) {
         super(props);
@@ -125,10 +88,12 @@ export default class SummaryResultsTable extends React.Component {
             selected: this.state.selected
         };
 
+        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.serviceSummaryStore.summaryResults);
+
         return (
             <BootstrapTable
                 className="trends-panel"
-                data={this.props.serviceSummaryStore.summaryResults}
+                data={trendsWithLastDuration}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -138,27 +103,27 @@ export default class SummaryResultsTable extends React.Component {
             >
                 <TableHeaderColumn
                     isKey
-                    dataFormat={SummaryResultsTable.columnFormatter}
+                    dataFormat={trendTableFormatters.columnFormatter}
                     dataField="Type"
                     width="50"
                     thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
                     dataField="count"
-                    dataFormat={SummaryResultsTable.countColumnFormatter}
-                    width="10"
+                    dataFormat={trendTableFormatters.countColumnFormatter}
+                    width="12"
                     thStyle={tableHeaderRightAlignedStyle}
                 />
                 <TableHeaderColumn
-                    dataField="tp99Duration"
-                    dataFormat={SummaryResultsTable.meanDurationColumnFormatter}
-                    width="18"
+                    dataField="lastTp99Duration"
+                    dataFormat={trendTableFormatters.durationColumnFormatter}
+                    width="20"
                     thStyle={tableHeaderRightAlignedStyle}
                 />
                 <TableHeaderColumn
                     dataField="successPercent"
-                    dataFormat={SummaryResultsTable.successPercentFormatter}
-                    width="8"
+                    dataFormat={trendTableFormatters.successPercentFormatter}
+                    width="12"
                     thStyle={tableHeaderRightAlignedStyle}
                 />
             </BootstrapTable>
