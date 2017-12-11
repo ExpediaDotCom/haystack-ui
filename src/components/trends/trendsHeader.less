@@ -16,9 +16,15 @@
 @import (reference) '../../app';
 
 .trend-summary__header-text {
-  margin-top: 0;
+  margin-bottom: @spacing-s;
 }
 .trend-summary__time-range-selector {
-  padding-right: @spacing-m;
+  padding: 3px 12px 3px 6px;
+  border: 1px solid @gray-mid-light;
   font-size: @font-size-base;
+  border-radius: 3px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }

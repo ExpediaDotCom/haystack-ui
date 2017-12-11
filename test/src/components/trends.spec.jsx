@@ -219,7 +219,7 @@ describe('<Trends />', () => {
         const trendsSearchStore = createStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
         const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(wrapper.find('.duration-sparklines')).to.have.length(4);
+        expect(wrapper.find('.sparkline-container')).to.have.length(4);
     });
 
     it('should call fetchTrendOperations upon expanding a trend', () => {

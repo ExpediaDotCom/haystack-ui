@@ -17,32 +17,59 @@
 @import (reference) '../../common/resultsTable';
 
 .trends-panel {
-  .filter {
-    color: @gray-darker;
+  .react-bs-table .table-bordered > tbody > tr > td {
+    vertical-align: middle;
   }
-
   .react-bs-table .react-bs-container-header > table > thead > tr > th {
     vertical-align: bottom;
   }
-  .react-bs-container-body td {
-    vertical-align: middle;
-  }
 
-  // overriding default styling for column filter
-  th[data-field="operationName"] {
-    padding: 0 0 @spacing-xs 0;
+  // overriding default styling for column filters
+  th[data-field] {
+    padding: 0 0 @spacing-s 0;
 
-    input {
-      width: 100%;
+    input, select {
+      .input-sm;
       padding-left: @spacing-xs;
       border: 1px solid @gray-mid-light;
       border-radius: 3px;
       background-color: white;
+      color: @gray-darker;
+    }
+  }
+
+  th[data-field="operationName"] input {
+    width: 100%;
+  }
+
+  th[data-field="successPercent"], th[data-field="count"], th[data-field="lastTp99Duration"] {
+    select {
+      width: 40px !important;
+      margin-left: @spacing-s;
+      border-radius: 3px 0 0 3px;
+    }
+
+    input {
+      width: calc(~"100% - 40px") !important;
+      margin-left: 0 !important;
+      border-left: 0;
+      border-radius: 0 3px 3px 0;
     }
   }
 }
 
-.duration-sparklines {
-  padding-left: 10%;
+.sparkline-container {
+  .sparkline-title {
+    .table__secondary;
+    text-align: right;
+    b {
+      font-size: @font-size-h6;
+      font-weight: 600;
+    }
+  }
+
+  .sparkline-graph {
+    height: 40px;
+  }
 }
 
