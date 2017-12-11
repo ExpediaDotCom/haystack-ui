@@ -98,6 +98,7 @@ export default class TraceDetails extends React.Component {
     render() {
         const {traceId, location, traceDetailsStore} = this.props;
 
+        const traceUrl = `${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${uiState.serviceName}${uiState.operationName ? `&operationName=${uiState.operationName}` : ''}&traceId=${traceId}`;
         return (
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
@@ -120,9 +121,10 @@ export default class TraceDetails extends React.Component {
                                 </span>
                             ) : null
                           }
-                        <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-share"/> Raw Trace</a>
+                        <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-server"/> Raw Trace</a>
+                        <a role="button" className="btn btn-sm btn-default" target="_blank" href={traceUrl}><span className="ti-new-window"/> Open in new tab</a>
                         <Clipboard
-                            text={`${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${uiState.serviceName}&operationName=${uiState.operationName}&traceId=${traceId}`}
+                            text={traceUrl}
                             onCopy={this.handleCopy}
                         >
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
