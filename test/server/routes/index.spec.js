@@ -13,18 +13,20 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-@import (reference) '../../app';
 
-.trend-summary__header-text {
-  margin-bottom: @spacing-s;
-}
-.trend-summary__time-range-selector {
-  padding: 3px 12px 3px 6px;
-  border: 1px solid @gray-mid-light;
-  font-size: @font-size-base;
-  border-radius: 3px;
+const server = require('../../../server/app.js');
+const request = require('supertest');
 
-  &:hover {
-    cursor: pointer;
-  }
-}
+describe('routes.index', () => {
+    it('returns http 200', (done) => {
+        request(server)
+            .get('/')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+});
