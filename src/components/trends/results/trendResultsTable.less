@@ -29,6 +29,7 @@
     padding: 0 0 @spacing-s 0;
 
     input, select {
+      .input-sm;
       padding-left: @spacing-xs;
       border: 1px solid @gray-mid-light;
       border-radius: 3px;
@@ -43,14 +44,12 @@
 
   th[data-field="successPercent"], th[data-field="count"], th[data-field="lastTp99Duration"] {
     select {
-      .input-sm;
       width: 40px !important;
       margin-left: @spacing-s;
       border-radius: 3px 0 0 3px;
     }
 
     input {
-      .input-sm;
       width: calc(~"100% - 40px") !important;
       margin-left: 0 !important;
       border-left: 0;
@@ -64,12 +63,13 @@
     .table__secondary;
     text-align: right;
     b {
+      font-size: @font-size-h6;
       font-weight: 600;
     }
   }
 
   .sparkline-graph {
-    height: 36px;
+    height: 40px;
   }
 }
 

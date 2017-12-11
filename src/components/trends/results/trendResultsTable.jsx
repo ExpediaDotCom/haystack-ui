@@ -66,7 +66,7 @@ export default class TrendResultsTable extends React.Component {
         return (<div className="sparkline-container">
                     { cell !== null ?
                         <div className="sparkline-title">
-                            last <b>{formatters.toDurationString(cell)}</b>
+                            latest duration <b>{formatters.toDurationStringFromMs(cell)}</b>
                         </div>
                         : null}
                     <div className="sparkline-graph">
@@ -120,7 +120,7 @@ export default class TrendResultsTable extends React.Component {
 
             return {
                 ...opTrends,
-                lastTp99Duration: lastPoint ? lastPoint.value : null
+                lastTp99Duration: lastPoint ? lastPoint.value / 1000 : null
             };
         });
     }
@@ -206,7 +206,7 @@ export default class TrendResultsTable extends React.Component {
         const numberFilterFormatter = {
             type: 'NumberFilter',
             delay: 500,
-            numberComparators: ['>', '<='],
+            numberComparators: ['>', '<'],
             defaultValue: { comparator: '>' }
         };
 
@@ -243,11 +243,8 @@ export default class TrendResultsTable extends React.Component {
                     dataSort
                     sortFunc={TrendResultsTable.sortByCount}
                     filter={{
-                        type: 'NumberFilter',
-                        delay: 500,
-                        numberComparators: ['>', '<='],
-                        defaultValue: { comparator: '>' },
-                        placeholder: 'Count'
+                        ...numberFilterFormatter,
+                        placeholder: 'Count...'
                     }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -260,7 +257,7 @@ export default class TrendResultsTable extends React.Component {
                     dataSort
                     filter={{
                         ...numberFilterFormatter,
-                        placeholder: 'Last duration in milliseconds'
+                        placeholder: 'Last duration in milliseconds...'
                     }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -274,7 +271,8 @@ export default class TrendResultsTable extends React.Component {
                     sortFunc={TrendResultsTable.sortByPercentage}
                     filter={{
                         ...numberFilterFormatter,
-                        placeholder: 'Success percent'
+                        defaultValue: { comparator: '<' },
+                        placeholder: 'Success %...'
                     }}
                     caretRender={TrendResultsTable.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
