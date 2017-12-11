@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import {withRouter} from 'react-router-dom';
+import {withRouter, Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
 
@@ -32,7 +32,6 @@ class SearchBar extends React.Component {
         super();
         this.updateSearchField = this.updateSearchField.bind(this);
         this.searchRedirect = this.searchRedirect.bind(this);
-        this.homeRedirect = this.homeRedirect.bind(this);
         this.state = {
             traceId: ''
         };
@@ -51,20 +50,16 @@ class SearchBar extends React.Component {
             label: `${this.state.traceId}`
         });
     }
-    homeRedirect(event) {
-        event.preventDefault();
-        this.props.history.push('/');
-    }
     render() {
         return (
             <header>
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">
-                            <div className="navbar-brand logo-container" role="presentation" onClick={this.homeRedirect}>
+                            <Link to="/" className="navbar-brand">
                                 <img src="/images/logo.png" alt="Logo" className="logo"/>
                                 <span>Haystack</span>
-                            </div>
+                            </Link>
                         </div>
                         <div className="navbar-form navbar-right header-search">
                             <form onSubmit={this.searchRedirect}>
