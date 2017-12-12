@@ -15,6 +15,7 @@ html
     script.
         var haystackUiConfig = {
             subsystems: !{JSON.stringify(subsystems)},
-            gaTrackingID: !{JSON.stringify(gaTrackingID)}
+            gaTrackingID: !{JSON.stringify(gaTrackingID)},
+            fieldKeys: !{JSON.stringify(fieldKeys)}
         }
     script(async, defer, src='/bundles/js/app.js')

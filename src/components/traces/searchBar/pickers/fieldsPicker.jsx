@@ -18,30 +18,21 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
+import Autocomplete from '../../utils/autocomplete';
+
+const fieldKeys = (window.haystackUiConfig && window.haystackUiConfig.fieldKeys) || null;
+
 @observer
 export default class TimeWindowPicker extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired
     };
 
-    constructor(props) {
-        super(props);
-        this.updateFieldKv = this.updateFieldKv.bind(this);
-    }
-
-    updateFieldKv(event) {
-        this.props.uiState.setFieldsUsingKvString(event.target.value);
-    }
-
     render() {
+        // Import custom autosuggestion key list and pass in to autocomplete component with options={}
         return (
             <div className="search-bar-pickers_fields">
-                <input
-                    type="text"
-                    className="search-bar-text-box"
-                    value={this.props.uiState.fieldsKvString}
-                    onChange={this.updateFieldKv}
-                />
+                <Autocomplete uiState={this.props.uiState} options={fieldKeys} />
             </div>
         );
     }
