@@ -24,7 +24,7 @@ module.exports = {
             //             eg. zipkinUrl: 'http://<zipkin>/api/v1'}
             //  - stub - a stub used during development, will be removed in future
             storeName: 'stub',
-            fieldKeys: ['traceId', 'spanId', 'serviceName', 'operationName', 'error']
+            fieldKeys: ['traceId', 'error', 'minDuration']
         },
         trends: {
             // name of config store module to use for fetching trends data from downstream
