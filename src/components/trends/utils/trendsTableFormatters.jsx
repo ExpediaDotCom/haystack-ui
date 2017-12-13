@@ -17,7 +17,7 @@
 import React from 'react';
 import {Sparklines, SparklinesCurve, SparklinesSpots} from 'react-sparklines';
 
-import '../results/trendResultsTable.less';
+import '../operation/operationResultsTable.less';
 
 import formatters from '../../../utils/formatters';
 
@@ -52,9 +52,6 @@ export default class TrendsTableFormatters {
     }
 
     static durationColumnFormatter(cell, row) {
-        console.log(cell);
-        console.log(row);
-
         const values = [];
         row.tp99Duration.map(d => values.push(d.value));
 

@@ -20,10 +20,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import TrendsHeader from './trendsHeader';
-import TrendResults from './results/trendResults';
-import SummaryResults from './summary/summaryResults';
-import trendsSearchStore from './stores/trendsSearchStore';
-import serviceSummaryStore from './stores/serviceSummaryStore';
+import OperationResults from './operation/operationResults';
+import ServiceResults from './service/serviceResults';
+import operationStore from './stores/operationStore';
+import serviceStore from './stores/serviceStore';
 
 export default class Trends extends React.Component {
     static propTypes = {
@@ -46,19 +46,19 @@ export default class Trends extends React.Component {
         return (
             <section className="trends-panel">
                 <TrendsHeader
-                    trendsSearchStore={trendsSearchStore}
-                    serviceSummaryStore={serviceSummaryStore}
+                    operationStore={operationStore}
+                    serviceStore={serviceStore}
                     serviceName={this.state.serviceName}
                     location={location}
                     history={history}
                 />
-                <SummaryResults
-                    summaryResultsStore={serviceSummaryStore}
+                <ServiceResults
+                    serviceStore={serviceStore}
                     serviceName={this.state.serviceName}
                     location={location}
                 />
-                <TrendResults
-                    trendResultsStore={trendsSearchStore}
+                <OperationResults
+                    operationStore={operationStore}
                     serviceName={this.state.serviceName}
                     location={location}
                 />

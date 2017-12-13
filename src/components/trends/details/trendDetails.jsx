@@ -31,12 +31,14 @@ export default class TrendDetails extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         serviceSummary: PropTypes.bool,
-        opName: PropTypes.string
+        opName: PropTypes.string,
+        statsType: PropTypes.string
     };
 
     static defaultProps = {
         serviceSummary: false,
-        opName: null
+        opName: null,
+        statsType: null
     };
 
     render() {
@@ -48,6 +50,7 @@ export default class TrendDetails extends React.Component {
                     location={this.props.location}
                     serviceName={this.props.serviceName}
                     opName={this.props.opName}
+                    statsType={this.props.statsType}
                 />
                 { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,

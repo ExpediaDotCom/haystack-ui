@@ -23,11 +23,13 @@ import { when } from 'mobx';
 import MockAdapter from 'axios-mock-adapter';
 
 
-import {TrendsSearchStore} from '../../../src/components/trends/stores/trendsSearchStore';
+import {OperationStore} from '../../../src/components/trends/stores/operationStore';
+import {ServiceStore} from '../../../src/components/trends/stores/serviceStore';
 
 const stubTime = {granularity: 1, from: 2, until: 3};
 const stubService = 'TestService';
 const stubOperation = 'TestOperation';
+const stubType = 'IncomingRequests';
 const stubTrend = [{
     operationName: 'test-1',
     count: 18800,
@@ -43,9 +45,9 @@ const stubTrend = [{
         }
     ]
 }];
-describe('TrendsSearchStore', () => {
+describe('OperationStore', () => {
     let server = null;
-    const store = new TrendsSearchStore();
+    const store = new OperationStore();
 
     beforeEach(() => {
         server = new MockAdapter(axios);
@@ -55,23 +57,61 @@ describe('TrendsSearchStore', () => {
         server = null;
     });
 
-    it('fetches trend service results', (done) => {
-        server.onGet('/api/trends/TestService?granularity=1&from=2&until=3').reply(200, stubTrend);
+    it('fetches operation stats', (done) => {
+        server.onGet('/api/trends/operation/TestService?granularity=1&from=2&until=3').reply(200, stubTrend);
 
-        store.fetchTrendServiceResults(stubService, stubTime);
+        store.fetchStats(stubService, stubTime);
 
         when(
-            () => store.summaryResults.length > 0,
+            () => store.statsResults.length > 0,
             () => {
-                expect(store.summaryResults).to.have.length(1);
+                expect(store.statsResults).to.have.length(1);
                 done();
             });
     });
 
-    it('fetches trend operation results', (done) => {
-        server.onGet('/api/trends/TestService/TestOperation?granularity=1&from=2&until=3').reply(200, stubTrend);
+    it('fetches operation trends', (done) => {
+        server.onGet('/api/trends/operation/TestService/TestOperation?granularity=1&from=2&until=3').reply(200, stubTrend);
 
-        store.fetchTrendOperationResults(stubService, stubOperation, stubTime);
+        store.fetchTrends(stubService, stubOperation, stubTime);
+
+        when(
+            () => store.trendsResults.length > 0,
+            () => {
+                expect(store.trendsResults).to.have.length(1);
+                done();
+            });
+    });
+});
+describe('ServiceStore', () => {
+    let server = null;
+    const store = new ServiceStore();
+
+    beforeEach(() => {
+        server = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+        server = null;
+    });
+
+    it('fetches service stats', (done) => {
+        server.onGet('/api/trends/service/TestService?granularity=1&from=2&until=3').reply(200, stubTrend);
+
+        store.fetchStats(stubService, stubTime);
+
+        when(
+            () => store.statsResults.length > 0,
+            () => {
+                expect(store.statsResults).to.have.length(1);
+                done();
+            });
+    });
+
+    it('fetches service trends', (done) => {
+        server.onGet('/api/trends/service/TestService/IncomingRequests?granularity=1&from=2&until=3').reply(200, stubTrend);
+
+        store.fetchTrends(stubService, stubType, stubTime);
 
         when(
             () => store.trendsResults.length > 0,

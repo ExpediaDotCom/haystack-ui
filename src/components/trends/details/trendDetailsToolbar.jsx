@@ -31,11 +31,13 @@ export default class TrendDetailsToolbar extends React.Component {
         trendsStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         opName: PropTypes.string,
+        statsType: PropTypes.string,
         serviceSummary: PropTypes.bool.isRequired
     };
 
     static defaultProps = {
-        opName: null
+        opName: null,
+        statsType: null
     };
 
     constructor(props) {
@@ -56,7 +58,7 @@ export default class TrendDetailsToolbar extends React.Component {
             from,
             until,
             isCustomTimeRange
-        } = props.trendsStore.summaryQuery;
+        } = props.trendsStore.statsQuery;
 
         const activeWindow = isCustomTimeRange
             ? timeWindow.toCustomTimeRange(from, until)
@@ -126,9 +128,9 @@ export default class TrendDetailsToolbar extends React.Component {
 
 
         if (this.props.opName) {
-            this.props.trendsStore.fetchTrendOperationResults(this.props.serviceName, this.props.opName, query);
+            this.props.trendsStore.fetchTrends(this.props.serviceName, this.props.opName, query);
         } else {
-            this.props.trendsStore.fetchTrendOperationResults(this.props.serviceName, query);
+            this.props.trendsStore.fetchTrends(this.props.serviceName, this.props.statsType, query);
         }
     }
 

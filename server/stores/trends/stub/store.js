@@ -34,7 +34,7 @@ function getRandomValues(timeWindow, dataPoints) {
     return valuesArr;
 }
 
-store.getServiceSummary = (serviceName, granularity, from, until) => {
+store.getServiceStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -43,7 +43,7 @@ store.getServiceSummary = (serviceName, granularity, from, until) => {
 
     deffered.resolve([
         {
-            Type: 'All Incoming Requests',
+            Type: 'IncomingRequests',
             count: 50000,
             successPercent: getValue(80, 100),
             tp99Duration: getRandomValues(mins, points)
@@ -52,7 +52,7 @@ store.getServiceSummary = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getTrendsForServiceSummary = (serviceName, granularity, from, until) => {
+store.getServiceTrends = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -71,8 +71,7 @@ store.getTrendsForServiceSummary = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-
-store.getTrendsForService = (serviceName, granularity, from, until) => {
+store.getOperationStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -133,7 +132,7 @@ store.getTrendsForService = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getTrendsForOperation = (serviceName, operationName, granularity, from, until) => {
+store.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;

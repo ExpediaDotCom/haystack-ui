@@ -21,13 +21,13 @@ import trendTableFormatters from '../utils/trendsTableFormatters';
 
 import TrendDetails from './../details/trendDetails';
 
-import './trendResultsTable.less';
+import './operationResultsTable.less';
 
-export default class TrendResultsTable extends React.Component {
+export default class OperationResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        trendsSearchStore: PropTypes.object.isRequired
+        operationStore: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -45,7 +45,7 @@ export default class TrendResultsTable extends React.Component {
     }
 
     componentDidMount() {
-        const opName = this.props.trendsSearchStore.summaryQuery.operationName;
+        const opName = this.props.operationStore.statsQuery.operationName;
         if (opName) {
             this.handleExpand(opName, true);
         }
@@ -71,7 +71,7 @@ export default class TrendResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails serviceSummary={false} store={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
+            return <TrendDetails serviceSummary={false} store={this.props.operationStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
         }
         return null;
     }
@@ -79,7 +79,7 @@ export default class TrendResultsTable extends React.Component {
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
-        const operation = this.props.trendsSearchStore.summaryQuery.operationName;
+        const operation = this.props.operationStore.statsQuery.operationName;
         const filter = operation
             ? {type: 'TextFilter', defaultValue: operation, delay: 500, placeholder: 'Search Operations...'}
             : {type: 'TextFilter', delay: 500, placeholder: 'Search Operations...'};
@@ -119,7 +119,7 @@ export default class TrendResultsTable extends React.Component {
             defaultValue: { comparator: '>' }
         };
 
-        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.trendsSearchStore.summaryResults);
+        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.operationStore.statsResults);
         return (
             <BootstrapTable
                 className="trends-panel"
@@ -144,7 +144,7 @@ export default class TrendResultsTable extends React.Component {
                     thStyle={tableHeaderStyle}
                     filter={filter}
                     headerText={'All operations for the service'}
-                ><TrendResultsTable.Header name="Operation"/></TableHeaderColumn>
+                ><OperationResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="count"
                     dataFormat={trendTableFormatters.countColumnFormatter}
@@ -158,7 +158,7 @@ export default class TrendResultsTable extends React.Component {
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Total invocation count of the operation for summary duration'}
-                ><TrendResultsTable.Header name="Count"/></TableHeaderColumn>
+                ><OperationResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="lastTp99Duration"
                     dataFormat={trendTableFormatters.durationColumnFormatter}
@@ -171,7 +171,7 @@ export default class TrendResultsTable extends React.Component {
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
-                ><TrendResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
+                ><OperationResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={trendTableFormatters.successPercentFormatter}
@@ -186,7 +186,7 @@ export default class TrendResultsTable extends React.Component {
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
                     headerText={'Success % for the operation'}
-                ><TrendResultsTable.Header name="Success %"/></TableHeaderColumn>
+                ><OperationResultsTable.Header name="Success %"/></TableHeaderColumn>
             </BootstrapTable>
         );
     }

@@ -24,11 +24,11 @@ import { MemoryRouter } from 'react-router';
 
 import Trends from '../../../src/components/trends/trends';
 import TrendsHeader from '../../../src/components/trends/trendsHeader';
-import TrendResults from '../../../src/components/trends/results/trendResults';
+import OperationResults from '../../../src/components/trends/operation/operationResults';
 import TrendDetails from '../../../src/components/trends/details/trendDetails';
-import {TrendsSearchStore} from '../../../src/components/trends/stores/trendsSearchStore';
-import {ServiceSummaryStore} from '../../../src/components/trends/stores/serviceSummaryStore';
-import SummaryResults from '../../../src/components/trends/summary/summaryResults';
+import {OperationStore} from '../../../src/components/trends/stores/operationStore';
+import {ServiceStore} from '../../../src/components/trends/stores/serviceStore';
+import ServiceResults from '../../../src/components/trends/service/serviceResults';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -160,22 +160,22 @@ const stubService = 'test-service';
 const stubOperation = 'test-operation-1';
 
 
-function TrendsStubComponent({trendsSearchStore, serviceSummaryStore, location, serviceName}) {
+function TrendsStubComponent({operationStore, serviceStore, location, serviceName}) {
     return (
         <section className="trends-panel">
             <TrendsHeader
-                trendsSearchStore={trendsSearchStore}
-                serviceSummaryStore={serviceSummaryStore}
+                operationStore={operationStore}
+                serviceStore={serviceStore}
                 serviceName={serviceName}
                 location={location}
             />
-            <SummaryResults
-                summaryResultsStore={serviceSummaryStore}
+            <ServiceResults
+                serviceStore={serviceStore}
                 serviceName={serviceName}
                 location={location}
             />
-            <TrendResults
-                trendResultsStore={trendsSearchStore}
+            <OperationResults
+                operationStore={operationStore}
                 serviceName={serviceName}
                 location={location}
             />
@@ -186,17 +186,17 @@ function TrendsDetailsStubComponent({store, location, serviceName, opName}) {
     return (<TrendDetails store={store} location={location} serviceName={serviceName} opName={opName} />);
 }
 
-function createTrendsSearchStubStore(summaryResults, trendsResults, promise, summaryQuery = {}, trendsQuery = {}) {
-    const store = new TrendsSearchStore();
-    store.summaryQuery = summaryQuery;
+function createOperationStubStore(statsResults, trendsResults, promise, statsQuery = {}, trendsQuery = {}) {
+    const store = new OperationStore();
+    store.statsQuery = statsQuery;
     store.trendsQuery = trendsQuery;
 
-    sinon.stub(store, 'fetchTrendServiceResults', () => {
-        store.summaryResults = summaryResults;
-        store.summaryPromiseState = promise;
+    sinon.stub(store, 'fetchStats', () => {
+        store.statsResults = statsResults;
+        store.statsPromiseState = promise;
     });
 
-    sinon.stub(store, 'fetchTrendOperationResults', () => {
+    sinon.stub(store, 'fetchTrends', () => {
         store.trendsResults = trendsResults;
         store.trendsPromiseState = promise;
     });
@@ -204,17 +204,17 @@ function createTrendsSearchStubStore(summaryResults, trendsResults, promise, sum
     return store;
 }
 
-function createServiceSummaryStubStore(summaryResults, trendsResults, promise, summaryQuery = {}, trendsQuery = {}) {
-    const store = new ServiceSummaryStore();
-    store.summaryQuery = summaryQuery;
+function createServiceStubStore(statsResults, trendsResults, promise, statsQuery = {}, trendsQuery = {}) {
+    const store = new ServiceStore();
+    store.statsQuery = statsQuery;
     store.trendsQuery = trendsQuery;
 
-    sinon.stub(store, 'fetchServiceSummaryResults', () => {
-        store.summaryResults = summaryResults;
-        store.summaryPromiseState = promise;
+    sinon.stub(store, 'fetchStats', () => {
+        store.statsResults = statsResults;
+        store.statsPromiseState = promise;
     });
 
-    sinon.stub(store, 'fetchTrendOperationResults', () => {
+    sinon.stub(store, 'fetchTrends', () => {
         store.trendsResults = trendsResults;
         store.trendsPromiseState = promise;
     });
@@ -229,39 +229,39 @@ describe('<Trends />', () => {
         expect(wrapper.find('.trends-panel')).to.have.length(1);
     });
 
-    it('should trigger fetchServiceSummaryResults on mount', () => {
-        const trendsSearchStore = createTrendsSearchStubStore([]);
-        const serviceSummaryStore = createServiceSummaryStubStore([]);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} serviceSummaryStore={serviceSummaryStore} location={stubLocation} serviceName={stubService}/>);
+    it('should trigger Service/Operation fetchStats on mount', () => {
+        const operationStore = createOperationStubStore([]);
+        const serviceStore = createServiceStubStore([]);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.trends-panel')).to.have.length(1);
-        expect(serviceSummaryStore.fetchServiceSummaryResults.calledOnce);
-        expect(trendsSearchStore.fetchTrendServiceResults.calledOnce);
+        expect(serviceStore.fetchStats.calledOnce);
+        expect(operationStore.fetchStats.calledOnce);
     });
 
     it('should render results after getting search results', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const serviceSummaryStore = createServiceSummaryStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} serviceSummaryStore={serviceSummaryStore} location={stubLocation} serviceName={stubService}/>);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(trendsSearchStore.fetchTrendServiceResults.callCount).to.equal(1);
+        expect(operationStore.fetchStats.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(2);
         expect(wrapper.find('.tr-no-border')).to.have.length(5);
     });
 
     it('should render error if promise is rejected', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, rejectedPromise);
-        const serviceSummaryStore = createServiceSummaryStubStore(stubServiceSummaryResults, stubOperationResults, rejectedPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} serviceSummaryStore={serviceSummaryStore} location={stubLocation} serviceName={stubService}/>);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, rejectedPromise);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, rejectedPromise);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(2);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
     });
 
     it('should render loading if promise is pending', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, pendingPromise);
-        const serviceSummaryStore = createServiceSummaryStubStore(stubServiceSummaryResults, stubOperationResults, pendingPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} serviceSummaryStore={serviceSummaryStore} location={stubLocation} serviceName={stubService}/>);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, pendingPromise);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, pendingPromise);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.loading')).to.have.length(2);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -269,44 +269,44 @@ describe('<Trends />', () => {
     });
 
     it('should render sparklines on each row of search results', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const serviceSummaryStore = createServiceSummaryStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
-        const wrapper = mount(<TrendsStubComponent trendsSearchStore={trendsSearchStore} serviceSummaryStore={serviceSummaryStore} location={stubLocation} serviceName={stubService}/>);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.sparkline-container')).to.have.length(5);
     });
 
-    it('should call fetchTrendOperations upon expanding a trend', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+    it('should call operation fetchStats upon expanding a trend', () => {
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
         // eslint-disable-next-line
         const wrapper = mount(<MemoryRouter>
-            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+            <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>); // MemoryRouter used to keep Link component from reading or writing to address-bar
-        expect(trendsSearchStore.fetchTrendOperationResults.calledOnce);
+        expect(operationStore.fetchStats.calledOnce);
     });
 
     it('should show the three charts in a trend expanded view', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
         const wrapper = mount(<MemoryRouter>
-            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+            <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
         expect(wrapper.find('.chart-container')).to.have.length(3);
     });
 
     it('should reload the graphs upon selecting a separate time', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<MemoryRouter>
-            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+            <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
         wrapper.find('.btn-default').first().simulate('click');
-        expect(trendsSearchStore.fetchTrendOperationResults.callCount).to.equal(2);
+        expect(operationStore.fetchTrends.callCount).to.equal(2);
         expect(wrapper.find('.chart-container')).to.have.length(3);
     });
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
         const wrapper = mount(<MemoryRouter>
-            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+            <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
 
         // Clicking modal
@@ -326,9 +326,9 @@ describe('<Trends />', () => {
     });
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
-        const trendsSearchStore = createTrendsSearchStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
         const wrapper = mount(<MemoryRouter>
-            <TrendsDetailsStubComponent store={trendsSearchStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
+            <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
 
         // Clicking granularity button

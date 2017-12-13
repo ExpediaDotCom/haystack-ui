@@ -19,40 +19,40 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 import { toQueryUrlString } from '../../../utils/queryParser';
 
-function TrendException(data) {
+function OperationStoreException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
 }
 
-export class TrendsSearchStore {
-    @observable summaryPromiseState = { case: ({empty}) => empty() };
+export class OperationStore {
+    @observable statsPromiseState = { case: ({empty}) => empty() };
     @observable trendsPromiseState = { case: ({empty}) => empty() };
-    @observable summaryResults = [];
-    @observable summaryQuery = {};
+    @observable statsResults = [];
+    @observable statsQuery = {};
     @observable trendsResults = [];
     @observable trendsQuery = {};
 
-    @action fetchTrendServiceResults(service, query, isCustomTimeRange, operationName) {
+    @action fetchStats(service, query, isCustomTimeRange, operationName) {
         const queryUrlString = toQueryUrlString(query);
-        this.summaryPromiseState = fromPromise(
+        this.statsPromiseState = fromPromise(
                 axios
-                    .get(`/api/trends/${service}?${queryUrlString}`)
+                    .get(`/api/trends/operation/${service}?${queryUrlString}`)
                     .then((result) => {
-                        this.summaryQuery = {...query, isCustomTimeRange, operationName};
-                        this.summaryResults = result.data;
+                        this.statsQuery = {...query, isCustomTimeRange, operationName};
+                        this.statsResults = result.data;
                     })
                     .catch((result) => {
-                        this.summaryQuery = {...query, isCustomTimeRange, operationName};
-                        this.summaryResults = [];
-                        throw new TrendException(result);
+                        this.statsQuery = {...query, isCustomTimeRange, operationName};
+                        this.statsResults = [];
+                        throw new OperationStoreException(result);
                     })
         );
     }
-    @action fetchTrendOperationResults(service, operation, query) {
+    @action fetchTrends(service, operation, query) {
         const queryUrlString = toQueryUrlString(query);
         this.trendsPromiseState = fromPromise(
             axios
-                .get(`/api/trends/${service}/${operation}?${queryUrlString}`)
+                .get(`/api/trends/operation/${service}/${operation}?${queryUrlString}`)
                 .then((result) => {
                     this.trendsResults = result.data;
                     this.trendsQuery = query;
@@ -60,10 +60,10 @@ export class TrendsSearchStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
-                    throw new TrendException(result);
+                    throw new OperationStoreException(result);
                 })
         );
     }
 }
 
-export default new TrendsSearchStore();
+export default new OperationStore();

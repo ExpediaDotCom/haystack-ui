@@ -19,29 +19,30 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../../common/loading';
-import SummaryResultsTable from '../summary/summaryResultsTable';
+import OperationResultsTable from './operationResultsTable';
+import './operationResults.less';
 import Error from '../../common/error';
 
 
 @observer
-export default class SummaryResults extends React.Component {
+export default class operationResults extends React.Component {
     static propTypes = {
-        summaryResultsStore: PropTypes.object.isRequired,
+        operationStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired
     };
 
     render() {
         return (
-            <section className="summary-results">
-                <div className="results-table-heading">Summary</div>
-                { this.props.summaryResultsStore.summaryPromiseState && this.props.summaryResultsStore.summaryPromiseState.case({
+            <section className="operation-results">
+                <div className="results-table-heading">Operations</div>
+                { this.props.operationStore.statsPromiseState && this.props.operationStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.summaryResultsStore.summaryResults && this.props.summaryResultsStore.summaryResults.length)
-                        ? <SummaryResultsTable
-                            serviceSummaryStore={this.props.summaryResultsStore}
+                    fulfilled: () => ((this.props.operationStore.statsPromiseState && this.props.operationStore.statsResults.length)
+                        ? <OperationResultsTable
+                            operationStore={this.props.operationStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />

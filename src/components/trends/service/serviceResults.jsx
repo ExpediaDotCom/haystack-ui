@@ -19,30 +19,29 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../../common/loading';
-import TrendResultsTable from './trendResultsTable';
-import './trendResults.less';
+import ServiceResultsTable from './serviceResultsTable';
 import Error from '../../common/error';
 
 
 @observer
-export default class TrendResults extends React.Component {
+export default class ServiceResults extends React.Component {
     static propTypes = {
-        trendResultsStore: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired
     };
 
     render() {
         return (
-            <section className="trend-results">
-                <div className="results-table-heading">Operations</div>
-                { this.props.trendResultsStore.summaryPromiseState && this.props.trendResultsStore.summaryPromiseState.case({
+            <section className="service-results">
+                <div className="results-table-heading">Summary</div>
+                { this.props.serviceStore.statsPromiseState && this.props.serviceStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.trendResultsStore.summaryResults && this.props.trendResultsStore.summaryResults.length)
-                        ? <TrendResultsTable
-                            trendsSearchStore={this.props.trendResultsStore}
+                    fulfilled: () => ((this.props.serviceStore.statsResults && this.props.serviceStore.statsResults.length)
+                        ? <ServiceResultsTable
+                            serviceStore={this.props.serviceStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />

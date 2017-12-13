@@ -24,7 +24,7 @@ export default class SummaryResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        serviceSummaryStore: PropTypes.object.isRequired
+        serviceStore: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -38,7 +38,7 @@ export default class SummaryResultsTable extends React.Component {
     }
 
     componentDidMount() {
-        const opName = this.props.serviceSummaryStore.summaryQuery.operationName;
+        const opName = this.props.serviceStore.statsQuery.operationName;
         if (opName) {
             this.handleExpand(opName, true);
         }
@@ -64,7 +64,13 @@ export default class SummaryResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.Type).length > 0) {
-            return <TrendDetails serviceSummary store={this.props.serviceSummaryStore} location={this.props.location} serviceName={this.props.serviceName} />;
+            return (<TrendDetails
+                serviceSummary
+                store={this.props.serviceStore}
+                location={this.props.location}
+                serviceName={this.props.serviceName}
+                statsType={row.Type}
+            />);
         }
         return null;
     }
@@ -88,7 +94,7 @@ export default class SummaryResultsTable extends React.Component {
             selected: this.state.selected
         };
 
-        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.serviceSummaryStore.summaryResults);
+        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.serviceStore.statsResults);
 
         return (
             <BootstrapTable
