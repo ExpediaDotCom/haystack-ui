@@ -43,7 +43,7 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
 
     deffered.resolve([
         {
-            Type: 'IncomingRequests',
+            type: 'Incoming Requests',
             count: 50000,
             successPercent: getValue(80, 100),
             tp99Duration: getRandomValues(mins, points)

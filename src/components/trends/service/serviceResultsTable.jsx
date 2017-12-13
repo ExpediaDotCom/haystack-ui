@@ -63,22 +63,20 @@ export default class SummaryResultsTable extends React.Component {
     }
 
     expandComponent(row) {
-        if (this.state.selected.filter(id => id === row.Type).length > 0) {
+        if (this.state.selected.filter(id => id === row.type).length > 0) {
             return (<TrendDetails
                 serviceSummary
                 store={this.props.serviceStore}
                 location={this.props.location}
                 serviceName={this.props.serviceName}
-                statsType={row.Type}
+                statsType={row.type}
             />);
         }
         return null;
     }
 
     render() {
-        const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
-        const tableHeaderStyle = {border: 'none'};
-
+        const tableHeaderStyle = {display: 'none'};
         const options = {
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
@@ -110,7 +108,7 @@ export default class SummaryResultsTable extends React.Component {
                 <TableHeaderColumn
                     isKey
                     dataFormat={trendTableFormatters.columnFormatter}
-                    dataField="Type"
+                    dataField="type"
                     width="50"
                     thStyle={tableHeaderStyle}
                 />
@@ -118,19 +116,19 @@ export default class SummaryResultsTable extends React.Component {
                     dataField="count"
                     dataFormat={trendTableFormatters.countColumnFormatter}
                     width="12"
-                    thStyle={tableHeaderRightAlignedStyle}
+                    thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
                     dataField="lastTp99Duration"
                     dataFormat={trendTableFormatters.durationColumnFormatter}
                     width="20"
-                    thStyle={tableHeaderRightAlignedStyle}
+                    thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
                     dataField="successPercent"
                     dataFormat={trendTableFormatters.successPercentFormatter}
                     width="12"
-                    thStyle={tableHeaderRightAlignedStyle}
+                    thStyle={tableHeaderStyle}
                 />
             </BootstrapTable>
         );

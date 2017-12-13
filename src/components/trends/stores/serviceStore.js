@@ -40,6 +40,7 @@ export class ServiceStore {
                     .then((result) => {
                         this.statsQuery = {...query, isCustomTimeRange};
                         this.statsResults = result.data;
+                        console.log(this.statsResults);
                     })
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange};

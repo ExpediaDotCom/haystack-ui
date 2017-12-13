@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 
 import Loading from '../../common/loading';
 import ServiceResultsTable from './serviceResultsTable';
+import './serviceResults.less';
 import Error from '../../common/error';
 
 
@@ -45,7 +46,7 @@ export default class ServiceResults extends React.Component {
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />
-                        : <Error />)
+                        : <Error errorMessage={'Service Stats not found!'} />)
                 })
                 }
             </section>

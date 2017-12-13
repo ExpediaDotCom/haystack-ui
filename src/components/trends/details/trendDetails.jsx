@@ -56,9 +56,9 @@ export default class TrendDetails extends React.Component {
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => (this.props.store.trendsResults && Object.keys(this.props.store.trendsResults).length ?
-                        <GraphContainer trendsStore={this.props.store} /> :
-                        <Error />)
+                    fulfilled: () => (this.props.store.trendsResults && Object.keys(this.props.store.trendsResults).length
+                        ? <GraphContainer trendsStore={this.props.store} />
+                        : <Error />)
                 })
                 }
             </div>
