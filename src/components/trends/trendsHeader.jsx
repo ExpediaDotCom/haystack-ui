@@ -25,7 +25,8 @@ import './trendsHeader.less';
 
 export default class TrendsHeader extends React.Component {
     static propTypes = {
-        trendsSearchStore: PropTypes.object.isRequired,
+        operationStore: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
@@ -82,7 +83,8 @@ export default class TrendsHeader extends React.Component {
             from: window.from,
             until: window.until
         };
-        this.props.trendsSearchStore.fetchTrendServiceResults(serviceName, query, window.isCustomTimeRange, operationName);
+        this.props.serviceStore.fetchStats(serviceName, query, window.isCustomTimeRange);
+        this.props.operationStore.fetchStats(serviceName, query, window.isCustomTimeRange, operationName);
     }
 
     handleTimeChange(event) {
@@ -126,14 +128,13 @@ export default class TrendsHeader extends React.Component {
 
         const selectedIndex = options.indexOf(activeWindow);
 
-        return (<div className="clearfix">
+        return (
                 <div className="pull-right trend-summary__header-text">
                     <span>Service trends for </span>
                     <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
                         {options.map((window, index) => (<option key={window.longName} value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>
-            </div>
         );
     }
 }

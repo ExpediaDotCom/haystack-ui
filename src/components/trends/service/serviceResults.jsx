@@ -19,30 +19,38 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../../common/loading';
-import TrendResultsTable from './trendResultsTable';
+import ServiceResultsTable from './serviceResultsTable';
+import './serviceResults.less';
 import Error from '../../common/error';
 
+
 @observer
-export default class TrendResults extends React.Component {
+export default class ServiceResults extends React.Component {
     static propTypes = {
-        trendsSearchStore: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired
     };
 
     render() {
         return (
-            <section>
-                { this.props.trendsSearchStore.resultsPromiseState && this.props.trendsSearchStore.resultsPromiseState.case({
+            <section className="service-results">
+                <div className="results-table-heading">Summary</div>
+                { this.props.serviceStore.statsPromiseState && this.props.serviceStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.trendsSearchStore.serviceResults && this.props.trendsSearchStore.serviceResults.length)
-                        ? <TrendResultsTable trendsSearchStore={this.props.trendsSearchStore} location={this.props.location} serviceName={this.props.serviceName}/>
-                        : <Error />)
+                    fulfilled: () => ((this.props.serviceStore.statsResults && this.props.serviceStore.statsResults.length)
+                        ? <ServiceResultsTable
+                            serviceStore={this.props.serviceStore}
+                            location={this.props.location}
+                            serviceName={this.props.serviceName}
+                        />
+                        : <Error errorMessage={'Service Stats not found!'} />)
                 })
                 }
             </section>
         );
     }
 }
+

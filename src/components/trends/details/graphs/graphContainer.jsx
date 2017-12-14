@@ -25,7 +25,7 @@ import SuccessGraph from './successGraph';
 @observer
 export default class GraphContainer extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired
+        trendsStore: PropTypes.object.isRequired
     };
     render() {
         const {
@@ -35,7 +35,7 @@ export default class GraphContainer extends React.Component {
             tp99Duration,
             failureCount,
             successCount
-        } = this.props.store.operationResults;
+        } = this.props.trendsStore.trendsResults;
         return (
             <div className="row">
                 <CountGraph points={count} />

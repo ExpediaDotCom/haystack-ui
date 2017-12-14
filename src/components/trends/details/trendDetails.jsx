@@ -25,26 +25,40 @@ import Loading from '../../common/loading';
 import './trendDetails.less';
 
 @observer
-export default class TrendResultExpand extends React.Component {
+export default class TrendDetails extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        opName: PropTypes.string.isRequired
-    }
+        serviceSummary: PropTypes.bool,
+        opName: PropTypes.string,
+        statsType: PropTypes.string
+    };
+
+    static defaultProps = {
+        serviceSummary: false,
+        opName: null,
+        statsType: null
+    };
 
     render() {
         return (
             <div className="table-row-details">
-                <TrendDetailsToolbar trendsSearchStore={this.props.store} location={this.props.location} serviceName={this.props.serviceName} opName={this.props.opName} />
-                { this.props.store.detailsPromiseState && this.props.store.detailsPromiseState.case({
+                <TrendDetailsToolbar
+                    serviceSummary={this.props.serviceSummary}
+                    trendsStore={this.props.store}
+                    location={this.props.location}
+                    serviceName={this.props.serviceName}
+                    opName={this.props.opName}
+                    statsType={this.props.statsType}
+                />
+                { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => (this.props.store.operationResults && Object.keys(this.props.store.operationResults).length ?
-                        <GraphContainer store={this.props.store} /> :
-                        <Error />)
-
+                    fulfilled: () => (this.props.store.trendsResults && Object.keys(this.props.store.trendsResults).length
+                        ? <GraphContainer trendsStore={this.props.store} />
+                        : <Error />)
                 })
                 }
             </div>

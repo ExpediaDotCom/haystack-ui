@@ -64,6 +64,8 @@ function getTrendValues(target, from, until) {
         transformResponse: [data => parseServiceResponse(data, target)]
     };
 
+    console.log(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`);
+
     axios
         .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, requestConfig)
         .then(response => deferred.resolve(response.data),
@@ -144,7 +146,7 @@ function convertGranularityToTimeWindow(timespan) {
     }
 }
 
-store.getTrendsForService = (serviceName, granularity, from, until) => {
+store.getOperationStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
     deffered.resolve(getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10)),
         error => deffered.reject(new Error(error)));
@@ -195,7 +197,7 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
         );
 }
 
-store.getTrendsForOperation = (serviceName, operationName, granularity, from, until) => {
+store.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
     const deffered = Q.defer();
 
     getOperationTrendResults(serviceName, toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
