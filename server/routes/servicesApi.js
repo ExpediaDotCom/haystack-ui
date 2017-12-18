@@ -15,19 +15,38 @@
  */
 
 const express = require('express');
+const LRU = require('lru-cache');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler');
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
+const options = { max: 500,
+    maxAge: 1000 * 60 * 60
+};
+const cache = LRU(options);
 
 router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getServices());
+    handleResponsePromise(res, next)(() => {
+        let services = cache.get('services');
+        if (!services) {
+            services = traceStore.getServices();
+            cache.set('services', services);
+        }
+        return services;
+    });
 });
 
 router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getOperations(req.query.serviceName));
+    handleResponsePromise(res, next)(() => {
+        let operations = cache.get(req.query.serviceName);
+        if (!operations) {
+            operations = traceStore.getOperations(req.query.serviceName);
+            cache.set(req.query.serviceName, operations);
+        }
+        return operations;
+    });
 });
 
 module.exports = router;
