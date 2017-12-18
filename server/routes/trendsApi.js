@@ -16,7 +16,7 @@
 
 const express = require('express');
 const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler');
+const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const trendStore = require(`../stores/trends/${config.stores.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 

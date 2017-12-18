@@ -17,26 +17,28 @@
 
 const express = require('express');
 const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler');
+const responseHandler = require('./utils/apiResponseHandler');
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
+const handleResponsePromiseWithCaching = responseHandler.handleResponsePromiseWithCaching;
+const handleResponsePromise = responseHandler.handleResponsePromise;
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.findTraces(req.query));
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getTrace(req.params.traceId));
 });
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getRawTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getRawTrace(req.params.traceId));
 });
 
 module.exports = router;

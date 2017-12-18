@@ -14,11 +14,29 @@
  *         limitations under the License.
  */
 
-function handleResponsePromise(response, next) {
-    return operation => operation().then(
+const cache = require('./cache');
+
+const responseHandler = {};
+responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge, apiCall) => {
+    let item = cache.get(url);
+    if (!item) {
+        return apiCall().then(
+            (result) => {
+                item = result;
+                response.json(item);
+                cache.set(url, item, maxAge);
+                return item;
+            },
+            err => next(err)
+        ).done();
+    }
+    response.json(item);
+    return item;
+};
+
+responseHandler.handleResponsePromise = (response, next) => operation => operation().then(
         result => response.json(result),
         err => next(err)
     ).done();
-}
 
-module.exports = handleResponsePromise;
+module.exports = responseHandler;

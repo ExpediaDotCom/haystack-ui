@@ -16,18 +16,20 @@
 
 const express = require('express');
 const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler');
+const responseHandler = require('./utils/apiResponseHandler');
+
+const handleResponsePromiseWithCaching = responseHandler.handleResponsePromiseWithCaching;
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
 router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getServices());
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, 36000, () => traceStore.getServices());
 });
 
 router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getOperations(req.query.serviceName));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, 36000, () => traceStore.getOperations(req.query.serviceName));
 });
 
 module.exports = router;
