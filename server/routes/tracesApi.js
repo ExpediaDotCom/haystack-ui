@@ -17,28 +17,28 @@
 
 const express = require('express');
 const config = require('../config/config');
-const responseHandler = require('./utils/apiResponseHandler');
+const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
+const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
 const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
-const handleResponsePromiseWithCaching = responseHandler.handleResponsePromiseWithCaching;
-const handleResponsePromise = responseHandler.handleResponsePromise;
+const TRACE_CACHE_MAX_AGE = 60 * 1000;
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next)(() => traceStore.findTraces(req.query));
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getTrace(req.params.traceId));
 });
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, 6000, () => traceStore.getRawTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawTrace(req.params.traceId));
 });
 
 module.exports = router;

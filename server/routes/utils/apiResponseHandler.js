@@ -17,21 +17,20 @@
 const cache = require('./cache');
 
 const responseHandler = {};
-responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge, apiCall) => {
-    let item = cache.get(url);
-    if (!item) {
-        return apiCall().then(
-            (result) => {
-                item = result;
-                response.json(item);
-                cache.set(url, item, maxAge);
-                return item;
+
+responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge) => (operation) => {
+    const cachedItem = cache.get(url);
+    if (cachedItem) {
+        response.json(cachedItem);
+    } else {
+        operation()
+        .then((result) => {
+                cache.set(url, result, maxAge);
+                response.json(result);
             },
-            err => next(err)
+            err => next(err),
         ).done();
     }
-    response.json(item);
-    return item;
 };
 
 responseHandler.handleResponsePromise = (response, next) => operation => operation().then(
