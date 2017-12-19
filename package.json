@@ -25,12 +25,13 @@
     "google-protobuf": "^3.4.0",
     "grpc": "^1.7.0",
     "lodash": "^4.17.4",
+    "lru-cache": "^4.1.1",
     "moment": "^2.16.0",
     "pug": "^2.0.0-beta6",
     "q": "^1.5.0",
+    "react-ga": "^2.3.5",
     "serve-favicon": "^2.3.2",
-    "winston": "^2.3.0",
-    "react-ga": "^2.3.5"
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.10.0",
@@ -66,7 +67,6 @@
     "less": "^2.3.1",
     "less-loader": "^4.0.3",
     "lodash-webpack-plugin": "^0.11.3",
-    "lru-cache": "^4.1.1",
     "mobx": "^3.1.9",
     "mobx-react": "^4.2.1",
     "mobx-utils": "^3.0.0",
