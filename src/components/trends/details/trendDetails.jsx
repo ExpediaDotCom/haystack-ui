@@ -48,8 +48,8 @@ export default class TrendDetails extends React.Component {
                     serviceSummary={this.props.serviceSummary}
                     trendsStore={this.props.store}
                     location={this.props.location}
-                    serviceName={this.props.serviceName}
-                    opName={this.props.opName}
+                    serviceName={encodeURIComponent(this.props.serviceName)}
+                    opName={encodeURIComponent(this.props.opName)}
                     statsType={this.props.statsType}
                 />
                 { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
