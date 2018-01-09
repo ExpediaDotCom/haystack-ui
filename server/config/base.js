@@ -35,15 +35,7 @@ module.exports = {
             //  - haystack - gets data from Haystack Metric Tank Setup
             //               haystack store also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
-            storeName: 'doppler',
-            dopplerUrl: 'https://dts-api.test.expedia.com',
-            queue: 'haystack-spans',
-            operationCountTemplateName: 'haystack-count-trend-generic:countMetric:{operationName,serviceName}',
-            operationDurationTemplateName: 'haystack-duration-trend-generic:histfield=duration:{duration,operationName,serviceName}',
-            operationSuccessTemplateName: 'haystack-success-count-trend-generic:countMetric:{operationName,serviceName,success}',
-            serviceCountTemplateName: 'CountByServiceNameServiceRoot-generic:countMetric:{service-root,serviceName}',
-            serviceDurationTemplateName: 'HistByDurationServiceNameServiceRoot-generic:histfield=duration:{duration, serviceName, service-root}',
-            serviceSuccessTemplateName: 'CountByServiceNameServiceRootError-generic:countMetric:{error, service-root,serviceName}'
+            storeName: 'stub'
         }
     }
 };
