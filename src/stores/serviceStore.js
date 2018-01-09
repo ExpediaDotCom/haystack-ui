@@ -16,14 +16,31 @@
  */
 import axios from 'axios';
 import {observable, action} from 'mobx';
+import { fromPromise } from 'mobx-utils';
+
+function parseServicePerfResponse(servicePerfData) {
+    const parsedServicePerfStats = [];
+    servicePerfData.forEach((serviceStats) => {
+        const serviceStatsObj = {
+            title: `${serviceStats.title}`,
+            successPercent: serviceStats.successPercent ? Math.exp(serviceStats.successPercent) : Math.exp(100),
+            failureCount: serviceStats.failureCount && Math.log(serviceStats.failureCount),
+            totalCount: Math.log(serviceStats.totalCount)
+        };
+        parsedServicePerfStats.push(serviceStatsObj);
+    });
+    return parsedServicePerfStats;
+}
 
 export class ServiceStore {
     @observable services = [];
+    @observable servicePerfStats = {};
+    @observable promiseState = { case: ({empty}) => empty() };
+
     @action fetchServices() {
         if (this.services.length) {
             return; // services already available, don't retrigger
         }
-
         axios({
             method: 'get',
             url: '/api/services'
@@ -31,6 +48,18 @@ export class ServiceStore {
         .then((response) => {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         });
+    }
+
+    @action fetchServicePerf(timeWindow, from, until) {
+        this.promiseState = fromPromise(
+            axios({
+                method: 'get',
+                url: `/api/servicePerf?timeWindow=${timeWindow}&from=${from}&until=${until}`
+            })
+                .then((response) => {
+                    this.servicePerfStats = parseServicePerfResponse(response.data);
+                })
+        );
     }
 }
 

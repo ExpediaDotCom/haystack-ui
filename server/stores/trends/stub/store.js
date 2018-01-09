@@ -52,6 +52,61 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
+store.getServicePerfStats = () => {
+    const deffered = Q.defer();
+
+    const cellStyle = { fontSize: '12px', textAnchor: 'start', fill: 'white'};
+
+    deffered.resolve(
+         [
+             {title: 'Service 1', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 2', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 3', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 4', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 5', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 6', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 7', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 8', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 9', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 10', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 11', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 12', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 13', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 14', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 15', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 16', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 17', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 18', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 19', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 20', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 21', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 22', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 23', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 24', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 25', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 26', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 27', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 28', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 29', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 30', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 31', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 32', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 33', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 34', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 35', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 36', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 37', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 38', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 39', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 40', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 41', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle},
+             {title: 'Service 42', successPercent: getValue(10, 100), tp99: getValue(10, 100000), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000), style: cellStyle}
+         ]
+    );
+
+    return deffered.promise;
+};
+
 store.getServiceTrends = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 

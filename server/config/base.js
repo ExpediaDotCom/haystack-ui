@@ -11,6 +11,9 @@ module.exports = {
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
+    // Switch for Service Performance Component
+    servicePerformanceComponent: true,
+
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled
     // traces store must be there in stores config
@@ -32,7 +35,15 @@ module.exports = {
             //  - haystack - gets data from Haystack Metric Tank Setup
             //               haystack store also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
-            storeName: 'stub'
+            storeName: 'doppler',
+            dopplerUrl: 'https://dts-api.test.expedia.com',
+            queue: 'haystack-spans',
+            operationCountTemplateName: 'haystack-count-trend-generic:countMetric:{operationName,serviceName}',
+            operationDurationTemplateName: 'haystack-duration-trend-generic:histfield=duration:{duration,operationName,serviceName}',
+            operationSuccessTemplateName: 'haystack-success-count-trend-generic:countMetric:{operationName,serviceName,success}',
+            serviceCountTemplateName: 'CountByServiceNameServiceRoot-generic:countMetric:{service-root,serviceName}',
+            serviceDurationTemplateName: 'HistByDurationServiceNameServiceRoot-generic:histfield=duration:{duration, serviceName, service-root}',
+            serviceSuccessTemplateName: 'CountByServiceNameServiceRootError-generic:countMetric:{error, service-root,serviceName}'
         }
     }
 };
