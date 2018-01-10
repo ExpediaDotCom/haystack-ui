@@ -11,8 +11,9 @@ module.exports = {
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
-    // Switch for Service Performance Component
-    enableServicePerformanceComponent: true,
+    // Feature switched
+    enableServicePerformance: true,
+    enableServiceLevelTrends: true,
 
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled

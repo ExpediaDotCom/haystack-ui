@@ -25,6 +25,8 @@ import ServiceResults from './service/serviceResults';
 import operationStore from './stores/operationStore';
 import serviceStore from './stores/serviceStore';
 
+const enableServiceLevelTrends = (window.haystackUiConfig.enableServiceLevelTrends);
+
 export default class Trends extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
@@ -52,11 +54,14 @@ export default class Trends extends React.Component {
                     location={location}
                     history={history}
                 />
-                <ServiceResults
-                    serviceStore={serviceStore}
-                    serviceName={this.state.serviceName}
-                    location={location}
-                />
+                {
+                    enableServiceLevelTrends &&
+                    <ServiceResults
+                        serviceStore={serviceStore}
+                        serviceName={this.state.serviceName}
+                        location={location}
+                    />
+                }
                 <OperationResults
                     operationStore={operationStore}
                     serviceName={this.state.serviceName}
