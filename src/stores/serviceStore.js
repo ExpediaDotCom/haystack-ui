@@ -16,11 +16,9 @@
  */
 import axios from 'axios';
 import {observable, action} from 'mobx';
-import { fromPromise } from 'mobx-utils';
 
 export class ServiceStore {
     @observable services = [];
-    @observable promiseState = { case: ({empty}) => empty() };
 
     @action fetchServices() {
         if (this.services.length) {
