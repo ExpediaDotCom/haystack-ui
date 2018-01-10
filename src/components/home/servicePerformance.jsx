@@ -27,14 +27,20 @@ import './servicePerformance.less';
 @observer
 export default class ServicePerformance extends Component {
     static propTypes = {
-        serviceStore: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        servicePerfStore: PropTypes.object.isRequired
     };
 
-    static addStyle(servicePerfStats) {
+    static addTitle(servicePerfStats) {
         const serviceData = [];
         servicePerfStats.forEach((serviceObj) => {
-            const obj = Object.assign({}, serviceObj);
-            obj.style = {fontSize: '13px', textAnchor: 'start', fill: '#f2f4fb', transform: 'translate(10)'};
+            const obj = {...serviceObj};
+            const successPercent = obj.successPercent === -100 ? 'NA' : `${Math.log(obj.successPercent).toFixed(2)}%`;
+            obj.title =
+                (<div>
+                    <div className="rv-treemap__leaf__title">{obj.serviceName}</div>
+                    <div className="rv-treemap__leaf__data">Success: {successPercent}</div>
+                </div>);
             serviceData.push(obj);
         });
         return {children: serviceData};
@@ -44,10 +50,12 @@ export default class ServicePerformance extends Component {
         super(props);
         this.state = {
             area: 'totalCount',
-            color: 'successPercent'
+            color: 'successPercent',
+            hoveredNode: false
         };
         this.handleAreaParamChange = this.handleAreaParamChange.bind(this);
         this.handleColorParamChange = this.handleColorParamChange.bind(this);
+        this.handleNodeClick = this.handleNodeClick.bind(this);
     }
 
     handleAreaParamChange(event) {
@@ -58,8 +66,12 @@ export default class ServicePerformance extends Component {
         this.setState({color: event.value});
     }
 
+    handleNodeClick() {
+        this.props.history.push(`/service/${this.state.hoveredNode.data.serviceName}/trends`);
+    }
+
     render() {
-        const colorRange = ['#3b5998', '#8b9dc3', '#dfe3ee', '#f7f7f7', '#ffffff'];
+        const colorRange = ['#3f4d71', '#f2f4fb'];
 
         const areaOptions = [
             {value: 'failureCount', label: 'Failure Count'},
@@ -70,51 +82,43 @@ export default class ServicePerformance extends Component {
             {value: 'successPercent', label: 'Success Percent'}
         ];
 
-        const treemapStyleSVG = {
-            stroke: 'none',
-            textAnchor: 'start'
-        };
-
         const ResponsiveTreemap = makeWidthFlexible(Treemap);
 
         return (
             <section className="container servicePerformance">
-                <div className="servicePerformance__header">
-                    <div className="servicePerformance__header-title">Service Performance</div>
-                    <div className="servicePerformance__header-params">
-                        <div className="servicePerformance__param-selector pull-right">
-                            <div className="pull-right">Area </div>
+                <div className="servicePerformance__header clearfix">
+                    <div className="servicePerformance__header-title pull-left">Service Performance</div>
+                    <div className="pull-right clearfix">
+                        <div className="servicePerformance__param-selector pull-left">
+                            <div className="text-right">Area </div>
                             <Select
                                 options={areaOptions}
                                 onChange={this.handleAreaParamChange}
                                 clearable={false}
                                 value={this.state.area}
-                                placeholder=""
                             />
                         </div>
-                        <div className="servicePerformance__param-selector pull-right">
-                            <div className="pull-right">Color </div>
+                        <div className="servicePerformance__param-selector pull-left">
+                            <div className="text-right">Color </div>
                             <Select
                                 options={colorOptions}
                                 onChange={this.handleColorParamChange}
                                 value={this.state.color}
                                 clearable={false}
-                                placeholder=""
                             />
                         </div>
                     </div>
                 </div>
-                { this.props.serviceStore.promiseState && this.props.serviceStore.promiseState.case({
+                { this.props.servicePerfStore.promiseState && this.props.servicePerfStore.promiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.serviceStore.promiseState)
+                    fulfilled: () => ((this.props.servicePerfStore.promiseState)
                         ? <ResponsiveTreemap
                             animation
-                            height={500}
-                            data={ServicePerformance.addStyle(this.props.serviceStore.servicePerfStats)}
-                            style={treemapStyleSVG}
-                            renderMode={'SVG'}
+                            height={600}
+                            data={ServicePerformance.addTitle(this.props.servicePerfStore.servicePerfStats)}
+                            renderMode={'DOM'}
                             padding={3}
                             margin={5}
                             mode={'squarify'}
@@ -123,10 +127,18 @@ export default class ServicePerformance extends Component {
                             getSize={d => d[this.state.area]}
                             getColor={d => d[this.state.color]}
                             sortFunction={(a, b) => b.value - a.value}
+                            onLeafMouseOver={nodeData => this.setState({hoveredNode: nodeData})}
+                            onLeafMouseOut={() => this.setState({hoveredNode: false})}
+                            onLeafClick={this.handleNodeClick}
                         />
                         : <Error />)
                 })
                 }
+                <div className="pull-right">
+                    <div className="text-right">Color Range </div>
+                    <div className="servicePerformance__colorRangeIndicator" />
+                </div>
+
             </section>
         );
     }

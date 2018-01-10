@@ -12,7 +12,7 @@ module.exports = {
     gaTrackingID: 'UA-XXXXXXXX-X',
 
     // Switch for Service Performance Component
-    servicePerformanceComponent: true,
+    enableServicePerformanceComponent: true,
 
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled

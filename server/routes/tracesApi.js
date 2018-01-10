@@ -38,7 +38,7 @@ router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.getRawTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawTrace(req.params.traceId));
 });
 
 module.exports = router;

@@ -20,10 +20,11 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import HomeSearchBox from './homeSearchBox';
 import serviceStore from '../../stores/serviceStore';
+import servicePerfStore from './stores/servicePerfStore';
 import ServicePerformance from './servicePerformance';
 import './home.less';
 
-const servicePerformanceComponent = (window.haystackUiConfig.servicePerformanceComponent);
+const enableServicePerformanceComponent = (window.haystackUiConfig.enableServicePerformanceComponent);
 
 @observer
 export default class Home extends Component {
@@ -32,14 +33,14 @@ export default class Home extends Component {
         serviceStore.fetchServices();
         const until = Date.now();
         const from = until - (15 * 60 * 1000);
-        serviceStore.fetchServicePerf('1-min', from, until);
+        servicePerfStore.fetchServicePerf('5-min', from, until);
     }
 
     render() {
         return (
             <article className="home-panel">
                 <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
-                {servicePerformanceComponent && <ServicePerformance serviceStore={serviceStore} />}
+                {enableServicePerformanceComponent && <ServicePerformance servicePerfStore={servicePerfStore} history={this.props.history} />}
             </article>
         );
     }

@@ -18,22 +18,58 @@
 @import (reference) '../../app';
 
 .servicePerformance {
-  padding-bottom: 20px;
+  padding-bottom: @spacing-m;
 }
 .servicePerformance__header {
-  display: flex;
-  justify-content: space-between;
-}
-.servicePerformance__header-params{
-  display: flex;
-  justify-content: space-between;
-  width: 320px;
+  margin-bottom: @spacing-s;
 }
 .servicePerformance__header-title {
   font-size: @font-size-h3;
   font-weight: 600;
 }
 .servicePerformance__param-selector {
-  flex: none;
-  width: 150px;
+  width: 170px;
+  padding-left: @spacing-m;
+}
+
+.servicePerformance__colorRangeIndicator {
+  background: linear-gradient(90deg, #3f4d71, #f2f4fb);
+  height: @spacing-m;
+  width: 200px;
+  padding-top: @spacing-s;
+}
+
+.rv-treemap {
+  font-size: 12px;
+  position: relative;
+  cursor: pointer;
+}
+
+.rv-treemap__leaf {
+  overflow: hidden;
+  position: absolute;
+}
+
+.rv-treemap__leaf--circle {
+  align-items: center;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.rv-treemap__leaf__content {
+  overflow: hidden;
+  padding: 5px;
+}
+
+.rv-treemap__leaf__title {
+  font-size: @font-size-h5;
+  line-height: 1.2;
+  font-weight: 400;
+  .ellipsis
+}
+
+.rv-treemap__leaf__data {
+  font-size: inherit;
+  .ellipsis
 }
