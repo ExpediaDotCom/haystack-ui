@@ -52,6 +52,37 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
+store.getServicePerfStats = () => {
+    const deffered = Q.defer();
+
+    deffered.resolve(
+         [
+             {serviceName: 'Service 1', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 2', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 3', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 4', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 5', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 6', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 7', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 8', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 9', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 10', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 11', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 12', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 13', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 14', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 15', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 16', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 17', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 18', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 19', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+             {serviceName: 'Service 20', successPercent: getValue(10, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)}
+         ]
+    );
+
+    return deffered.promise;
+};
+
 store.getServiceTrends = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 

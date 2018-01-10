@@ -64,8 +64,6 @@ function getTrendValues(target, from, until) {
         transformResponse: [data => parseServiceResponse(data, target)]
     };
 
-    console.log(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`);
-
     axios
         .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, requestConfig)
         .then(response => deferred.resolve(response.data),

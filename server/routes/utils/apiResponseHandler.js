@@ -28,14 +28,14 @@ responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge)
                 cache.set(url, result, maxAge);
                 response.json(result);
             },
-            err => next(err),
+            err => next(err)
         ).done();
     }
 };
 
-responseHandler.handleResponsePromise = (response, next) => operation => operation().then(
-        result => response.json(result),
-        err => next(err)
-    ).done();
+responseHandler.handleResponsePromise = (response, next) => operation => operation()
+    .then(result => response.json(result),
+        err => next(err))
+    .done();
 
 module.exports = responseHandler;

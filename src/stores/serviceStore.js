@@ -19,11 +19,11 @@ import {observable, action} from 'mobx';
 
 export class ServiceStore {
     @observable services = [];
+
     @action fetchServices() {
         if (this.services.length) {
             return; // services already available, don't retrigger
         }
-
         axios({
             method: 'get',
             url: '/api/services'
@@ -32,6 +32,7 @@ export class ServiceStore {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         });
     }
+
 }
 
 export default new ServiceStore();

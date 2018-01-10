@@ -31,6 +31,7 @@ const logger = require('./support/logger');
 const indexRoute = require('./routes/index');
 const servicesApi = require('./routes/servicesApi');
 const tracesApi = require('./routes/tracesApi');
+const servicesPerfApi = require('./routes/servicesPerfApi');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
 
@@ -54,7 +55,7 @@ app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 
 // ROUTING
-const apis = [servicesApi, tracesApi];
+const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.stores.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
 
 app.use('/api', ...apis);
