@@ -13,6 +13,7 @@ module.exports = {
 
     // Feature switched
     enableServicePerformance: true,
+    enableServiceLevelTrends: true,
 
     // data stores to connect to
     // this list defines subsystems for which UI should be enabled

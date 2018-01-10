@@ -28,7 +28,8 @@ router.get('*', (req, res) => {
         subsystems: Object.keys(config.stores),
         gaTrackingID: config.gaTrackingID,
         fieldKeys: config.stores.traces.fieldKeys,
-        enableServicePerformance: config.enableServicePerformance
+        enableServicePerformance: config.enableServicePerformance,
+        enableServiceLevelTrends: config.enableServiceLevelTrends
     });
 });
 
