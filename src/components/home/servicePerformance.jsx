@@ -38,11 +38,14 @@ const colors = [
     '#4B9D93'
 ];
 
+const colorScale = colors.map((color, index) => `${color} ${colorPercentRanges[index]}%`).join(',');
+
 @observer
 export default class ServicePerformance extends Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
-        servicePerfStore: PropTypes.object.isRequired
+        servicePerfStore: PropTypes.object.isRequired,
+        servicePerfStats: PropTypes.object.isRequired
     };
 
     static mapToColor(percent) {
@@ -68,14 +71,26 @@ export default class ServicePerformance extends Component {
 
     constructor(props) {
         super(props);
+        const treemapData = ServicePerformance.createTreemapData(props.servicePerfStats);
         this.state = {
             area: 'totalCount',
             color: 'successPercent',
-            hoveredNode: false
+            hoveredNode: false,
+            treemapData,
+            initData: treemapData
         };
         this.handleAreaParamChange = this.handleAreaParamChange.bind(this);
         this.handleColorParamChange = this.handleColorParamChange.bind(this);
         this.handleNodeClick = this.handleNodeClick.bind(this);
+        this.handleTreemapDataFilter = this.handleTreemapDataFilter.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const treemapData = ServicePerformance.createTreemapData(nextProps.servicePerfStats);
+        this.setState({
+            treemapData,
+            initData: treemapData
+        });
     }
 
     handleAreaParamChange(event) {
@@ -87,7 +102,23 @@ export default class ServicePerformance extends Component {
     }
 
     handleNodeClick() {
-        this.props.history.push(`/service/${this.state.hoveredNode.data.serviceName}/trends`);
+        if (this.state.hoveredNode) {
+            this.props.history.push(`/service/${this.state.hoveredNode}/trends`);
+        }
+    }
+
+    handleTreemapDataFilter(event) {
+        const initData = this.state.initData.children.slice(0, this.state.treemapData.length);
+        const filteredData = initData.filter(serviceData => serviceData.serviceName.toLowerCase().includes(event.target.value.toLowerCase()));
+        if (filteredData.length !== 0) {
+            this.setState({
+                treemapData: {children: filteredData, successPercentColor: '#fff'}
+            });
+        } else {
+            this.setState({
+                treemapData: {title: 'No Matching Service Found', totalCountValue: 1, successPercentColor: '#fff'}
+            });
+        }
     }
 
     render() {
@@ -107,6 +138,15 @@ export default class ServicePerformance extends Component {
                 <div className="servicePerformance__header clearfix">
                     <div className="servicePerformance__header-title pull-left">Service Performance</div>
                     <div className="pull-right clearfix">
+                        <div className="servicePerformance__param-selector pull-left">
+                            <div className="text-right"><span className="ti-search" /> </div>
+                            <input
+                                type="text"
+                                className="servicePerformance__search"
+                                placeholder={'Filter Services...'}
+                                onChange={this.handleTreemapDataFilter}
+                            />
+                        </div>
                         <div className="servicePerformance__param-selector pull-left">
                             <div className="text-right">Area </div>
                             <Select
@@ -134,8 +174,8 @@ export default class ServicePerformance extends Component {
                     fulfilled: () => ((this.props.servicePerfStore.promiseState)
                         ? <ResponsiveTreemap
                             animation
-                            height={700}
-                            data={ServicePerformance.createTreemapData(this.props.servicePerfStore.servicePerfStats)}
+                            height={600}
+                            data={this.state.treemapData}
                             renderMode={'DOM'}
                             padding={3}
                             margin={5}
@@ -144,12 +184,27 @@ export default class ServicePerformance extends Component {
                             getSize={d => d[`${this.state.area}Value`]}
                             getColor={d => d[`${this.state.color}Color`]}
                             sortFunction={(a, b) => b.value - a.value}
-                            onLeafMouseOver={nodeData => this.setState({hoveredNode: nodeData})}
+                            onLeafMouseOver={nodeData => nodeData.data.serviceName && this.setState({hoveredNode: nodeData.data.serviceName})}
                             onLeafMouseOut={() => this.setState({hoveredNode: false})}
                             onLeafClick={this.handleNodeClick}
                         />
                         : <Error />)
                 })}
+                <section>
+                    <div className="pull-right clearfix">
+                        <div className="pull-left">0%</div>
+                        <div
+                            className="pull-left"
+                            style={{
+                                background: `linear-gradient(to right, ${colorScale})`,
+                                height: '10px',
+                                width: '200px',
+                                margin: '6px'
+                            }}
+                        />
+                        <div className="pull-left">100%</div>
+                    </div>
+                </section>
             </section>
         );
     }
