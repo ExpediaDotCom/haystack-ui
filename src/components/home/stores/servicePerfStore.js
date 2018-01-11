@@ -19,7 +19,7 @@ import {action, observable} from 'mobx';
 import {fromPromise} from 'mobx-utils';
 
 export class ServicePerfStore {
-    @observable servicePerfStats = {};
+    @observable servicePerfStats = [];
     @observable promiseState = { case: ({empty}) => empty() };
 
     @action fetchServicePerf(timeWindow, from, until) {
