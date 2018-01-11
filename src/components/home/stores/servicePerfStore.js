@@ -15,22 +15,8 @@
  *
  */
 import axios from 'axios';
-import {observable, action} from 'mobx';
-import { fromPromise } from 'mobx-utils';
-
-function parseServicePerfResponse(servicePerfData) {
-    const parsedServicePerfStats = [];
-    servicePerfData.forEach((serviceStats) => {
-        const serviceStatsObj = {
-            serviceName: `${serviceStats.serviceName}`,
-            successPercent: serviceStats.successPercent ? Math.exp(serviceStats.successPercent) : -100,
-            failureCount: serviceStats.failureCount && Math.log(serviceStats.failureCount),
-            totalCount: Math.log(serviceStats.totalCount)
-        };
-        parsedServicePerfStats.push(serviceStatsObj);
-    });
-    return parsedServicePerfStats;
-}
+import {action, observable} from 'mobx';
+import {fromPromise} from 'mobx-utils';
 
 export class ServicePerfStore {
     @observable servicePerfStats = {};
@@ -42,9 +28,9 @@ export class ServicePerfStore {
                 method: 'get',
                 url: `/api/servicePerf?timeWindow=${timeWindow}&from=${from}&until=${until}`
             })
-                .then((response) => {
-                    this.servicePerfStats = parseServicePerfResponse(response.data);
-                })
+            .then((response) => {
+                this.servicePerfStats = response.data;
+            })
         );
     }
 }
