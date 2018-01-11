@@ -17,12 +17,26 @@
 
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-import {Treemap, makeWidthFlexible} from 'react-vis';
+import {makeWidthFlexible, Treemap} from 'react-vis';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Error from '../common/error';
 import Loading from '../common/loading';
 import './servicePerformance.less';
+
+const colorPercentRanges = [0, 50, 75, 90, 95, 98, 99, 99.9, 100];
+
+const colors = [
+    '#8D2827',
+    '#B34D4B',
+    '#EC8B83',
+    '#F6C6B5',
+    '#f5ffd3',
+    '#D1E6CC',
+    '#A5CEB9',
+    '#76B6A3',
+    '#4B9D93'
+];
 
 @observer
 export default class ServicePerformance extends Component {
@@ -31,19 +45,25 @@ export default class ServicePerformance extends Component {
         servicePerfStore: PropTypes.object.isRequired
     };
 
-    static addTitle(servicePerfStats) {
-        const serviceData = [];
-        servicePerfStats.forEach((serviceObj) => {
-            const obj = {...serviceObj};
-            const successPercent = obj.successPercent === -100 ? 'NA' : `${Math.log(obj.successPercent).toFixed(2)}%`;
-            obj.title =
+    static mapToColor(percent) {
+        return colors[
+            colorPercentRanges.indexOf(
+                colorPercentRanges.find(x => x >= percent))];
+    }
+
+    static createTreemapData(servicePerfStats) {
+        const serviceData = servicePerfStats.map(servicePerf => ({
+            ...servicePerf,
+            title:
                 (<div>
-                    <div className="rv-treemap__leaf__title">{obj.serviceName}</div>
-                    <div className="rv-treemap__leaf__data">Success: {successPercent}</div>
-                </div>);
-            serviceData.push(obj);
-        });
-        return {children: serviceData};
+                    <div className="rv-treemap__leaf__title">{servicePerf.serviceName}</div>
+                </div>),
+            totalCountValue: Math.log(servicePerf.totalCount || 1),
+            failureCountValue: Math.log(servicePerf.faliureCount || 1),
+            successPercentColor: (servicePerf.successPercent === null) ? '#eee' : ServicePerformance.mapToColor(servicePerf.successPercent)
+        }));
+
+        return {children: serviceData, successPercentColor: '#fff'};
     }
 
     constructor(props) {
@@ -71,12 +91,10 @@ export default class ServicePerformance extends Component {
     }
 
     render() {
-        const colorRange = ['#3f4d71', '#f2f4fb'];
-
         const areaOptions = [
             {value: 'failureCount', label: 'Failure Count'},
-            {value: 'totalCount', label: 'Total Count'}
-            ];
+            {value: 'totalCount', label: 'Request Count'}
+        ];
 
         const colorOptions = [
             {value: 'successPercent', label: 'Success Percent'}
@@ -116,29 +134,22 @@ export default class ServicePerformance extends Component {
                     fulfilled: () => ((this.props.servicePerfStore.promiseState)
                         ? <ResponsiveTreemap
                             animation
-                            height={600}
-                            data={ServicePerformance.addTitle(this.props.servicePerfStore.servicePerfStats)}
+                            height={700}
+                            data={ServicePerformance.createTreemapData(this.props.servicePerfStore.servicePerfStats)}
                             renderMode={'DOM'}
                             padding={3}
                             margin={5}
-                            mode={'squarify'}
-                            colorType={'linear'}
-                            colorRange={colorRange}
-                            getSize={d => d[this.state.area]}
-                            getColor={d => d[this.state.color]}
+                            mode={'circlePack'}
+                            colorType={'literal'}
+                            getSize={d => d[`${this.state.area}Value`]}
+                            getColor={d => d[`${this.state.color}Color`]}
                             sortFunction={(a, b) => b.value - a.value}
                             onLeafMouseOver={nodeData => this.setState({hoveredNode: nodeData})}
                             onLeafMouseOut={() => this.setState({hoveredNode: false})}
                             onLeafClick={this.handleNodeClick}
                         />
                         : <Error />)
-                })
-                }
-                <div className="pull-right">
-                    <div className="text-right">Color Range </div>
-                    <div className="servicePerformance__colorRangeIndicator" />
-                </div>
-
+                })}
             </section>
         );
     }

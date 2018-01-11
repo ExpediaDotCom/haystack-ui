@@ -45,7 +45,6 @@
 .rv-treemap {
   font-size: 12px;
   position: relative;
-  cursor: pointer;
 }
 
 .rv-treemap__leaf {
@@ -57,16 +56,18 @@
   border-radius: 100%;
   display: flex;
   justify-content: center;
+
+  &:not(:first-child){
+    cursor: pointer;
+  }
 }
 
 .rv-treemap__leaf__content {
   padding: 5px;
+  .ellipsis
 }
 
 .rv-treemap__leaf__title {
-  font-size: @font-size-h5;
-  line-height: 1.2;
-  font-weight: 400;
   .ellipsis
 }
 
