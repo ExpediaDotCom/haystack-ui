@@ -16,3 +16,50 @@
  */
 
 @import (reference) '../../app';
+
+.alert-details__alert-glow  {
+  animation: glow 700ms ease-out infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    border-left: 1px solid @white;
+  }
+  100% {
+    border-left: 1px solid @brand-danger;
+  }
+}
+
+.alert-details__history-table {
+  position: relative;
+  display: inline-block;
+  float: right;
+  width: 40%;
+}
+
+.alert-details__details-list {
+  position: relative;
+  display: inline-block;
+  float: left;
+  width: 55%;
+}
+
+.alert-details__title {
+  margin-top: 0;
+  font-weight: 600;
+  display: inline;
+}
+
+.alert-details__button {
+  margin-bottom: 5px;
+}
+
+.alert-details__day-badge {
+  margin-left: 2px;
+  background-color: @brand-success;
+  border-radius: 5px;
+}
+
+.alert-details__button-margin {
+  margin-left: 10px;
+}

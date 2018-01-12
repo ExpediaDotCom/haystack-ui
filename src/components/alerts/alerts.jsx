@@ -16,12 +16,39 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+import { observer } from 'mobx-react';
+
+import ActiveAlerts from './activeAlerts';
 import './alerts.less';
-import WorkInProgress from '../common/workInProgress';
+import alertsStore from './stores/activeAlertsStore';
 
-export default () => (
-    <section className="alerts-panel">
-        <WorkInProgress/>
-    </section>
-);
+@observer
+export default class Alerts extends React.Component {
+    static propTypes = {
+        match: PropTypes.object.isRequired
+    };
 
+    constructor(props) {
+        super(props);
+        this.state = {serviceName: this.props.match.params.serviceName};
+    }
+
+    componentDidMount() {
+        alertsStore.fetchServiceAlerts(this.state.serviceName);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({serviceName: nextProps.match.params.serviceName});
+        alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName);
+    }
+
+    render() {
+        return (
+            <section className="alerts-panel">
+                <ActiveAlerts serviceName={this.state.serviceName} alertsStore={alertsStore}/>
+            </section>
+
+        );
+    }
+}

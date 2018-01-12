@@ -57,6 +57,7 @@ app.use(logger.ERROR_LOGGER);
 // ROUTING
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.stores.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
+if (config.stores.alerts) apis.push(require('./routes/alertsApi')); // eslint-disable-line global-require
 
 app.use('/api', ...apis);
 app.use('/', indexRoute);

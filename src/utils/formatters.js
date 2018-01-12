@@ -18,6 +18,15 @@ import timeago from 'timeago.js';
 import moment from 'moment';
 
 const formatters = {};
+const dateLetterConversion = {
+    0: 'Su',
+    1: 'M',
+    2: 'Tu',
+    3: 'W',
+    4: 'Th',
+    5: 'F',
+    6: 'Sa'
+};
 
 formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
 
@@ -54,11 +63,34 @@ formatters.toNumberString = (num) => {
     return `${(num / 1000000).toFixed(1)}m`;
 };
 
+
 formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     const start = moment(fromInMs);
     const end = moment(untilInMs);
 
     return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
 };
+
+// Returns corresponding string from alert type number
+formatters.toAlertTypeString = (num) => {
+    if (num === 1) {
+        return 'Count';
+    } else if (num === 2) {
+        return 'Duration TP99';
+    }
+    return 'Success %';
+};
+
+// Converts date number array to corresponding date abbreviations
+formatters.toActiveDateArray = (dateNums) => {
+    const dateLetters = [];
+    dateNums.forEach((x) => {
+        dateLetters.push(dateLetterConversion[x]);
+    });
+    return dateLetters;
+};
+
+// Adds colon inside four digit time string
+formatters.toTimeRegex = time => time.replace(/(\d{2})(\d{2})/, '$1:$2');
 
 export default formatters;

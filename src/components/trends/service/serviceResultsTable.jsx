@@ -96,7 +96,7 @@ export default class SummaryResultsTable extends React.Component {
 
         return (
             <BootstrapTable
-                className="trends-panel"
+                className="table-panel"
                 data={trendsWithLastDuration}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
