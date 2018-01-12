@@ -22,28 +22,30 @@
 }
 
 .servicePerformance__header {
-  margin-bottom: @spacing-s;
+  padding-bottom: @spacing-s;
 }
 
 .servicePerformance__header-title {
   font-size: @font-size-h3;
-  font-weight: 600;
+  font-weight: @headings-font-weight;
 }
 
 .servicePerformance__param-selector {
-  width: 200px;
+  width: 180px;
   padding-left: @spacing-m;
 }
 
-.servicePerformance__search{
-  width: 100%;
-  font-size: 17px;
+.servicePerformance__search {
+  margin-top: @line-height-computed;
+}
+
+.servicePerformance__searchBox{
+  font-size: @font-size-large;
   box-shadow: none;
   background-color: @gray-lighter;
-  left: 0;
   line-height: 34px;
-  padding-left: 10px;
-  top: 0;
+  padding-left: @padding-small-horizontal;
+  width:95%;
   color: #333333;
 
   &:focus {

@@ -62,7 +62,7 @@ export default class ServicePerformance extends Component {
                     <div className="rv-treemap__leaf__title">{servicePerf.serviceName}</div>
                 </div>),
             totalCountValue: Math.log(servicePerf.totalCount || 1),
-            failureCountValue: Math.log(servicePerf.faliureCount || 1),
+            failureCountValue: Math.log(servicePerf.failureCount || 1),
             successPercentColor: (servicePerf.successPercent === null) ? '#eee' : ServicePerformance.mapToColor(servicePerf.successPercent)
         }));
 
@@ -135,34 +135,34 @@ export default class ServicePerformance extends Component {
 
         return (
             <section className="container servicePerformance">
-                <div className="servicePerformance__header clearfix">
-                    <div className="servicePerformance__header-title pull-left">Service Performance</div>
-                    <div className="pull-right clearfix">
-                        <div className="servicePerformance__param-selector pull-left">
-                            <div className="text-right"><span className="ti-search" /> </div>
-                            <input
-                                type="text"
-                                className="servicePerformance__search"
-                                placeholder={'Filter Services...'}
-                                onChange={this.handleTreemapDataFilter}
-                            />
-                        </div>
-                        <div className="servicePerformance__param-selector pull-left">
-                            <div className="text-right">Area </div>
-                            <Select
-                                options={areaOptions}
-                                onChange={this.handleAreaParamChange}
-                                clearable={false}
-                                value={this.state.area}
-                            />
-                        </div>
-                        <div className="servicePerformance__param-selector pull-left">
+                <div className="servicePerformance__header row clearfix">
+                    <div className="servicePerformance__header-title col-md-4">Service Performance</div>
+                    <div className="servicePerformance__search col-md-4">
+                        <input
+                            type="text"
+                            className="servicePerformance__searchBox"
+                            placeholder={'Filter Services...'}
+                            onChange={this.handleTreemapDataFilter}
+                        />
+                        <span className="ti-search" />
+                    </div>
+                    <div className="clearfix col-md-4">
+                        <div className="servicePerformance__param-selector pull-right">
                             <div className="text-right">Color </div>
                             <Select
                                 options={colorOptions}
                                 onChange={this.handleColorParamChange}
                                 value={this.state.color}
                                 clearable={false}
+                            />
+                        </div>
+                        <div className="servicePerformance__param-selector pull-right">
+                            <div className="text-right">Area </div>
+                            <Select
+                                options={areaOptions}
+                                onChange={this.handleAreaParamChange}
+                                clearable={false}
+                                value={this.state.area}
                             />
                         </div>
                     </div>
