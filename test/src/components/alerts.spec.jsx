@@ -65,7 +65,7 @@ function getRandomValues() {
 const stubAlerts = [
     {
         alertId: 1,
-        operationName: 'tarley-1',
+        operationName: 'test',
         type: 1,
         status: false,
         timestamp: getRandomTimeStamp(),
@@ -73,8 +73,16 @@ const stubAlerts = [
     },
     {
         alertId: 2,
-        operationName: 'tarley-1',
+        operationName: 'test',
         type: 2,
+        status: true,
+        timestamp: getRandomTimeStamp(),
+        value: getRandomValues()
+    },
+    {
+        alertId: 3,
+        operationName: 'test',
+        type: 3,
         status: true,
         timestamp: getRandomTimeStamp(),
         value: getRandomValues()
@@ -141,7 +149,7 @@ describe('<Alerts />', () => {
     });
 });
 
-describe('<ActiveAlerts />', () => {
+describe('<AlertsPanel />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubActiveAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
@@ -168,13 +176,33 @@ describe('<ActiveAlerts />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(2);
+        expect(wrapper.find('.tr-no-border')).to.have.length(3);
+    });
+});
+describe('<AlertDetails />', () => {
+    it('should render error if promise is rejected', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, rejectedPromise);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} row={stubAlerts[0]} serviceName={stubService} /></MemoryRouter>);
+
+        expect(wrapper.find('.error-message_text')).to.have.length(1);
+        expect(wrapper.find('.loading')).to.have.length(0);
+        expect(wrapper.find('.alert-details__details-list')).to.have.length(0);
     });
 
-    it('should render the alert details upon clicking an active alert row', () => {
+    it('should render loading if promise is pending', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, pendingPromise);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} row={stubAlerts[0]} serviceName={stubService} /></MemoryRouter>);
+
+        expect(wrapper.find('.loading')).to.have.length(1);
+        expect(wrapper.find('.error-message_text')).to.have.length(0);
+        expect(wrapper.find('.alert-details__details-list')).to.have.length(0);
+    });
+    it('should render the alert details with successful details promise', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} row={stubAlerts[0]} serviceName={stubService} /></MemoryRouter>);
 
+        expect(wrapper.find('.loading')).to.have.length(0);
+        expect(wrapper.find('.error-message_text')).to.have.length(0);
         expect(wrapper.find('.alert-details__details-list')).to.have.length(1);
     });
 });
