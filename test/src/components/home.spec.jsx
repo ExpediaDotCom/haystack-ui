@@ -21,10 +21,12 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import Home from '../../../src/components/home/home';
 import HomeSearchBox from '../../../src/components/home/homeSearchBox';
+import ServicePerformance from '../../../src/components/home/servicePerformance';
 import {ServiceStore} from '../../../src/stores/serviceStore';
+import {ServicePerfStore} from '../../../src/components/home/stores/servicePerfStore';
 
 
-const stubResults = [
+const serviceStubResults = [
     'lannister-service',
     'stark-service',
     'tyrell-service',
@@ -32,6 +34,35 @@ const stubResults = [
     'baratheon-service',
     'dragon-service'
 ];
+
+const servicePerfStubResults = {
+    children: [
+        {
+            serviceName: 'Service 1',
+            successPercent: 90,
+            failureCount: 26088,
+            totalCount: 5394949947
+        },
+        {
+            serviceName: 'Service 2',
+            successPercent: 97,
+            failureCount: 6001,
+            totalCount: 6406933
+        },
+        {
+            serviceName: 'Service 3',
+            successPercent: 98,
+            failureCount: 21632,
+            totalCount: 1000000
+        },
+        {
+            serviceName: 'Service 4',
+            successPercent: 96,
+            failureCount: 81338,
+            totalCount: 84143
+        }
+    ]
+};
 
 const stubLocation = {
     search: '/'
@@ -46,11 +77,20 @@ const stubHistory = {
     }
 };
 
-function createStubStore(results) {
+function createServiceStubStore(results) {
     const store = new ServiceStore();
     store.services = [];
     sinon.stub(store, 'fetchServices', () => {
         store.services = results;
+    });
+    return store;
+}
+
+function createServicePerfStubStore(results) {
+    const store = new ServicePerfStore();
+    store.servicePerfStats = [];
+    sinon.stub(store, 'fetchServicePerf', () => {
+        store.servicePerfStats = results;
     });
     return store;
 }
@@ -63,13 +103,20 @@ describe('<Home />', () => {
 
     it('homepage contains homesearchbox', () => {
         const wrapper = shallow(<Home history={stubHistory}/>);
-        const serviceStore = createStubStore(stubResults);
+        const serviceStore = createServiceStubStore(serviceStubResults);
         expect(wrapper.contains(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>)).to.equal(true);
     });
 
     it('should render the homesearchbox', () => {
-        const serviceStore = createStubStore(stubResults);
+        const serviceStore = createServiceStubStore(serviceStubResults);
         const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
         expect(wrapper.find('.container')).to.have.length(1);
+    });
+
+    it('should render the servicePerformance', () => {
+        const servicePerfStore = createServicePerfStubStore(servicePerfStubResults);
+        const wrapper = shallow(<ServicePerformance history={stubHistory} servicePerfStore={servicePerfStore} servicePerfStats={servicePerfStore.servicePerfStats}/>);
+        expect(wrapper.find('.container')).to.have.length(1);
+        expect(wrapper.find('.servicePerformance')).to.have.length(1);
     });
 });

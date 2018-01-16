@@ -17,22 +17,10 @@
 const server = require('../../../server/app.js');
 const request = require('supertest');
 
-describe('routes.servicesApi', () => {
+describe('routes.servicePerfApi', () => {
     it('returns http 200 for /api/services', (done) => {
         request(server)
-            .get('/api/services')
-            .expect(200)
-            .end((err) => {
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-
-    it('returns http 200 for /api/operations', (done) => {
-        request(server)
-            .get('/api/operations?serviceName=service')
+            .get('/api/servicePerf')
             .expect(200)
             .end((err) => {
                 if (err) {
@@ -42,3 +30,4 @@ describe('routes.servicesApi', () => {
             });
     });
 });
+
