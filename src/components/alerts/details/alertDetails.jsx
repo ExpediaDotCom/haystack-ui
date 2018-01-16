@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
 import AlertDetailsContainer from './alertDetailsContainer';
-import alertDetailsStore from '../stores/alertDetailsStore';
 import Loading from '../../common/loading';
 import Error from '../../common/error';
 
@@ -28,21 +27,22 @@ import Error from '../../common/error';
 export default class AlertDetails extends React.Component {
     static propTypes = {
         row: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        alertDetailsStore: PropTypes.object.isRequired
     };
 
     componentDidMount() {
-        alertDetailsStore.fetchAlertHistory(this.props.row.alertId);
+        this.props.alertDetailsStore.fetchAlertDetails(this.props.row.alertId);
     }
 
     render() {
         return (
             <section className="table-row-details">
             {
-                alertDetailsStore.promiseState && alertDetailsStore.promiseState.case({
+                this.props.alertDetailsStore.promiseState && this.props.alertDetailsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => <AlertDetailsContainer alertDetailsStore={alertDetailsStore} serviceName={this.props.serviceName} row={this.props.row} />
+                    fulfilled: () => <AlertDetailsContainer alertDetailsStore={this.props.alertDetailsStore} serviceName={this.props.serviceName} row={this.props.row} />
                 })
             }
         </section>

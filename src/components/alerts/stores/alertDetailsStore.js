@@ -27,7 +27,7 @@ export class AlertDetailsStore {
 
     @observable promiseState = null;
 
-    @action fetchAlertHistory(alertId) {
+    @action fetchAlertDetails(alertId) {
         this.promiseState = fromPromise(
             axios
                 .get(`/api/alert/${alertId}`)

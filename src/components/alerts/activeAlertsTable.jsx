@@ -21,6 +21,7 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Sparklines, SparklinesCurve} from 'react-sparklines';
 
 import AlertDetails from './details/alertDetails';
+import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
 
 export default class ActiveAlertsTable extends React.Component {
@@ -117,7 +118,7 @@ export default class ActiveAlertsTable extends React.Component {
     }
     expandComponent(row) {
         if (this.state.selected.filter(alertId => alertId === row.alertId).length > 0) {
-            return (<AlertDetails row={row} serviceName={encodeURIComponent(this.props.serviceName)}/>);
+            return (<AlertDetails row={row} serviceName={encodeURIComponent(this.props.serviceName)} alertDetailsStore={alertDetailsStore} />);
         }
         return null;
     }
