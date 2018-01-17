@@ -151,13 +151,17 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
+function convertEpochTimeInSecondsToMillis(timestamp) {
+    return timestamp * 1000;
+}
+
 function fetchOperationTrendValues(target, from, until) {
     const deferred = Q.defer();
 
     axios
         .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
         .then(response => deferred.resolve(response.data[0]
-            ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: datapoint[1]}))
+            ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
             : []),
             error => deferred.reject(new Error(error)))
         .catch((error) => {
