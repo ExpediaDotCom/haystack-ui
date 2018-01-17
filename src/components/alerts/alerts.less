@@ -21,12 +21,16 @@
   animation: glow 700ms ease-out infinite alternate;
 }
 
+.alerts__title-bold {
+  font-weight: 600;
+}
+
 @keyframes glow {
   0% {
-    border-left: 1px solid @white;
+    border-left: 3px solid @white;
   }
   100% {
-    border-left: 1px solid @brand-danger;
+    border-left: 3px solid @brand-danger;
   }
 }
 
@@ -34,7 +38,9 @@
   position: relative;
   display: inline-block;
   float: right;
-  width: 40%;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
 }
 
 .alert-details__details-list {
@@ -62,4 +68,8 @@
 
 .alert-details__button-margin {
   margin-left: 10px;
+}
+
+.table__large-label {
+  font-size: 90%
 }

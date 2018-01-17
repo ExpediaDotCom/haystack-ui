@@ -35,19 +35,19 @@ export default class ActiveAlertsTable extends React.Component {
     }
 
     static typeColumnFormatter(cell) {
-        return `<div class="table__primary text-right">${formatters.toAlertTypeString(cell)}</div>`;
+        return `<div class="table__primary">${formatters.toAlertTypeString(cell)}</div>`;
     }
 
     static statusColumnFormatter(cell) {
         if (cell) {
-            return '<div class="text-right"><span class="label label-success">Passing</span></div>';
+            return '<span class="label label-success table__large-label">Healthy</span>';
         }
-        return '<div class="text-right"><span class="label label-failure">Failing</span></div>';
+        return '<span class="label label-failure table__large-label">Unhealthy</span>';
     }
 
     static timestampColumnFormatter(timestamp) {
-        return `<div class="table__primary text-right">${formatters.toTimeago(timestamp)}</div>
-                <div class="table__secondary text-right">${formatters.toTimestring(timestamp)}</div>`;
+        return `<div class="table__primary">${formatters.toTimeago(timestamp)}</div>
+                <div class="table__secondary">${formatters.toTimestring(timestamp)}</div>`;
     }
 
     static valueColumnFormatter(cell, row) {
@@ -95,8 +95,20 @@ export default class ActiveAlertsTable extends React.Component {
             expanding: [],
             selected: []
         };
+
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
+        this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
+    }
+
+    getUnhealthyAlerts() {
+        let unhealthyAlerts = 0;
+        this.props.results.forEach((alert) => {
+            if (!alert.status) {
+                unhealthyAlerts += 1;
+            }
+        });
+        return unhealthyAlerts;
     }
 
     handleExpand(rowKey, isExpand) {
@@ -116,6 +128,7 @@ export default class ActiveAlertsTable extends React.Component {
             );
         }
     }
+
     expandComponent(row) {
         if (this.state.selected.filter(alertId => alertId === row.alertId).length > 0) {
             return (<AlertDetails row={row} serviceName={encodeURIComponent(this.props.serviceName)} alertDetailsStore={alertDetailsStore} />);
@@ -160,69 +173,74 @@ export default class ActiveAlertsTable extends React.Component {
         const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
 
         return (
-            <BootstrapTable
-                className="table-panel"
-                data={results}
-                tableStyle={{ border: 'none' }}
-                trClassName={ActiveAlertsTable.rowClassNameFormat}
-                options={options}
-                pagination
-                expandableRow={() => true}
-                expandComponent={this.expandComponent}
-                selectRow={selectRowProp}
-                multiColumnSort={2}
-            >
-                <TableHeaderColumn
-                    dataField="alertId"
-                    hidden
-                    isKey
-                >AlertId</TableHeaderColumn>
-                <TableHeaderColumn
-                    caretRender={ActiveAlertsTable.getCaret}
-                    dataFormat={ActiveAlertsTable.nameColumnFormatter}
-                    dataField="operationName"
-                    width="15"
-                    dataSort
-                    thStyle={tableHeaderStyle}
-                    headerText={'Operation Name'}
-                ><ActiveAlertsTable.Header name="Operation Name"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    caretRender={ActiveAlertsTable.getCaret}
-                    dataField="type"
-                    width="10"
-                    dataFormat={ActiveAlertsTable.typeColumnFormatter}
-                    dataSort
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Alert Type'}
-                ><ActiveAlertsTable.Header name="Alert Type"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    caretRender={ActiveAlertsTable.getCaret}
-                    dataField="status"
-                    width="10"
-                    dataFormat={ActiveAlertsTable.statusColumnFormatter}
-                    dataSort
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Status'}
-                ><ActiveAlertsTable.Header name="Status"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    caretRender={ActiveAlertsTable.getCaret}
-                    dataFormat={ActiveAlertsTable.timestampColumnFormatter}
-                    dataField="timestamp"
-                    width="12"
-                    dataSort
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Alert Timestamp'}
-                ><ActiveAlertsTable.Header name="Last Change"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    caretRender={ActiveAlertsTable.getCaret}
-                    dataField="value"
-                    width="20"
-                    dataFormat={ActiveAlertsTable.valueColumnFormatter}
-                    dataSort
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Value'}
-                ><ActiveAlertsTable.Header name="Value"/></TableHeaderColumn>
-            </BootstrapTable>
+            <div>
+                <h5>
+                    <span className="alerts__title-bold">{this.getUnhealthyAlerts()}</span> unhealthy alerts out of <span className="alerts__title-bold">{this.props.results.length}</span> total for {this.props.serviceName}
+                </h5>
+                <BootstrapTable
+                    className="table-panel"
+                    data={results}
+                    tableStyle={{ border: 'none' }}
+                    trClassName={ActiveAlertsTable.rowClassNameFormat}
+                    options={options}
+                    pagination
+                    expandableRow={() => true}
+                    expandComponent={this.expandComponent}
+                    selectRow={selectRowProp}
+                    multiColumnSort={2}
+                >
+                    <TableHeaderColumn
+                        dataField="alertId"
+                        hidden
+                        isKey
+                    >AlertId</TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataFormat={ActiveAlertsTable.nameColumnFormatter}
+                        dataField="operationName"
+                        width="15"
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Operation Name'}
+                    ><ActiveAlertsTable.Header name="Operation Name"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataField="type"
+                        width="10"
+                        dataFormat={ActiveAlertsTable.typeColumnFormatter}
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Alert Type'}
+                    ><ActiveAlertsTable.Header name="Alert Type"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataField="status"
+                        width="10"
+                        dataFormat={ActiveAlertsTable.statusColumnFormatter}
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Status'}
+                    ><ActiveAlertsTable.Header name="Status"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataFormat={ActiveAlertsTable.timestampColumnFormatter}
+                        dataField="timestamp"
+                        width="12"
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Alert Timestamp'}
+                    ><ActiveAlertsTable.Header name="Last Status Change"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataField="value"
+                        width="12"
+                        dataFormat={ActiveAlertsTable.valueColumnFormatter}
+                        dataSort
+                        thStyle={tableHeaderRightAlignedStyle}
+                        headerText={'Value'}
+                    ><ActiveAlertsTable.Header name="Metric"/></TableHeaderColumn>
+                </BootstrapTable>
+            </div>
         );
     }
 }

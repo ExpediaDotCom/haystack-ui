@@ -35,8 +35,12 @@ export default class AlertDetailsContainer extends React.Component {
         return `<input type="checkbox" checked=${cell} >`;
     }
 
-    static timestampFormatter(cell) {
+    static timeAgoFormatter(cell) {
         return formatters.toTimeago(cell);
+    }
+
+    static timestampFormatter(cell) {
+        return formatters.toTimestring(cell);
     }
 
     static activeDateFormatter(cell) {
@@ -54,11 +58,8 @@ export default class AlertDetailsContainer extends React.Component {
         return `${formatters.toTimeRegex(from)} to ${formatters.toTimeRegex(to)}`;
     }
 
-    static statusColumnFormatter(cell) {
-        if (cell) {
-            return '<div class="text-right"><span class="label label-success">Passing</span></div>';
-        }
-        return '<div class="text-right"><span class="label label-failure">Failing</span></div>';
+    static durationColumnFormatter(cell, row) {
+        return formatters.toDurationString(row.startTimestamp - row.endTimestamp);
     }
 
     static subscriptionDeleteButton() {
@@ -71,25 +72,26 @@ export default class AlertDetailsContainer extends React.Component {
 
     render() {
         return (
-            <div className="clearfix">
-                <div className="alert-details__details-list">
-                    <div className="title-button-group">
-                        <h5 className="alert-details__title">Subscriptions</h5>
-                        <button className="btn btn-sm btn-success pull-right alert-details__button">New Subscription</button>
-                    </div>
-                    <BootstrapTable data={this.props.alertDetailsStore.alertDetails.subscriptions} height={150} scrollTop={'Top'} >
-                        <TableHeaderColumn dataField="subscriptionId" isKey hidden>Target</TableHeaderColumn>
-                        <TableHeaderColumn width="10%" dataField="type">Type</TableHeaderColumn>
-                        <TableHeaderColumn width="30%" dataField="days" dataFormat={AlertDetailsContainer.activeDateFormatter} >Days Active</TableHeaderColumn>
-                        <TableHeaderColumn width="20%" dataField="time" dataFormat={AlertDetailsContainer.activeTimeFormatter} >Time</TableHeaderColumn>
-                        <TableHeaderColumn width="8%" dataField="enabled" dataFormat={AlertDetailsContainer.activeCheckbox} >Active</TableHeaderColumn>
-                        <TableHeaderColumn width="8%" dataField="delete" dataFormat={AlertDetailsContainer.subscriptionDeleteButton} />
-                        <TableHeaderColumn width="8%" dataField="edit" dataFormat={AlertDetailsContainer.subscriptionEditButton} />
-                    </BootstrapTable>
-                </div>
+            <div className="clearfix alert-details-container">
+                {/* Subscription tool */}
+                {/* <div className="alert-details__details-list"> */}
+                    {/* <div className="title-button-group"> */}
+                        {/* h5 className="alert-details__title">Subscriptions</h5> */}
+                        {/* <button className="btn btn-sm btn-success pull-right alert-details__button">New Subscription</button> */}
+                    {/* </div> */}
+                    {/* <BootstrapTable data={this.props.alertDetailsStore.alertDetails.subscriptions} height={150} scrollTop={'Top'} > */}
+                        {/* <TableHeaderColumn dataField="subscriptionId" isKey hidden>Target</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width="10%" dataField="type">Type</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width="30%" dataField="days" dataFormat={AlertDetailsContainer.activeDateFormatter} >Days Active</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width="20%" dataField="time" dataFormat={AlertDetailsContainer.activeTimeFormatter} >Time</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width="8%" dataField="enabled" dataFormat={AlertDetailsContainer.activeCheckbox} >Active</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width="8%" dataField="delete" dataFormat={AlertDetailsContainer.subscriptionDeleteButton} /> */}
+                        {/* <TableHeaderColumn width="8%" dataField="edit" dataFormat={AlertDetailsContainer.subscriptionEditButton} /> */}
+                    {/* </BootstrapTable> */}
+                {/* </div> */}
                 <div className="alert-details__history-table">
                     <div className="title-button-group">
-                        <h5 className="alert-details__title">Alert History</h5>
+                        <h5 className="alert-details__title">Unhealthy Alert History</h5>
                         <div className="btn-group-sm alert-details__button new-button-spacing pull-right">
                             <Link
                                 className="btn btn-sm btn-primary"
@@ -106,9 +108,10 @@ export default class AlertDetailsContainer extends React.Component {
                             </Link>
                         </div>
                     </div>
-                    <BootstrapTable data={this.props.alertDetailsStore.alertDetails.history} height={150} scrollTop={'Top'} options={{defaultSortName: 'timestamp', defaultSortOrder: 'desc'}}>
-                        <TableHeaderColumn dataSort dataFormat={AlertDetailsContainer.timestampFormatter} dataField="timestamp" isKey>Timestamp</TableHeaderColumn>
-                        <TableHeaderColumn thStyle={{textAlign: 'right'}} dataFormat={AlertDetailsContainer.statusColumnFormatter} dataField="status">Status</TableHeaderColumn>
+                    <BootstrapTable data={this.props.alertDetailsStore.alertDetails.history} height={150} scrollTop={'Top'} options={{defaultSortName: 'startTimestamp', defaultSortOrder: 'desc'}}>
+                        <TableHeaderColumn dataSort dataFormat={AlertDetailsContainer.timeAgoFormatter} dataField="startTimestamp" isKey>Time Alert Started</TableHeaderColumn>
+                        <TableHeaderColumn dataSort dataFormat={AlertDetailsContainer.timestampFormatter} dataField="startTimestamp">Timestamp</TableHeaderColumn>
+                        <TableHeaderColumn dataFormat={AlertDetailsContainer.durationColumnFormatter} dataField="endTimestamp">Duration</TableHeaderColumn>
                     </BootstrapTable>
                 </div>
             </div>

@@ -18,15 +18,16 @@ import timeago from 'timeago.js';
 import moment from 'moment';
 
 const formatters = {};
-const dateLetterConversion = {
-    0: 'Su',
-    1: 'M',
-    2: 'Tu',
-    3: 'W',
-    4: 'Th',
-    5: 'F',
-    6: 'Sa'
-};
+
+// const dateLetterConversion = {
+//     0: 'Su',
+//     1: 'M',
+//     2: 'Tu',
+//     3: 'W',
+//     4: 'Th',
+//     5: 'F',
+//     6: 'Sa'
+// };
 
 formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
 
@@ -82,15 +83,15 @@ formatters.toAlertTypeString = (num) => {
 };
 
 // Converts date number array to corresponding date abbreviations
-formatters.toActiveDateArray = (dateNums) => {
-    const dateLetters = [];
-    dateNums.forEach((x) => {
-        dateLetters.push(dateLetterConversion[x]);
-    });
-    return dateLetters;
-};
+// formatters.toActiveDateArray = (dateNums) => {
+//     const dateLetters = [];
+//     dateNums.forEach((x) => {
+//         dateLetters.push(dateLetterConversion[x]);
+//     });
+//     return dateLetters;
+// };
 
 // Adds colon inside four digit time string
-formatters.toTimeRegex = time => time.replace(/(\d{2})(\d{2})/, '$1:$2');
+// formatters.toTimeRegex = time => time.replace(/(\d{2})(\d{2})/, '$1:$2');
 
 export default formatters;

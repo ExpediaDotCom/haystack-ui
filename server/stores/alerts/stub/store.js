@@ -27,6 +27,16 @@ function getRandomTimeStamp() {
     return (currentTime - Math.floor((Math.random() * 5000 * 60 * 1000)));
 }
 
+function getAlertHistoryTimestamps() {
+    const currentTime = ((new Date()).getTime()) * 1000;
+    const start = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
+    const end = start - Math.floor((Math.random() * 5000 * 60 * 1000));
+    return {
+        startTimestamp: start,
+        endTimestamp: end
+    };
+}
+
 function getRandomValues() {
     const valuesArr = [];
     _.range(50).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
@@ -109,78 +119,17 @@ const alerts = [
 ];
 
 const alertDetails = {
-    subscriptions: [
-        {
-            subscriptionId: '1',
-            type: 'Slack',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            time: ['0000', '2359'],
-            enabled: true
-        },
-        {
-            subscriptionId: '2',
-            type: 'Email',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            time: ['0000', '2359'],
-            enabled: true
-        }
-    ],
     history: [
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: true,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: true,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: true,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: true,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: true,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        }
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps()
     ]
 };
 

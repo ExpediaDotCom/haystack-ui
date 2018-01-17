@@ -24,7 +24,6 @@ function AlertsException(data) {
 
 export class AlertDetailsStore {
     @observable alertDetails = null;
-
     @observable promiseState = null;
 
     @action fetchAlertDetails(alertId) {

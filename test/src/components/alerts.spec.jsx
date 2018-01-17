@@ -62,6 +62,16 @@ function getRandomValues() {
     return valuesArr;
 }
 
+function getAlertHistoryTimestamps() {
+    const currentTime = ((new Date()).getTime()) * 1000;
+    const start = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
+    const end = start - Math.floor((Math.random() * 5000 * 60 * 1000));
+    return {
+        startTimestamp: start,
+        endTimestamp: end
+    };
+}
+
 const stubAlerts = [
     {
         alertId: 1,
@@ -90,33 +100,9 @@ const stubAlerts = [
 ];
 
 const stubDetails = {
-    subscriptions: [
-        {
-            subscriptionId: '1',
-            type: 'Slack',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            time: ['0000', '2359'],
-            enabled: true
-        },
-        {
-            subscriptionId: '2',
-            type: 'Email',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            time: ['0000', '2359'],
-            enabled: true
-        }
-    ],
     history: [
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        },
-        {
-            status: false,
-            timestamp: getRandomTimeStamp(),
-            value: getRandomValues()
-        }
+        getAlertHistoryTimestamps(),
+        getAlertHistoryTimestamps()
     ]
 };
 
@@ -186,7 +172,7 @@ describe('<AlertDetails />', () => {
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.loading')).to.have.length(0);
-        expect(wrapper.find('.alert-details__details-list')).to.have.length(0);
+        expect(wrapper.find('.alert-details-container')).to.have.length(0);
     });
 
     it('should render loading if promise is pending', () => {
@@ -195,7 +181,7 @@ describe('<AlertDetails />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.alert-details__details-list')).to.have.length(0);
+        expect(wrapper.find('.alert-details-container')).to.have.length(0);
     });
     it('should render the alert details with successful details promise', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise);
@@ -203,6 +189,6 @@ describe('<AlertDetails />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.alert-details__details-list')).to.have.length(1);
+        expect(wrapper.find('.alert-details-container')).to.have.length(1);
     });
 });
