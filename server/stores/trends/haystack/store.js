@@ -167,6 +167,7 @@ function groupByService({countValues, successValues, failureValues, tp99Values})
     });
     return trendResults;
 }
+
 function getOperationStatsResults(service, timeWindow, from, until) {
     const CountTarget = getWildCardOperationTargetStat(service, timeWindow, 'count.received-span');
     const SuccessTarget = getWildCardOperationTargetStat(service, timeWindow, 'count.success-span');
@@ -302,7 +303,7 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
 function getServiceStatsResults(timeWindow, from, until) {
     const CountTarget = getWildCardServiceTargetStat(timeWindow, 'count.received-span');
     const SuccessTarget = getWildCardServiceTargetStat(timeWindow, 'count.success-span');
-    const FailureTarget = getWildCardServiceTargetStat( timeWindow, 'count.failure-span');
+    const FailureTarget = getWildCardServiceTargetStat(timeWindow, 'count.failure-span');
     const tp99Target = getWildCardServiceTargetStat(timeWindow, '*_99.duration');
 
     return Q.all([
