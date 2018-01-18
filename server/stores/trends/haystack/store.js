@@ -25,13 +25,20 @@ const logger = require('../../../support/logger').withIdentifier('support:haysta
 const store = {};
 const metricTankUrl = config.stores.trends.metricTankUrl;
 
-function getServiceTargetStat(service, timeWindow, metricStat) {
+function getWildCardOperationTargetStat(service, timeWindow, metricStat) {
     return `serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
 }
-
+function getWildCardServiceTargetStat(service, timeWindow, metricStat) {
+    return `serviceName.*.interval.${timeWindow}.stat.${metricStat}`;
+}
 function getOperationTargetStat(service, operationName, timeWindow, metricStat) {
     return `serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.${metricStat}`;
 }
+
+function getServiceTargetStat(service, timeWindow, metricStat) {
+    return `serviceName.${service}.interval.${timeWindow}.stat.${metricStat}`;
+}
+
 
 function toMetricTankOperationName(operationName) {
     return operationName.replace(/\./gi, '___');
@@ -112,12 +119,32 @@ function groupByOperation({countValues, successValues, failureValues, tp99Values
     });
     return trendResults;
 }
+function groupByService({countValues, successValues, failureValues, tp99Values}) {
+    const trendResults = [];
+    const groupedByOperationName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.serviceName);
+    Object.keys(groupedByOperationName).forEach((operationName) => {
+        const operationTrends = groupedByOperationName[operationName];
+        const count = fetchOperationDataPoints(operationTrends, 'count.received-span');
+        const successCount = fetchOperationDataPoints(operationTrends, 'count.success-span');
+        const failureCount = fetchOperationDataPoints(operationTrends, 'count.failure-span');
+        const tp99Duration = fetchOperationDataPoints(operationTrends, '*_99.duration');
 
-function getServiceTrendResults(service, timeWindow, from, until) {
-    const CountTarget = getServiceTargetStat(service, timeWindow, 'count.received-span');
-    const SuccessTarget = getServiceTargetStat(service, timeWindow, 'count.success-span');
-    const FailureTarget = getServiceTargetStat(service, timeWindow, 'count.failure-span');
-    const tp99Target = getServiceTargetStat(service, timeWindow, '*_99.duration');
+        const opKV = {
+            operationName,
+            count: dataPointsSum(count),
+            successPercent: toSuccessPercent(successCount, failureCount),
+            tp99Duration
+        };
+
+        trendResults.push(opKV);
+    });
+    return trendResults;
+}
+function getOperationStatsResults(service, timeWindow, from, until) {
+    const CountTarget = getWildCardOperationTargetStat(service, timeWindow, 'count.received-span');
+    const SuccessTarget = getWildCardOperationTargetStat(service, timeWindow, 'count.success-span');
+    const FailureTarget = getWildCardOperationTargetStat(service, timeWindow, 'count.failure-span');
+    const tp99Target = getWildCardOperationTargetStat(service, timeWindow, '*_99.duration');
 
     return Q.all([
         getTrendValues(CountTarget, from, until),
@@ -146,7 +173,7 @@ function convertGranularityToTimeWindow(timespan) {
 
 store.getOperationStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
-    deffered.resolve(getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10)),
+    deffered.resolve(getOperationStatsResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10)),
         error => deffered.reject(new Error(error)));
     return deffered.promise;
 };
@@ -203,6 +230,72 @@ store.getOperationTrends = (serviceName, operationName, granularity, from, until
     const deffered = Q.defer();
 
     getOperationTrendResults(serviceName, toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
+        .then(results => deffered.resolve(results));
+
+    return deffered.promise;
+};
+
+
+function getServiceTrendResults(serviceName, timeWindow, from, until) {
+    const CountTarget = getServiceTargetStat(serviceName, timeWindow, 'count.received-span');
+    const SuccessTarget = getServiceTargetStat(serviceName, timeWindow, 'count.success-span');
+    const FailureTarget = getServiceTargetStat(serviceName, timeWindow, 'count.failure-span');
+    const meanTarget = getServiceTargetStat(serviceName, timeWindow, 'mean.duration');
+    const tp95Target = getServiceTargetStat(serviceName, timeWindow, '*_95.duration');
+    const tp99Target = getServiceTargetStat(serviceName, timeWindow, '*_99.duration');
+
+
+    return Q.all([
+        fetchOperationTrendValues(CountTarget, from, until),
+        fetchOperationTrendValues(SuccessTarget, from, until),
+        fetchOperationTrendValues(FailureTarget, from, until),
+        fetchOperationTrendValues(meanTarget, from, until),
+        fetchOperationTrendValues(tp95Target, from, until),
+        fetchOperationTrendValues(tp99Target, from, until)
+    ])
+        .then(results => ({
+                count: results[0],
+                successCount: results[1],
+                failureCount: results[2],
+                meanDuration: results[3],
+                tp95Duration: results[4],
+                tp99Duration: results[5]
+            })
+        );
+}
+store.getServiceStats = (serviceName, granularity, from, until) => {
+    const deffered = Q.defer();
+
+    getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
+        .then(results => deffered.resolve(results));
+
+    return deffered.promise;
+};
+
+function getServiceStatsResults(timeWindow, from, until) {
+    const CountTarget = getWildCardServiceTargetStat(timeWindow, 'count.received-span');
+    const SuccessTarget = getWildCardServiceTargetStat(timeWindow, 'count.success-span');
+    const FailureTarget = getWildCardServiceTargetStat( timeWindow, 'count.failure-span');
+    const tp99Target = getWildCardServiceTargetStat(timeWindow, '*_99.duration');
+
+    return Q.all([
+        getTrendValues(CountTarget, from, until),
+        getTrendValues(SuccessTarget, from, until),
+        getTrendValues(FailureTarget, from, until),
+        getTrendValues(tp99Target, from, until)
+    ])
+        .then(values => groupByService({
+                countValues: values[0],
+                successValues: values[1],
+                failureValues: values[2],
+                tp99Values: values[3]
+            })
+        );
+}
+
+store.getServicePerfStats = (granularity, from, until) => {
+    const deffered = Q.defer();
+    getServiceStatsResults(convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
         .then(results => deffered.resolve(results));
 
     return deffered.promise;
