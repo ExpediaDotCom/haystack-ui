@@ -313,6 +313,14 @@ describe('<Traces />', () => {
         expect(tracesSearchStore.fetchSearchResults.calledOnce);
     });
 
+    it('should render service selection menu when traces are the only subsystem', () => {
+        const tracesSearchStore = createStubStore([]);
+        window.haystackUiConfig.subsystems = ['traces'];
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        expect(wrapper.find('.search-bar-headers_service')).to.have.length(1);
+    });
+
     it('should render results after getting search results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
