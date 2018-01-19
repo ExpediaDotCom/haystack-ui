@@ -65,9 +65,9 @@ const pendingPromise = {
 const stubResults = [{
     traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
     root: {
-        url: '',
-        serviceName: '',
-        operationName: ''
+        url: 'test-1',
+        serviceName: 'test-1',
+        operationName: 'test-1'
     },
     services: [
         {
@@ -93,9 +93,9 @@ const stubResults = [{
     {
         traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
         root: {
-            url: '',
-            serviceName: '',
-            operationName: ''
+            url: 'test-2',
+            serviceName: 'test-2',
+            operationName: 'test-2'
         },
         services: [
             {
@@ -347,6 +347,27 @@ describe('<Traces />', () => {
     });
 
     it('should update search results on clicking search', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(0).simulate('click');
+        let traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+            traceIdA = traceIdA.props().children;
+        wrapper.find('.results-header').at(0).simulate('click');
+        let traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+            traceIdB = traceIdB.props().children;
+        expect(traceIdA).to.not.equal(traceIdB);
+
+        wrapper.find('.results-header').at(6).simulate('click');
+        traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdA = traceIdA.props().children;
+        wrapper.find('.results-header').at(6).simulate('click');
+        traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdB = traceIdB.props().children;
+        expect(traceIdA).to.not.equal(traceIdB);
+    });
+
+    it('should sort based on whatever row is clicked', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
