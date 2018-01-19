@@ -74,9 +74,15 @@
   border-radius: 100%;
   display: flex;
   justify-content: center;
+  border: 0.5px solid @gray-mid-lighter;
 
   &:not(:first-child){
     cursor: pointer;
+
+    &:hover {
+      border: 0.5px solid @gray-mid-light;
+      box-shadow: 1px 1px 15px 0 @gray-mid-light;
+    }
   }
 }
 
