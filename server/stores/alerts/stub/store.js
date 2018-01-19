@@ -29,8 +29,8 @@ function getRandomTimeStamp() {
 
 function getAlertHistoryTimestamps() {
     const currentTime = ((new Date()).getTime()) * 1000;
-    const start = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
-    const end = start - Math.floor((Math.random() * 5000 * 60 * 1000));
+    const end = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
+    const start = end - Math.floor((Math.random() * 5000 * 60 * 1000));
     return {
         startTimestamp: start,
         endTimestamp: end
@@ -118,8 +118,7 @@ const alerts = [
     }
 ];
 
-const alertDetails = {
-    history: [
+const alertDetails = [
         getAlertHistoryTimestamps(),
         getAlertHistoryTimestamps(),
         getAlertHistoryTimestamps(),
@@ -130,8 +129,7 @@ const alertDetails = {
         getAlertHistoryTimestamps(),
         getAlertHistoryTimestamps(),
         getAlertHistoryTimestamps()
-    ]
-};
+];
 
 const store = {};
 

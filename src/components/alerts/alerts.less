@@ -21,7 +21,7 @@
   animation: glow 700ms ease-out infinite alternate;
 }
 
-.alerts__title-bold {
+.alerts__bold {
   font-weight: 600;
 }
 
@@ -34,42 +34,26 @@
   }
 }
 
-.alert-details__history-table {
-  position: relative;
-  display: inline-block;
-  float: right;
-  width: 50%;
-  margin-left: 25%;
-  margin-right: 25%;
-}
-
-.alert-details__details-list {
-  position: relative;
-  display: inline-block;
-  float: left;
-  width: 55%;
-}
-
 .alert-details__title {
   margin-top: 0;
   font-weight: 600;
   display: inline;
 }
 
-.alert-details__button {
-  margin-bottom: 5px;
-}
-
-.alert-details__day-badge {
-  margin-left: 2px;
-  background-color: @brand-success;
-  border-radius: 5px;
-}
-
 .alert-details__button-margin {
-  margin-left: 10px;
+  margin-left: @spacing-l;
 }
 
 .table__large-label {
   font-size: 90%
+}
+
+.alert-details__table {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.no-underline:hover {
+  text-decoration: none
 }

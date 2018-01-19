@@ -131,7 +131,7 @@ export default class ActiveAlertsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(alertId => alertId === row.alertId).length > 0) {
-            return (<AlertDetails row={row} serviceName={encodeURIComponent(this.props.serviceName)} alertDetailsStore={alertDetailsStore} />);
+            return (<AlertDetails alertId={row.alertId} operationName={row.operationName} serviceName={this.props.serviceName} alertDetailsStore={alertDetailsStore} />);
         }
         return null;
     }
@@ -175,7 +175,7 @@ export default class ActiveAlertsTable extends React.Component {
         return (
             <div>
                 <h5>
-                    <span className="alerts__title-bold">{this.getUnhealthyAlerts()}</span> unhealthy alerts out of <span className="alerts__title-bold">{this.props.results.length}</span> total for {this.props.serviceName}
+                    <span className="alerts__bold">{this.getUnhealthyAlerts()}</span> unhealthy alerts out of <span className="alerts__bold">{this.props.results.length}</span> total for {this.props.serviceName}
                 </h5>
                 <BootstrapTable
                     className="table-panel"

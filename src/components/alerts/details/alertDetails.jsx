@@ -26,13 +26,14 @@ import Error from '../../common/error';
 @observer
 export default class AlertDetails extends React.Component {
     static propTypes = {
-        row: PropTypes.object.isRequired,
+        alertId: PropTypes.number.isRequired,
+        operationName: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
         alertDetailsStore: PropTypes.object.isRequired
     };
 
     componentDidMount() {
-        this.props.alertDetailsStore.fetchAlertDetails(this.props.row.alertId);
+        this.props.alertDetailsStore.fetchAlertDetails(this.props.alertId);
     }
 
     render() {
@@ -42,7 +43,11 @@ export default class AlertDetails extends React.Component {
                 this.props.alertDetailsStore.promiseState && this.props.alertDetailsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => <AlertDetailsContainer alertDetailsStore={this.props.alertDetailsStore} serviceName={this.props.serviceName} row={this.props.row} />
+                    fulfilled: () => (<AlertDetailsContainer
+                        alertDetailsStore={this.props.alertDetailsStore}
+                        serviceName={encodeURIComponent(this.props.serviceName)}
+                        operationName={encodeURIComponent(this.props.operationName)}
+                    />)
                 })
             }
         </section>
