@@ -24,6 +24,10 @@ export class ServiceStore {
         if (this.services.length) {
             return; // services already available, don't retrigger
         }
+        if (window.haystackUiConfig.services) {
+            this.services = window.haystackUiConfig.services;
+            return; // services found in the html, don't retrigger
+        }
         axios({
             method: 'get',
             url: '/api/services'
@@ -32,7 +36,6 @@ export class ServiceStore {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         });
     }
-
 }
 
 export default new ServiceStore();
