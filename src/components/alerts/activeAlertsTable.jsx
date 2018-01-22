@@ -30,24 +30,23 @@ export default class ActiveAlertsTable extends React.Component {
         results: PropTypes.object.isRequired
     };
 
-    static nameColumnFormatter(cell) {
-        return `<div class="table__primary">${cell}</div>`;
+    static nameColumnFormatter(cell, row) {
+        return `<div class="table__primary">${cell} ${formatters.toAlertTypeString(row.type)}</div>`;
     }
 
     static typeColumnFormatter(cell) {
-        return `<div class="table__primary">${formatters.toAlertTypeString(cell)}</div>`;
+        return `<div class="">${formatters.toAlertTypeString(cell)}</div>`;
     }
 
     static statusColumnFormatter(cell) {
         if (cell) {
-            return '<span class="label label-success table__large-label">Healthy</span>';
+            return '<span class="label label-success table__large-label">healthy</span>';
         }
-        return '<span class="label label-failure table__large-label">Unhealthy</span>';
+        return '<span class="label label-failure table__large-label">unhealthy</span>';
     }
 
     static timestampColumnFormatter(timestamp) {
-        return `<div class="table__primary">${formatters.toTimeago(timestamp)}</div>
-                <div class="table__secondary">${formatters.toTimestring(timestamp)}</div>`;
+        return `<div class=""><b>${formatters.toTimeago(timestamp)}</b> at ${formatters.toTimestring(timestamp)}</div>`;
     }
 
     static valueColumnFormatter(cell, row) {
@@ -170,15 +169,17 @@ export default class ActiveAlertsTable extends React.Component {
         };
 
         const tableHeaderStyle = { border: 'none' };
-        const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
 
         return (
             <div>
-                <h5>
-                    <span className="alerts__bold">{this.getUnhealthyAlerts()}</span> unhealthy alerts out of <span className="alerts__bold">{this.props.results.length}</span> total for {this.props.serviceName}
-                </h5>
+                <header>
+                    <div>
+                        <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealty</div>
+                        <div>out of <span className="alerts__bold">{this.props.results.length}</span> alerts for {this.props.serviceName}</div>
+                    </div>
+                </header>
                 <BootstrapTable
-                    className="table-panel"
+                    className="alerts-panel"
                     data={results}
                     tableStyle={{ border: 'none' }}
                     trClassName={ActiveAlertsTable.rowClassNameFormat}
@@ -198,11 +199,29 @@ export default class ActiveAlertsTable extends React.Component {
                         caretRender={ActiveAlertsTable.getCaret}
                         dataFormat={ActiveAlertsTable.nameColumnFormatter}
                         dataField="operationName"
-                        width="15"
+                        width="40"
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Operation Name'}
-                    ><ActiveAlertsTable.Header name="Operation Name"/></TableHeaderColumn>
+                    ><ActiveAlertsTable.Header name="Alert"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataField="status"
+                        width="8"
+                        dataFormat={ActiveAlertsTable.statusColumnFormatter}
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Status'}
+                    ><ActiveAlertsTable.Header name="Status"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={ActiveAlertsTable.getCaret}
+                        dataFormat={ActiveAlertsTable.timestampColumnFormatter}
+                        dataField="timestamp"
+                        width="20"
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Alert Timestamp'}
+                    ><ActiveAlertsTable.Header name="Status Changed"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={ActiveAlertsTable.getCaret}
                         dataField="type"
@@ -214,31 +233,13 @@ export default class ActiveAlertsTable extends React.Component {
                     ><ActiveAlertsTable.Header name="Alert Type"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={ActiveAlertsTable.getCaret}
-                        dataField="status"
-                        width="10"
-                        dataFormat={ActiveAlertsTable.statusColumnFormatter}
-                        dataSort
-                        thStyle={tableHeaderStyle}
-                        headerText={'Status'}
-                    ><ActiveAlertsTable.Header name="Status"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
-                        dataFormat={ActiveAlertsTable.timestampColumnFormatter}
-                        dataField="timestamp"
-                        width="12"
-                        dataSort
-                        thStyle={tableHeaderStyle}
-                        headerText={'Alert Timestamp'}
-                    ><ActiveAlertsTable.Header name="Last Status Change"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
                         dataField="value"
-                        width="12"
+                        width="20"
                         dataFormat={ActiveAlertsTable.valueColumnFormatter}
                         dataSort
-                        thStyle={tableHeaderRightAlignedStyle}
+                        thStyle={tableHeaderStyle}
                         headerText={'Value'}
-                    ><ActiveAlertsTable.Header name="Metric"/></TableHeaderColumn>
+                    ><ActiveAlertsTable.Header name="Last 1 Hour Trend"/></TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );

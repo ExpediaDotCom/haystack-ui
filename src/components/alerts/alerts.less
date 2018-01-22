@@ -17,12 +17,13 @@
 
 @import (reference) '../../app';
 
-.alert-details__alert-glow  {
-  animation: glow 700ms ease-out infinite alternate;
+.alerts-title__header {
+  font-size: @font-size-h3;
+  line-height: 1.2;
 }
 
-.alerts__bold {
-  font-weight: 600;
+.alert-details__alert-glow  {
+  animation: glow 700ms ease-out infinite alternate;
 }
 
 @keyframes glow {
@@ -34,26 +35,26 @@
   }
 }
 
-.alert-details__title {
-  margin-top: 0;
-  font-weight: 600;
-  display: inline;
+.alerts-panel .react-bs-table .table-bordered > tbody > tr > td {
+  vertical-align: middle;
 }
 
-.alert-details__button-margin {
-  margin-left: @spacing-l;
+.alerts__bold {
+  font-weight: 600;
 }
 
 .table__large-label {
   font-size: 90%
 }
 
-.alert-details__table {
-  width: 90%;
-  margin-left: 5%;
-  margin-right: 5%;
+.subscriptions {
+  margin-bottom: @spacing-m;
 }
 
-.no-underline:hover {
-  text-decoration: none
+.subscriptions__table.table {
+  margin-bottom: @spacing-s;
+}
+
+.alert-details-container_header {
+  margin-bottom: @spacing-m;
 }

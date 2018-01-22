@@ -53,7 +53,7 @@ const LogsTable = ({logs, startTime}) => {
                     <td>{log.key}</td>
                     <td>{LogEnum[log.value]}</td>
                     <td>{formatters.toDurationString(log.timestamp - startTime)}</td>
-                    <td>{formatters.toTimestring(log.timestamp)}</td>
+                    <td>{formatters.toTimestringWithMs(log.timestamp)}</td>
                 </tr>)
             )}
             </tbody>

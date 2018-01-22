@@ -40,7 +40,7 @@ export default class AlertDetailsContainer extends React.Component {
     }
 
     static durationColumnFormatter(start, end) {
-        return formatters.toDurationString(end - start);
+        return formatters.toDurationStringInSecAndMin(end - start);
     }
 
     constructor(props) {
@@ -61,39 +61,110 @@ export default class AlertDetailsContainer extends React.Component {
     render() {
         const sortedResults = _.orderBy(this.props.alertDetailsStore.alertDetails, alert => alert.startTimestamp, ['desc']);
 
-        return (
-            <div className="clearfix alert-details-container">
-                <table className="alert-details__table table table-striped">
+        const Subscription = () => (
+            <section className="subscriptions col-md-6">
+                <h4>Subscriptions</h4>
+                <table className="subscriptions__table table">
+                    <thead>
+                        <tr>
+                            <th width="20%">Medium</th>
+                            <th width="60%">Medium Handle</th>
+                            <th width="15%">Modify</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="non-highlight-row">
+                            <td><span className="ti-email"/>  Slack</td>
+                            <td>haystck-notifications</td>
+                            <td>
+                                <div className="btn-group btn-group-sm">
+                                    <Link to={'#'} className="btn btn-default">
+                                        <span className="ti-pencil"/>
+                                    </Link>
+                                    <Link to={'#'} className="btn btn-default">
+                                        <span className="ti-trash"/>
+                                    </Link>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr className="non-highlight-row">
+                            <td><span className="ti-email"/>  Mail</td>
+                            <td>test@expedia.com</td>
+                            <td>
+                                <div className="btn-group btn-group-sm">
+                                    <Link to={'#'} className="btn btn-default">
+                                        <span className="ti-pencil"/>
+                                    </Link>
+                                    <Link to={'#'} className="btn btn-default">
+                                        <span className="ti-trash"/>
+                                    </Link>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="text-left">
+                    <Link to={'#'} className="btn btn-sm btn-success">
+                        <span className="ti-plus"/> Add Subscription
+                    </Link>
+                </div>
+            </section>
+        );
+
+        const History = () => (
+            <div className="col-md-6">
+                <h4>History</h4>
+                <table className="table">
                     <thead>
                     <tr>
-                        <th>Start Time</th>
-                        <th>Duration</th>
-                        <th>Actions</th>
+                        <th width="50%">Start Time</th>
+                        <th width="20%" className="text-right">Duration</th>
+                        <th width="30%" className="text-right">See Traces & Trends</th>
                     </tr>
                     </thead>
                     <tbody>
                     {sortedResults.map(alert =>
-                        (<tr className="history-row" key={Math.random()}>
+                        (<tr className="non-highlight-row" key={Math.random()}>
                             <td><span className="alerts__bold">{AlertDetailsContainer.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertDetailsContainer.timestampFormatter(alert.startTimestamp)}</td>
-                            <td><span className="alerts__bold">{AlertDetailsContainer.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
-                            <td>
-                                <Link
-                                    to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)}
-                                    className="no-underline"
-                                >
-                                    <span className="ti-stats-up"/>  Trends
-                                </Link>
-                                <Link
-                                    to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)}
-                                    className="alert-details__button-margin no-underline"
-                                >
-                                    <span className="ti-line-double"/>  Traces
-                                </Link>
+                            <td className="text-right"><span className="alerts__bold">{AlertDetailsContainer.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
+                            <td className="text-right">
+                                <div className="btn-group btn-group-sm">
+                                    <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-default">
+                                        <span className="ti-stats-up"/>
+                                    </Link>
+                                    <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-sm btn-default">
+                                        <span className="ti-line-double"/>
+                                    </Link>
+                                </div>
                             </td>
                         </tr>)
                     )}
                     </tbody>
                 </table>
+            </div>
+        );
+
+        return (
+            <div className="alert-details-container">
+                <div className="clearfix alert-details-container_header">
+                    <div className="pull-left">
+                        <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-primary">
+                            <span className="ti-stats-up"/> Jump to Trends
+                        </Link>
+                    </div>
+                    <div className="btn-group btn-group-sm pull-right">
+                        <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-default">
+                            <span className="ti-line-double"/> See Traces
+                        </Link>
+                        <Link to={'#'} className="btn btn-primary">
+                            <span className="ti-link"/> Share Alert
+                        </Link>
+                    </div>
+                </div>
+                <div className="row">
+                    <Subscription />
+                    <History />
+                </div>
             </div>
         );
     }

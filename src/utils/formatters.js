@@ -19,17 +19,9 @@ import moment from 'moment';
 
 const formatters = {};
 
-// const dateLetterConversion = {
-//     0: 'Su',
-//     1: 'M',
-//     2: 'Tu',
-//     3: 'W',
-//     4: 'Th',
-//     5: 'F',
-//     6: 'Sa'
-// };
+formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss, DD MMM YY');
 
-formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
+formatters.toTimestringWithMs = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
 
 formatters.toTimeago = startTime => timeago().format(Math.floor(startTime / 1000));
 
@@ -42,6 +34,15 @@ formatters.toDurationString = (duration) => {
         return `${Math.floor(duration / 1000)}ms`;
     }
     return `${(duration / 1000000).toFixed(3)}s`;
+};
+
+formatters.toDurationStringInSecAndMin = (duration) => {
+    if (duration === 0) {
+        return '0';
+    } else if (duration < 60000000) {
+        return `${Math.floor(duration / 1000000)} sec`;
+    }
+    return `${Math.floor(duration / 60000000)} min`;
 };
 
 formatters.toDurationStringFromMs = (duration) => {
@@ -81,17 +82,5 @@ formatters.toAlertTypeString = (num) => {
     }
     return 'Success %';
 };
-
-// Converts date number array to corresponding date abbreviations
-// formatters.toActiveDateArray = (dateNums) => {
-//     const dateLetters = [];
-//     dateNums.forEach((x) => {
-//         dateLetters.push(dateLetterConversion[x]);
-//     });
-//     return dateLetters;
-// };
-
-// Adds colon inside four digit time string
-// formatters.toTimeRegex = time => time.replace(/(\d{2})(\d{2})/, '$1:$2');
 
 export default formatters;
