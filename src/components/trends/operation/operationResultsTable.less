@@ -42,7 +42,7 @@
     width: 100%;
   }
 
-  th[data-field="successPercent"], th[data-field="count"], th[data-field="lastTp99Duration"] {
+  th[data-field="avgSuccessPercent"], th[data-field="totalCount"], th[data-field="latestTp99Duration"] {
     select {
       width: 40px !important;
       margin-left: @spacing-s;
@@ -60,16 +60,28 @@
 
 .sparkline-container {
   .sparkline-title {
+    padding-bottom: 6px;
     .table__secondary;
     text-align: right;
     b {
       font-size: @font-size-h6;
       font-weight: 600;
     }
+    .sparkline-percentColor {
+      &.green {
+        color: @brand-success;
+      }
+      &.orange {
+        color: darken(@brand-warning, 10%);
+      }
+      &.red {
+        color: @brand-danger;
+      }
+    }
   }
 
   .sparkline-graph {
-    height: 40px;
+    height: 27px;
   }
 }
 

@@ -47,30 +47,43 @@ export default class TrendsTableFormatters {
         return `<div class="table__left">${operation}</div>`;
     }
 
-    static countColumnFormatter(cell) {
-        return `<div class="table__right">${formatters.toNumberString(cell)}</div>`;
-    }
-
-    static durationColumnFormatter(cell, row) {
+    static countColumnFormatter(cell, row) {
         const values = [];
-        row.tp99Duration.map(d => values.push(d.value));
+        row.countPoints.map(d => values.push(d.value));
 
         return (<div className="sparkline-container">
             { cell !== null ?
                 <div className="sparkline-title">
-                    latest duration <b>{formatters.toDurationStringFromMs(cell)}</b>
+                    total <b>{formatters.toNumberString(cell)}</b>
                 </div>
                 : null}
             <div className="sparkline-graph">
                 <Sparklines className="sparkline" data={values} min={0} height={48}>
-                    <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
-                    <SparklinesSpots />
+                    <SparklinesCurve style={{ strokeWidth: 1.5 }} color="#36a2eb" />
                 </Sparklines>
             </div>
         </div>);
     }
 
-    static successPercentFormatter(cell) {
+    static durationColumnFormatter(cell, row) {
+        const values = [];
+        row.tp99DurationPoints.map(d => values.push(d.value));
+
+        return (<div className="sparkline-container">
+            { cell !== null ?
+                <div className="sparkline-title">
+                    latest <b>{formatters.toDurationStringFromMs(cell)}</b>
+                </div>
+                : null}
+            <div className="sparkline-graph">
+                <Sparklines className="sparkline" data={values} min={0} height={48}>
+                    <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
+                </Sparklines>
+            </div>
+        </div>);
+    }
+
+    static successPercentFormatter(cell, row) {
         if (cell === null) {
             return null;
         }
@@ -82,7 +95,21 @@ export default class TrendsTableFormatters {
             stateColor = 'orange';
         }
 
-        return <div className={`percentContainer text-right ${stateColor}`}>{cell.toFixed(2)}%</div>;
+        const values = [];
+        row.successPercentPoints.map(d => values.push(d.value));
+
+        return (<div className="sparkline-container ">
+            { cell !== null ?
+                <div className={'sparkline-title'}>
+                    average <b className={`sparkline-percentColor ${stateColor}`}> {cell.toFixed(2)}% </b>
+                </div>
+                : null}
+            <div className="sparkline-graph">
+                <Sparklines className="sparkline" data={values} min={0} height={48}>
+                    <SparklinesCurve style={{ strokeWidth: 1.5 }} color="#4bc0c0" />
+                </Sparklines>
+            </div>
+        </div>);
     }
 
     static sortByName(a, b, order) {
@@ -92,18 +119,18 @@ export default class TrendsTableFormatters {
         return b.operationName.toLowerCase().localeCompare(a.operationName.toLowerCase());
     }
 
-    static sortByCount(a, b, order) {
+    static sortByTotalCount(a, b, order) {
         if (order === 'desc') {
-            return b.count - a.count;
+            return b.totalCount - a.totalCount;
         }
-        return a.count - b.count;
+        return a.totalCount - b.totalCount;
     }
 
-    static sortByPercentage(a, b, order) {
+    static sortByAvgPercentage(a, b, order) {
         if (order === 'desc') {
-            return b.successPercent - a.successPercent;
+            return b.avgSuccessPercent - a.avgSuccessPercent;
         }
-        return a.successPercent - b.successPercent;
+        return a.avgSuccessPercent - b.avgSuccessPercent;
     }
 
     static enrichTrends(serviceTrends) {

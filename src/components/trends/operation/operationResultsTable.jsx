@@ -96,7 +96,7 @@ export default class OperationResultsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing { (to - start) + 1 } out of { total } total {total === 1 ? 'operation' : 'operations'}</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: 'count',  // default sort column name
+            defaultSortName: 'totalCount',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
@@ -119,11 +119,10 @@ export default class OperationResultsTable extends React.Component {
             defaultValue: { comparator: '>' }
         };
 
-        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.operationStore.statsResults);
         return (
             <BootstrapTable
                 className="trends-panel"
-                data={trendsWithLastDuration}
+                data={this.props.operationStore.statsResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -146,11 +145,11 @@ export default class OperationResultsTable extends React.Component {
                     headerText={'All operations for the service'}
                 ><OperationResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="count"
+                    dataField="totalCount"
                     dataFormat={trendTableFormatters.countColumnFormatter}
-                    width="12"
+                    width="15"
                     dataSort
-                    sortFunc={trendTableFormatters.sortByCount}
+                    sortFunc={trendTableFormatters.sortByTotalCount}
                     filter={{
                         ...numberFilterFormatter,
                         placeholder: 'Count...'
@@ -160,9 +159,9 @@ export default class OperationResultsTable extends React.Component {
                     headerText={'Total invocation count of the operation for summary duration'}
                 ><OperationResultsTable.Header name="Count"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="lastTp99Duration"
+                    dataField="latestTp99Duration"
                     dataFormat={trendTableFormatters.durationColumnFormatter}
-                    width="20"
+                    width="15"
                     dataSort
                     filter={{
                         ...numberFilterFormatter,
@@ -173,11 +172,11 @@ export default class OperationResultsTable extends React.Component {
                     headerText={'TP99 duration for the operation. Sorting is based on duration of the last data point, which is marked as a dot'}
                 ><OperationResultsTable.Header name="Duration TP99"/></TableHeaderColumn>
                 <TableHeaderColumn
-                    dataField="successPercent"
+                    dataField="avgSuccessPercent"
                     dataFormat={trendTableFormatters.successPercentFormatter}
-                    width="12"
+                    width="15"
                     dataSort
-                    sortFunc={trendTableFormatters.sortByPercentage}
+                    sortFunc={trendTableFormatters.sortByAvgPercentage}
                     filter={{
                         ...numberFilterFormatter,
                         defaultValue: { comparator: '<' },

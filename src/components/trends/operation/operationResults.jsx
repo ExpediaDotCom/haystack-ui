@@ -35,7 +35,7 @@ export default class operationResults extends React.Component {
     render() {
         return (
             <section className="operation-results">
-                <div className="results-table-heading">Operations</div>
+                <div className="results-table-heading">All Operations</div>
                 { this.props.operationStore.statsPromiseState && this.props.operationStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
