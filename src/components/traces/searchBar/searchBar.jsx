@@ -27,6 +27,8 @@ import './searchBar.less';
 export default class SearchBar extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired,
+        operationStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         match: PropTypes.object.isRequired
@@ -99,7 +101,7 @@ export default class SearchBar extends React.Component {
     render() {
         return (
             <section className="search-bar">
-                <SearchQueryBar query={this.state.query} searchCallback={this.searchCallback}/>
+                <SearchQueryBar query={this.state.query} serviceStore={this.props.serviceStore} operationStore={this.props.operationStore} searchCallback={this.searchCallback}/>
             </section>
         );
     }

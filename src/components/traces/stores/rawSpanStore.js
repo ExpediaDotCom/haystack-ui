@@ -23,7 +23,7 @@ function RawSpanException(data) {
 }
 
 export class RawSpanStore {
-    @observable rawSpan = null;
+    @observable rawSpan = [];
 
     @observable promiseState = null;
 

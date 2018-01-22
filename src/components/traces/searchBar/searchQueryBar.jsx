@@ -30,6 +30,8 @@ import './searchBar.less';
 export default class SearchQueryBar extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired,
+        operationStore: PropTypes.object.isRequired,
         searchCallback: PropTypes.func.isRequired
     };
 
@@ -37,7 +39,9 @@ export default class SearchQueryBar extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.search = this.search.bind(this);
+    }
 
+    componentWillMount() {
         uiState.initUsingQuery(this.props.query);
     }
 
@@ -81,8 +85,8 @@ export default class SearchQueryBar extends React.Component {
                         </div>
                         <div className="search-bar-pickers">
                             { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
-                            && <ServicePicker uiState={uiState}/>}
-                            <OperationPicker uiState={uiState}/>
+                            && <ServicePicker uiState={uiState} serviceStore={this.props.serviceStore}/>}
+                            <OperationPicker uiState={uiState} operationStore={this.props.operationStore}/>
                             <FieldsPicker uiState={uiState}/>
                             <TimeWindowPicker uiState={uiState}/>
                             <div className="search-bar-pickers_submit">

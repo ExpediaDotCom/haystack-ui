@@ -72,7 +72,7 @@ describe('RawSpanStore', () => {
         store.fetchRawSpan('test-stub', 'test-span');
 
         when(
-            () => store.rawSpan !== null,
+            () => store.rawSpan.length > 0,
             () => {
                 expect(store.rawSpan).to.have.length(1);
                 done();
