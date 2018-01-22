@@ -100,7 +100,7 @@ const stubResults = [{
         services: [
             {
                 name: 'abc-service',
-                duration: 89548,
+                duration: 1000000,
                 spanCount: 11
             },
             {
@@ -489,6 +489,20 @@ describe('<Traces />', () => {
 
         expect(timePointers).to.have.length(5);
         expect((timePointers).last().text()).to.eq('3.500s ');
+    });
+
+    it('should be able to sort on columns after getting search results', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+        wrapper.find('.results-header').at(5).simulate('click');
+
+        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
+        expect(wrapper.find('.react-bs-table-container .tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
     });
 
     it('has a modal upon clicking a span', () => {
