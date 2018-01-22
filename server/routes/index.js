@@ -20,6 +20,7 @@
 
 const express = require('express');
 const config = require('../config/config');
+const cache = require('./utils/cache');
 
 const router = express.Router();
 
@@ -29,7 +30,8 @@ router.get('*', (req, res) => {
         gaTrackingID: config.gaTrackingID,
         fieldKeys: config.stores.traces.fieldKeys,
         enableServicePerformance: config.enableServicePerformance,
-        enableServiceLevelTrends: config.enableServiceLevelTrends
+        enableServiceLevelTrends: config.enableServiceLevelTrends,
+        services: cache.get('/api/services') || null
     });
 });
 

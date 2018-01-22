@@ -15,6 +15,7 @@
  */
 
 const cache = require('./cache');
+const _ = require('lodash');
 
 const responseHandler = {};
 
@@ -25,7 +26,9 @@ responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge)
     } else {
         operation()
         .then((result) => {
-                cache.set(url, result, maxAge);
+                if (!_.isEmpty(result)) {
+                    cache.set(url, result, maxAge);
+                }
                 response.json(result);
             },
             err => next(err)
