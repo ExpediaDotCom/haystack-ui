@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 
 import Loading from '../common/loading';
-import ActiveAlertsTable from './activeAlertsTable';
+import AlertsTable from './alertsTable';
 import Error from '../common/error';
 
 @observer
@@ -36,7 +36,7 @@ export default class AlertsPanel extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <ActiveAlertsTable results={this.props.alertsStore.alerts} serviceName={this.props.serviceName}/>
+                        ? <AlertsTable results={this.props.alertsStore.alerts} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }

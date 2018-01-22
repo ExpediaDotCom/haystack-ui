@@ -148,12 +148,12 @@ export default class AlertDetailsContainer extends React.Component {
             <div className="alert-details-container">
                 <div className="clearfix alert-details-container_header">
                     <div className="pull-left">
-                        <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-primary">
+                        <Link to={'#'} className="btn btn-primary">
                             <span className="ti-stats-up"/> Jump to Trends
                         </Link>
                     </div>
                     <div className="btn-group btn-group-sm pull-right">
-                        <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-default">
+                        <Link to={'#'} className="btn btn-default">
                             <span className="ti-line-double"/> See Traces
                         </Link>
                         <Link to={'#'} className="btn btn-primary">

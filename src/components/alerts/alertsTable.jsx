@@ -24,7 +24,7 @@ import AlertDetails from './details/alertDetails';
 import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
 
-export default class ActiveAlertsTable extends React.Component {
+export default class AlertsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         results: PropTypes.object.isRequired
@@ -175,14 +175,14 @@ export default class ActiveAlertsTable extends React.Component {
                 <header>
                     <div>
                         <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealty</div>
-                        <div>out of <span className="alerts__bold">{this.props.results.length}</span> alerts for {this.props.serviceName}</div>
+                        <div>out of {this.props.results.length} alerts for {this.props.serviceName}</div>
                     </div>
                 </header>
                 <BootstrapTable
                     className="alerts-panel"
                     data={results}
                     tableStyle={{ border: 'none' }}
-                    trClassName={ActiveAlertsTable.rowClassNameFormat}
+                    trClassName={AlertsTable.rowClassNameFormat}
                     options={options}
                     pagination
                     expandableRow={() => true}
@@ -196,50 +196,50 @@ export default class ActiveAlertsTable extends React.Component {
                         isKey
                     >AlertId</TableHeaderColumn>
                     <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
-                        dataFormat={ActiveAlertsTable.nameColumnFormatter}
+                        caretRender={AlertsTable.getCaret}
+                        dataFormat={AlertsTable.nameColumnFormatter}
                         dataField="operationName"
                         width="40"
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Operation Name'}
-                    ><ActiveAlertsTable.Header name="Alert"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Alert"/></TableHeaderColumn>
                     <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
+                        caretRender={AlertsTable.getCaret}
                         dataField="status"
                         width="8"
-                        dataFormat={ActiveAlertsTable.statusColumnFormatter}
+                        dataFormat={AlertsTable.statusColumnFormatter}
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Status'}
-                    ><ActiveAlertsTable.Header name="Status"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Status"/></TableHeaderColumn>
                     <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
-                        dataFormat={ActiveAlertsTable.timestampColumnFormatter}
+                        caretRender={AlertsTable.getCaret}
+                        dataFormat={AlertsTable.timestampColumnFormatter}
                         dataField="timestamp"
                         width="20"
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Alert Timestamp'}
-                    ><ActiveAlertsTable.Header name="Status Changed"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Status Changed"/></TableHeaderColumn>
                     <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
+                        caretRender={AlertsTable.getCaret}
                         dataField="type"
                         width="10"
-                        dataFormat={ActiveAlertsTable.typeColumnFormatter}
+                        dataFormat={AlertsTable.typeColumnFormatter}
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Alert Type'}
-                    ><ActiveAlertsTable.Header name="Alert Type"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
                     <TableHeaderColumn
-                        caretRender={ActiveAlertsTable.getCaret}
+                        caretRender={AlertsTable.getCaret}
                         dataField="value"
                         width="20"
-                        dataFormat={ActiveAlertsTable.valueColumnFormatter}
+                        dataFormat={AlertsTable.valueColumnFormatter}
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Value'}
-                    ><ActiveAlertsTable.Header name="Last 1 Hour Trend"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Last 1 Hour Trend"/></TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );

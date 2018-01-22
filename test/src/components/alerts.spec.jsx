@@ -23,7 +23,7 @@ import _ from 'lodash';
 import { MemoryRouter } from 'react-router';
 
 import Alerts from '../../../src/components/alerts/alerts';
-import AlertsPanel from '../../../src/components/alerts/activeAlerts';
+import AlertsView from '../../../src/components/alerts/alertsView';
 import AlertDetails from '../../../src/components/alerts/details/alertDetails';
 import {ActiveAlertsStore} from '../../../src/components/alerts/stores/activeAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
@@ -135,11 +135,11 @@ describe('<Alerts />', () => {
     });
 });
 
-describe('<AlertsPanel />', () => {
+describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubActiveAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsPanel alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -148,7 +148,7 @@ describe('<AlertsPanel />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubActiveAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsPanel alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -158,7 +158,7 @@ describe('<AlertsPanel />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubActiveAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsPanel alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);

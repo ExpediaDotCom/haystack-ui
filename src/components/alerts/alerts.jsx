@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 
-import ActiveAlerts from './activeAlerts';
+import AlertsView from './alertsView';
 import './alerts.less';
 import alertsStore from './stores/activeAlertsStore';
 
@@ -46,7 +46,7 @@ export default class Alerts extends React.Component {
     render() {
         return (
             <section className="alerts-panel">
-                <ActiveAlerts serviceName={this.state.serviceName} alertsStore={alertsStore}/>
+                <AlertsView serviceName={this.state.serviceName} alertsStore={alertsStore}/>
             </section>
 
         );
