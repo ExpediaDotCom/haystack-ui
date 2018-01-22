@@ -150,14 +150,13 @@ export default class ServiceTools extends Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-md-6">
-                                <h3 className="serviceToolsTab__title">
+                                <h3 className="serviceToolsTab__title" onClick={this.showServiceChanger}>
                                     {
                                         serviceChangeToggleOpen ?
                                             <ServiceChange/> :
                                             <span className="serviceToolsTab__title-name">{trimmedServiceName}</span>
                                     }
                                     <span
-                                        onClick={this.showServiceChanger}
                                         className={serviceChangeToggleOpen ?
                                             'serviceToolsTab__title-toggle active ti-pencil' :
                                             'serviceToolsTab__title-toggle ti-pencil'}
