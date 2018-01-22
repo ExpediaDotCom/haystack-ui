@@ -69,10 +69,23 @@ describe('TracesSearchStore', () => {
         server = null;
     });
 
-    it('fetches traces from the api with a query', (done) => {
+    it('fetches traces from the api with a query with a timerange', (done) => {
         server.onGet('/api/traces?serviceName=test-query&startTime=1000&endTime=1000').reply(200, stubTrace);
 
         store.fetchSearchResults({serviceName: 'test-query', startTime: 1, endTime: 1});
+
+        when(
+            () => store.searchResults.length > 0,
+            () => {
+                expect(store.searchResults).to.have.length(1);
+                done();
+            });
+    });
+
+    it('fetches traces from the api with a query without a timerange', (done) => {
+        server.onGet('/api/traces?serviceName=test-query').reply(200, stubTrace);
+
+        store.fetchSearchResults({serviceName: 'test-query'});
 
         when(
             () => store.searchResults.length > 0,

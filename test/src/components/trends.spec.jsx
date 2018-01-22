@@ -168,6 +168,7 @@ function TrendsStubComponent({operationStore, serviceStore, location, serviceNam
                 serviceStore={serviceStore}
                 serviceName={serviceName}
                 location={location}
+                history={{}}
             />
             <ServiceResults
                 serviceStore={serviceStore}
@@ -222,10 +223,9 @@ function createServiceStubStore(statsResults, trendsResults, promise, statsQuery
     return store;
 }
 
-
 describe('<Trends />', () => {
     it('should render the trends panel`', () => {
-        const wrapper = shallow(<Trends location={stubLocation} match={stubMatch} />);
+        const wrapper = shallow(<Trends location={stubLocation} match={stubMatch} history={{}} />);
         expect(wrapper.find('.trends-panel')).to.have.length(1);
     });
 

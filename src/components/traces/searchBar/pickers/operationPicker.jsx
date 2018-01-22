@@ -19,12 +19,12 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import {autorun} from 'mobx';
 import Select from 'react-select';
-import operationStore from '../../../../stores/operationStore';
 
 @observer
 export default class OperationPicker extends React.Component {
     static propTypes = {
-        uiState: PropTypes.object.isRequired
+        uiState: PropTypes.object.isRequired,
+        operationStore: PropTypes.object.isRequired
     };
 
     static convertToValueLabelMap(operationList) {
@@ -34,11 +34,13 @@ export default class OperationPicker extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+    }
 
+    componentWillMount() {
         autorun(() => {
-          if (props.uiState.serviceName) {
-            operationStore.fetchOperations(this.props.uiState.serviceName);
-          }
+            if (this.props.uiState.serviceName) {
+                this.props.operationStore.fetchOperations(this.props.uiState.serviceName);
+            }
         });
     }
 
@@ -47,11 +49,11 @@ export default class OperationPicker extends React.Component {
     }
 
     render() {
-      const operationName = this.props.uiState.operationName || operationStore.operations[0];
+      const operationName = this.props.uiState.operationName || (this.props.operationStore.operations.length && this.props.operationStore.operations[0]);
 
       // default to current operation if there is no operation in store
-      const options = operationStore.operations.length
-          ? OperationPicker.convertToValueLabelMap(operationStore.operations)
+      const options = this.props.operationStore.operations.length
+          ? OperationPicker.convertToValueLabelMap(this.props.operationStore.operations)
           : OperationPicker.convertToValueLabelMap([operationName]);
 
         return (

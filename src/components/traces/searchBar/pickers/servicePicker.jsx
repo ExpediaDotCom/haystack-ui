@@ -18,12 +18,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import Select from 'react-select';
-import serviceStore from '../../../../stores/serviceStore';
 
 @observer
 export default class ServicePicker extends React.Component {
     static propTypes = {
-        uiState: PropTypes.object.isRequired
+        uiState: PropTypes.object.isRequired,
+        serviceStore: PropTypes.object.isRequired
     };
 
     static convertToValueLabelMap(serviceList) {
@@ -33,8 +33,10 @@ export default class ServicePicker extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+    }
 
-        serviceStore.fetchServices();
+    componentDidMount() {
+        this.props.serviceStore.fetchServices();
     }
 
     handleChange(event) {
@@ -45,8 +47,8 @@ export default class ServicePicker extends React.Component {
         const serviceName = this.props.uiState.serviceName;
 
         // default to current service if there is not operation in store
-        const options = serviceStore.services.length
-            ? ServicePicker.convertToValueLabelMap(serviceStore.services)
+        const options = this.props.serviceStore.services.length
+            ? ServicePicker.convertToValueLabelMap(this.props.serviceStore.services)
             : ServicePicker.convertToValueLabelMap([serviceName]);
 
         return (

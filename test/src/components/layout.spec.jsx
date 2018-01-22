@@ -55,7 +55,8 @@ const stubHistory = {
 
 const stubMatch = {
     params: {
-        serviceName: 'abc-service'
+        serviceName: 'abc-service',
+        traceId: 'trace-id'
     }
 };
 
@@ -225,7 +226,7 @@ describe('<Footer />', () => {
 
 describe('<ServiceTools />', () => {
     it('should render the NoMatch panel`', () => {
-        const wrapper = mount(<MemoryRouter><ServiceTools history={stubHistory} match={stubMatch} location={stubHistory.location.search} /></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><ServiceTools history={stubHistory} match={stubMatch} location={stubHistory.location} /></MemoryRouter>);
         expect(wrapper.find('.serviceToolsTab__tabs')).to.have.length(1);
     });
 });

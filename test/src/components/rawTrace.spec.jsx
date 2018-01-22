@@ -73,7 +73,7 @@ describe('RawTraceStore', () => {
     });
 });
 
-describe('RawSpan', () => {
+describe('RawTrace', () => {
     it('should render a formatted panel with the raw span from the store', () => {
         const store = createStubStore(stubTrace, fulfilledPromise);
         const wrapper = mount(<RawTraceModal isOpen closeModal={() => null} traceId={'test-stub'} rawTraceStore={store} />);
