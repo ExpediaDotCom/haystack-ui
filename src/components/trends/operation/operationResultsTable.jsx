@@ -100,7 +100,8 @@ export default class OperationResultsTable extends React.Component {
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
-            expandBodyClass: 'expand-row-body'
+            expandBodyClass: 'expand-row-body',
+            noDataText: 'No such operation found, try clearing filters'
         };
 
         const selectRowProp = {
@@ -152,7 +153,7 @@ export default class OperationResultsTable extends React.Component {
                     sortFunc={trendTableFormatters.sortByTotalCount}
                     filter={{
                         ...numberFilterFormatter,
-                        placeholder: 'Count...'
+                        placeholder: 'Total Count...'
                     }}
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -165,7 +166,7 @@ export default class OperationResultsTable extends React.Component {
                     dataSort
                     filter={{
                         ...numberFilterFormatter,
-                        placeholder: 'Last duration in milliseconds...'
+                        placeholder: 'Last TP99 in ms...'
                     }}
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
@@ -180,7 +181,7 @@ export default class OperationResultsTable extends React.Component {
                     filter={{
                         ...numberFilterFormatter,
                         defaultValue: { comparator: '<' },
-                        placeholder: 'Success %...'
+                        placeholder: 'Avg Success %...'
                     }}
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderRightAlignedStyle}
