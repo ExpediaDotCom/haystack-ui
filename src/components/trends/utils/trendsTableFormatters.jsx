@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import {Sparklines, SparklinesCurve, SparklinesSpots} from 'react-sparklines';
+import {Sparklines, SparklinesCurve} from 'react-sparklines';
 
 import '../operation/operationResultsTable.less';
 
@@ -131,17 +131,6 @@ export default class TrendsTableFormatters {
             return b.avgSuccessPercent - a.avgSuccessPercent;
         }
         return a.avgSuccessPercent - b.avgSuccessPercent;
-    }
-
-    static enrichTrends(serviceTrends) {
-        return serviceTrends.map((opTrends) => {
-            const lastPoint = opTrends.tp99Duration[opTrends.tp99Duration.length - 1];
-
-            return {
-                ...opTrends,
-                lastTp99Duration: lastPoint ? lastPoint.value / 1000 : null
-            };
-        });
     }
 
 }
