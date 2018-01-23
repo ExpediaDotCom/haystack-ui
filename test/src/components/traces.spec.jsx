@@ -505,7 +505,7 @@ describe('<Traces />', () => {
             .simulate('keyDown', {keyCode: 40});
         expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
         wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
-        expect(wrapper.find('.autofill-suggestion')).to.have.length( 0);
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
     });
 
 
