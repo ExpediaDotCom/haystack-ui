@@ -499,13 +499,13 @@ describe('<Traces />', () => {
     it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
         const store = createUIStateStore();
         const wrapper = mount(<Autocomplete options={['test-1', 'test-2', 'test-3']} uiState={store}/>);
-        wrapper.find('.search-bar-text-box').simulate('click')
-            .simulate('keyDown', {keyCode: 40})
-            .simulate('keyDown', {keyCode: 38})
-            .simulate('keyDown', {keyCode: 40});
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'test'}});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 40});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
         expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
-        wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 13});
+        expect(wrapper.find('.search-bar-text-box').node.value).to.equal('test-3=');
     });
 
 
