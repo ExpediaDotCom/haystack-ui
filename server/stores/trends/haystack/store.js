@@ -91,21 +91,48 @@ function toSuccessPercent(successPoints, failurePoints) {
     return 100 - ((failureCount / (successCount + failureCount)) * 100);
 }
 
+function toSuccessPercentPoints(successCount, failureCount) {
+    const successTimestamps = successCount.map(point => point.timestamp);
+    const failureTimestamps = failureCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+
+    return _.compact(timestamps.map((timestamp) => {
+        const successItem = _.find(successCount, x => (x.timestamp === timestamp));
+        const successVal = (successItem && successItem.value) ? successItem.value : 0;
+
+        const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
+        const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
+
+        if (successVal + failureVal) {
+            return {
+                value: (100 - ((failureVal / (successVal + failureVal)) * 100)),
+                timestamp
+            };
+        }
+        return null;
+    }));
+}
+
+
 function groupByOperation({countValues, successValues, failureValues, tp99Values}) {
     const trendResults = [];
     const groupedByOperationName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.operationName);
     Object.keys(groupedByOperationName).forEach((operationName) => {
         const operationTrends = groupedByOperationName[operationName];
-        const count = fetchOperationDataPoints(operationTrends, 'count.received-span');
+        const countPoints = fetchOperationDataPoints(operationTrends, 'count.received-span');
         const successCount = fetchOperationDataPoints(operationTrends, 'count.success-span');
         const failureCount = fetchOperationDataPoints(operationTrends, 'count.failure-span');
-        const tp99Duration = fetchOperationDataPoints(operationTrends, '*_99.duration');
+        const tp99DurationPoints = fetchOperationDataPoints(operationTrends, '*_99.duration');
+        const latestTp99DurationDatapoint = tp99DurationPoints[tp99DurationPoints.length - 1];
 
         const opKV = {
             operationName,
-            count: dataPointsSum(count),
-            successPercent: toSuccessPercent(successCount, failureCount),
-            tp99Duration
+            totalCount: dataPointsSum,
+            countPoints,
+            avgSuccessPercent: toSuccessPercent(successCount, failureCount),
+            successPercentPoints: toSuccessPercentPoints(successCount, failureCount),
+            latestTp99Duration: latestTp99DurationDatapoint && latestTp99DurationDatapoint.value,
+            tp99DurationPoints
         };
 
         trendResults.push(opKV);
