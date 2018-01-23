@@ -28,6 +28,8 @@ import SearchBar from '../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
 import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
+import {SearchBarUiStateStore} from '../../../src/components/traces/searchBar/searchBarUiStateStore';
+import Autocomplete from '../../../src/components/traces/utils/autocomplete';
 import {OperationStore} from '../../../src/stores/operationStore';
 import {ServiceStore} from '../../../src/stores/serviceStore';
 import TraceDetails from '../../../src/components/traces/details/traceDetails';
@@ -250,6 +252,15 @@ function createServiceStubStore() {
     const store = new ServiceStore();
     store.services = [];
     sinon.stub(store, 'fetchServices', () => {});
+    return store;
+}
+
+function createUIStateStore() {
+    const store = new SearchBarUiStateStore();
+    const query = {
+        serviceName: 'test-service'
+    };
+    store.initUsingQuery(query);
     return store;
 }
 
@@ -483,13 +494,22 @@ describe('<Traces />', () => {
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
         wrapper.find('.search-bar-text-box').simulate('click');
         expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
-        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 40});
-        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 38});
-        wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
     });
 
-    it('renders the all spans in the trace in the detail view', () => {
+    it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
+        const store = createUIStateStore();
+        const wrapper = mount(<Autocomplete options={['test-1', 'test-2', 'test-3']} uiState={store}/>);
+        wrapper.find('.search-bar-text-box').simulate('click')
+            .simulate('keyDown', {keyCode: 40})
+            .simulate('keyDown', {keyCode: 38})
+            .simulate('keyDown', {keyCode: 40});
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
+        wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
+        expect(wrapper.find('.autofill-suggestion')).to.have.length( 0);
+    });
+
+
+        it('renders the all spans in the trace in the detail view', () => {
         const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
