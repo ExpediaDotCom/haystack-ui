@@ -51,7 +51,7 @@ export default class TrendsTableFormatters {
         const values = row.countPoints.map(d => d.value);
 
         return (<div className="sparkline-container">
-            { cell &&
+            { !isNaN(cell) &&
             <div className="sparkline-title">
                 total: <b>{formatters.toNumberString(cell)}</b>
             </div>}
@@ -67,7 +67,7 @@ export default class TrendsTableFormatters {
         const values = row.tp99DurationPoints.map(d => d.value);
 
         return (<div className="sparkline-container">
-            { Number.isInteger(cell) &&
+            { !isNaN(cell) &&
             <div className="sparkline-title">
                 latest: <b>{formatters.toDurationStringFromMs(cell)}</b>
             </div>}
@@ -94,7 +94,7 @@ export default class TrendsTableFormatters {
         const values = row.successPercentPoints.map(d => d.value);
 
         return (<div className="sparkline-container ">
-            { cell &&
+            { !isNaN(cell) &&
                 <div className={'sparkline-title'}>
                     average: <b className={`sparkline-percentColor ${stateColor}`}> {cell.toFixed(2)}% </b>
                 </div>
