@@ -178,17 +178,17 @@ export default class Autocomplete extends React.Component {
 
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
-        if ((e.nativeEvent.keyCode === 13 && this.state.fieldsString.length) || e.nativeEvent.keyCode === 9) {
+        if ((e.keyCode === 13 && this.state.fieldsString.length) || e.keyCode === 9) {
             e.preventDefault();
             this.handleSelection();
             this.handleBlur();
-        } else if (e.nativeEvent.keyCode === 38) {
+        } else if (e.keyCode === 38) {
             e.preventDefault();
             this.higherSuggestion();
-        } else if (e.nativeEvent.keyCode === 40) {
+        } else if (e.keyCode === 40) {
             e.preventDefault();
             this.lowerSuggestion();
-        } else if (e.nativeEvent.keyCode === 27) {
+        } else if (e.keyCode === 27) {
             e.preventDefault();
             this.handleBlur();
         } else {
