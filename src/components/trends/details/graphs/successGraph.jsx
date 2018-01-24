@@ -67,7 +67,9 @@ const SuccessGraph = ({successCount, failureCount}) => {
             data,
             backgroundColor,
             borderColor,
-            borderWidth: 1
+            borderWidth: 1,
+            pointRadius: 1,
+            pointHoverRadius: 3
         }],
         fill: 'end'
     };

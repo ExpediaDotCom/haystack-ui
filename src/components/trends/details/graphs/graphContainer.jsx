@@ -38,7 +38,7 @@ export default class GraphContainer extends React.Component {
         } = this.props.trendsStore.trendsResults;
         return (
             <div className="row">
-                <CountGraph points={count} />
+                <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} />
                 <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} />
                 <SuccessGraph successCount={successCount} failureCount={failureCount} />
             </div>
