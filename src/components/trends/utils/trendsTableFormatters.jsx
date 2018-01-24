@@ -51,9 +51,9 @@ export default class TrendsTableFormatters {
         const values = row.countPoints.map(d => d.value);
 
         return (<div className="sparkline-container">
-            { cell &&
+            { !isNaN(cell) &&
             <div className="sparkline-title">
-                total <b>{formatters.toNumberString(cell)}</b>
+                total: <b>{formatters.toNumberString(cell)}</b>
             </div>}
             <div className="sparkline-graph">
                 <Sparklines className="sparkline" data={values} min={0} height={48}>
@@ -67,9 +67,9 @@ export default class TrendsTableFormatters {
         const values = row.tp99DurationPoints.map(d => d.value);
 
         return (<div className="sparkline-container">
-            { cell &&
+            { !isNaN(cell) &&
             <div className="sparkline-title">
-                latest <b>{formatters.toDurationStringFromMs(cell)}</b>
+                latest: <b>{formatters.toDurationStringFromMs(cell)}</b>
             </div>}
             <div className="sparkline-graph">
                 <Sparklines className="sparkline" data={values} min={0} height={48}>
@@ -94,9 +94,9 @@ export default class TrendsTableFormatters {
         const values = row.successPercentPoints.map(d => d.value);
 
         return (<div className="sparkline-container ">
-            { cell &&
+            { !isNaN(cell) &&
                 <div className={'sparkline-title'}>
-                    average <b className={`sparkline-percentColor ${stateColor}`}> {cell.toFixed(2)}% </b>
+                    average: <b className={`sparkline-percentColor ${stateColor}`}> {cell.toFixed(2)}% </b>
                 </div>
             }
             <div className="sparkline-graph">
