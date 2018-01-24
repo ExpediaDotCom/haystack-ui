@@ -23,8 +23,14 @@ import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
 
-const backgroundColor = [['rgba(54, 162, 235, 0.2)']];
-const borderColor = [['rgba(54, 162, 235, 1)']];
+const backgroundColorSuccess = [['rgba(156, 98, 250, 0']];
+const borderColorSuccess = [['rgba(156, 98, 250, 1)']];
+
+const backgroundColorTotal = [['rgba(54, 162, 235, 0.2)']];
+const borderColorTotal = [['rgba(54, 162, 235, 1)']];
+
+const backgroundColorFailure = [['rgba(229, 28, 35, 0)']];
+const borderColorFailure = [['rgba(229, 28, 35, 1)']];
 
 const countChartOptions = _.cloneDeep(options);
 
@@ -41,21 +47,44 @@ countChartOptions.scales.yAxes = [{
     }
 }];
 
-const CountGraph = ({points}) => {
-    const data = points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+const CountGraph = ({countPoints, successPoints, failurePoints}) => {
+    const total = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
 
-    if (!data.length) {
+    if (!total.length && !successData && !failureData) {
         return (<MissingTrendGraph title="Count"/>);
     }
 
     const chartData = {
-        datasets: [{
-            label: 'Count    ',
-            data,
-            backgroundColor,
-            borderColor,
-            borderWidth: 1
-        }]
+        datasets: [
+            {
+                label: 'Failure    ',
+                data: failureData,
+                backgroundColor: backgroundColorFailure,
+                borderColor: borderColorFailure,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
+            {
+                label: 'Success    ',
+                data: successData,
+                backgroundColor: backgroundColorSuccess,
+                borderColor: borderColorSuccess,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
+            {
+                label: 'Total     ',
+                data: total,
+                backgroundColor: backgroundColorTotal,
+                borderColor: borderColorTotal,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            }]
     };
 
     return (<div className="col-md-12">
@@ -68,7 +97,9 @@ const CountGraph = ({points}) => {
 };
 
 CountGraph.propTypes = {
-    points: PropTypes.object.isRequired
+    countPoints: PropTypes.object.isRequired,
+    successPoints: PropTypes.object.isRequired,
+    failurePoints: PropTypes.object.isRequired
 };
 
 export default CountGraph;
