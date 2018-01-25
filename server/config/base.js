@@ -37,6 +37,12 @@ module.exports = {
             //               haystack store also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
             storeName: 'stub'
+        },
+        alerts: {
+            // name of config store module to use for fetching anomaly detection data from downstream
+            // Options :
+            //  - stub - a stub used during development, will be removed in future
+            storeName: 'stub'
         }
     }
 };

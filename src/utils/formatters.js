@@ -19,7 +19,9 @@ import moment from 'moment';
 
 const formatters = {};
 
-formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
+formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss, DD MMM YY');
+
+formatters.toTimestringWithMs = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
 
 formatters.toTimeago = startTime => timeago().format(Math.floor(startTime / 1000));
 
@@ -32,6 +34,15 @@ formatters.toDurationString = (duration) => {
         return `${Math.floor(duration / 1000)}ms`;
     }
     return `${(duration / 1000000).toFixed(3)}s`;
+};
+
+formatters.toDurationStringInSecAndMin = (duration) => {
+    if (duration === 0) {
+        return '0';
+    } else if (duration < 60000000) {
+        return `${Math.floor(duration / 1000000)} sec`;
+    }
+    return `${Math.floor(duration / 60000000)} min`;
 };
 
 formatters.toDurationStringFromMs = (duration) => {
