@@ -39,6 +39,8 @@ $ npm run watch
 
 ## Testing
 
+[http://haystack.exp-test.net/](Haystack UI Test env)
+
 Haystack-ui utilizes [Mocha](https://github.com/mochajs/mocha) as it's testing framework, with [Chai](https://github.com/chaijs/chai) as the assertation library, [Enzyme](https://github.com/airbnb/enzyme) for utility, and [JSDOM](https://github.com/tmpvar/jsdom) as a headless browser for rendering React components.
 [ESLint](https://github.com/eslint/eslint) is used as a linter and insurance of code quality. 
 
