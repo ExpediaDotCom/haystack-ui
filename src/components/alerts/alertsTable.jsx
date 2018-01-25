@@ -20,12 +20,15 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Sparklines, SparklinesCurve} from 'react-sparklines';
 
+import {toQuery} from '../../utils/queryParser';
 import AlertDetails from './details/alertDetails';
 import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
+import './alerts';
 
 export default class AlertsTable extends React.Component {
     static propTypes = {
+        location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         results: PropTypes.object.isRequired
     };
@@ -101,14 +104,32 @@ export default class AlertsTable extends React.Component {
 
     constructor(props) {
         super(props);
+
+        const query = toQuery(this.props.location.search);
+        const operationName = query.operationName;
+        const type = query.type;
+
         this.state = {
             expanding: [],
-            selected: []
+            selected: [],
+            type,
+            operationName
         };
 
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
         this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.state.type && this.state.operationName) {
+            this.props.results.forEach((item, index) => {
+                if (item.type === this.state.type && item.operationName === this.state.operationName) {
+                    this.handleExpand(index, true);
+                }
+                return null;
+            });
+        }
     }
 
     getUnhealthyAlerts() {
@@ -147,6 +168,19 @@ export default class AlertsTable extends React.Component {
     }
 
     render() {
+        const typeSelection = {
+            count: 'Count',
+            successPercentage: 'Success Percentage',
+            durationTp99: 'Duration TP99'
+        };
+
+        const operationFilter = this.state.operationName
+            ? {type: 'TextFilter', defaultValue: this.state.operationName, delay: 500, placeholder: 'Search Operations...'}
+            : {type: 'TextFilter', delay: 500, placeholder: 'Search Operations...'};
+        const typeFilter = this.state.type
+            ? {type: 'SelectFilter', options: typeSelection, defaultValue: this.state.type, delay: 500, placeholder: 'All'}
+            : {type: 'SelectFilter', options: typeSelection, delay: 500, placeholder: 'All'};
+
         const results = this.props.results.map((result, index) => ({...result, alertId: index}));
 
         const selectRowProp = {
@@ -210,6 +244,7 @@ export default class AlertsTable extends React.Component {
                         dataField="operationName"
                         width="30"
                         dataSort
+                        filter={operationFilter}
                         thStyle={tableHeaderStyle}
                         headerText={'Operation Name'}
                     ><AlertsTable.Header name="Operation"/></TableHeaderColumn>
@@ -219,6 +254,7 @@ export default class AlertsTable extends React.Component {
                         width="20"
                         dataFormat={AlertsTable.typeColumnFormatter}
                         dataSort
+                        filter={typeFilter}
                         thStyle={tableHeaderStyle}
                         headerText={'Alert Type'}
                     ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
