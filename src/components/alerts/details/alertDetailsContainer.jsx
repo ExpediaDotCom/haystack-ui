@@ -120,7 +120,7 @@ export default class AlertDetailsContainer extends React.Component {
                     <tr>
                         <th width="50%">Start Time</th>
                         <th width="20%" className="text-right">Duration</th>
-                        <th width="30%" className="text-right">See Traces & Trends</th>
+                        <th width="30%" className="text-right">See Trends & Traces</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -149,12 +149,12 @@ export default class AlertDetailsContainer extends React.Component {
             <div className="alert-details-container">
                 <div className="clearfix alert-details-container_header">
                     <div className="pull-left">
-                        <Link to={'#'} className="btn btn-primary">
+                        <Link to={`/service/${this.props.serviceName}/trends?operationName=${this.props.operationName}`} className="btn btn-primary">
                             <span className="ti-stats-up"/> Jump to Trends
                         </Link>
                     </div>
-                    <div className="btn-group btn-group-sm pull-right">
-                        <Link to={'#'} className="btn btn-default">
+                    <div className="btn-group btn-group pull-right">
+                        <Link to={`/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}`} className="btn btn-default">
                             <span className="ti-line-double"/> See Traces
                         </Link>
                         <Link to={'#'} className="btn btn-primary">
