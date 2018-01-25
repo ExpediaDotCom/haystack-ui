@@ -23,7 +23,7 @@ function RawTraceException(data) {
 }
 
 export class RawTraceStore {
-    @observable rawTrace = null;
+    @observable rawTrace = [];
 
     @observable promiseState = null;
 

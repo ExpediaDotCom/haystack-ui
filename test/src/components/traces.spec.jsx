@@ -17,7 +17,6 @@
 
 /* eslint-disable react/prop-types, no-unused-expressions */
 
-
 import React from 'react';
 import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
@@ -29,6 +28,10 @@ import SearchBar from '../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
 import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
+import {SearchBarUiStateStore} from '../../../src/components/traces/searchBar/searchBarUiStateStore';
+import Autocomplete from '../../../src/components/traces/utils/autocomplete';
+import {OperationStore} from '../../../src/stores/operationStore';
+import {ServiceStore} from '../../../src/stores/serviceStore';
 import TraceDetails from '../../../src/components/traces/details/traceDetails';
 
 const stubLocation = {
@@ -65,9 +68,9 @@ const pendingPromise = {
 const stubResults = [{
     traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
     root: {
-        url: '',
-        serviceName: '',
-        operationName: ''
+        url: 'test-1',
+        serviceName: 'test-1',
+        operationName: 'test-1'
     },
     services: [
         {
@@ -93,14 +96,14 @@ const stubResults = [{
     {
         traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
         root: {
-            url: '',
-            serviceName: '',
-            operationName: ''
+            url: 'test-2',
+            serviceName: 'test-2',
+            operationName: 'test-2'
         },
         services: [
             {
                 name: 'abc-service',
-                duration: 89548,
+                duration: 1000000,
                 spanCount: 11
             },
             {
@@ -238,10 +241,40 @@ const stubDetails = [
     }
 ];
 
+function createOperationStubStore() {
+    const store = new OperationStore();
+    store.operations = [];
+    sinon.stub(store, 'fetchOperations', () => {});
+    return store;
+}
+
+function createServiceStubStore() {
+    const store = new ServiceStore();
+    store.services = [];
+    sinon.stub(store, 'fetchServices', () => {});
+    return store;
+}
+
+function createUIStateStore() {
+    const store = new SearchBarUiStateStore();
+    const query = {
+        serviceName: 'test-service'
+    };
+    store.initUsingQuery(query);
+    return store;
+}
+
 function TracesStubComponent({tracesSearchStore, history, location, match}) {
     return (<section className="traces-panel">
-        <SearchBar tracesSearchStore={tracesSearchStore} history={history} location={location} match={match}/>
-        <TraceResults tracesSearchStore={tracesSearchStore} history={history}/>
+        <SearchBar
+            tracesSearchStore={tracesSearchStore}
+            serviceStore={createServiceStubStore()}
+            operationStore={createOperationStubStore()}
+            history={history}
+            location={location}
+            match={match}
+        />
+        <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={{}}/>
     </section>);
 }
 
@@ -313,6 +346,14 @@ describe('<Traces />', () => {
         expect(tracesSearchStore.fetchSearchResults.calledOnce);
     });
 
+    it('should render service selection menu when traces are the only subsystem', () => {
+        const tracesSearchStore = createStubStore([]);
+        window.haystackUiConfig.subsystems = ['traces'];
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        expect(wrapper.find('.search-bar-headers_service')).to.have.length(1);
+    });
+
     it('should render results after getting search results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
@@ -339,6 +380,27 @@ describe('<Traces />', () => {
     });
 
     it('should update search results on clicking search', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(0).simulate('click');
+        let traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+            traceIdA = traceIdA.props().children;
+        wrapper.find('.results-header').at(0).simulate('click');
+        let traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+            traceIdB = traceIdB.props().children;
+        expect(traceIdA).to.not.equal(traceIdB);
+
+        wrapper.find('.results-header').at(6).simulate('click');
+        traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdA = traceIdA.props().children;
+        wrapper.find('.results-header').at(6).simulate('click');
+        traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdB = traceIdB.props().children;
+        expect(traceIdA).to.not.equal(traceIdB);
+    });
+
+    it('should sort based on whatever row is clicked', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
@@ -374,7 +436,7 @@ describe('<Traces />', () => {
 
     it('should not accept invalid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing no key value'}});
         wrapper.find('.traces-search-button').simulate('click');
@@ -399,7 +461,7 @@ describe('<Traces />', () => {
 
     it('should accept valid query string parameters', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});
         wrapper.find('.traces-search-button').simulate('click');
@@ -424,7 +486,7 @@ describe('<Traces />', () => {
 
     it('should have an autosuggest feature for keys in traces header search', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+        const wrapper = mount(<SearchBar tracesSearchStore={tracesSearchStore} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()} history={stubHistory} location={stubLocation} match={stubMatch}/>);
         wrapper.find('.search-bar-text-box').simulate('click');
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 65});
@@ -432,13 +494,22 @@ describe('<Traces />', () => {
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
         wrapper.find('.search-bar-text-box').simulate('click');
         expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
-        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 40});
-        wrapper.find('.search-bar-headers').simulate('keyDown', {keyCode: 38});
-        wrapper.find('.autofill-suggestion').last().simulate('mouseEnter').simulate('click');
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(0);
     });
 
-    it('renders the all spans in the trace in the detail view', () => {
+    it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
+        const store = createUIStateStore();
+        const wrapper = mount(<Autocomplete options={['test-1', 'test-2', 'test-3']} uiState={store}/>);
+        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'test'}});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 40});
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
+        expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
+        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 13});
+        expect(wrapper.find('.search-bar-text-box').node.value).to.equal('test-3=');
+    });
+
+
+        it('renders the all spans in the trace in the detail view', () => {
         const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
@@ -462,6 +533,24 @@ describe('<Traces />', () => {
         expect((timePointers).last().text()).to.eq('3.500s ');
     });
 
+    it('should be able to sort on columns after getting search results', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+        wrapper.find('.results-header').at(5).simulate('click');
+
+        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
+        expect(wrapper.find('.react-bs-table-container .tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
+    });
+
     it('has a modal upon clicking a span', () => {
         const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<MemoryRouter>
@@ -471,10 +560,4 @@ describe('<Traces />', () => {
         const modal = wrapper.find('SpanDetailsModal').first();
         expect(modal.props().isOpen).to.be.true;
     });
-
-    it('should update URL query params on clicking search');
-
-    it('should sort columns');
-
-    it('should use new query for searching traces');
 });

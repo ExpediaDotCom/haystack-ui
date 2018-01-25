@@ -47,7 +47,7 @@ formatters.toDurationStringInSecAndMin = (duration) => {
 
 formatters.toDurationStringFromMs = (duration) => {
     if (duration === 0) {
-        return '0';
+        return '0ms';
     } else if (duration < 1000) {
         return `${duration}ms`;
     }

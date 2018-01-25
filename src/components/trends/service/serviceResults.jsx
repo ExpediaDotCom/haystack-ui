@@ -39,14 +39,14 @@ export default class ServiceResults extends React.Component {
                 { this.props.serviceStore.statsPromiseState && this.props.serviceStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
-                    rejected: () => <Error />,
+                    rejected: () => <Error errorMessage={''} />,
                     fulfilled: () => ((this.props.serviceStore.statsResults && this.props.serviceStore.statsResults.length)
                         ? <ServiceResultsTable
                             serviceStore={this.props.serviceStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />
-                        : <Error errorMessage={'Service Stats not found!'} />)
+                        : <Error errorMessage={''} />)
                 })
                 }
             </section>

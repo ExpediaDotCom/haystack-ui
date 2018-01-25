@@ -43,10 +43,22 @@ const stubMatch = {
 
 const stubServiceSummaryResults = [
     {
-        Type: 'All Incoming Requests',
-        count: 10000,
-        successPercent: 51,
-        tp99Duration: [{value: 180, timestamp: 1508431848839},
+        type: 'Incoming Requests',
+        totalCount: 18800,
+        countPoints: [
+            {value: 180, timestamp: 1508431848839},
+            {value: 82, timestamp: 1508432748839},
+            {value: 950, timestamp: 1508433648839},
+            {value: 53, timestamp: 1508434548839}],
+        avgSuccessPercent: 69.997,
+        successPercentPoints: [
+            {value: 180, timestamp: 1508431848839},
+            {value: 82, timestamp: 1508432748839},
+            {value: 950, timestamp: 1508433648839},
+            {value: 53, timestamp: 1508434548839}],
+        latestTp99Duration: 14530,
+        tp99DurationPoints: [
+            {value: 180, timestamp: 1508431848839},
             {value: 82, timestamp: 1508432748839},
             {value: 950, timestamp: 1508433648839},
             {value: 53, timestamp: 1508434548839}]
@@ -54,41 +66,89 @@ const stubServiceSummaryResults = [
 ];
 
 const stubSearchResults = [
-    {operationName: 'test-operation-1',
-        count: 10000,
-        successPercent: 51,
-        tp99Duration:
-            [{value: 180, timestamp: 1508431848839},
+    {
+        operationName: 'Op 1',
+        totalCount: 18800,
+        countPoints: [
+            {value: 180, timestamp: 1508431848839},
+            {value: 82, timestamp: 1508432748839},
+            {value: 950, timestamp: 1508433648839},
+            {value: 53, timestamp: 1508434548839}],
+        avgSuccessPercent: 69.997,
+        successPercentPoints: [
+            {value: 180, timestamp: 1508431848839},
+            {value: 82, timestamp: 1508432748839},
+            {value: 950, timestamp: 1508433648839},
+            {value: 53, timestamp: 1508434548839}],
+        latestTp99Duration: 14530,
+        tp99DurationPoints: [
+            {value: 180, timestamp: 1508431848839},
             {value: 82, timestamp: 1508432748839},
             {value: 950, timestamp: 1508433648839},
             {value: 53, timestamp: 1508434548839}]
     },
-    {operationName: 'test-operation-2',
-        count: 15000,
-        successPercent: 86,
-        tp99Duration:
-            [{value: 311, timestamp: 1508431848839},
-            {value: 745, timestamp: 1508432748839},
-            {value: 874, timestamp: 1508433648839},
-            {value: 914, timestamp: 1508434548839}]
+    {
+        operationName: 'Op 2',
+        totalCount: 1800,
+        countPoints: [
+            {value: 380, timestamp: 1508431848839},
+            {value: 22, timestamp: 1508432748839},
+            {value: 930, timestamp: 1508433648839},
+            {value: 23, timestamp: 1508434548839}],
+        avgSuccessPercent: 69.997,
+        successPercentPoints: [
+            {value: 1280, timestamp: 1508431848839},
+            {value: 822, timestamp: 1508432748839},
+            {value: 9520, timestamp: 1508433648839},
+            {value: 253, timestamp: 1508434548839}],
+        latestTp99Duration: 14530,
+        tp99DurationPoints: [
+            {value: 1810, timestamp: 1508431848839},
+            {value: 8121, timestamp: 1508432748839},
+            {value: 91150, timestamp: 1508433648839},
+            {value: 153, timestamp: 1508434548839}]
     },
-    {operationName: 'test-operation-3',
-        count: 5000,
-        successPercent: 14,
-        tp99Duration:
-            [{value: 175, timestamp: 1508431848839},
-            {value: 276, timestamp: 1508432748839},
-            {value: 920, timestamp: 1508433648839},
-            {value: 740, timestamp: 1508434548839}]
+    {
+        operationName: 'Op 3',
+        totalCount: 2800,
+        countPoints: [
+            {value: 1180, timestamp: 1508431848839},
+            {value: 1812, timestamp: 1508432748839},
+            {value: 9150, timestamp: 1508433648839},
+            {value: 533, timestamp: 1508434548839}],
+        avgSuccessPercent: 69.997,
+        successPercentPoints: [
+            {value: 1860, timestamp: 1508431848839},
+            {value: 862, timestamp: 1508432748839},
+            {value: 9650, timestamp: 1508433648839},
+            {value: 563, timestamp: 1508434548839}],
+        latestTp99Duration: 14530,
+        tp99DurationPoints: [
+            {value: 1680, timestamp: 1508431848839},
+            {value: 782, timestamp: 1508432748839},
+            {value: 97750, timestamp: 1508433648839},
+            {value: 573, timestamp: 1508434548839}]
     },
-    {operationName: 'test-operation-4',
-        count: 1000,
-        successPercent: 89,
-        tp99Duration:
-            [{value: 655, timestamp: 1508431848839},
-            {value: 673, timestamp: 1508432748839},
-            {value: 466, timestamp: 1508433648839},
-            {value: 170, timestamp: 1508434548839}]
+    {
+        operationName: 'Op 4',
+        totalCount: 2800,
+        countPoints: [
+            {value: 1180, timestamp: 1508431848839},
+            {value: 1812, timestamp: 1508432748839},
+            {value: 9150, timestamp: 1508433648839},
+            {value: 533, timestamp: 1508434548839}],
+        avgSuccessPercent: 69.997,
+        successPercentPoints: [
+            {value: 1860, timestamp: 1508431848839},
+            {value: 862, timestamp: 1508432748839},
+            {value: 9650, timestamp: 1508433648839},
+            {value: 563, timestamp: 1508434548839}],
+        latestTp99Duration: 14530,
+        tp99DurationPoints: [
+            {value: 1680, timestamp: 1508431848839},
+            {value: 782, timestamp: 1508432748839},
+            {value: 97750, timestamp: 1508433648839},
+            {value: 573, timestamp: 1508434548839}]
     }
 ];
 
@@ -168,6 +228,7 @@ function TrendsStubComponent({operationStore, serviceStore, location, serviceNam
                 serviceStore={serviceStore}
                 serviceName={serviceName}
                 location={location}
+                history={{}}
             />
             <ServiceResults
                 serviceStore={serviceStore}
@@ -222,10 +283,9 @@ function createServiceStubStore(statsResults, trendsResults, promise, statsQuery
     return store;
 }
 
-
 describe('<Trends />', () => {
     it('should render the trends panel`', () => {
-        const wrapper = shallow(<Trends location={stubLocation} match={stubMatch} />);
+        const wrapper = shallow(<Trends location={stubLocation} match={stubMatch} history={{}} />);
         expect(wrapper.find('.trends-panel')).to.have.length(1);
     });
 
@@ -273,7 +333,7 @@ describe('<Trends />', () => {
         const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(wrapper.find('.sparkline-container')).to.have.length(5);
+        expect(wrapper.find('.sparkline-container')).to.have.length(15);
     });
 
     it('should call operation fetchStats upon expanding a trend', () => {

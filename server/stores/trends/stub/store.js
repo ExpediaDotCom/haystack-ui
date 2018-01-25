@@ -34,6 +34,12 @@ function getRandomValues(timeWindow, dataPoints) {
     return valuesArr;
 }
 
+function getRandomPercentageValues(timeWindow, dataPoints) {
+    const valuesArr = [];
+    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(80, 100), timestamp: getTimeStamp(i * timeWindow)}));
+    return valuesArr;
+}
+
 store.getServiceStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
@@ -44,9 +50,12 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
     deffered.resolve([
         {
             type: 'Incoming Requests',
-            count: 50000,
-            successPercent: getValue(80, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 18800,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 69.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 14530,
+            tp99DurationPoints: getRandomValues(mins, points)
         }]);
 
     return deffered.promise;
@@ -112,51 +121,75 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
     deffered.resolve([
         {
             operationName: 'tarley-1',
-            count: 18800,
-            successPercent: getValue(80, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 18800,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 69.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 14530,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'snow-1',
-            count: 15075,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 15075,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 79.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 14153,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'grayjoy-1',
-            count: 299,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 299,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 89.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 14353,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'tully-1',
-            count: 58859,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 58859,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 99.99,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 31453,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'clegane-1',
-            count: 18800,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 18800,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 59.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 31453,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'drogo-1',
-            count: 15075,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 15075,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 89.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 81453,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'dondarrion-1',
-            count: 5750,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 5750,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 9.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 91453,
+            tp99DurationPoints: getRandomValues(mins, points)
         },
         {
             operationName: 'mormont-1',
-            count: 5899,
-            successPercent: getValue(90, 100),
-            tp99Duration: getRandomValues(mins, points)
+            totalCount: 5899,
+            countPoints: getRandomValues(mins, points),
+            avgSuccessPercent: 99.997,
+            successPercentPoints: getRandomPercentageValues(mins, points),
+            latestTp99Duration: 1453,
+            tp99DurationPoints: getRandomValues(mins, points)
         }
     ]);
 

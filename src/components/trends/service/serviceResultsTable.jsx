@@ -92,12 +92,10 @@ export default class SummaryResultsTable extends React.Component {
             selected: this.state.selected
         };
 
-        const trendsWithLastDuration = trendTableFormatters.enrichTrends(this.props.serviceStore.statsResults);
-
         return (
             <BootstrapTable
-                className="table-panel"
-                data={trendsWithLastDuration}
+                className="trends-panel"
+                data={this.props.serviceStore.statsResults}
                 tableStyle={{border: 'none'}}
                 trClassName="tr-no-border"
                 expandableRow={() => true}
@@ -113,21 +111,21 @@ export default class SummaryResultsTable extends React.Component {
                     thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
-                    dataField="count"
+                    dataField="totalCount"
                     dataFormat={trendTableFormatters.countColumnFormatter}
-                    width="12"
+                    width="15"
                     thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
-                    dataField="lastTp99Duration"
+                    dataField="latestTp99Duration"
                     dataFormat={trendTableFormatters.durationColumnFormatter}
-                    width="20"
+                    width="15"
                     thStyle={tableHeaderStyle}
                 />
                 <TableHeaderColumn
-                    dataField="successPercent"
+                    dataField="avgSuccessPercent"
                     dataFormat={trendTableFormatters.successPercentFormatter}
-                    width="12"
+                    width="15"
                     thStyle={tableHeaderStyle}
                 />
             </BootstrapTable>

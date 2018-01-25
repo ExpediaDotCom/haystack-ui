@@ -28,9 +28,8 @@ export default class RawSpan extends React.Component {
         rawSpanStore: PropTypes.object.isRequired
     };
 
-    constructor(props) {
-        super(props);
-        props.rawSpanStore.fetchRawSpan(props.traceId, props.spanId);
+    componentDidMount() {
+        this.props.rawSpanStore.fetchRawSpan(this.props.traceId, this.props.spanId);
     }
 
     render() {
