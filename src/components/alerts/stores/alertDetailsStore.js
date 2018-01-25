@@ -23,13 +23,13 @@ function AlertsException(data) {
 }
 
 export class AlertDetailsStore {
-    @observable alertDetails = null;
+    @observable alertDetails = [];
     @observable promiseState = null;
 
-    @action fetchAlertDetails(alertId) {
+    @action fetchAlertDetails(serviceName, operationName, type) {
         this.promiseState = fromPromise(
             axios
-                .get(`/api/alert/${alertId}`)
+                .get(`/api/alert/${serviceName}/${JSON.stringify(operationName)}/${type}`)
                 .then((result) => {
                     this.alertDetails = result.data;
                 })

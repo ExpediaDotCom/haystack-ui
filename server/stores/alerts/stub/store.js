@@ -45,76 +45,67 @@ function getRandomValues() {
 
 const alerts = [
     {
-        alertId: 1,
         operationName: 'tarley-1',
-        type: 1,
-        status: false,
+        type: 'count',
+        isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 2,
         operationName: 'tarley-1',
-        type: 2,
-        status: true,
+        type: 'durationTp99',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 3,
         operationName: 'tarley-1',
-        type: 3,
-        status: true,
+        type: 'successPercentage',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 4,
         operationName: 'tully-1',
-        type: 1,
-        status: true,
+        type: 'count',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 5,
         operationName: 'tully-1',
-        type: 2,
-        status: true,
+        type: 'durationTp99',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 6,
         operationName: 'tully-1',
-        type: 3,
-        status: true,
+        type: 'successPercentage',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 7,
         operationName: 'dondarrion-1',
-        type: 1,
-        status: false,
+        type: 'count',
+        isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 8,
         operationName: 'dondarrion-1',
-        type: 2,
-        status: true,
+        type: 'durationTp99',
+        isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     },
     {
-        alertId: 9,
         operationName: 'dondarrion-1',
-        type: 3,
-        status: false,
+        type: 'successPercentage',
+        isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
-        value: getRandomValues()
+        trend: getRandomValues()
     }
 ];
 

@@ -26,8 +26,8 @@ router.get('/alerts/service/:serviceName', (req, res, next) => {
     handleResponsePromise(res, next)(() => alertStore.getServiceAlerts(req.params.serviceName));
 });
 
-router.get('/alert/:alertId', (req, res, next) => {
-    handleResponsePromise(res, next)(() => alertStore.getAlertDetails(req.params.alertId));
+router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
+    handleResponsePromise(res, next)(() => alertStore.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType));
 });
 
 module.exports = router;

@@ -30,12 +30,12 @@ export default class AlertsTable extends React.Component {
         results: PropTypes.object.isRequired
     };
 
-    static nameColumnFormatter(cell, row) {
-        return `<div class="table__primary">${cell} ${formatters.toAlertTypeString(row.type)}</div>`;
+    static nameColumnFormatter(cell) {
+        return `<div class="table__primary">${cell}</div>`;
     }
 
     static typeColumnFormatter(cell) {
-        return `<div class="">${formatters.toAlertTypeString(cell)}</div>`;
+        return `<div class="table__primary">${AlertsTable.toAlertTypeString(cell)}</div>`;
     }
 
     static statusColumnFormatter(cell) {
@@ -49,15 +49,14 @@ export default class AlertsTable extends React.Component {
         return `<div class=""><b>${formatters.toTimeago(timestamp)}</b> at ${formatters.toTimestring(timestamp)}</div>`;
     }
 
-    static valueColumnFormatter(cell, row) {
-        const values = [];
-        cell.map(d => values.push(d.value));
+    static trendColumnFormatter(cell) {
+        const trends = cell.map(d => d.value);
 
         return (
             <div className="sparkline-container">
                 <div className="sparkline-graph">
-                    <Sparklines className="sparkline" data={values} min={0} height={40}>
-                        <SparklinesCurve style={{ strokeWidth: 1 }} color={row.status ? '#4CAF50' : '#e23474'} />
+                    <Sparklines className="sparkline" data={trends} min={0} height={40}>
+                        <SparklinesCurve style={{ strokeWidth: 1 }} color={'#36a2eb'} />
                     </Sparklines>
                 </div>
             </div>
@@ -85,8 +84,20 @@ export default class AlertsTable extends React.Component {
     }
 
     static rowClassNameFormat(row) {
-        return row.status ? 'tr-no-border' : 'tr-no-border alert-details__alert-glow';
+        return row.isUnhealthy ? 'tr-no-border' : 'tr-no-border alert-details__alert-glow';
     }
+
+    static toAlertTypeString = (num) => {
+        if (num === 'count') {
+            return 'Count';
+        } else if (num === 'durationTp99') {
+            return 'Duration TP99';
+        } else if (num === 'successPercentage') {
+            return 'Success %';
+        }
+
+        return null;
+    };
 
     constructor(props) {
         super(props);
@@ -103,7 +114,7 @@ export default class AlertsTable extends React.Component {
     getUnhealthyAlerts() {
         let unhealthyAlerts = 0;
         this.props.results.forEach((alert) => {
-            if (!alert.status) {
+            if (!alert.isUnhealthy) {
                 unhealthyAlerts += 1;
             }
         });
@@ -130,15 +141,13 @@ export default class AlertsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(alertId => alertId === row.alertId).length > 0) {
-            return (<AlertDetails alertId={row.alertId} operationName={row.operationName} serviceName={this.props.serviceName} alertDetailsStore={alertDetailsStore} />);
+            return (<AlertDetails serviceName={this.props.serviceName} operationName={row.operationName} type={row.type} alertDetailsStore={alertDetailsStore} />);
         }
         return null;
     }
 
     render() {
-        const {
-            results
-        } = this.props;
+        const results = this.props.results.map((result, index) => ({...result, alertId: index}));
 
         const selectRowProp = {
             clickToSelect: true,
@@ -161,7 +170,7 @@ export default class AlertsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing alerts { start } to { to } out of { total }</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: 'status',
+            defaultSortName: 'isUnhealthy',
             defaultSortOrder: 'asc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
@@ -199,14 +208,23 @@ export default class AlertsTable extends React.Component {
                         caretRender={AlertsTable.getCaret}
                         dataFormat={AlertsTable.nameColumnFormatter}
                         dataField="operationName"
-                        width="40"
+                        width="30"
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'Operation Name'}
-                    ><AlertsTable.Header name="Alert"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Operation"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
-                        dataField="status"
+                        dataField="type"
+                        width="20"
+                        dataFormat={AlertsTable.typeColumnFormatter}
+                        dataSort
+                        thStyle={tableHeaderStyle}
+                        headerText={'Alert Type'}
+                    ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        caretRender={AlertsTable.getCaret}
+                        dataField="isUnhealthy"
                         width="8"
                         dataFormat={AlertsTable.statusColumnFormatter}
                         dataSort
@@ -224,21 +242,12 @@ export default class AlertsTable extends React.Component {
                     ><AlertsTable.Header name="Status Changed"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
-                        dataField="type"
-                        width="10"
-                        dataFormat={AlertsTable.typeColumnFormatter}
-                        dataSort
-                        thStyle={tableHeaderStyle}
-                        headerText={'Alert Type'}
-                    ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        caretRender={AlertsTable.getCaret}
-                        dataField="value"
+                        dataField="trend"
                         width="20"
-                        dataFormat={AlertsTable.valueColumnFormatter}
+                        dataFormat={AlertsTable.trendColumnFormatter}
                         dataSort
                         thStyle={tableHeaderStyle}
-                        headerText={'Value'}
+                        headerText={'trend'}
                     ><AlertsTable.Header name="Last 1 Hour Trend"/></TableHeaderColumn>
                 </BootstrapTable>
             </div>

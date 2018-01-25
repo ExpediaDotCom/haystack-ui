@@ -26,14 +26,14 @@ import Error from '../../common/error';
 @observer
 export default class AlertDetails extends React.Component {
     static propTypes = {
-        alertId: PropTypes.number.isRequired,
-        operationName: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
+        operationName: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
         alertDetailsStore: PropTypes.object.isRequired
     };
 
     componentDidMount() {
-        this.props.alertDetailsStore.fetchAlertDetails(this.props.alertId);
+        this.props.alertDetailsStore.fetchAlertDetails(this.props.serviceName, this.props.operationName, this.props.type);
     }
 
     render() {

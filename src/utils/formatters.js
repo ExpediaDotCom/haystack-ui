@@ -65,22 +65,11 @@ formatters.toNumberString = (num) => {
     return `${(num / 1000000).toFixed(1)}m`;
 };
 
-
 formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     const start = moment(fromInMs);
     const end = moment(untilInMs);
 
     return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
-};
-
-// Returns corresponding string from alert type number
-formatters.toAlertTypeString = (num) => {
-    if (num === 1) {
-        return 'Count';
-    } else if (num === 2) {
-        return 'Duration TP99';
-    }
-    return 'Success %';
 };
 
 export default formatters;

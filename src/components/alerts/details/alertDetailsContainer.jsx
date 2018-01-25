@@ -61,6 +61,7 @@ export default class AlertDetailsContainer extends React.Component {
     render() {
         const sortedResults = _.orderBy(this.props.alertDetailsStore.alertDetails, alert => alert.startTimestamp, ['desc']);
 
+        // eslint-disable-next-line no-unused-vars
         const Subscription = () => (
             <section className="subscriptions col-md-6">
                 <h4>Subscriptions</h4>
@@ -162,7 +163,6 @@ export default class AlertDetailsContainer extends React.Component {
                     </div>
                 </div>
                 <div className="row">
-                    <Subscription />
                     <History />
                 </div>
             </div>
