@@ -26,7 +26,8 @@ import alertsStore from './stores/serviceAlertsStore';
 @observer
 export default class Alerts extends React.Component {
     static propTypes = {
-        match: PropTypes.object.isRequired
+        match: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -46,7 +47,7 @@ export default class Alerts extends React.Component {
     render() {
         return (
             <section className="alerts-panel">
-                <AlertsView serviceName={this.state.serviceName} alertsStore={alertsStore}/>
+                <AlertsView serviceName={this.state.serviceName} location={this.props.location} alertsStore={alertsStore}/>
             </section>
 
         );

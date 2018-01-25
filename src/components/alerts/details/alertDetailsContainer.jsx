@@ -21,6 +21,7 @@ import {observer} from 'mobx-react';
 import _ from 'lodash';
 import {Link} from 'react-router-dom';
 
+import AlertDetailsToolbar from './alertDetailsToolbar';
 import formatters from '../../../utils/formatters';
 
 @observer
@@ -28,7 +29,8 @@ export default class AlertDetailsContainer extends React.Component {
     static propTypes = {
         alertDetailsStore: PropTypes.object.isRequired,
         operationName: PropTypes.string.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired
     };
 
     static timeAgoFormatter(cell) {
@@ -120,7 +122,7 @@ export default class AlertDetailsContainer extends React.Component {
                     <tr>
                         <th width="50%">Start Time</th>
                         <th width="20%" className="text-right">Duration</th>
-                        <th width="30%" className="text-right">See Traces & Trends</th>
+                        <th width="30%" className="text-right">See Trends & Traces</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -148,19 +150,7 @@ export default class AlertDetailsContainer extends React.Component {
         return (
             <div className="alert-details-container">
                 <div className="clearfix alert-details-container_header">
-                    <div className="pull-left">
-                        <Link to={'#'} className="btn btn-primary">
-                            <span className="ti-stats-up"/> Jump to Trends
-                        </Link>
-                    </div>
-                    <div className="btn-group btn-group-sm pull-right">
-                        <Link to={'#'} className="btn btn-default">
-                            <span className="ti-line-double"/> See Traces
-                        </Link>
-                        <Link to={'#'} className="btn btn-primary">
-                            <span className="ti-link"/> Share Alert
-                        </Link>
-                    </div>
+                    <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} type={this.props.type}/>
                 </div>
                 <div className="row">
                     <History />
