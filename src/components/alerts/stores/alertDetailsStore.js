@@ -27,7 +27,6 @@ export class AlertDetailsStore {
     @observable promiseState = null;
 
     @action fetchAlertDetails(serviceName, operationName, type) {
-        console.log(`/api/alert/${serviceName}/${operationName}/${type}`);
         this.promiseState = fromPromise(
             axios
                 .get(`/api/alert/${serviceName}/${operationName}/${type}`)

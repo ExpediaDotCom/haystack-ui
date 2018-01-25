@@ -22,7 +22,7 @@ import axios from 'axios';
 import { when } from 'mobx';
 import MockAdapter from 'axios-mock-adapter';
 
-import {ActiveAlertsStore} from '../../../src/components/alerts/stores/activeAlertsStore';
+import {ServiceAlertsStore} from '../../../src/components/alerts/stores/serviceAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
 
 const stubService = 'stub-service';
@@ -33,7 +33,7 @@ const stubDetails = [{}];
 
 describe('ServiceAlertsStore', () => {
     let server = null;
-    const store = new ActiveAlertsStore();
+    const store = new ServiceAlertsStore();
 
     beforeEach(() => {
         server = new MockAdapter(axios);
@@ -44,7 +44,7 @@ describe('ServiceAlertsStore', () => {
     });
 
     it('fetches active alerts from API', (done) => {
-        server.onGet('/api/alerts/service/stub-service').reply(200, stubAlert);
+        server.onGet('/api/alerts/stub-service').reply(200, stubAlert);
 
         store.fetchServiceAlerts(stubService);
 

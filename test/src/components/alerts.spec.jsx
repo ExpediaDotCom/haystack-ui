@@ -25,7 +25,7 @@ import { MemoryRouter } from 'react-router';
 import Alerts from '../../../src/components/alerts/alerts';
 import AlertsView from '../../../src/components/alerts/alertsView';
 import AlertDetails from '../../../src/components/alerts/details/alertDetails';
-import {ActiveAlertsStore} from '../../../src/components/alerts/stores/activeAlertsStore';
+import {ServiceAlertsStore} from '../../../src/components/alerts/stores/serviceAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
 
 const stubService = 'StubService';
@@ -103,8 +103,8 @@ const stubDetails = {
     ]
 };
 
-function createStubActiveAlertsStore(alertResults, promise) {
-    const store = new ActiveAlertsStore();
+function createStubServiceAlertsStore(alertResults, promise) {
+    const store = new ServiceAlertsStore();
 
     sinon.stub(store, 'fetchServiceAlerts', () => {
         store.alerts = alertResults;
@@ -134,7 +134,7 @@ describe('<Alerts />', () => {
 
 describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
-        const alertsStore = createStubActiveAlertsStore(stubAlerts, rejectedPromise);
+        const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
         const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 
@@ -143,7 +143,7 @@ describe('<AlertsView />', () => {
     });
 
     it('should render loading if promise is pending', () => {
-        const alertsStore = createStubActiveAlertsStore(stubAlerts, pendingPromise);
+        const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
         const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 
@@ -153,7 +153,7 @@ describe('<AlertsView />', () => {
     });
 
     it('should render the Active Alerts Table', () => {
-        const alertsStore = createStubActiveAlertsStore(stubAlerts, fulfilledPromise);
+        const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
         const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
 

@@ -21,7 +21,7 @@ import { observer } from 'mobx-react';
 
 import AlertsView from './alertsView';
 import './alerts.less';
-import alertsStore from './stores/activeAlertsStore';
+import alertsStore from './stores/serviceAlertsStore';
 
 @observer
 export default class Alerts extends React.Component {

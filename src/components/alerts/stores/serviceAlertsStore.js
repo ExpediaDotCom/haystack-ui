@@ -22,14 +22,14 @@ function AlertsException(data) {
     this.data = data;
 }
 
-export class ActiveAlertsStore {
+export class ServiceAlertsStore {
     @observable alerts = [];
     @observable promiseState = null;
 
     @action fetchServiceAlerts(serviceName) {
         this.promiseState = fromPromise(
             axios
-                .get(`/api/alerts/service/${serviceName}`)
+                .get(`/api/alerts/${serviceName}`)
                 .then((result) => {
                     this.alerts = result.data;
                 })
@@ -40,4 +40,4 @@ export class ActiveAlertsStore {
     }
 }
 
-export default new ActiveAlertsStore();
+export default new ServiceAlertsStore();
