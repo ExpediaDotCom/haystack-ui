@@ -27,23 +27,11 @@ import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDeta
 
 const stubService = 'stub-service';
 
-const stubAlert = [
-    {
-        alertId: 1,
-        operationName: 'Test',
-        type: 1,
-        status: false,
-        timestamp: 1510686424051000,
-        value: 1
-    }
-];
+const stubAlert = [{}];
 
-const stubDetails = [{
-    subscriptions: ['success'],
-    history: []
-}];
+const stubDetails = [{}];
 
-describe('ActiveAlertsStore', () => {
+describe('ServiceAlertsStore', () => {
     let server = null;
     const store = new ActiveAlertsStore();
 
@@ -82,9 +70,8 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert details', (done) => {
-        server.onGet('/api/alert/stub-id').reply(200, stubDetails);
-
-        store.fetchAlertDetails('stub-id');
+        server.onGet('/api/alert/svc/op/type').reply(200, stubDetails);
+        store.fetchAlertDetails('svc', 'op', 'type');
 
         when(
             () => store.alertDetails.length > 0,

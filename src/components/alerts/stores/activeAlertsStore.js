@@ -23,8 +23,7 @@ function AlertsException(data) {
 }
 
 export class ActiveAlertsStore {
-    @observable alerts = null;
-
+    @observable alerts = [];
     @observable promiseState = null;
 
     @action fetchServiceAlerts(serviceName) {
