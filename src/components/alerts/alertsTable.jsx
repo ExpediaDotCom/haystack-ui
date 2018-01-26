@@ -135,7 +135,7 @@ export default class AlertsTable extends React.Component {
     getUnhealthyAlerts() {
         let unhealthyAlerts = 0;
         this.props.results.forEach((alert) => {
-            if (!alert.isUnhealthy) {
+            if (alert.isUnhealthy) {
                 unhealthyAlerts += 1;
             }
         });
