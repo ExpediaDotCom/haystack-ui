@@ -47,56 +47,56 @@ const alerts = [
     {
         operationName: 'tarley-1',
         type: 'count',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tarley-1',
-        type: 'durationTp99',
         isUnhealthy: true,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
     },
     {
         operationName: 'tarley-1',
-        type: 'successPercentage',
-        isUnhealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tully-1',
-        type: 'count',
-        isUnhealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tully-1',
         type: 'durationTp99',
-        isUnhealthy: true,
+        isUnhealthy: false,
+        timestamp: getRandomTimeStamp(),
+        trend: getRandomValues()
+    },
+    {
+        operationName: 'tarley-1',
+        type: 'successPercentage',
+        isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
     },
     {
         operationName: 'tully-1',
-        type: 'successPercentage',
-        isUnhealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'dondarrion-1',
         type: 'count',
         isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
     },
     {
+        operationName: 'tully-1',
+        type: 'durationTp99',
+        isUnhealthy: false,
+        timestamp: getRandomTimeStamp(),
+        trend: getRandomValues()
+    },
+    {
+        operationName: 'tully-1',
+        type: 'successPercentage',
+        isUnhealthy: false,
+        timestamp: getRandomTimeStamp(),
+        trend: getRandomValues()
+    },
+    {
+        operationName: 'dondarrion-1',
+        type: 'count',
+        isUnhealthy: true,
+        timestamp: getRandomTimeStamp(),
+        trend: getRandomValues()
+    },
+    {
         operationName: 'dondarrion-1',
         type: 'durationTp99',
-        isUnhealthy: true,
+        isUnhealthy: false,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
     },
