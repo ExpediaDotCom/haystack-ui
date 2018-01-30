@@ -20,6 +20,7 @@ import { observer } from 'mobx-react';
 
 import Loading from '../common/loading';
 import AlertsTable from './alertsTable';
+import AlertsToolbar from './alertsToolbar';
 import Error from '../common/error';
 
 @observer
@@ -27,20 +28,24 @@ export default class AlertsPanel extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         alertsStore: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     render() {
         return (
             <section>
+                <div className="alert-results">
+                    <AlertsToolbar history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertsTable results={this.props.alertsStore.alerts} location={this.props.location} serviceName={this.props.serviceName}/>
+                        ? <AlertsTable history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }
+                </div>
             </section>
         );
     }

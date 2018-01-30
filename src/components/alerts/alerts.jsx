@@ -27,7 +27,8 @@ import alertsStore from './stores/serviceAlertsStore';
 export default class Alerts extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        location: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -40,14 +41,16 @@ export default class Alerts extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({serviceName: nextProps.match.params.serviceName});
-        alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName);
+        if (nextProps.match.params.serviceName !== this.state.serviceName) {
+            this.setState({serviceName: nextProps.match.params.serviceName});
+            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName);
+        }
     }
 
     render() {
         return (
             <section className="alerts-panel">
-                <AlertsView serviceName={this.state.serviceName} location={this.props.location} alertsStore={alertsStore}/>
+                <AlertsView serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
             </section>
 
         );

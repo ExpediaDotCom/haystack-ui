@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Sparklines, SparklinesCurve} from 'react-sparklines';
+import { observer } from 'mobx-react';
 
 import {toQuery} from '../../utils/queryParser';
 import AlertDetails from './details/alertDetails';
@@ -26,11 +27,12 @@ import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
 import './alerts';
 
+@observer
 export default class AlertsTable extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        results: PropTypes.object.isRequired
+        alertsStore: PropTypes.object.isRequired
     };
 
     static nameColumnFormatter(cell) {
@@ -118,28 +120,17 @@ export default class AlertsTable extends React.Component {
 
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
-        this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
     }
 
     componentDidMount() {
         if (this.state.type && this.state.operationName) {
-            this.props.results.forEach((item, index) => {
+            this.props.alertsStore.alerts.forEach((item, index) => {
                 if (item.type === this.state.type && item.operationName === this.state.operationName) {
                     this.handleExpand(index, true);
                 }
                 return null;
             });
         }
-    }
-
-    getUnhealthyAlerts() {
-        let unhealthyAlerts = 0;
-        this.props.results.forEach((alert) => {
-            if (alert.isUnhealthy) {
-                unhealthyAlerts += 1;
-            }
-        });
-        return unhealthyAlerts;
     }
 
     handleExpand(rowKey, isExpand) {
@@ -189,7 +180,7 @@ export default class AlertsTable extends React.Component {
 
         const statusFilter = {type: 'SelectFilter', options: statusSelection, delay: 500, placeholder: 'Both'};
 
-        const results = this.props.results.map((result, index) => ({...result, alertId: index}));
+        const results = this.props.alertsStore.alerts.map((result, index) => ({...result, alertId: index}));
 
         const selectRowProp = {
             clickToSelect: true,
@@ -223,14 +214,8 @@ export default class AlertsTable extends React.Component {
 
         return (
             <div>
-                <header>
-                    <div>
-                        <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealty</div>
-                        <div>out of {this.props.results.length} alerts for {this.props.serviceName}</div>
-                    </div>
-                </header>
                 <BootstrapTable
-                    className="alerts-panel"
+                    className="alerts-table"
                     data={results}
                     tableStyle={{ border: 'none' }}
                     trClassName={AlertsTable.rowClassNameFormat}
@@ -292,7 +277,7 @@ export default class AlertsTable extends React.Component {
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'trend'}
-                    ><AlertsTable.Header name="Last 1 Hour Trend"/></TableHeaderColumn>
+                    ><AlertsTable.Header name="Trend"/></TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );

@@ -15,8 +15,8 @@
  */
 
 import moment from 'moment';
-import metricGranularity from './metricGranularity';
-import formatters from '../../../utils/formatters';
+import metricGranularity from '../components/trends/utils/metricGranularity';
+import formatters from './formatters';
 
 const timeWindow = {};
 

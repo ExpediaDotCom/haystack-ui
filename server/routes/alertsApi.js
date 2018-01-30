@@ -23,7 +23,7 @@ const alertStore = require(`../stores/alerts/${config.stores.alerts.storeName}/s
 const router = express.Router();
 
 router.get('/alerts/:serviceName', (req, res, next) => {
-    handleResponsePromise(res, next)(() => alertStore.getServiceAlerts(req.params.serviceName));
+    handleResponsePromise(res, next)(() => alertStore.getServiceAlerts(req.params.serviceName, req.query));
 });
 
 router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
