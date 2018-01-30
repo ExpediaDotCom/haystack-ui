@@ -20,16 +20,21 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {NavLink} from 'react-router-dom';
 import Select from 'react-select';
+import {observer} from 'mobx-react';
+
 import './serviceTools.less';
+import AlertCounter from '../alerts/alertCounter';
 import serviceStore from '../../stores/serviceStore';
 import ServiceToolsContainer from './serviceToolsContainer';
+import alertsStore from '../alerts/stores/serviceAlertsStore';
 
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
+const isAlertsEnabled = subsystems.includes('alerts');
 const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');
-const isAlertsEnabled = subsystems.includes('alerts');
 
+@observer
 export default class ServiceTools extends Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
@@ -52,8 +57,13 @@ export default class ServiceTools extends Component {
         this.showServiceChanger = this.showServiceChanger.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
-
         serviceStore.fetchServices();
+    }
+
+    componentDidMount() {
+        if (isAlertsEnabled) {
+            alertsStore.fetchUnhealthyAlertCount(this.props.match.params.serviceName);
+        }
     }
 
     setWrapperRef(node) {
@@ -61,6 +71,9 @@ export default class ServiceTools extends Component {
     }
 
     handleServiceChange(event) {
+        if (isAlertsEnabled) {
+            alertsStore.fetchUnhealthyAlertCount(event.value);
+        }
         const pathname = this.props.location.pathname;
         const activeView = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length);
         this.props.history.push(`/service/${event.value}/${activeView}`);
@@ -86,7 +99,7 @@ export default class ServiceTools extends Component {
         const serviceChangeToggleOpen = this.state.serviceChangeToggleOpen;
 
         const Tabs = () => (<nav className="serviceToolsTab__tabs col-md-6">
-            {isFlowEnabled ?
+            {isFlowEnabled &&
                 <NavLink
                     className={navLinkClass}
                     activeClassName={navLinkClassActive}
@@ -96,9 +109,8 @@ export default class ServiceTools extends Component {
                     <span className="serviceToolsTab__tab-option-icon ti-vector"/>
                     Flow
                 </NavLink>
-                : null
             }
-            {isTrendsEnabled ?
+            {isTrendsEnabled &&
                 <NavLink
                     className={navLinkClass}
                     activeClassName={navLinkClassActive}
@@ -107,7 +119,6 @@ export default class ServiceTools extends Component {
                     <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
                     Trends
                 </NavLink>
-                : null
             }
             <NavLink
                 className={navLinkClass}
@@ -117,7 +128,7 @@ export default class ServiceTools extends Component {
                 <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
                 Traces
             </NavLink>
-            {isAlertsEnabled ?
+            {isAlertsEnabled &&
                 <NavLink
                     className={navLinkClass}
                     activeClassName={navLinkClassActive}
@@ -125,8 +136,8 @@ export default class ServiceTools extends Component {
                 >
                     <span className="serviceToolsTab__tab-option-icon ti-bell"/>
                     Alerts
+                    <AlertCounter serviceName={this.props.match.params.serviceName} />
                 </NavLink>
-                : null
             }
         </nav>);
 

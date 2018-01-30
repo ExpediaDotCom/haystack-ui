@@ -26,6 +26,10 @@ router.get('/alerts/:serviceName', (req, res, next) => {
     handleResponsePromise(res, next)(() => alertStore.getServiceAlerts(req.params.serviceName));
 });
 
+router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
+    handleResponsePromise(res, next)(() => alertStore.getServiceUnhealthyAlertCount(req.params.serviceName));
+});
+
 router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
     handleResponsePromise(res, next)(() => alertStore.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType));
 });
