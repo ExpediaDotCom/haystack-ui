@@ -37,14 +37,13 @@ export default class AlertsPanel extends React.Component {
             <section>
                 <div className="alert-results">
                     <AlertsToolbar history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
-                { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertsTable history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
-                        : <Error />)
-                })
-                }
+                        { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
+                            pending: () => <Loading />,
+                            rejected: () => <Error />,
+                            fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
+                                ? <AlertsTable history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
+                                : <Error />)
+                        })}
                 </div>
             </section>
         );
