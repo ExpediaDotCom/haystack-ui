@@ -34,17 +34,15 @@ export default class AlertsPanel extends React.Component {
 
     render() {
         return (
-            <section>
-                <div className="alert-results">
-                    <AlertsToolbar history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
-                        { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
-                            pending: () => <Loading />,
-                            rejected: () => <Error />,
-                            fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                                ? <AlertsTable history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
-                                : <Error />)
-                        })}
-                </div>
+            <section className="alert-results">
+                <AlertsToolbar history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
+                { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
+                    pending: () => <Loading />,
+                    rejected: () => <Error />,
+                    fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
+                        ? <AlertsTable history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
+                        : <Error />)
+                })}
             </section>
         );
     }
