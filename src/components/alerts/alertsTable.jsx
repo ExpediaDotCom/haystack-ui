@@ -20,12 +20,15 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Sparklines, SparklinesCurve} from 'react-sparklines';
 
+import {toQuery} from '../../utils/queryParser';
 import AlertDetails from './details/alertDetails';
 import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
+import './alerts';
 
 export default class AlertsTable extends React.Component {
     static propTypes = {
+        location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         results: PropTypes.object.isRequired
     };
@@ -40,9 +43,9 @@ export default class AlertsTable extends React.Component {
 
     static statusColumnFormatter(cell) {
         if (cell) {
-            return '<span class="label label-success table__large-label">healthy</span>';
+            return '<span class="label label-failure table__large-label">unhealthy</span>';
         }
-        return '<span class="label label-failure table__large-label">unhealthy</span>';
+        return '<span class="label label-success table__large-label">healthy</span>';
     }
 
     static timestampColumnFormatter(timestamp) {
@@ -84,7 +87,7 @@ export default class AlertsTable extends React.Component {
     }
 
     static rowClassNameFormat(row) {
-        return row.isUnhealthy ? 'tr-no-border' : 'tr-no-border alert-details__alert-glow';
+        return row.isUnhealthy ? 'tr-no-border alert-details__alert-glow' : 'tr-no-border';
     }
 
     static toAlertTypeString = (num) => {
@@ -101,9 +104,16 @@ export default class AlertsTable extends React.Component {
 
     constructor(props) {
         super(props);
+
+        const query = toQuery(this.props.location.search);
+        const operationName = query.operationName;
+        const type = query.type;
+
         this.state = {
             expanding: [],
-            selected: []
+            selected: [],
+            type,
+            operationName
         };
 
         this.handleExpand = this.handleExpand.bind(this);
@@ -111,10 +121,21 @@ export default class AlertsTable extends React.Component {
         this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
     }
 
+    componentDidMount() {
+        if (this.state.type && this.state.operationName) {
+            this.props.results.forEach((item, index) => {
+                if (item.type === this.state.type && item.operationName === this.state.operationName) {
+                    this.handleExpand(index, true);
+                }
+                return null;
+            });
+        }
+    }
+
     getUnhealthyAlerts() {
         let unhealthyAlerts = 0;
         this.props.results.forEach((alert) => {
-            if (!alert.isUnhealthy) {
+            if (alert.isUnhealthy) {
                 unhealthyAlerts += 1;
             }
         });
@@ -147,6 +168,27 @@ export default class AlertsTable extends React.Component {
     }
 
     render() {
+        const typeSelection = {
+            count: 'Count',
+            successPercentage: 'Success Percentage',
+            durationTp99: 'Duration TP99'
+        };
+
+        const statusSelection = {
+            true: 'Unhealthy',
+            false: 'Healthy'
+        };
+
+        const operationFilter = this.state.operationName
+            ? {type: 'TextFilter', defaultValue: this.state.operationName, delay: 500, placeholder: 'Search Operations...'}
+            : {type: 'TextFilter', delay: 500, placeholder: 'Search Operations...'};
+
+        const typeFilter = this.state.type
+            ? {type: 'SelectFilter', options: typeSelection, defaultValue: this.state.type, delay: 500, placeholder: 'All'}
+            : {type: 'SelectFilter', options: typeSelection, delay: 500, placeholder: 'All'};
+
+        const statusFilter = {type: 'SelectFilter', options: statusSelection, delay: 500, placeholder: 'Both'};
+
         const results = this.props.results.map((result, index) => ({...result, alertId: index}));
 
         const selectRowProp = {
@@ -171,7 +213,7 @@ export default class AlertsTable extends React.Component {
                 (<p>Showing alerts { start } to { to } out of { total }</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: 'isUnhealthy',
-            defaultSortOrder: 'asc',  // default sort order
+            defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
             expandBodyClass: 'expand-row-body'
@@ -197,7 +239,6 @@ export default class AlertsTable extends React.Component {
                     expandableRow={() => true}
                     expandComponent={this.expandComponent}
                     selectRow={selectRowProp}
-                    multiColumnSort={2}
                 >
                     <TableHeaderColumn
                         dataField="alertId"
@@ -210,6 +251,7 @@ export default class AlertsTable extends React.Component {
                         dataField="operationName"
                         width="30"
                         dataSort
+                        filter={operationFilter}
                         thStyle={tableHeaderStyle}
                         headerText={'Operation Name'}
                     ><AlertsTable.Header name="Operation"/></TableHeaderColumn>
@@ -219,12 +261,14 @@ export default class AlertsTable extends React.Component {
                         width="20"
                         dataFormat={AlertsTable.typeColumnFormatter}
                         dataSort
+                        filter={typeFilter}
                         thStyle={tableHeaderStyle}
                         headerText={'Alert Type'}
                     ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
                         dataField="isUnhealthy"
+                        filter={statusFilter}
                         width="8"
                         dataFormat={AlertsTable.statusColumnFormatter}
                         dataSort

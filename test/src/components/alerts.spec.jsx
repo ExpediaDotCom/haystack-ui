@@ -47,6 +47,10 @@ const stubMatch = {
     }
 };
 
+const stubLocation = {
+    search: ''
+};
+
 function getValue(min, max) {
     return _.round((Math.random() * (max - min)) + min, 0);
 }
@@ -155,7 +159,7 @@ describe('<AlertsView />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);

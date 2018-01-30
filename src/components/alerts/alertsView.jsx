@@ -25,6 +25,7 @@ import Error from '../common/error';
 @observer
 export default class AlertsPanel extends React.Component {
     static propTypes = {
+        location: PropTypes.object.isRequired,
         alertsStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired
     };
@@ -36,7 +37,7 @@ export default class AlertsPanel extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertsTable results={this.props.alertsStore.alerts} serviceName={this.props.serviceName}/>
+                        ? <AlertsTable results={this.props.alertsStore.alerts} location={this.props.location} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }

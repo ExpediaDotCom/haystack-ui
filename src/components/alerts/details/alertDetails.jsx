@@ -47,6 +47,7 @@ export default class AlertDetails extends React.Component {
                         alertDetailsStore={this.props.alertDetailsStore}
                         serviceName={encodeURIComponent(this.props.serviceName)}
                         operationName={encodeURIComponent(this.props.operationName)}
+                        type={this.props.type}
                     />)
                 })
             }
