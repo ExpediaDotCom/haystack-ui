@@ -47,10 +47,10 @@ export default class ServiceToolsContainer extends Component {
             <article className="serviceToolsContainer container">
                 <Switch>
                     <Route exact path="/service/:serviceName" component={Trends}/>
-                    {isFlowEnabled ? <Route exact path="/service/:serviceName/flow" component={Flow}/> : null}
+                    {isFlowEnabled && <Route exact path="/service/:serviceName/flow" component={Flow}/>}
                     <Route exact path="/service/:serviceName/traces" component={Traces}/>
-                    {isTrendsEnabled ? <Route exact path="/service/:serviceName/trends" component={Trends}/> : null}
-                    {isAlertsEnabled ? <Route exact path="/service/:serviceName/alerts" component={Alerts}/> : null}
+                    {isTrendsEnabled && <Route exact path="/service/:serviceName/trends" component={Trends}/>}
+                    {isAlertsEnabled && <Route exact path="/service/:serviceName/alerts" component={Alerts}/>}
                 </Switch>
             </article>
         );

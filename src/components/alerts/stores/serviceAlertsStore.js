@@ -23,8 +23,20 @@ function AlertsException(data) {
 }
 
 export class ServiceAlertsStore {
+    @observable unhealthyAlertCount = null;
     @observable alerts = [];
     @observable promiseState = null;
+
+    @action fetchUnhealthyAlertCount(serviceName) {
+        axios
+            .get(`/api/alerts/${serviceName}/unhealthyCount`)
+            .then((result) => {
+                this.unhealthyAlertCount = result.data;
+            })
+            .catch((result) => {
+                throw new AlertsException(result);
+            });
+    }
 
     @action fetchServiceAlerts(serviceName) {
         this.promiseState = fromPromise(
