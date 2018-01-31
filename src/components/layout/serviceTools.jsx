@@ -135,7 +135,7 @@ export default class ServiceTools extends Component {
                     to={`/service/${serviceName}/alerts`}
                 >
                     <span className="serviceToolsTab__tab-option-icon ti-bell"/>
-                    Alerts
+                    <span>Alerts</span>
                     <AlertCounter serviceName={this.props.match.params.serviceName} />
                 </NavLink>
             }

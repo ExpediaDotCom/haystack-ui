@@ -17,7 +17,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
@@ -29,12 +29,9 @@ export default class AlertCounter extends React.Component {
     };
 
     render() {
-        if (alertsStore.unhealthyAlertCount > 0) {
+        if (alertsStore.unhealthyAlertCount) {
             return (
-                <div className="alert-counter">
-                    <span className="ti-alert"/>
-                    <sup>{alertsStore.unhealthyAlertCount}</sup>
-                </div>
+                <span className="badge alert-counter">{alertsStore.unhealthyAlertCount}</span>
             );
         }
         return null;
