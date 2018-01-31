@@ -32,20 +32,33 @@ function AlertsException(data) {
 }
 
 export class ServiceAlertsStore {
+    @observable unhealthyAlertCount = null;
     @observable alerts = [];
     @observable promiseState = null;
+
+
+    @action fetchUnhealthyAlertCount(serviceName) {
+        axios
+        .get(`/api/alerts/${serviceName}/unhealthyCount`)
+        .then((result) => {
+            this.unhealthyAlertCount = result.data;
+        })
+        .catch((result) => {
+            throw new AlertsException(result);
+        });
+    }
 
     @action fetchServiceAlerts(serviceName, timeFrame) {
         const timeFrameString = timeFrame ? `timeFrame=${indexToTimeframeConverter[timeFrame]}` : `timeFrame=${60 * 60}`;
         this.promiseState = fromPromise(
             axios
-                .get(`/api/alerts/${serviceName}?${timeFrameString}`)
-                .then((result) => {
-                    this.alerts = result.data;
-                })
-                .catch((result) => {
-                    throw new AlertsException(result);
-                })
+            .get(`/api/alerts/${serviceName}?${timeFrameString}`)
+            .then((result) => {
+                this.alerts = result.data;
+            })
+            .catch((result) => {
+                throw new AlertsException(result);
+            })
         );
     }
 }
