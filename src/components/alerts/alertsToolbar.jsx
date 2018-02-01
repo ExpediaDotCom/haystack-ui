@@ -36,8 +36,7 @@ export default class AlertsToolbar extends React.Component {
         super(props);
 
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.timeFrame ? query.timeFrame : 1;
-
+        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 1;
         this.state = {
             options: timeWindow.presets,
             activeWindow
@@ -59,9 +58,11 @@ export default class AlertsToolbar extends React.Component {
 
     handleTimeChange(event) {
         const selectedIndex = event.target.value;
-        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, selectedIndex);
+        const selectedWindow = this.state.options[selectedIndex];
+
+        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, selectedWindow);
         const query = {
-            timeFrame: selectedIndex
+            preset: this.state.options[selectedIndex].shortName
         };
         const queryUrl = `?${toQueryUrlString(query)}`;
         this.props.history.push(queryUrl);

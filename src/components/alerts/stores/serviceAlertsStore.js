@@ -17,15 +17,6 @@ import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
-const indexToTimeframeConverter = [
-    60 * 5,
-    60 * 60,
-    60 * 60 * 6,
-    60 * 60 * 12,
-    60 * 60 * 24,
-    60 * 60 * 24 * 7
-];
-
 function AlertsException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
@@ -47,8 +38,8 @@ export class ServiceAlertsStore {
             });
     }
 
-    @action fetchServiceAlerts(serviceName, timeFrame) {
-        const timeFrameString = timeFrame ? `timeFrame=${indexToTimeframeConverter[timeFrame]}` : `timeFrame=${60 * 60}`;
+    @action fetchServiceAlerts(serviceName, preset) {
+        const timeFrameString = `from=${preset.from}&until=${preset.until}`;
         this.promiseState = fromPromise(
             axios
                 .get(`/api/alerts/${serviceName}?${timeFrameString}`)

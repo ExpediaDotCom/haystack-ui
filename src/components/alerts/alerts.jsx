@@ -22,6 +22,8 @@ import { observer } from 'mobx-react';
 import AlertsView from './alertsView';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
+import timeWindow from '../../utils/timeWindow';
+import {toQuery} from '../../utils/queryParser';
 
 @observer
 export default class Alerts extends React.Component {
@@ -37,13 +39,15 @@ export default class Alerts extends React.Component {
     }
 
     componentDidMount() {
-        alertsStore.fetchServiceAlerts(this.state.serviceName);
+        const query = toQuery(this.props.location.search);
+        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 1;
+        alertsStore.fetchServiceAlerts(this.state.serviceName, timeWindow.presets[activeWindow]);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.match.params.serviceName !== this.state.serviceName) {
             this.setState({serviceName: nextProps.match.params.serviceName});
-            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName);
+            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, timeWindow.presets[1]);
         }
     }
 

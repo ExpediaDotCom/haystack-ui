@@ -44,9 +44,9 @@ describe('ServiceAlertsStore', () => {
     });
 
     it('fetches active alerts from API', (done) => {
-        server.onGet('/api/alerts/stub-service?timeFrame=3600').reply(200, stubAlert);
+        server.onGet('/api/alerts/stub-service?from=1&until=1').reply(200, stubAlert);
 
-        store.fetchServiceAlerts(stubService, 1);
+        store.fetchServiceAlerts(stubService, {from: 1, until: 1});
 
         when(
             () => store.alerts.length > 0,

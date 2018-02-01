@@ -38,9 +38,10 @@ function getAlertHistoryTimestamps() {
 }
 
 function getRandomValues(query) {
-    const stubTimeFrame = query.timeFrame < 10000 ? query.timeFrame / 60 : 100;
+    const range = (query.until - query.from) / 60 / 1000;
+    const points = range < 150 ? range : 150;
     const valuesArr = [];
-    _.range(stubTimeFrame).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
+    _.range(points).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
     return valuesArr;
 }
 
