@@ -140,7 +140,7 @@ describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -149,7 +149,7 @@ describe('<AlertsView />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);

@@ -22,12 +22,15 @@ import { observer } from 'mobx-react';
 import AlertsView from './alertsView';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
+import timeWindow from '../../utils/timeWindow';
+import {toQuery} from '../../utils/queryParser';
 
 @observer
 export default class Alerts extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        location: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -36,18 +39,22 @@ export default class Alerts extends React.Component {
     }
 
     componentDidMount() {
-        alertsStore.fetchServiceAlerts(this.state.serviceName);
+        const query = toQuery(this.props.location.search);
+        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 1;
+        alertsStore.fetchServiceAlerts(this.state.serviceName, timeWindow.presets[activeWindow]);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({serviceName: nextProps.match.params.serviceName});
-        alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName);
+        if (nextProps.match.params.serviceName !== this.state.serviceName) {
+            this.setState({serviceName: nextProps.match.params.serviceName});
+            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, timeWindow.presets[1]);
+        }
     }
 
     render() {
         return (
             <section className="alerts-panel">
-                <AlertsView serviceName={this.state.serviceName} location={this.props.location} alertsStore={alertsStore}/>
+                <AlertsView serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
             </section>
 
         );

@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
 
-import timeWindow from './utils/timeWindow';
+import timeWindow from '../../utils/timeWindow';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 
 import './trendsHeader.less';
@@ -131,7 +131,7 @@ export default class TrendsHeader extends React.Component {
         return (
                 <div className="pull-right trend-summary__header-text">
                     <span>Service trends for </span>
-                    <select className="trend-summary__time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
+                    <select className="time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
                         {options.map((window, index) => (<option key={window.longName} value={index}>{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
                     </select>
                 </div>

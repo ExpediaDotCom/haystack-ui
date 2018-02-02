@@ -29,25 +29,26 @@ export class ServiceAlertsStore {
 
     @action fetchUnhealthyAlertCount(serviceName) {
         axios
-            .get(`/api/alerts/${serviceName}/unhealthyCount`)
+        .get(`/api/alerts/${serviceName}/unhealthyCount`)
+        .then((result) => {
+            this.unhealthyAlertCount = result.data;
+        })
+        .catch((result) => {
+            throw new AlertsException(result);
+        });
+    }
+
+    @action fetchServiceAlerts(serviceName, preset) {
+        const timeFrameString = `from=${preset.from}&until=${preset.until}`;
+        this.promiseState = fromPromise(
+            axios
+            .get(`/api/alerts/${serviceName}?${timeFrameString}`)
             .then((result) => {
-                this.unhealthyAlertCount = result.data;
+                this.alerts = result.data;
             })
             .catch((result) => {
                 throw new AlertsException(result);
-            });
-    }
-
-    @action fetchServiceAlerts(serviceName) {
-        this.promiseState = fromPromise(
-            axios
-                .get(`/api/alerts/${serviceName}`)
-                .then((result) => {
-                    this.alerts = result.data;
-                })
-                .catch((result) => {
-                    throw new AlertsException(result);
-                })
+            })
         );
     }
 }

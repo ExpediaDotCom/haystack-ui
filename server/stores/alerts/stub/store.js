@@ -37,77 +37,81 @@ function getAlertHistoryTimestamps() {
     };
 }
 
-function getRandomValues() {
+function getRandomValues(query) {
+    const range = (query.until - query.from) / 60 / 1000;
+    const points = range < 150 ? range : 150;
     const valuesArr = [];
-    _.range(50).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
+    _.range(points).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
     return valuesArr;
 }
 
-const alerts = [
-    {
-        operationName: 'tarley-1',
-        type: 'count',
-        isUnhealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tarley-1',
-        type: 'durationTp99',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tarley-1',
-        type: 'successPercentage',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tully-1',
-        type: 'count',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tully-1',
-        type: 'durationTp99',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'tully-1',
-        type: 'successPercentage',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'dondarrion-1',
-        type: 'count',
-        isUnhealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'dondarrion-1',
-        type: 'durationTp99',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'dondarrion-1',
-        type: 'successPercentage',
-        isUnhealthy: false,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    }
-];
+function getAlerts(query) {
+    return [
+        {
+            operationName: 'tarley-1',
+            type: 'count',
+            isUnhealthy: true,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'tarley-1',
+            type: 'durationTp99',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'tarley-1',
+            type: 'successPercentage',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'tully-1',
+            type: 'count',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'tully-1',
+            type: 'durationTp99',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'tully-1',
+            type: 'successPercentage',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'dondarrion-1',
+            type: 'count',
+            isUnhealthy: true,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'dondarrion-1',
+            type: 'durationTp99',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        },
+        {
+            operationName: 'dondarrion-1',
+            type: 'successPercentage',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp(),
+            trend: getRandomValues(query)
+        }
+    ];
+}
 
 const alertDetails = [
         getAlertHistoryTimestamps(),
@@ -124,11 +128,10 @@ const alertDetails = [
 
 const store = {};
 
-store.getServiceAlerts = () => Q.fcall(() => alerts);
+store.getServiceAlerts = (service, query) => Q.fcall(() => getAlerts(query));
 
 store.getAlertDetails = () => Q.fcall(() => alertDetails);
 
 store.getServiceUnhealthyAlertCount = () => Q.fcall(() => Math.floor(Math.random() * 3));
-
 
 module.exports = store;
