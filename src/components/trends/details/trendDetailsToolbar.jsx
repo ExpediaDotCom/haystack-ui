@@ -265,7 +265,7 @@ export default class TrendDetailsToolbar extends React.Component {
                         text={this.state.clipboardText}
                         onCopy={this.handleCopy}
                     >
-                        <a role="button" className="trend-detail-share-button btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
+                        <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                     </Clipboard>
                 </div>
             </div>
