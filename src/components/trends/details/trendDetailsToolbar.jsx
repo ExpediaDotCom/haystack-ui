@@ -53,6 +53,7 @@ export default class TrendDetailsToolbar extends React.Component {
         this.updateGranularity = this.updateGranularity.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
+        this.setClipboardText = this.setClipboardText.bind(this);
 
         const {
             from,
@@ -70,13 +71,7 @@ export default class TrendDetailsToolbar extends React.Component {
             activeGranularity,
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
-            clipboardText: this.props.serviceSummary === true
-                ? `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?from=${activeWindow.from ||
-                timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
-                timeWindow.toTimeRange(activeWindow.value).until}`
-                : `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${activeWindow.from ||
-                timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
-                timeWindow.toTimeRange(activeWindow.value).until}`
+            clipboardText: this.setClipboardText(activeWindow)
         };
     }
 
@@ -86,6 +81,17 @@ export default class TrendDetailsToolbar extends React.Component {
 
     setWrapperRef(node) {
         this.wrapperRef = node;
+    }
+
+    setClipboardText(activeWindow) {
+        if (this.props.serviceSummary === true) {
+            return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?from=${activeWindow.from ||
+            timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
+            timeWindow.toTimeRange(activeWindow.value).until}`;
+        }
+        return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${activeWindow.from ||
+        timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
+        timeWindow.toTimeRange(activeWindow.value).until}`;
     }
 
     hideTimePicker() {
@@ -143,6 +149,7 @@ export default class TrendDetailsToolbar extends React.Component {
         presetWindow.until = timeRange.until;
         this.hideTimePicker();
         this.setState({
+            clipboardText: this.setClipboardText(preset),
             activeWindow: presetWindow,
             activeGranularity: updatedGranularity
         });
@@ -156,6 +163,7 @@ export default class TrendDetailsToolbar extends React.Component {
         const updatedGranularity = timeWindow.getLowerGranularity(activeWindow.value);
         this.hideTimePicker();
         this.setState({
+            clipboardText: this.setClipboardText(activeWindow),
             activeWindow,
             activeGranularity: updatedGranularity
         });
@@ -257,7 +265,7 @@ export default class TrendDetailsToolbar extends React.Component {
                         text={this.state.clipboardText}
                         onCopy={this.handleCopy}
                     >
-                        <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
+                        <a role="button" className="trend-detail-share-button btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
                     </Clipboard>
                 </div>
             </div>
