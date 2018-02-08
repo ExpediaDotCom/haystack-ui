@@ -184,6 +184,113 @@ store.getOperations = () => Q.fcall(() => ['mormont-1',
     'tarley-1'
 ]);
 
+store.getLatencyCost = () => Q.fcall(() => [
+    {
+        from: {
+            serviceName: 'service-1',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-2',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 65
+    },
+    {
+        from: {
+            serviceName: 'service-2',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-3',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 10
+    },
+    {
+        from: {
+            serviceName: 'service-2',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-4',
+            infrastructureProvider: '',
+            infrastructureRegion: ''
+        },
+        networkDelta: 545
+    },
+    {
+        from: {
+            serviceName: 'service-2',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-5',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        networkDelta: 645
+    },
+    {
+        from: {
+            serviceName: 'service-3',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-6',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        networkDelta: 225
+    },
+    {
+        from: {
+            serviceName: 'service-3',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-6',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 190
+    },
+    {
+        from: {
+            serviceName: 'service-5',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        to: {
+            serviceName: 'service-7',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        networkDelta: null
+    },
+    {
+        from: {
+            serviceName: 'service-5',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        to: {
+            serviceName: 'service-7',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-2'
+        }, 
+        networkDelta: null
+    }
+]);
+
 store.getTrace = () => Q.fcall(() => trace);
 
 store.getRawTrace = () => Q.fcall(() => trace);
