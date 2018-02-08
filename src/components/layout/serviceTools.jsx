@@ -43,7 +43,9 @@ export default class ServiceTools extends Component {
     };
 
     static convertToValueLabelMap(serviceList) {
-        return serviceList.map(service => ({value: service, label: service}));
+        return serviceList
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .map(service => ({value: service, label: service}));
     }
 
     constructor(props) {
