@@ -113,6 +113,22 @@ export class TraceDetailsStore {
         setChildExpandState(this.timelineSpans, selectedParentId, !parent.expanded);
         parent.expanded = !parent.expanded;
     }
+
+    @observable latencyCost = [];
+    @observable latencyCostPromiseState = null ;
+
+    @action getLatencyCost(traceId) {
+        this.latencyCostPromiseState = fromPromise(
+            axios
+                .get(`/api/trace/${traceId}/latencyCost`)
+                .then((result) => {
+                    this.latencyCost = Object.entries(result.data);
+                })
+                .catch((result) => {
+                    throw new TraceException(result);
+                })
+        );
+    }
 }
 
 export default new TraceDetailsStore();
