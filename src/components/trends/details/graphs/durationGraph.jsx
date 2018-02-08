@@ -57,33 +57,34 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     }
 
     const chartData = {
-        datasets: [{
-            label: 'Mean     ',
-            data: meanData,
-            backgroundColor: backgroundColor1,
-            borderColor: borderColor1,
-            borderWidth: 1,
-            pointRadius: 1,
-            pointHoverRadius: 3
-        },
-        {
-            label: 'TP95    ',
-            data: tp95Data,
-            backgroundColor: backgroundColor2,
-            borderColor: borderColor2,
-            borderWidth: 1,
-            pointRadius: 1,
-            pointHoverRadius: 3
-        },
-        {
-            label: 'TP99    ',
-            data: tp99Data,
-            backgroundColor: backgroundColor3,
-            borderColor: borderColor3,
-            borderWidth: 1,
-            pointRadius: 1,
-            pointHoverRadius: 3
-        }]
+        datasets: [
+            {
+                label: 'TP99    ',
+                data: tp99Data,
+                backgroundColor: backgroundColor3,
+                borderColor: borderColor3,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
+            {
+                label: 'TP95    ',
+                data: tp95Data,
+                backgroundColor: backgroundColor2,
+                borderColor: borderColor2,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
+            {
+                label: 'Mean     ',
+                data: meanData,
+                backgroundColor: backgroundColor1,
+                borderColor: borderColor1,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            }]
     };
 
     return (<div className="col-md-12">
