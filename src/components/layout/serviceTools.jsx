@@ -127,7 +127,7 @@ export default class ServiceTools extends Component {
                 activeClassName={navLinkClassActive}
                 to={`/service/${serviceName}/traces`}
             >
-                <span className="serviceToolsTab__tab-option-icon ti-line-double"/>
+                <span className="serviceToolsTab__tab-option-icon ti-align-left"/>
                 Traces
             </NavLink>
             {isAlertsEnabled &&

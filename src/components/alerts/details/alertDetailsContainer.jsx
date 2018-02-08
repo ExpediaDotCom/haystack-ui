@@ -136,7 +136,7 @@ export default class AlertDetailsContainer extends React.Component {
                                         <span className="ti-stats-up"/>
                                     </Link>
                                     <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-sm btn-default">
-                                        <span className="ti-line-double"/>
+                                        <span className="ti-align-left"/>
                                     </Link>
                                 </div>
                             </td>

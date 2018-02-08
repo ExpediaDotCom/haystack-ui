@@ -54,7 +54,7 @@ export default class AlertDetailsToolbar extends React.Component {
                 <div className="btn-group btn-group pull-right">
 
                 <Link to={`/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}`} className="btn btn-default">
-                    <span className="ti-line-double"/> See Traces
+                    <span className="ti-align-left"/> See Traces
                 </Link>
                 <Clipboard
                     text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${this.props.operationName}&type=${this.props.type}`}
