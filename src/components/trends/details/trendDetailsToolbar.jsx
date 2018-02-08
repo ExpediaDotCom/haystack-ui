@@ -247,7 +247,7 @@ export default class TrendDetailsToolbar extends React.Component {
                                 className="btn btn-sm btn-default"
                                 to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
                             ><span
-                                className="ti-line-double"
+                                className="ti-align-left"
                             /> See Traces</Link>
 
                         )
