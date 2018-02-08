@@ -23,19 +23,17 @@ import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
 
-const backgroundColorSuccess = [['rgba(156, 98, 250, 0']];
-const borderColorSuccess = [['rgba(156, 98, 250, 1)']];
+const backgroundColorSuccess = [['rgba(54, 162, 235, 0.2']];
+const borderColorSuccess = [['rgba(54, 162, 235, 1)']];
 
-const backgroundColorTotal = [['rgba(54, 162, 235, 0.2)']];
-const borderColorTotal = [['rgba(54, 162, 235, 1)']];
-
-const backgroundColorFailure = [['rgba(229, 28, 35, 0)']];
+const backgroundColorFailure = [['rgba(241, 143, 149, 1)']];
 const borderColorFailure = [['rgba(229, 28, 35, 1)']];
 
 const countChartOptions = _.cloneDeep(options);
 
 countChartOptions.scales.yAxes = [{
     display: true,
+    stacked: true,
     ticks: {
         callback(value) {
             const formattedValue = formatters.toNumberString(value);
@@ -59,7 +57,7 @@ const CountGraph = ({countPoints, successPoints, failurePoints}) => {
     const chartData = {
         datasets: [
             {
-                label: 'Failure    ',
+                label: 'Failure  ',
                 data: failureData,
                 backgroundColor: backgroundColorFailure,
                 borderColor: borderColorFailure,
@@ -68,19 +66,10 @@ const CountGraph = ({countPoints, successPoints, failurePoints}) => {
                 pointHoverRadius: 3
             },
             {
-                label: 'Success    ',
+                label: 'Success  ',
                 data: successData,
                 backgroundColor: backgroundColorSuccess,
                 borderColor: borderColorSuccess,
-                borderWidth: 1,
-                pointRadius: 1,
-                pointHoverRadius: 3
-            },
-            {
-                label: 'Total     ',
-                data: total,
-                backgroundColor: backgroundColorTotal,
-                borderColor: borderColorTotal,
                 borderWidth: 1,
                 pointRadius: 1,
                 pointHoverRadius: 3
