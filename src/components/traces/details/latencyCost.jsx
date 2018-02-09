@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import vis from 'vis';
+import { Network } from 'vis/index-network';
 
 @observer
 export default class LatencyCost extends React.Component {
@@ -68,7 +68,7 @@ export default class LatencyCost extends React.Component {
         const container = document.getElementById('latencyGraph');
         const data = {nodes, edges};
         const options = {layout: {hierarchical: true}, edges: {color: '#000000'}};
-        const network = new vis.Network(container, data, options); // eslint-disable-line
+        const network = new Network(container, data, options); // eslint-disable-line
     }
 
     render() {
