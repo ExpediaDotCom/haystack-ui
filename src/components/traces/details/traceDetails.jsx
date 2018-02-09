@@ -104,15 +104,6 @@ export default class TraceDetails extends React.Component {
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
                     <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
-                    <ul className="nav nav-tabs pull-left">
-                        <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                        </li>
-                        <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                        </li>
-                    </ul>
-
                     <div className="btn-group btn-group-sm pull-right">
                           {
                             this.state.showCopied ? (
@@ -130,6 +121,16 @@ export default class TraceDetails extends React.Component {
                         >
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
+                    </div>
+                    <div className="pull-left full-width">
+                        <ul className="nav nav-tabs">
+                            <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                            </li>
+                            <li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 {this.tabViewer({

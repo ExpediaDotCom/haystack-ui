@@ -27,7 +27,9 @@ export default class LatencyCost extends React.Component {
     };
 
     static getBackgroundColor(provider) {
-        return {background: provider === 'aws' ? '#ff9330' : '#80C2F2'};
+        const background = provider === 'aws' ? '#ff9330' : '#80C2F2';
+        const border = provider === 'aws' ? '#ad5c14' : '#2c73a5';
+        return {background, border};
     }
 
     static createItems(data) {
@@ -73,7 +75,7 @@ export default class LatencyCost extends React.Component {
         const nodes = LatencyCost.createNodes(items);
         const container = document.getElementById('latencyGraph');
         const data = {nodes, edges};
-        const options = {layout: {hierarchical: true}, interaction: {zoomView: false, dragView: false, hover: true}};
+        const options = {layout: {hierarchical: true}, interaction: {zoomView: false, dragView: false, click: false}};
         return new Network(container, data, options);
     }
 
