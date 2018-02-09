@@ -16,6 +16,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import {observer} from 'mobx-react';
 import { Network } from 'vis/index-network';
 
@@ -25,50 +26,55 @@ export default class LatencyCost extends React.Component {
         traceDetailsStore: PropTypes.object.isRequired
     };
 
-    static createNodes(data) {
-        const nodes = [];
-        data.forEach((entry) => {
-            const fromServiceName = entry[1].from.serviceName;
-            const toServiceName = entry[1].to.serviceName;
-            const fromEnv = `${entry[1].from.infrastructureProvider} ${entry[1].from.infrastructureRegion}`;
-            const toEnv = `${entry[1].to.infrastructureProvider} ${entry[1].to.infrastructureRegion}`;
-
-            if (!nodes.find(item => item.label[0] === fromServiceName && item.label[1] === fromEnv)) {
-                nodes.push({id: nodes.length, label: [fromServiceName, fromEnv], shape: 'box'});
-            }
-            if (!nodes.find(item => item.label[0] === toServiceName && item.label[1] === toEnv)) {
-                nodes.push({id: nodes.length, label: [toServiceName, toEnv], shape: 'box'});
-            }
-        });
-        return nodes;
+    static getBackgroundColor(provider) {
+        return {background: provider === 'aws' ? '#ff9330' : '#80C2F2'};
     }
 
-    static createEdges(data, nodes) {
-        const edges = [];
-        data.forEach((entry) => {
-            const matchFromLabel = entry[1].from.serviceName;
+    static createItems(data) {
+        const flatMap = _.flatten(data.map((entry) => {
+            const fromEnv = `${entry[1].from.infrastructureProvider} ${entry[1].from.infrastructureRegion}`;
+            const toEnv = `${entry[1].to.infrastructureProvider} ${entry[1].to.infrastructureRegion}`;
+            const fromColor = LatencyCost.getBackgroundColor(entry[1].from.infrastructureProvider);
+            const toColor = LatencyCost.getBackgroundColor(entry[1].to.infrastructureProvider);
+            const fromServiceName = entry[1].from.serviceName;
+            const toServiceName = entry[1].to.serviceName;
+            return [{serviceProviderRegion: fromEnv, name: fromServiceName, color: fromColor}, {serviceProviderRegion: toEnv, name: toServiceName, color: toColor}];
+        }));
+        return _.uniqWith(flatMap, _.isEqual);
+    }
+
+    static createEdges(data, items) {
+        const edges = data.map((entry) => {
+            const matchFromName = entry[1].from.serviceName;
             const matchFromEnv = `${entry[1].from.infrastructureProvider} ${entry[1].from.infrastructureRegion}`;
-            const matchToLabel = entry[1].to.serviceName;
+            const matchToName = entry[1].to.serviceName;
             const matchToEnv = `${entry[1].to.infrastructureProvider} ${entry[1].to.infrastructureRegion}`;
             const networkDelta = entry[1].networkDelta ? `${entry[1].networkDelta}ms` : '';
-            const matchFromIndex = nodes.findIndex(item => item.label[0] === matchFromLabel && item.label[1] === matchFromEnv);
-            const matchToIndex = nodes.findIndex(item => item.label[0] === matchToLabel && item.label[1] === matchToEnv);
-            edges.push({from: matchFromIndex, to: matchToIndex, label: networkDelta});
+            const matchFromIndex = items.findIndex(item => item.name === matchFromName && item.serviceProviderRegion === matchFromEnv);
+            const matchToIndex = items.findIndex(item => item.name === matchToName && item.serviceProviderRegion === matchToEnv);
+            return {from: matchFromIndex, to: matchToIndex, label: networkDelta};
         });
-        return edges;
+        return _.uniqWith(edges, _.isEqual);
+    }
+
+    static createNodes(items) {
+        return items.map((node, i) => {
+            const {serviceProviderRegion, name, color} = node;
+            const shape = 'box';
+            const id = i;
+            const label = serviceProviderRegion ? [name, serviceProviderRegion].join('\n') : name;
+            return {id, label, shape, color};
+        });
     }
 
     componentDidMount() {
-        const nodes = LatencyCost.createNodes(this.props.traceDetailsStore.latencyCost);
-        const edges = LatencyCost.createEdges(this.props.traceDetailsStore.latencyCost, nodes);
-        nodes.map((node) => {
-            node.label = node.label.join('\n'); // eslint-disable-line
-            return node;
-        });
+        const items = LatencyCost.createItems(this.props.traceDetailsStore.latencyCost);
+        const edges = LatencyCost.createEdges(this.props.traceDetailsStore.latencyCost, items);
+        const nodes = LatencyCost.createNodes(items);
         const container = document.getElementById('latencyGraph');
         const data = {nodes, edges};
-        const options = {layout: {hierarchical: true}, edges: {color: '#000000'}};
-        const network = new Network(container, data, options); // eslint-disable-line
+        const options = {layout: {hierarchical: true}, interaction: {zoomView: false, dragView: false, hover: true}};
+        return new Network(container, data, options);
     }
 
     render() {
