@@ -38,8 +38,8 @@ export class ServiceAlertsStore {
         });
     }
 
-    @action fetchServiceAlerts(serviceName, preset) {
-        const timeFrameString = `from=${preset.from}&until=${preset.until}`;
+    @action fetchServiceAlerts(serviceName, granularity, preset) {
+        const timeFrameString = `granularity=${granularity}&from=${preset.from}&until=${preset.until}`;
         this.promiseState = fromPromise(
             axios
             .get(`/api/alerts/${serviceName}?${timeFrameString}`)

@@ -51,21 +51,26 @@ export default class AlertsTable extends React.Component {
     }
 
     static timestampColumnFormatter(timestamp) {
-        return `<div class=""><b>${formatters.toTimeago(timestamp)}</b> at ${formatters.toTimestring(timestamp)}</div>`;
+        if (timestamp) {
+            return `<div class=""><b>${formatters.toTimeago(timestamp)}</b> at ${formatters.toTimestring(timestamp)}</div>`;
+        }
+        return '<div/>';
     }
 
     static trendColumnFormatter(cell) {
-        const trends = cell.map(d => d.value);
-
-        return (
-            <div className="sparkline-container">
-                <div className="sparkline-graph">
-                    <Sparklines className="sparkline" data={trends} min={0} height={40}>
-                        <SparklinesCurve style={{ strokeWidth: 1 }} color={'#36a2eb'} />
-                    </Sparklines>
+        if (cell) {
+            const trends = cell.map(d => d.value);
+            return (
+                <div className="sparkline-container">
+                    <div className="sparkline-graph">
+                        <Sparklines className="sparkline" data={trends} min={0} height={40}>
+                            <SparklinesCurve style={{ strokeWidth: 1 }} color={'#36a2eb'} />
+                        </Sparklines>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
+        return '<div />';
     }
 
     static Header({name}) {
@@ -97,8 +102,8 @@ export default class AlertsTable extends React.Component {
             return 'Count';
         } else if (num === 'durationTp99') {
             return 'Duration TP99';
-        } else if (num === 'successPercentage') {
-            return 'Success %';
+        } else if (num === 'failureCount') {
+            return 'Failure Count';
         }
 
         return null;
@@ -161,7 +166,7 @@ export default class AlertsTable extends React.Component {
     render() {
         const typeSelection = {
             count: 'Count',
-            successPercentage: 'Success Percentage',
+            failureCount: 'Failure Count',
             durationTp99: 'Duration TP99'
         };
 
