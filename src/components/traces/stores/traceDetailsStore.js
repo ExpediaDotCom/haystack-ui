@@ -60,6 +60,8 @@ function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration)
 export class TraceDetailsStore {
     @observable promiseState = null;
     @observable spans = [];
+    @observable latencyCost = [];
+    @observable latencyCostPromiseState = null ;
 
     @action fetchTraceDetails(traceId) {
         this.promiseState = fromPromise(
@@ -113,9 +115,6 @@ export class TraceDetailsStore {
         setChildExpandState(this.timelineSpans, selectedParentId, !parent.expanded);
         parent.expanded = !parent.expanded;
     }
-
-    @observable latencyCost = [];
-    @observable latencyCostPromiseState = null ;
 
     @action getLatencyCost(traceId) {
         this.latencyCostPromiseState = fromPromise(

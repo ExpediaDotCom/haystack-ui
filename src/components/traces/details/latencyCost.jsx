@@ -45,7 +45,21 @@ export default class LatencyCost extends React.Component {
         return (infrastructureProvider || infrastructureRegion) ? `${infrastructureProvider} ${infrastructureRegion}` : 'NA';
     }
 
-    static createEnvColorMap(rawEdges) {
+    static addEnvironmentInLatencyCost(rawEdges) {
+        return rawEdges.map(edge => ({
+            from: {
+                ...edge.from,
+                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion)
+            },
+            to: {
+                ...edge.to,
+                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion)
+            },
+            networkDelta: edge.networkDelta
+        }));
+    }
+
+    static getEnvironments(rawEdges) {
         const environments =
             _.uniqWith(
                 _.flatten(rawEdges.map(edge =>
@@ -56,33 +70,23 @@ export default class LatencyCost extends React.Component {
                 _.isEqual
             );
 
-        const colorMap = {};
-        environments.forEach((environment, index) => {
+        return environments.map((environment, index) => {
             if (environment === 'NA') {
-                colorMap.NA = {
+                return {
+                    environment: 'NA',
                     background: '#eee',
-                    border: '#aaa',
-                    hover: {
-                        background: '#aaa',
-                        border: '#aaa'
-                    }
-                };
-            } else {
-                colorMap[environment] = {
-                    background: backgroundColors[index % backgroundColors.length],
-                    border: borderColors[index % borderColors.length],
-                    hover: {
-                        background: borderColors[index % borderColors.length],
-                        border: borderColors[index % borderColors.length]
-                    }
+                    border: '#aaa'
                 };
             }
-        });
-
-        return colorMap;
+            return {
+                environment,
+                background: backgroundColors[index % backgroundColors.length],
+                border: borderColors[index % borderColors.length]
+            };
+        }).sort((e1, e2) => e1.environment.localeCompare(e2.environment));
     }
 
-    static createNodes(rawEdges, environmentMap) {
+    static createNodes(rawEdges, environmentList) {
         const allNodes = _.flatten(rawEdges.map((edge) => {
             const fromEnv = LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion);
             const fromServiceName = edge.from.serviceName;
@@ -97,28 +101,31 @@ export default class LatencyCost extends React.Component {
 
         return uniqueNodes.map((node, index) => {
             const {environment, name} = node;
+            const environmentWithColor = environmentList.find(en => en.environment === environment);
 
             return {
                 ...node,
                 id: index,
                 label: `<b>${name}</b>\n${environment}`,
-                color: environmentMap[environment]
+                color: {
+                    background: environmentWithColor.background,
+                    border: environmentWithColor.border,
+                    hover: {
+                        background: environmentWithColor.border,
+                        border: environmentWithColor.border
+                    }
+                }
             };
         });
     }
 
     static createEdges(rawEdges, nodes) {
-        const edges = rawEdges.map((rawEdge) => {
-            const fromName = rawEdge.from.serviceName;
-            const fromEnv = LatencyCost.toEnvironmentString(rawEdge.from.infrastructureProvider, rawEdge.from.infrastructureRegion);
-            const fromIndex = nodes.find(node => node.name === fromName && node.environment === fromEnv).id;
+        return rawEdges.map((rawEdge) => {
+            const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
+            const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
 
-            const toName = rawEdge.to.serviceName;
-            const toEnv = LatencyCost.toEnvironmentString(rawEdge.to.infrastructureProvider, rawEdge.to.infrastructureRegion);
-            const toIndex = nodes.find(node => node.name === toName && node.environment === toEnv).id;
-
-            const networkDelta = rawEdge.networkDelta ? `${rawEdge.networkDelta}ms` : '';
-            const isSameEnv = (fromEnv === toEnv);
+            const networkDelta = rawEdge.networkDelta ? `${rawEdge.networkDelta}ms` : null;
+            const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
 
             return {
                 from: fromIndex,
@@ -130,21 +137,63 @@ export default class LatencyCost extends React.Component {
                 }
             };
         });
+    }
 
-        return _.uniqWith(edges, _.isEqual);
+    static calculateLatencySummary(rawEdges) {
+        let networkTime = 0;
+        let networkTimeCrossDc = 0;
+        let calls = 0;
+        let measuredCalls = 0;
+        let crossDcCalls = 0;
+        let crossDcMeasuredCalls = 0;
+
+        rawEdges.forEach((edge) => {
+            const networkDelta = edge.networkDelta ? edge.networkDelta : 0;
+            const isMeasured = (edge.networkDelta !== null && edge.networkDelta !== undefined);
+            const isSameEnv = (edge.from.environment === edge.to.environment);
+
+            calls += 1;
+            if (isMeasured) measuredCalls += 1;
+            networkTime += networkDelta;
+            if (!isSameEnv) {
+                crossDcCalls += 1;
+                networkTimeCrossDc += networkDelta;
+                if (isMeasured) crossDcMeasuredCalls += 1;
+            }
+        });
+
+        return {
+            networkTime,
+            networkTimeCrossDc,
+            calls,
+            measuredCalls,
+            crossDcCalls,
+            crossDcMeasuredCalls
+        };
+    }
+
+    componentWillMount() {
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.traceDetailsStore.latencyCost);
+        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+
+        this.setState({latencyCostWithEnvironment, environmentList});
     }
 
     componentDidMount() {
-        const environmentMap = LatencyCost.createEnvColorMap(this.props.traceDetailsStore.latencyCost);
-        const nodes = LatencyCost.createNodes(this.props.traceDetailsStore.latencyCost, environmentMap);
-        const edges = LatencyCost.createEdges(this.props.traceDetailsStore.latencyCost, nodes);
+        const {latencyCostWithEnvironment, environmentList} = this.state;
+
+        const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
+        const edges = LatencyCost.createEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
 
         const container = document.getElementById('latencyGraph');
         const options = {
             autoResize: true,
             layout: {
-                hierarchical: true
+                hierarchical: {
+                    enabled: true,
+                    sortMethod: 'directed'
+                }
             },
             interaction: {
                 selectable: false,
@@ -175,7 +224,7 @@ export default class LatencyCost extends React.Component {
                         scaleFactor: 0.5
                     }
                 },
-                hoverWidth: 0.4,
+                hoverWidth: 0.5,
                 font: {
                     background: '#ffffff',
                     face: 'Titillium Web',
@@ -191,8 +240,53 @@ export default class LatencyCost extends React.Component {
     }
 
     render() {
+        const {latencyCostWithEnvironment, environmentList} = this.state;
+        const summary = LatencyCost.calculateLatencySummary(latencyCostWithEnvironment);
+
+        const LatencySummary = () =>
+            (<div className="well well-sm">
+                <table className="latency-summary">
+                    <tbody>
+                    <tr>
+                        <td>Network time</td>
+                        <td>
+                            <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
+                            <span>({summary.calls} calls)</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Network time cross datacenters</td>
+                        <td>
+                            <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
+                            <span>({summary.crossDcCalls} calls)</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Datacenters involved</td>
+                        <td>
+                            <span className="latency-summary__primary-info">4</span>
+                            <span>
+                            {
+                                environmentList && environmentList.map(
+                                    environment => (
+                                        <span
+                                            key={Math.random()}
+                                            className="dc-marker"
+                                            style={{backgroundColor: environment.background, borderColor: environment.border }}
+                                        >
+                                            {environment.environment}
+                                        </span>))
+                            }
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>);
+
         return (
             <article>
+                <LatencySummary />
                 <div id="latencyGraph" style={{ height: '500px' }}/>
             </article>
         );
