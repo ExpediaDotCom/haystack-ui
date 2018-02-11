@@ -122,7 +122,7 @@ export class TraceDetailsStore {
             axios
                 .get(`/api/trace/${traceId}/latencyCost`)
                 .then((result) => {
-                    this.latencyCost = Object.entries(result.data);
+                    this.latencyCost = result.data;
                 })
                 .catch((result) => {
                     throw new TraceException(result);

@@ -23,7 +23,7 @@ import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
 
-const backgroundColorSuccess = [['rgba(54, 162, 235, 0.2']];
+const backgroundColorSuccess = [['rgba(54, 162, 235, 0.2)']];
 const borderColorSuccess = [['rgba(54, 162, 235, 1)']];
 
 const backgroundColorFailure = [['rgba(241, 143, 149, 1)']];

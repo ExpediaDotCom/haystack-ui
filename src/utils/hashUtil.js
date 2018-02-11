@@ -1,5 +1,6 @@
+/* eslint-disable no-bitwise */
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -13,18 +14,14 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-/* eslint-disable no-bitwise */
 
-import hashUtil from './hashUtil';
+const hashUtil = {};
 
-const colorMapper = {};
+hashUtil.calculateHash = svc =>
+    svc.split('').reduce((a, b) => {
+        let running = a;
+        running = ((running << 5) - running) + b.charCodeAt(0);
+        return running & running;
+    }, 0);
 
-function mapToColorIndex(svc) {
-    return (Math.abs(hashUtil.calculateHash(svc)) % 25) + 1;
-}
-
-colorMapper.toFillClass = serviceName => `svc-color-${mapToColorIndex(serviceName)}-fill`;
-
-colorMapper.toBackgroundClass = serviceName => `svc-color-${mapToColorIndex(serviceName)}-bg`;
-
-export default colorMapper;
+export default hashUtil;

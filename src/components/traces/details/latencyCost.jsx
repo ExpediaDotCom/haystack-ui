@@ -18,8 +18,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {observer} from 'mobx-react';
-import { Network } from 'vis';
+import {Network} from 'vis';
+
 // import { Network } from 'vis/index-network'; // Works, but breaks tests due to import issue. Package size is much smaller with this import.
+
+const borderColors = [
+    '#36A2EB',
+    '#FF6384',
+    '#ff9f40',
+    '#4BC0C0'
+];
+const backgroundColors = [
+    '#D8ECFA',
+    '#FEB2C2',
+    '#FFECDB',
+    '#DCF2F2'
+];
 
 @observer
 export default class LatencyCost extends React.Component {
@@ -27,64 +41,160 @@ export default class LatencyCost extends React.Component {
         traceDetailsStore: PropTypes.object.isRequired
     };
 
-    static getBackgroundColor(provider) {
-        const background = provider === 'aws' ? '#ff9330' : '#80C2F2';
-        const border = provider === 'aws' ? '#ad5c14' : '#2c73a5';
-        return {background, border};
+    static toEnvironmentString(infrastructureProvider, infrastructureRegion) {
+        return (infrastructureProvider || infrastructureRegion) ? `${infrastructureProvider} ${infrastructureRegion}` : 'NA';
     }
 
-    static createItems(data) {
-        const flatMap = _.flatten(data.map((entry) => {
-            const fromEnv = `${entry[1].from.infrastructureProvider} ${entry[1].from.infrastructureRegion}`;
-            const toEnv = `${entry[1].to.infrastructureProvider} ${entry[1].to.infrastructureRegion}`;
-            const fromColor = LatencyCost.getBackgroundColor(entry[1].from.infrastructureProvider);
-            const toColor = LatencyCost.getBackgroundColor(entry[1].to.infrastructureProvider);
-            const fromServiceName = entry[1].from.serviceName;
-            const toServiceName = entry[1].to.serviceName;
-            return [{serviceProviderRegion: fromEnv, name: fromServiceName, color: fromColor}, {serviceProviderRegion: toEnv, name: toServiceName, color: toColor}];
-        }));
-        return _.uniqWith(flatMap, _.isEqual);
-    }
+    static createEnvColorMap(rawEdges) {
+        const environments =
+            _.uniqWith(
+                _.flatten(rawEdges.map(edge =>
+                    [
+                        LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion),
+                        LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion)
+                    ])),
+                _.isEqual
+            );
 
-    static createEdges(data, items) {
-        const edges = data.map((entry) => {
-            const matchFromName = entry[1].from.serviceName;
-            const matchFromEnv = `${entry[1].from.infrastructureProvider} ${entry[1].from.infrastructureRegion}`;
-            const matchToName = entry[1].to.serviceName;
-            const matchToEnv = `${entry[1].to.infrastructureProvider} ${entry[1].to.infrastructureRegion}`;
-            const networkDelta = entry[1].networkDelta ? `${entry[1].networkDelta}ms` : '';
-            const matchFromIndex = items.findIndex(item => item.name === matchFromName && item.serviceProviderRegion === matchFromEnv);
-            const matchToIndex = items.findIndex(item => item.name === matchToName && item.serviceProviderRegion === matchToEnv);
-            return {from: matchFromIndex, to: matchToIndex, label: networkDelta};
+        const colorMap = {};
+        environments.forEach((environment, index) => {
+            if (environment === 'NA') {
+                colorMap.NA = {
+                    background: '#eee',
+                    border: '#aaa',
+                    hover: {
+                        background: '#aaa',
+                        border: '#aaa'
+                    }
+                };
+            } else {
+                colorMap[environment] = {
+                    background: backgroundColors[index % backgroundColors.length],
+                    border: borderColors[index % borderColors.length],
+                    hover: {
+                        background: borderColors[index % borderColors.length],
+                        border: borderColors[index % borderColors.length]
+                    }
+                };
+            }
         });
+
+        return colorMap;
+    }
+
+    static createNodes(rawEdges, environmentMap) {
+        const allNodes = _.flatten(rawEdges.map((edge) => {
+            const fromEnv = LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion);
+            const fromServiceName = edge.from.serviceName;
+
+            const toEnv = LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion);
+            const toServiceName = edge.to.serviceName;
+
+            return [{environment: fromEnv, name: fromServiceName}, {environment: toEnv, name: toServiceName}];
+        }));
+
+        const uniqueNodes = _.uniqWith(allNodes, _.isEqual);
+
+        return uniqueNodes.map((node, index) => {
+            const {environment, name} = node;
+
+            return {
+                ...node,
+                id: index,
+                label: `<b>${name}</b>\n${environment}`,
+                color: environmentMap[environment]
+            };
+        });
+    }
+
+    static createEdges(rawEdges, nodes) {
+        const edges = rawEdges.map((rawEdge) => {
+            const fromName = rawEdge.from.serviceName;
+            const fromEnv = LatencyCost.toEnvironmentString(rawEdge.from.infrastructureProvider, rawEdge.from.infrastructureRegion);
+            const fromIndex = nodes.find(node => node.name === fromName && node.environment === fromEnv).id;
+
+            const toName = rawEdge.to.serviceName;
+            const toEnv = LatencyCost.toEnvironmentString(rawEdge.to.infrastructureProvider, rawEdge.to.infrastructureRegion);
+            const toIndex = nodes.find(node => node.name === toName && node.environment === toEnv).id;
+
+            const networkDelta = rawEdge.networkDelta ? `${rawEdge.networkDelta}ms` : '';
+            const isSameEnv = (fromEnv === toEnv);
+
+            return {
+                from: fromIndex,
+                to: toIndex,
+                label: networkDelta,
+                color: {
+                    color: isSameEnv ? '#333333' : '#dd0000',
+                    hover: isSameEnv ? '#333333' : '#dd0000'
+                }
+            };
+        });
+
         return _.uniqWith(edges, _.isEqual);
     }
 
-    static createNodes(items) {
-        return items.map((node, i) => {
-            const {serviceProviderRegion, name, color} = node;
-            const shape = 'box';
-            const id = i;
-            const label = serviceProviderRegion ? [name, serviceProviderRegion].join('\n') : name;
-            return {id, label, shape, color};
-        });
-    }
-
     componentDidMount() {
-        const items = LatencyCost.createItems(this.props.traceDetailsStore.latencyCost);
-        const edges = LatencyCost.createEdges(this.props.traceDetailsStore.latencyCost, items);
-        const nodes = LatencyCost.createNodes(items);
-        const container = document.getElementById('latencyGraph');
+        const environmentMap = LatencyCost.createEnvColorMap(this.props.traceDetailsStore.latencyCost);
+        const nodes = LatencyCost.createNodes(this.props.traceDetailsStore.latencyCost, environmentMap);
+        const edges = LatencyCost.createEdges(this.props.traceDetailsStore.latencyCost, nodes);
         const data = {nodes, edges};
-        const options = {layout: {hierarchical: true}, interaction: {zoomView: false, dragView: false, click: false}};
+
+        const container = document.getElementById('latencyGraph');
+        const options = {
+            autoResize: true,
+            layout: {
+                hierarchical: true
+            },
+            interaction: {
+                selectable: false,
+                zoomView: false,
+                dragView: false,
+                hover: true
+            },
+            nodes: {
+                shape: 'box',
+                margin: {
+                    left: 10,
+                    right: 10,
+                    bottom: 10
+                },
+                font: {
+                    multi: true,
+                    face: 'Titillium Web',
+                    size: 12,
+                    bold: {
+                        size: 14
+                    }
+                }
+            },
+            edges: {
+                arrows: {
+                    to: {
+                        enabled: true,
+                        scaleFactor: 0.5
+                    }
+                },
+                hoverWidth: 0.4,
+                font: {
+                    background: '#ffffff',
+                    face: 'Titillium Web',
+                    size: 12
+                },
+                color: {
+                    color: '#333333'
+                }
+            }
+        };
+
         return new Network(container, data, options);
     }
 
     render() {
         return (
-            <div>
+            <article>
                 <div id="latencyGraph" style={{ height: '500px' }}/>
-            </div>
+            </article>
         );
     }
 }
