@@ -312,6 +312,19 @@ store.getLatencyCost = () => Q.fcall(() => [
             infrastructureRegion: 'us-east-2'
         }, 
         networkDelta: 15
+    },
+    {
+        from: {
+            serviceName: 'service-2',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'service-1',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 200
     }
 ]);
 

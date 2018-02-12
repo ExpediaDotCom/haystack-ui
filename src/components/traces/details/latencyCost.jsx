@@ -124,9 +124,8 @@ export default class LatencyCost extends React.Component {
             const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
             const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
 
-            const networkDelta = rawEdge.networkDelta ? `${rawEdge.networkDelta}ms` : null;
+            const networkDelta = rawEdge.networkDelta && `${rawEdge.networkDelta}ms`;
             const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
-
             return {
                 from: fromIndex,
                 to: toIndex,
@@ -134,7 +133,8 @@ export default class LatencyCost extends React.Component {
                 color: {
                     color: isSameEnv ? '#333333' : '#dd0000',
                     hover: isSameEnv ? '#333333' : '#dd0000'
-                }
+                },
+                smooth: {roundness: 0.2}
             };
         });
     }
@@ -185,8 +185,9 @@ export default class LatencyCost extends React.Component {
         const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
         const edges = LatencyCost.createEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
-
-        const container = document.getElementById('latencyGraph');
+        const container = this.graphContainer;
+        console.log(container);
+        console.log(document);
         const options = {
             autoResize: true,
             layout: {
@@ -218,6 +219,9 @@ export default class LatencyCost extends React.Component {
                 }
             },
             edges: {
+                smooth: {
+                    type: 'curvedCW'
+                },
                 arrows: {
                     to: {
                         enabled: true,
@@ -287,7 +291,7 @@ export default class LatencyCost extends React.Component {
         return (
             <article>
                 <LatencySummary />
-                <div id="latencyGraph" style={{ height: '500px' }}/>
+                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
             </article>
         );
     }

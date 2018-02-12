@@ -125,10 +125,10 @@ export default class TraceDetails extends React.Component {
                     <div className="pull-left full-width">
                         <ul className="nav nav-tabs">
                             <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                             </li>
                             <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
                             </li>
                         </ul>
                     </div>
