@@ -31,7 +31,7 @@ function toAnnotationQuery(query) {
   return Object
     .keys(query)
     .filter(key => query[key] && !reservedField.includes(key))
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)
+    .map(key => `${encodeURIComponent(key).toLowerCase()}=${encodeURIComponent(query[key])}`)
     .join(' ');
 }
 

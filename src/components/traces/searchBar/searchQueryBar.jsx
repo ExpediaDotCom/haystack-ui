@@ -65,7 +65,7 @@ export default class SearchQueryBar extends React.Component {
             this.props.searchCallback({
                 serviceName: uiState.serviceName,
                 operationName: uiState.operationName,
-                ...toFieldsObject(uiState.fieldsKvString.toLowerCase()),
+                ...toFieldsObject(uiState.fieldsKvString),
                 ...uiState.timeWindow
             });
         }
