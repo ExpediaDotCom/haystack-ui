@@ -42,7 +42,7 @@ export default class AlertDetailsContainer extends React.Component {
     }
 
     static durationColumnFormatter(start, end) {
-        return formatters.toDurationStringInSecAndMin(end - start);
+        return formatters.toDurationStringInSecAndMin(start - end);
     }
 
     constructor(props) {

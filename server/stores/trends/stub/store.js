@@ -126,7 +126,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 69.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14530,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'snow-1',
@@ -135,7 +137,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 79.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14153,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'grayjoy-1',
@@ -144,7 +148,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 89.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14353,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'tully-1',
@@ -153,7 +159,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 99.99,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 31453,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'clegane-1',
@@ -162,7 +170,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 59.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 31453,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'drogo-1',
@@ -171,7 +181,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 89.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 81453,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'dondarrion-1',
@@ -180,7 +192,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 9.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 91453,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         },
         {
             operationName: 'mormont-1',
@@ -189,7 +203,9 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
             avgSuccessPercent: 99.997,
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 1453,
-            tp99DurationPoints: getRandomValues(mins, points)
+            tp99DurationPoints: getRandomValues(mins, points),
+            successPoints: getRandomValues(mins, points),
+            failurePoints: getRandomValues(mins, points)
         }
     ]);
 

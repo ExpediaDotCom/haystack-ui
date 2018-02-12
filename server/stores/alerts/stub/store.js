@@ -63,7 +63,7 @@ function getAlerts(query) {
         },
         {
             operationName: 'tarley-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
@@ -84,7 +84,7 @@ function getAlerts(query) {
         },
         {
             operationName: 'tully-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
@@ -105,7 +105,7 @@ function getAlerts(query) {
         },
         {
             operationName: 'dondarrion-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
