@@ -51,25 +51,24 @@ export default class AlertDetailsToolbar extends React.Component {
                         <span className="ti-stats-up"/> Jump to Trends
                     </Link>
                 </div>
-                <div className="btn-group btn-group pull-right">
-
-                <Link to={`/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}`} className="btn btn-default">
-                    <span className="ti-align-left"/> See Traces
-                </Link>
-                <Clipboard
-                    text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${this.props.operationName}&type=${this.props.type}`}
-                    onCopy={this.handleCopy}
-                >
-                    <a role="button" className="btn btn-primary"><span className="ti-link"/> Share Alert</a>
-                </Clipboard>
-                {
-                    this.state.showCopied && (
-                        <span className="tooltip fade left in" role="tooltip">
-                        <span className="tooltip-arrow"/>
-                        <span className="tooltip-inner">Link Copied!</span>
-                    </span>
-                    )
-                }
+                <div className="btn-group btn-group-sm pull-right">
+                    <Link to={`/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}`} className="btn btn-default">
+                        <span className="ti-align-left"/> See Traces
+                    </Link>
+                    <Clipboard
+                        text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${this.props.operationName}&type=${this.props.type}`}
+                        onCopy={this.handleCopy}
+                    >
+                        <a role="button" className="btn btn-primary"><span className="ti-link"/> Share Alert</a>
+                    </Clipboard>
+                    {
+                        this.state.showCopied && (
+                            <span className="tooltip fade left in" role="tooltip">
+                            <span className="tooltip-arrow"/>
+                            <span className="tooltip-inner">Link Copied!</span>
+                        </span>
+                        )
+                    }
                 </div>
             </div>
         );
