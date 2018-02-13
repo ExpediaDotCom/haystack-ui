@@ -185,7 +185,9 @@ export default class AlertsTable extends React.Component {
 
         const statusFilter = {type: 'SelectFilter', options: statusSelection, delay: 500, placeholder: 'Both'};
 
-        const results = this.props.alertsStore.alerts.map((result, index) => ({...result, alertId: index}));
+        const results = this.props.alertsStore.alerts.map((result, index) => ({...result, alertId: index})).sort(
+            (a, b) => a.operationName.toLowerCase().localeCompare(b.operationName.toLowerCase())
+        );
 
         const selectRowProp = {
             clickToSelect: true,
