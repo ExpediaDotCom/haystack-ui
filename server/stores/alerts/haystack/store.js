@@ -71,9 +71,15 @@ function parseOperationAlertsResponse(data) {
         const alertTypeIndex = targetSplit.indexOf('alertType');
         const operationName = fromMetricTankTarget(targetSplit[operationNameTagIndex + 1]);
         const type = fromMetricTankTarget(targetSplit[alertTypeIndex + 1]);
+
         const latestDatapoint = op.datapoints.sort((a, b) => b[1] - a[1])[0];
         const isUnhealthy = (latestDatapoint[0] === 1);
-        const timestamp = latestDatapoint[1] * 1000 * 1000;
+
+        let timestamp = latestDatapoint[1] * 1000 * 1000;
+        if (!isUnhealthy) {
+            const latestUnhealthy = op.datapoints.find(x => x[0]).sort((a, b) => b[1] - a[1]);
+            timestamp = latestUnhealthy[1] * 1000 * 1000;
+        }
 
         parsedData.push({
             operationName,
