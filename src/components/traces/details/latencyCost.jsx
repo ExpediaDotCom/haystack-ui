@@ -133,8 +133,7 @@ export default class LatencyCost extends React.Component {
                 color: {
                     color: isSameEnv ? '#333333' : '#dd0000',
                     hover: isSameEnv ? '#333333' : '#dd0000'
-                },
-                smooth: {roundness: 0.2}
+                }
             };
         });
     }
@@ -186,8 +185,6 @@ export default class LatencyCost extends React.Component {
         const edges = LatencyCost.createEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
         const container = this.graphContainer;
-        console.log(container);
-        console.log(document);
         const options = {
             autoResize: true,
             layout: {
@@ -219,9 +216,6 @@ export default class LatencyCost extends React.Component {
                 }
             },
             edges: {
-                smooth: {
-                    type: 'curvedCW'
-                },
                 arrows: {
                     to: {
                         enabled: true,
