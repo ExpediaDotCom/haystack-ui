@@ -147,29 +147,25 @@ store.getServiceAlerts = (serviceName, query) => {
 };
 
 function parseAlertDetailResponse(data) {
+    if (!data || !data.length) {
+        return [];
+    }
+
     const parsedData = [];
-    const sortedDatapoints = data[0].datapoints.sort((a, b) => b[1] - a[1]);
+    const sortedPoints = data[0].datapoints.sort((a, b) => a[1] - b[1]);
+    let lastHealthyPoint = sortedPoints[0][1];
 
-    sortedDatapoints.forEach((datapoint, index) => {
-        const unparsedDatapoints = sortedDatapoints.slice(index, sortedDatapoints.length);
+    sortedPoints.forEach((point, index) => {
+        if (!point[0]) {
+            if (index && sortedPoints[index - 1][0]) {
+                parsedData.push({
+                    startTimestamp: lastHealthyPoint * 1000 * 1000,
+                    endTimestamp: sortedPoints[index - 1][1] * 1000 * 1000
+                });
+            }
 
-        if ((index <= (parsedData[parsedData.length - 1] && parsedData[parsedData.length - 1].endTimeStampIndex))
-            || unparsedDatapoints.length === 0
-            || !sortedDatapoints[index][0]) return;
-
-        const stateChangeTimeStampIndex = unparsedDatapoints && unparsedDatapoints.findIndex(dp => dp[0] !== datapoint[0]);
-        const endTS = stateChangeTimeStampIndex === -1 ? unparsedDatapoints[unparsedDatapoints.length - 1][1] : unparsedDatapoints[stateChangeTimeStampIndex] && unparsedDatapoints[stateChangeTimeStampIndex][1];
-
-        const endTimeStampIndexOrig = sortedDatapoints.findIndex(dp => dp[1] === endTS);
-
-        const dpKV = {
-            startTimestamp: datapoint[1] * 1000 * 1000,
-            endTimestamp: endTS * 1000 * 1000,
-            startTimestampIndex: index,
-            endTimeStampIndex: endTimeStampIndexOrig
-        };
-
-        parsedData.push(dpKV);
+            lastHealthyPoint = point[1];
+        }
     });
 
     return parsedData;
