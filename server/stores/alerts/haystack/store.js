@@ -30,7 +30,7 @@ const logger = require('../../../support/logger').withIdentifier('support:haysta
 const store = {};
 const metricTankUrl = config.stores.alerts.metricTankUrl;
 
-const alertTypes = ['count', 'durationTp99', 'failureCount'];
+const alertTypes = ['totalCount', 'durationTp99', 'failureCount'];
 
 function fetchOperations(serviceName) {
     const deferred = Q.defer();
@@ -106,7 +106,7 @@ function fetchOperationAlerts(serviceName) {
 
 function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTrends}) {
     const alertTypeToTrendMap = {
-        count: 'countPoints',
+        totalCount: 'countPoints',
         durationTp99: 'tp99DurationPoints',
         failureCount: 'failurePoints'
     };

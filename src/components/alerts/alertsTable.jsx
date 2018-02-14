@@ -98,8 +98,8 @@ export default class AlertsTable extends React.Component {
     }
 
     static toAlertTypeString = (num) => {
-        if (num === 'count') {
-            return 'Count';
+        if (num === 'totalCount') {
+            return 'Total Count';
         } else if (num === 'durationTp99') {
             return 'Duration TP99';
         } else if (num === 'failureCount') {
@@ -165,7 +165,7 @@ export default class AlertsTable extends React.Component {
 
     render() {
         const typeSelection = {
-            count: 'Count',
+            totalCount: 'Total Count',
             failureCount: 'Failure Count',
             durationTp99: 'Duration TP99'
         };
