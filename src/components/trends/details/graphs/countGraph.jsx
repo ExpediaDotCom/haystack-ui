@@ -23,8 +23,11 @@ import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
 
-const backgroundColorSuccess = [['rgba(54, 162, 235, 0.2']];
-const borderColorSuccess = [['rgba(54, 162, 235, 1)']];
+const backgroundColorTotal = [['rgba(54, 162, 235, 0.2']];
+const borderColorTotal = [['rgba(54, 162, 235, 1)']];
+
+const backgroundColorSuccess = [['rgba(75, 192, 192, 0.2']];
+const borderColorSuccess = [['rgba(75, 192, 192, 1)']];
 
 const backgroundColorFailure = [['rgba(241, 143, 149, 1)']];
 const borderColorFailure = [['rgba(229, 28, 35, 1)']];
@@ -33,7 +36,6 @@ const countChartOptions = _.cloneDeep(options);
 
 countChartOptions.scales.yAxes = [{
     display: true,
-    stacked: true,
     ticks: {
         callback(value) {
             const formattedValue = formatters.toNumberString(value);
@@ -46,11 +48,11 @@ countChartOptions.scales.yAxes = [{
 }];
 
 const CountGraph = ({countPoints, successPoints, failurePoints}) => {
-    const total = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
     const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
     const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
 
-    if (!total.length && !successData && !failureData) {
+    if (!totalData.length && !successData && !failureData) {
         return (<MissingTrendGraph title="Count"/>);
     }
 
@@ -70,6 +72,15 @@ const CountGraph = ({countPoints, successPoints, failurePoints}) => {
                 data: successData,
                 backgroundColor: backgroundColorSuccess,
                 borderColor: borderColorSuccess,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
+            {
+                label: 'Total     ',
+                data: totalData,
+                backgroundColor: backgroundColorTotal,
+                borderColor: borderColorTotal,
                 borderWidth: 1,
                 pointRadius: 1,
                 pointHoverRadius: 3
