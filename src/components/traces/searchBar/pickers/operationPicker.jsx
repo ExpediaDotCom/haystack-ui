@@ -49,7 +49,7 @@ export default class OperationPicker extends React.Component {
     }
 
     render() {
-      const operationName = this.props.uiState.operationName || (this.props.operationStore.operations.length && this.props.operationStore.operations[0]);
+      const operationName = this.props.uiState.operationName || (this.props.operationStore.operations.length ? this.props.operationStore.operations[0] : '');
 
       // default to current operation if there is no operation in store
       const options = this.props.operationStore.operations.length
