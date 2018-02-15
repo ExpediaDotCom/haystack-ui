@@ -200,5 +200,8 @@ store.getAlertDetails = (serviceName, operationName, alertType) => {
     return deferred.promise;
 };
 
+// no-op for now, TODO add the metrictank read logic
+store.getServiceUnhealthyAlertCount = () => Q.fcall(() => 0);
+
 module.exports = store;
 

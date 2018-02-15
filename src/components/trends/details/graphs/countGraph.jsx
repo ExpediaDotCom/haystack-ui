@@ -29,7 +29,7 @@ const borderColorTotal = [['rgba(54, 162, 235, 1)']];
 const backgroundColorSuccess = [['rgba(75, 192, 192, 0.2']];
 const borderColorSuccess = [['rgba(75, 192, 192, 1)']];
 
-const backgroundColorFailure = [['rgba(241, 143, 149, 1)']];
+const backgroundColorFailure = [['rgba(229, 28, 35, 0.2)']];
 const borderColorFailure = [['rgba(229, 28, 35, 1)']];
 
 const countChartOptions = _.cloneDeep(options);
@@ -47,7 +47,7 @@ countChartOptions.scales.yAxes = [{
     }
 }];
 
-const CountGraph = ({countPoints, successPoints, failurePoints}) => {
+const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) => {
     const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
     const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
     const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
@@ -55,6 +55,14 @@ const CountGraph = ({countPoints, successPoints, failurePoints}) => {
     if (!totalData.length && !successData && !failureData) {
         return (<MissingTrendGraph title="Count"/>);
     }
+
+    countChartOptions.scales.xAxes = [{
+        type: 'time',
+        time: {
+            min: new Date(from),
+            max: new Date(until)
+        }
+    }];
 
     const chartData = {
         datasets: [
@@ -99,7 +107,9 @@ const CountGraph = ({countPoints, successPoints, failurePoints}) => {
 CountGraph.propTypes = {
     countPoints: PropTypes.object.isRequired,
     successPoints: PropTypes.object.isRequired,
-    failurePoints: PropTypes.object.isRequired
+    failurePoints: PropTypes.object.isRequired,
+    from: PropTypes.number.isRequired,
+    until: PropTypes.number.isRequired
 };
 
 export default CountGraph;

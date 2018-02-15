@@ -48,7 +48,7 @@ export default class Alerts extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.match.params.serviceName !== this.state.serviceName) {
             this.setState({serviceName: nextProps.match.params.serviceName});
-            const activeWindowPreset = timeWindow.timeWindow.presets[1];
+            const activeWindowPreset = timeWindow.presets[1];
             alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, timeWindow.getLowerGranularity(activeWindowPreset.value).value, activeWindowPreset);
         }
     }

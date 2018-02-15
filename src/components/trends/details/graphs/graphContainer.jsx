@@ -36,11 +36,17 @@ export default class GraphContainer extends React.Component {
             failureCount,
             successCount
         } = this.props.trendsStore.trendsResults;
+
+        const {
+            from,
+            until
+        } = this.props.trendsStore.trendsQuery;
+
         return (
             <div className="row">
-                <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} />
-                <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} />
-                <SuccessGraph successCount={successCount} failureCount={failureCount} />
+                <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} from={from} until={until}/>
+                <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} from={from} until={until} />
+                <SuccessGraph successCount={successCount} failureCount={failureCount} from={from} until={until} />
             </div>
         );
     }
