@@ -187,12 +187,12 @@ store.getOperations = () => Q.fcall(() => ['mormont-1',
 store.getLatencyCost = () => Q.fcall(() => [
     {
         from: {
-            serviceName: 'service-1',
+            serviceName: 'stark-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-west-2'
         },
         to: {
-            serviceName: 'service-2',
+            serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-west-2'
         },
@@ -200,101 +200,12 @@ store.getLatencyCost = () => Q.fcall(() => [
     },
     {
         from: {
-            serviceName: 'service-2',
+            serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-west-2'
         },
         to: {
-            serviceName: 'service-3',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        networkDelta: 10
-    },
-    {
-        from: {
-            serviceName: 'service-2',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        to: {
-            serviceName: 'service-4',
-            infrastructureProvider: '',
-            infrastructureRegion: ''
-        },
-        networkDelta: 545
-    },
-    {
-        from: {
-            serviceName: 'service-2',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        to: {
-            serviceName: 'service-5',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
-        },
-        networkDelta: 645
-    },
-    {
-        from: {
-            serviceName: 'service-3',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        to: {
-            serviceName: 'service-6',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
-        },
-        networkDelta: 225
-    },
-    {
-        from: {
-            serviceName: 'service-3',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        to: {
-            serviceName: 'service-6',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
-        },
-        networkDelta: 100
-    },
-    {
-        from: {
-            serviceName: 'service-3',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        to: {
-            serviceName: 'service-6',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        networkDelta: 190
-    },
-    {
-        from: {
-            serviceName: 'service-4'
-        },
-        to: {
-            serviceName: 'service-6',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
-        },
-        networkDelta: 190
-    },
-    {
-        from: {
-            serviceName: 'service-5',
-            infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
-        },
-        to: {
-            serviceName: 'service-7',
+            serviceName: 'tyrell-service',
             infrastructureProvider: '',
             infrastructureRegion: ''
         },
@@ -302,29 +213,120 @@ store.getLatencyCost = () => Q.fcall(() => [
     },
     {
         from: {
-            serviceName: 'service-5',
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'dragon-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-1'
+        },
+        networkDelta: 55
+    },
+    {
+        from: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'dragon-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-1'
+        },
+        networkDelta: 64
+    },
+    {
+        from: {
+            serviceName: 'dragon-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-1'
+        },
+        to: {
+            serviceName: 'blackwater-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-2'
+        },
+        networkDelta: 121
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'baratheon-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-east-1'
+        },
+        networkDelta: 180
+    },
+    {
+        from: {
+            serviceName: 'baratheon-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-east-1'
         },
         to: {
-            serviceName: 'service-7',
+            serviceName: 'blackwater-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-2'
-        }, 
-        networkDelta: 15
+            infrastructureRegion: 'us-east-1'
+        },
+        networkDelta: 109
     },
     {
         from: {
-            serviceName: 'service-2',
+            serviceName: 'stark-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-west-2'
         },
         to: {
-            serviceName: 'service-1',
+            serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
             infrastructureRegion: 'us-west-2'
         },
-        networkDelta: 200
+        networkDelta: 99
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 128
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        networkDelta: 77
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-2'
+        },
+        to: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureRegion: 'us-west-3'
+        },
+        networkDelta: 98
     }
 ]);
 
