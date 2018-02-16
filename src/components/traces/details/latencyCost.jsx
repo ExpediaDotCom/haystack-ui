@@ -232,7 +232,7 @@ export default class LatencyCost extends React.Component {
         };
 
         // eslint-disable-next-line no-undef
-        return new Network(container, data, options);
+        return new vis.Network(container, data, options);
     }
 
     render() {
