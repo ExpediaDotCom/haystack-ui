@@ -33,7 +33,6 @@ export default class Span extends React.Component {
             index: PropTypes.number.isRequired,
             span: PropTypes.object.isRequired,
             totalDuration: PropTypes.number.isRequired,
-            maxDepth: PropTypes.number.isRequired,
             spanHeight: PropTypes.number.isRequired,
             timelineWidthPercent: PropTypes.number.isRequired,
             timePointersHeight: PropTypes.number.isRequired,
@@ -80,7 +79,6 @@ export default class Span extends React.Component {
             span,
             totalDuration,
             spanHeight,
-            maxDepth,
             timelineWidthPercent,
             timePointersHeight,
             parentStartTimePercent,
@@ -97,16 +95,18 @@ export default class Span extends React.Component {
             operationName
         } = span;
 
+        const depthFactor = depth * 0.5;
         // coordinates
         const verticalPadding = 6;
         const topY = timePointersHeight + (index * spanHeight);
 
         // service pills
         const pillHeight = spanHeight - (2 * verticalPadding);
-        const maxServiceChars = 21 - (maxDepth * 2);
         const serviceNameBaseline = topY + verticalPadding + (pillHeight - 8);
+        const maxServiceChars = 14;
+        const serviceLabelWidth = (maxServiceChars * 7.5);
         const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
-        const serviceLabelWidth = (maxServiceChars * 7);
+
         // TODO add tooltip text
         const ServiceName = (
             <g>
@@ -116,12 +116,12 @@ export default class Span extends React.Component {
                     height={pillHeight}
                     width={serviceLabelWidth}
                     y={topY + verticalPadding}
-                    x={`${depth + 2}%`}
+                    x={`${depthFactor + 2}%`}
                     clipPath="url(#overflow)"
                 />
                 <text
                     className="span-service-label"
-                    x={`${depth + 2.5}%`}
+                    x={`${depthFactor + 2.5}%`}
                     y={serviceNameBaseline}
                     clipPath="url(#overflow)"
                 >{trimmedServiceName}
@@ -199,13 +199,13 @@ export default class Span extends React.Component {
                             className="service-expand-pill"
                             height={pillHeight - 4}
                             width={18}
-                            x={`${depth + 0.1}%`}
+                            x={`${depthFactor + 0.1}%`}
                             y={topY + verticalPadding + 2}
                             onClick={this.toggleChild}
                         />
                         <text
                             className="service-expand-text"
-                            x={`${depth + 0.4}%`}
+                            x={`${depthFactor + 0.4}%`}
                             y={serviceNameBaseline + 2}
                             onClick={this.toggleChild}
                         >{expanded ? '-' : '+'}</text>

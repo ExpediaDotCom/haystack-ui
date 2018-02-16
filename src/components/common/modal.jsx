@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'react-modal';
+import colorMapper from '../../utils/serviceColorMapper';
 import './modal.less';
 
 const modalStyles = {
@@ -36,10 +37,13 @@ const modalStyles = {
     }
 };
 
-const ModalView = ({title, isOpen, closeModal, children}) => (
+const ModalView = ({serviceName, title, isOpen, closeModal, children}) => (
     <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'}>
         <header className="clearfix">
-            <h4 className="pull-left">{title}</h4>
+            <div className="pull-left">
+                <div>{serviceName && (<span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>)}</div>
+                <h4>{title}</h4>
+            </div>
             <button className="close pull-right" onClick={closeModal}>&times;</button>
         </header>
         <section>
@@ -48,7 +52,12 @@ const ModalView = ({title, isOpen, closeModal, children}) => (
     </Modal>
 );
 
+ModalView.defaultProps = {
+    serviceName: ''
+};
+
 ModalView.propTypes = {
+    serviceName: PropTypes.string,
     title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
