@@ -126,7 +126,7 @@ export default class AlertDetailsContainer extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {sortedResults.map(alert =>
+                    {sortedResults.length ? sortedResults.map(alert =>
                         (<tr className="non-highlight-row" key={Math.random()}>
                             <td><span className="alerts__bold">{AlertDetailsContainer.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertDetailsContainer.timestampFormatter(alert.startTimestamp)}</td>
                             <td className="text-right"><span className="alerts__bold">{AlertDetailsContainer.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
@@ -140,8 +140,9 @@ export default class AlertDetailsContainer extends React.Component {
                                     </Link>
                                 </div>
                             </td>
-                        </tr>)
-                    )}
+                        </tr>))
+                        : (<tr className="non-highlight-row"><td>No past alert found</td><td/><td/></tr>)
+                    }
                     </tbody>
                 </table>
             </div>

@@ -60,7 +60,8 @@ export default class AlertsToolbar extends React.Component {
         const selectedIndex = event.target.value;
         const selectedWindow = this.state.options[selectedIndex];
 
-        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, selectedWindow);
+
+        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, timeWindow.getLowerGranularity(selectedWindow.value).value, selectedWindow);
         const query = {
             preset: this.state.options[selectedIndex].shortName
         };

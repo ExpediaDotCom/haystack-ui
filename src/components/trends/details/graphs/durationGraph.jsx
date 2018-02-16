@@ -47,7 +47,7 @@ durationChartOptions.scales.yAxes = [{
     }
 }];
 
-const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
+const DurationGraph = ({meanPoints, tp95Points, tp99Points, from, until}) => {
     const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
     const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
     const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
@@ -55,6 +55,14 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
     if (!meanData.length && !tp95Data.length && !tp99Data.length) {
         return (<MissingTrendGraph title="Duration"/>);
     }
+
+    durationChartOptions.scales.xAxes = [{
+        type: 'time',
+        time: {
+            min: new Date(from),
+            max: new Date(until)
+        }
+    }];
 
     const chartData = {
         datasets: [
@@ -99,7 +107,9 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points}) => {
 DurationGraph.propTypes = {
     meanPoints: PropTypes.object.isRequired,
     tp95Points: PropTypes.object.isRequired,
-    tp99Points: PropTypes.object.isRequired
+    tp99Points: PropTypes.object.isRequired,
+    from: PropTypes.number.isRequired,
+    until: PropTypes.number.isRequired
 };
 
 export default DurationGraph;

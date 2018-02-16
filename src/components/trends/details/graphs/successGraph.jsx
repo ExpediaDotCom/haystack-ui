@@ -36,7 +36,7 @@ successChartOptions.scales.yAxes = [{
     }
 }];
 
-const SuccessGraph = ({successCount, failureCount}) => {
+const SuccessGraph = ({successCount, failureCount, from, until}) => {
     const successTimestamps = successCount.map(point => point.timestamp);
     const failureTimestamps = failureCount.map(point => point.timestamp);
     const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
@@ -60,6 +60,14 @@ const SuccessGraph = ({successCount, failureCount}) => {
     if (!data.length) {
         return (<MissingTrendGraph title="Success %"/>);
     }
+
+    successChartOptions.scales.xAxes = [{
+        type: 'time',
+        time: {
+            min: new Date(from),
+            max: new Date(until)
+        }
+    }];
 
     const chartData = {
         datasets: [{
@@ -85,7 +93,9 @@ const SuccessGraph = ({successCount, failureCount}) => {
 
 SuccessGraph.propTypes = {
     successCount: PropTypes.object.isRequired,
-    failureCount: PropTypes.object.isRequired
+    failureCount: PropTypes.object.isRequired,
+    from: PropTypes.number.isRequired,
+    until: PropTypes.number.isRequired
 };
 
 export default SuccessGraph;

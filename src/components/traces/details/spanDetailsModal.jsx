@@ -55,7 +55,8 @@ export default class SpanDetailsModal extends React.Component {
         const subsystems = window.haystackUiConfig.subsystems;
         return (
             <Modal
-                title={`[${this.props.serviceName}] ${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`}
+                serviceName={this.props.serviceName}
+                title={`${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`}
                 isOpen={this.props.isOpen}
                 closeModal={this.props.closeModal}
             >

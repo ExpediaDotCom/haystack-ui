@@ -30,7 +30,6 @@ export default class Timeline extends React.Component {
         timelineSpans: PropTypes.array.isRequired,
         startTime: PropTypes.number.isRequired,
         totalDuration: PropTypes.number.isRequired,
-        maxDepth: PropTypes.number.isRequired,
         toggleExpand: PropTypes.func.isRequired
     };
 
@@ -55,8 +54,7 @@ export default class Timeline extends React.Component {
         const {
             timelineSpans,
             startTime,
-            totalDuration,
-            maxDepth
+            totalDuration
         } = this.props;
 
         // layout constants
@@ -92,7 +90,6 @@ export default class Timeline extends React.Component {
                         span={span}
                         startTime={startTime}
                         totalDuration={totalDuration}
-                        maxDepth={maxDepth}
                         timelineWidthPercent={timelineWidthPercent}
                         timePointersHeight={timePointersHeight}
                         spanHeight={spanHeight}

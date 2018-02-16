@@ -70,7 +70,7 @@ export default class TraceDetails extends React.Component {
         setTimeout(() => this.setState({showCopied: false}), 2000);
     }
 
-    tabViewer({promiseState, timelineSpans, totalDuration, startTime, maxDepth}) {
+    tabViewer({promiseState, timelineSpans, totalDuration, startTime}) {
         return (<section>
                 {
                     promiseState && promiseState.case({
@@ -83,7 +83,6 @@ export default class TraceDetails extends React.Component {
                                         timelineSpans={timelineSpans}
                                         totalDuration={totalDuration}
                                         startTime={startTime}
-                                        maxDepth={maxDepth}
                                         toggleExpand={this.props.traceDetailsStore.toggleExpand}
                                     /> :
                                     <LatencyCost traceDetailsStore={this.props.traceDetailsStore} />;
@@ -137,8 +136,7 @@ export default class TraceDetails extends React.Component {
                     promiseState: traceDetailsStore.promiseState,
                     timelineSpans: traceDetailsStore.timelineSpans,
                     totalDuration: traceDetailsStore.totalDuration,
-                    startTime: traceDetailsStore.startTime,
-                    maxDepth: traceDetailsStore.maxDepth
+                    startTime: traceDetailsStore.startTime
                 })}
 
                 <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>

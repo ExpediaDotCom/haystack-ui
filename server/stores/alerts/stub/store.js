@@ -49,7 +49,7 @@ function getAlerts(query) {
     return [
         {
             operationName: 'tarley-1',
-            type: 'count',
+            type: 'totalCount',
             isUnhealthy: true,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
@@ -63,14 +63,14 @@ function getAlerts(query) {
         },
         {
             operationName: 'tarley-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
         },
         {
             operationName: 'tully-1',
-            type: 'count',
+            type: 'totalCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
@@ -84,14 +84,14 @@ function getAlerts(query) {
         },
         {
             operationName: 'tully-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
         },
         {
             operationName: 'dondarrion-1',
-            type: 'count',
+            type: 'totalCount',
             isUnhealthy: true,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
@@ -105,7 +105,7 @@ function getAlerts(query) {
         },
         {
             operationName: 'dondarrion-1',
-            type: 'successPercentage',
+            type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp(),
             trend: getRandomValues(query)
