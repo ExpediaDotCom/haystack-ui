@@ -28,6 +28,8 @@ import LatencyCost from './latencyCost';
 import rawTraceStore from '../stores/rawTraceStore';
 import uiState from '../searchBar/searchBarUiStateStore';
 
+const enableLatencyCostViewer = (window.haystackUiConfig.enableLatencyCostViewer);
+
 @observer
 export default class TraceDetails extends React.Component {
     static propTypes = {
@@ -121,16 +123,18 @@ export default class TraceDetails extends React.Component {
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
-                    <div className="pull-left full-width">
-                        <ul className="nav nav-tabs">
-                            <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                            </li>
-                            <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                            </li>
-                        </ul>
-                    </div>
+                    {
+                        enableLatencyCostViewer &&
+                        (<div className="pull-left full-width">
+                            <ul className="nav nav-tabs">
+                                <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                                    <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                </li>
+                                <li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                                    <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                </li>
+                            </ul>
+                        </div>)}
                 </div>
                 {this.tabViewer({
                     promiseState: traceDetailsStore.promiseState,
