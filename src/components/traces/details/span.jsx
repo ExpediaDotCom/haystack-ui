@@ -110,7 +110,6 @@ export default class Span extends React.Component {
         // TODO add tooltip text
         const ServiceName = (
             <g>
-
                 <rect
                     className={`service-pill ${serviceColor.toFillClass(serviceName)}`}
                     height={pillHeight}
@@ -155,7 +154,9 @@ export default class Span extends React.Component {
                 x={0}
                 y={topY}
                 onClick={this.openModal}
-            />
+            >
+                <title>{serviceName} : {operationName}</title>
+            </rect>
         </g>);
 
         // invocation lines
