@@ -249,20 +249,20 @@ export default class LatencyCost extends React.Component {
                         <td>Network time</td>
                         <td>
                             <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
-                            <span>({summary.calls} calls)</span>
+                            <span>({summary.measuredCalls} measured out of {summary.calls} calls)</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Network time cross datacenters</td>
                         <td>
                             <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
-                            <span>({summary.crossDcCalls} calls)</span>
+                            <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Datacenters involved</td>
                         <td>
-                            <span className="latency-summary__primary-info">4</span>
+                            <span className="latency-summary__primary-info">{environmentList.length}</span>
                             <span>
                             {
                                 environmentList && environmentList.map(
