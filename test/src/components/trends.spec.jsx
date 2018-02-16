@@ -300,8 +300,8 @@ describe('<Trends />', () => {
     });
 
     it('should render results after getting search results', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(operationStore.fetchStats.callCount).to.equal(1);
@@ -310,8 +310,8 @@ describe('<Trends />', () => {
     });
 
     it('should render error if promise is rejected', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, rejectedPromise);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, rejectedPromise);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, rejectedPromise, stubQuery, stubQuery);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, rejectedPromise, stubQuery, stubQuery);
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(2);
@@ -319,8 +319,8 @@ describe('<Trends />', () => {
     });
 
     it('should render loading if promise is pending', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, pendingPromise);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, pendingPromise);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, pendingPromise, stubQuery, stubQuery);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, pendingPromise, stubQuery, stubQuery);
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.loading')).to.have.length(2);
@@ -329,15 +329,15 @@ describe('<Trends />', () => {
     });
 
     it('should render sparklines on each row of search results', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
+        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.sparkline-container')).to.have.length(15);
     });
 
     it('should call operation fetchStats upon expanding a trend', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         // eslint-disable-next-line
         const wrapper = mount(<MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
@@ -346,7 +346,7 @@ describe('<Trends />', () => {
     });
 
     it('should show the three charts in a trend expanded view', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
@@ -364,7 +364,7 @@ describe('<Trends />', () => {
     });
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
@@ -386,7 +386,7 @@ describe('<Trends />', () => {
     });
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
-        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery);
+        const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         const wrapper = mount(<MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>);
