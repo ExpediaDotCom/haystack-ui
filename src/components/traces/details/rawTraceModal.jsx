@@ -38,10 +38,10 @@ export default class RawTraceModal extends React.Component {
     }
 
     render() {
-        const {isOpen, closeModal, rawTraceStore} = this.props;
+        const {isOpen, closeModal, rawTraceStore, traceId} = this.props;
 
         return (
-            <Modal isOpen={isOpen} closeModal={closeModal} title={'Raw Trace'}>
+            <Modal isOpen={isOpen} closeModal={closeModal} title={`Raw Trace: ${traceId}`}>
                 <div>
                     {
                         rawTraceStore.promiseState &&
