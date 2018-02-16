@@ -25,6 +25,7 @@ import Error from '../../common/error';
 import RawTraceModal from './rawTraceModal';
 import Timeline from './timeline';
 import LatencyCost from './latencyCost';
+import TraceTrendsTab from './traceTrendsTab';
 import rawTraceStore from '../stores/rawTraceStore';
 import uiState from '../searchBar/searchBarUiStateStore';
 
@@ -80,14 +81,19 @@ export default class TraceDetails extends React.Component {
                         rejected: () => <Error />,
                         fulfilled: () => {
                             if (timelineSpans && timelineSpans.length) {
-                                return (this.state.tabSelected === 1) ?
-                                    <Timeline
-                                        timelineSpans={timelineSpans}
-                                        totalDuration={totalDuration}
-                                        startTime={startTime}
-                                        toggleExpand={this.props.traceDetailsStore.toggleExpand}
-                                    /> :
-                                    <LatencyCost traceDetailsStore={this.props.traceDetailsStore} />;
+                                switch (this.state.tabSelected) {
+                                    case 2:
+                                        return <LatencyCost traceDetailsStore={this.props.traceDetailsStore} />;
+                                    case 3:
+                                        return <TraceTrendsTab timelineSpans={timelineSpans} />;
+                                    default:
+                                        return (<Timeline
+                                            timelineSpans={timelineSpans}
+                                            totalDuration={totalDuration}
+                                            startTime={startTime}
+                                            toggleExpand={this.props.traceDetailsStore.toggleExpand}
+                                        />);
+                                }
                             }
 
                             return <Error />;
@@ -125,13 +131,16 @@ export default class TraceDetails extends React.Component {
                     </div>
                     {
                         enableLatencyCostViewer &&
-                        (<div className="pull-left full-width">
+                        (<div className="trace-details-tabs pull-left full-width">
                             <ul className="nav nav-tabs">
                                 <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                    <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                                 </li>
                                 <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                    <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                </li>
+                                <li className={this.state.tabSelected === 3 ? 'active' : ''}>
+                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
                                 </li>
                             </ul>
                         </div>)}
