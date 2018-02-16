@@ -18,9 +18,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {observer} from 'mobx-react';
-import {Network} from 'vis';
-
-// import { Network } from 'vis/index-network'; // Works, but breaks tests due to import issue. Package size is much smaller with this import.
 
 const borderColors = [
     '#36A2EB',
@@ -234,6 +231,7 @@ export default class LatencyCost extends React.Component {
             }
         };
 
+        // eslint-disable-next-line no-undef
         return new Network(container, data, options);
     }
 
