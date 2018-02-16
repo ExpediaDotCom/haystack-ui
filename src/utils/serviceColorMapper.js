@@ -15,19 +15,12 @@
  */
 /* eslint-disable no-bitwise */
 
+import hashUtil from './hashUtil';
+
 const colorMapper = {};
 
-// calculate hash code for a given string
-function calculateHash(svc) {
-    return svc.split('').reduce((a, b) => {
-        let running = a;
-        running = ((running << 5) - running) + b.charCodeAt(0);
-        return running & running;
-    }, 0);
-}
-
 function mapToColorIndex(svc) {
-    return (Math.abs(calculateHash(svc)) % 25) + 1;
+    return (Math.abs(hashUtil.calculateHash(svc)) % 25) + 1;
 }
 
 colorMapper.toFillClass = serviceName => `svc-color-${mapToColorIndex(serviceName)}-fill`;

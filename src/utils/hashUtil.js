@@ -1,5 +1,6 @@
+/* eslint-disable no-bitwise */
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -14,6 +15,13 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+const hashUtil = {};
 
-export default () => <div>TODO add invocations view</div>;
+hashUtil.calculateHash = svc =>
+    svc.split('').reduce((a, b) => {
+        let running = a;
+        running = ((running << 5) - running) + b.charCodeAt(0);
+        return running & running;
+    }, 0);
+
+export default hashUtil;

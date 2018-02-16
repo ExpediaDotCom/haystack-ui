@@ -126,3 +126,32 @@
   font-size: @font-size-large;
   font-weight: normal;
 }
+
+.react-bs-table .table-row-details table.latency-summary {
+  font-size: 14px;
+
+  tr {
+    border: 0;
+    &:hover td {
+      background-color: @gray-lighter !important;
+      color: @gray-darker !important;
+      cursor: auto !important;
+    }
+  }
+  td {
+    padding: 0 12px 3px 0;
+  }
+}
+
+.latency-summary__primary-info {
+  font-weight: 800;
+  margin-right: @spacing-s;
+}
+
+.dc-marker {
+  margin-right: @spacing-s;
+  padding: 0 @spacing-xs 0 @spacing-xs;
+  border-radius: @spacing-xxs;
+  border-width: 1px;
+  border-style: solid;
+}

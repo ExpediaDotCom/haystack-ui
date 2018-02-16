@@ -24,9 +24,11 @@ import Loading from '../../common/loading';
 import Error from '../../common/error';
 import RawTraceModal from './rawTraceModal';
 import Timeline from './timeline';
-import Invocations from './invocations';
+import LatencyCost from './latencyCost';
 import rawTraceStore from '../stores/rawTraceStore';
 import uiState from '../searchBar/searchBarUiStateStore';
+
+const enableLatencyCostViewer = (window.haystackUiConfig.enableLatencyCostViewer);
 
 @observer
 export default class TraceDetails extends React.Component {
@@ -50,6 +52,7 @@ export default class TraceDetails extends React.Component {
 
     componentDidMount() {
         this.props.traceDetailsStore.fetchTraceDetails(this.props.traceId);
+        this.props.traceDetailsStore.getLatencyCost(this.props.traceId);
     }
 
     openModal() {
@@ -84,7 +87,7 @@ export default class TraceDetails extends React.Component {
                                         startTime={startTime}
                                         toggleExpand={this.props.traceDetailsStore.toggleExpand}
                                     /> :
-                                    <Invocations/>;
+                                    <LatencyCost traceDetailsStore={this.props.traceDetailsStore} />;
                             }
 
                             return <Error />;
@@ -102,15 +105,6 @@ export default class TraceDetails extends React.Component {
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
                     <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
-                    <ul className="nav nav-tabs pull-left hidden">
-                        <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                        </li>
-                        <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Invocations</a>
-                        </li>
-                    </ul>
-
                     <div className="btn-group btn-group-sm pull-right">
                           {
                             this.state.showCopied ? (
@@ -129,6 +123,18 @@ export default class TraceDetails extends React.Component {
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
+                    {
+                        enableLatencyCostViewer &&
+                        (<div className="pull-left full-width">
+                            <ul className="nav nav-tabs">
+                                <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                                    <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                </li>
+                                <li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                                    <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                </li>
+                            </ul>
+                        </div>)}
                 </div>
                 {this.tabViewer({
                     promiseState: traceDetailsStore.promiseState,

@@ -31,6 +31,7 @@ router.get('*', (req, res) => {
         fieldKeys: config.stores.traces.fieldKeys,
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
+        enableLatencyCostViewer: config.enableLatencyCostViewer,
         services: cache.get('/api/services') || null
     });
 });

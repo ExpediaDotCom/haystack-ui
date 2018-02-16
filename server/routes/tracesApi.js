@@ -33,6 +33,10 @@ router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getTrace(req.params.traceId));
 });
 
+router.get('/trace/:traceId/latencyCost', (req, res, next) => {
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getLatencyCost(req.params.traceId));
+});
+
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
 });
