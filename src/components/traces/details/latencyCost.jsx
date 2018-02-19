@@ -117,20 +117,45 @@ export default class LatencyCost extends React.Component {
     }
 
     static createEdges(rawEdges, nodes) {
-        return rawEdges.map((rawEdge) => {
+        const edges = [];
+        rawEdges.forEach((rawEdge) => {
             const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
             const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
-
-            const networkDelta = rawEdge.networkDelta && `${rawEdge.networkDelta}ms`;
-            const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
-            return {
-                from: fromIndex,
-                to: toIndex,
-                label: networkDelta,
-                color: {
-                    color: isSameEnv ? '#333333' : '#dd0000',
-                    hover: isSameEnv ? '#333333' : '#dd0000'
+            const networkDelta = rawEdge.networkDelta;
+            const existingEdge = edges.findIndex(e => e.from === fromIndex && e.to === toIndex);
+            if (existingEdge > -1) {
+                if (edges[existingEdge] && networkDelta) {
+                    edges[existingEdge].networkDelta += networkDelta;
                 }
+                edges[existingEdge].overlappingEdges += 1;
+            } else {
+                const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
+                edges.push({
+                    from: fromIndex,
+                    to: toIndex,
+                    networkDelta,
+                    overlappingEdges: 1,
+                    color: {
+                        color: isSameEnv ? '#333333' : '#dd0000',
+                        hover: isSameEnv ? '#333333' : '#dd0000'
+                    }
+                });
+            }
+        });
+        return LatencyCost.labelEdges(edges);
+    }
+
+    static labelEdges(edges) {
+        return edges.map((edge) => {
+            let label = '';
+            if (edge.overlappingEdges > 1) {
+                label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
+            } else {
+                label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
+            }
+            return {
+                ...edge,
+                label
             };
         });
     }
@@ -187,7 +212,8 @@ export default class LatencyCost extends React.Component {
             layout: {
                 hierarchical: {
                     enabled: true,
-                    sortMethod: 'directed'
+                    sortMethod: 'directed',
+                    levelSeparation: 140
                 }
             },
             interaction: {
@@ -223,10 +249,15 @@ export default class LatencyCost extends React.Component {
                 font: {
                     background: '#ffffff',
                     face: 'Titillium Web',
-                    size: 12
+                    size: 15
                 },
                 color: {
                     color: '#333333'
+                }
+            },
+            physics: {
+                hierarchicalRepulsion: {
+                    nodeDistance: 140
                 }
             }
         };
