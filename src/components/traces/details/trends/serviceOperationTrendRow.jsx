@@ -16,40 +16,47 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {observer} from 'mobx-react';
+import _ from 'lodash';
 
-import colorMapper from '../../../utils/serviceColorMapper';
+import colorMapper from '../../../../utils/serviceColorMapper';
+import TrendsTableFormatters from '../../../trends/utils/trendsTableFormatters';
+import fetcher from '../../stores/traceTrendFetcher';
 
-@observer
-export default class LatencyCost extends React.Component {
+export default class extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired
     };
 
     componentWillMount() {
-        console.log('trigger ajax');
+        fetcher.fetchOperationTrends(this.props.serviceName, this.props.serviceName.operationName, Date.now() - (60 * 60 * 1000), Date.now())
+        .then((result) => {
+            this.setState({trends: result.data});
+        });
     }
 
     render() {
         const {serviceName, operationName} = this.props;
-
+        const trends = this.state && this.state.trends;
+        const totalCount = trends && _.sum(trends.count.map(a => a.value));
         return (
             <tr>
                 <td className="trace-trend-table_cell">
+                    <a href="http://localhost:8080/service/expweb/trends?operationName=service%3AUserServiceV3-AuthenticateByAutologin&from=1518791107653&until=1518794707653">
                     <div className={`service-spans label label-default ${colorMapper.toBackgroundClass(serviceName)}`}>
                         {serviceName}
                     </div>
                     <div className="trace-trend-table_op-name">{operationName}</div>
+                    </a>
                 </td>
                 <td className="trace-trend-table_cell">
-                    a
+                    {trends && TrendsTableFormatters.countColumnFormatter(totalCount, {countPoints: trends.count})}
                 </td>
                 <td className="trace-trend-table_cell">
-                    b
+                    {trends && TrendsTableFormatters.durationColumnFormatter(trends.tp99Duration[trends.tp99Duration.length - 1].value / 100, {tp99DurationPoints: trends.tp99Duration})}
                 </td>
                 <td className="trace-trend-table_cell">
-                    c
+                    {trends && TrendsTableFormatters.successPercentFormatter(100, {successPercentPoints: trends.successCount.map(() => ({value: 100}))})}
                 </td>
             </tr>
         );

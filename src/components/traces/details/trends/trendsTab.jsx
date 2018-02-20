@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -17,13 +18,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {observer} from 'mobx-react';
 
 import ServiceOperationTrendRow from './serviceOperationTrendRow';
 
-
-@observer
-export default class LatencyCost extends React.Component {
+export default class extends React.Component {
     static propTypes = {
         timelineSpans: PropTypes.array.isRequired
     };
@@ -41,10 +39,10 @@ export default class LatencyCost extends React.Component {
             <article>
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
-                        <th width="40" className="trace-trend-table_cell">Operation</th>
-                        <th width="20" className="trace-trend-table_cell">Count</th>
-                        <th width="20" className="trace-trend-table_cell">Duration</th>
-                        <th width="20" className="trace-trend-table_cell">Success %</th>
+                        <th width="60" className="trace-trend-table_cell">Operation</th>
+                        <th width="20" className="trace-trend-table_cell text-right">Count</th>
+                        <th width="20" className="trace-trend-table_cell text-right">Duration</th>
+                        <th width="20" className="trace-trend-table_cell text-right">Success %</th>
                     </thead>
                     <tbody>
                     {

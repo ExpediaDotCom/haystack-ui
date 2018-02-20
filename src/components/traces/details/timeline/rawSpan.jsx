@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import Loading from '../../common/loading';
-import Error from '../../common/error';
+import Loading from '../../../common/loading';
+import Error from '../../../common/error';
 
 @observer
 export default class RawSpan extends React.Component {

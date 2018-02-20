@@ -169,10 +169,18 @@
 }
 
 .trace-trend-table_cell {
-  padding: @spacing-xs;
+  padding: @spacing-xs @spacing-s @spacing-xs @spacing-s;
 }
 
 .trace-trend-table_op-name {
   font-size: 16px;
   font-weight: 600;
+  padding-bottom: 12px;
+  text-decoration: none !important;
+  color: @gray-dark !important;
+
+  &:hover {
+    color: white !important;
+    text-decoration: none !important;
+  }
 }
