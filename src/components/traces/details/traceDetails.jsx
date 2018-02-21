@@ -103,21 +103,22 @@ export default class TraceDetails extends React.Component {
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
-                    {
-                        enableLatencyCostViewer &&
-                        (<div className="trace-details-tabs pull-left full-width">
-                            <ul className="nav nav-tabs">
-                                <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                                </li>
-                                <li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                    <div className="trace-details-tabs pull-left full-width">
+                        <ul className="nav nav-tabs">
+                            <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                            </li>
+                            {
+                                enableLatencyCostViewer &&
+                                (<li className={this.state.tabSelected === 2 ? 'active' : ''}>
                                     <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                                </li>
-                                <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
-                                </li>
-                            </ul>
-                        </div>)}
+                                </li>)
+                            }
+                            <li className={this.state.tabSelected === 3 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore)}</section>

@@ -25,14 +25,14 @@ function TraceException(data) {
 
 export class LatencyCostStore {
     @observable latencyCost = [];
-    @observable latencyCostPromiseState = null ;
+    @observable promiseState = null ;
     traceId = null;
 
     @action fetchLatencyCost(traceId) {
         if (this.traceId === traceId) return;
         this.traceId = traceId;
 
-        this.latencyCostPromiseState = fromPromise(
+        this.promiseState = fromPromise(
             axios
             .get(`/api/trace/${traceId}/latencyCost`)
             .then((result) => {
