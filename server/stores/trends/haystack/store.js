@@ -25,16 +25,16 @@ const store = {};
 const metricTankUrl = config.stores.trends.metricTankUrl;
 
 function getWildCardOperationTargetStat(service, timeWindow, metricStat) {
-    return `serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
+    return `haystack.serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
 }
 function getWildCardServiceTargetStat(timeWindow, metricStat) {
     return `serviceName.*.interval.${timeWindow}.stat.${metricStat}`;
 }
 function getOperationTargetStat(service, operationName, timeWindow, metricStat) {
-    return `serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.${metricStat}`;
+    return `haystack.serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.${metricStat}`;
 }
 function getServiceTargetStat(service, timeWindow, metricStat) {
-    return `serviceName.${service}.interval.${timeWindow}.stat.${metricStat}`;
+    return `haystack.serviceName.${service}.interval.${timeWindow}.stat.${metricStat}`;
 }
 
 function convertGranularityToTimeWindow(timespan) {
