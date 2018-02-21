@@ -50,7 +50,7 @@ export default class TrendsTableFormatters {
     }
 
     static durationColumnFormatter(cell, row) {
-        return <Sparklines.DurationSparkline latest={cell} points={row.tp99DurationPoints.map(d => d.value)} />;
+        return <Sparklines.DurationSparkline latest={cell / 1000} points={row.tp99DurationPoints.map(d => d.value)} />;
     }
 
     static successPercentFormatter(cell, row) {

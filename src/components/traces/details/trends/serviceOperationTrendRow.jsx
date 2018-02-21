@@ -22,6 +22,39 @@ import colorMapper from '../../../../utils/serviceColorMapper';
 import TrendSparklines from '../../../trends/utils/trendSparklines';
 import fetcher from '../../stores/traceTrendFetcher';
 
+// TODO dedupe code and push it to server side
+function toSuccessPercentPoints(successCount, failureCount) {
+    const successTimestamps = successCount.map(point => point.timestamp);
+    const failureTimestamps = failureCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+
+    return _.compact(timestamps.map((timestamp) => {
+        const successItem = _.find(successCount, x => (x.timestamp === timestamp));
+        const successVal = (successItem && successItem.value) ? successItem.value : 0;
+
+        const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
+        const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
+
+        if (successVal + failureVal) {
+            return (100 - ((failureVal / (successVal + failureVal)) * 100));
+        }
+
+        return null;
+    }));
+}
+
+// TODO dedupe code and push it to server side
+function toAvgSuccessPercent(successPoints, failurePoints) {
+    const successCount = successPoints.reduce(((accumulator, dataPoint) => (accumulator + dataPoint.value)), 0);
+    const failureCount = failurePoints.reduce(((accumulator, dataPoint) => (accumulator + dataPoint.value)), 0);
+
+    if (successCount + failureCount === 0) {
+        return null;
+    }
+
+    return 100 - ((failureCount / (successCount + failureCount)) * 100);
+}
+
 export default class TrendRow extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
@@ -52,6 +85,9 @@ export default class TrendRow extends React.Component {
         const latestDuration = trends && trends.tp99Duration[trends.tp99Duration.length - 1].value / 1000;
         const durationPoints = trends && trends.tp99Duration.map(p => p.value);
 
+        const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount);
+        const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount);
+
         return (
             <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until)}>
                 <td className="trace-trend-table_cell">
@@ -65,7 +101,7 @@ export default class TrendRow extends React.Component {
                     {trends && <TrendSparklines.DurationSparkline latest={latestDuration} points={durationPoints} /> }
                 </td>
                 <td className="trace-trend-table_cell">
-                    {trends && <TrendSparklines.SuccessPercentSparkline average={latestDuration} points={durationPoints} />}
+                    {trends && <TrendSparklines.SuccessPercentSparkline average={successPercentAvg} points={successPercentPoints} />}
                 </td>
             </tr>
         );
