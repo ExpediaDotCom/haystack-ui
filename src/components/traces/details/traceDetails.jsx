@@ -20,12 +20,14 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import Clipboard from 'react-copy-to-clipboard';
 import './traceDetails.less';
-import Loading from '../../common/loading';
-import Error from '../../common/error';
 import RawTraceModal from './rawTraceModal';
-import Timeline from './timeline';
-import LatencyCost from './latencyCost';
+import TimelineTabContainer from './timeline/timelineTabContainer';
+import LatencyCostTabContainer from './latency/latencyCostTabContainer';
+import TrendsTabContainer from './trends/trendsTabContainer';
+
 import rawTraceStore from '../stores/rawTraceStore';
+import latencyCostStore from '../stores/latencyCostStore';
+
 import uiState from '../searchBar/searchBarUiStateStore';
 
 const enableLatencyCostViewer = (window.haystackUiConfig.enableLatencyCostViewer);
@@ -38,6 +40,17 @@ export default class TraceDetails extends React.Component {
         traceDetailsStore: PropTypes.object.isRequired
     };
 
+    static tabViewer(traceId, tabSelected, traceDetailsStore) {
+        switch (tabSelected) {
+            case 2:
+                return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
+            case 3:
+                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore}/>;
+            default:
+                return (<TimelineTabContainer traceId={traceId} store={traceDetailsStore} />);
+        }
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -48,11 +61,6 @@ export default class TraceDetails extends React.Component {
         this.closeModal = this.closeModal.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.traceDetailsStore.fetchTraceDetails(this.props.traceId);
-        this.props.traceDetailsStore.getLatencyCost(this.props.traceId);
     }
 
     openModal() {
@@ -70,31 +78,6 @@ export default class TraceDetails extends React.Component {
     handleCopy() {
         this.setState({showCopied: true});
         setTimeout(() => this.setState({showCopied: false}), 2000);
-    }
-
-    tabViewer({promiseState, timelineSpans, totalDuration, startTime}) {
-        return (<section>
-                {
-                    promiseState && promiseState.case({
-                        pending: () => <Loading />,
-                        rejected: () => <Error />,
-                        fulfilled: () => {
-                            if (timelineSpans && timelineSpans.length) {
-                                return (this.state.tabSelected === 1) ?
-                                    <Timeline
-                                        timelineSpans={timelineSpans}
-                                        totalDuration={totalDuration}
-                                        startTime={startTime}
-                                        toggleExpand={this.props.traceDetailsStore.toggleExpand}
-                                    /> :
-                                    <LatencyCost traceDetailsStore={this.props.traceDetailsStore} />;
-                            }
-
-                            return <Error />;
-                        }
-                    })
-                }
-            </section>);
     }
 
     render() {
@@ -116,32 +99,29 @@ export default class TraceDetails extends React.Component {
                           }
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-server"/> Raw Trace</a>
                         <a role="button" className="btn btn-sm btn-default" target="_blank" href={traceUrl}><span className="ti-new-window"/> Open in new tab</a>
-                        <Clipboard
-                            text={traceUrl}
-                            onCopy={this.handleCopy}
-                        >
+                        <Clipboard text={traceUrl} onCopy={this.handleCopy}>
                             <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
                         </Clipboard>
                     </div>
-                    {
-                        enableLatencyCostViewer &&
-                        (<div className="pull-left full-width">
-                            <ul className="nav nav-tabs">
-                                <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                    <a role="button" className="timeline-tab-button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                                </li>
-                                <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                    <a role="button" className="latency-tab-button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                                </li>
-                            </ul>
-                        </div>)}
+                    <div className="trace-details-tabs pull-left full-width">
+                        <ul className="nav nav-tabs">
+                            <li className={this.state.tabSelected === 1 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                            </li>
+                            {
+                                enableLatencyCostViewer &&
+                                (<li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                </li>)
+                            }
+                            <li className={this.state.tabSelected === 3 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                {this.tabViewer({
-                    promiseState: traceDetailsStore.promiseState,
-                    timelineSpans: traceDetailsStore.timelineSpans,
-                    totalDuration: traceDetailsStore.totalDuration,
-                    startTime: traceDetailsStore.startTime
-                })}
+
+                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore)}</section>
 
                 <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
             </section>

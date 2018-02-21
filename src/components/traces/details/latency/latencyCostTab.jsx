@@ -17,7 +17,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {observer} from 'mobx-react';
 
 const borderColors = [
     '#36A2EB',
@@ -32,10 +31,9 @@ const backgroundColors = [
     '#DCF2F2'
 ];
 
-@observer
 export default class LatencyCost extends React.Component {
     static propTypes = {
-        traceDetailsStore: PropTypes.object.isRequired
+        latencyCost: PropTypes.object.isRequired
     };
 
     static toEnvironmentString(infrastructureProvider, infrastructureRegion) {
@@ -194,7 +192,7 @@ export default class LatencyCost extends React.Component {
     }
 
     componentWillMount() {
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.traceDetailsStore.latencyCost);
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.latencyCost);
         const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
         this.setState({latencyCostWithEnvironment, environmentList});

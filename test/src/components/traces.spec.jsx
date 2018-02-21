@@ -521,7 +521,7 @@ describe('<Traces />', () => {
         const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
         wrapper.find('[id="test-span-1"]').simulate('click');
 
-        expect(wrapper.find('.span-bar')).to.have.length(1);
+        expect(wrapper.find('.span-bar')).to.have.length(4);
     });
 
     it('properly renders the time pointers to depict duration', () => {
