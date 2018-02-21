@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import colorMapper from '../../../../utils/serviceColorMapper';
-import TrendsTableFormatters from '../../../trends/utils/trendsTableFormatters';
+import TrendSparklines from '../../../trends/utils/trendSparklines';
 import fetcher from '../../stores/traceTrendFetcher';
 
 export default class TrendRow extends React.Component {
@@ -45,7 +45,12 @@ export default class TrendRow extends React.Component {
     render() {
         const {serviceName, operationName, from, until} = this.props;
         const trends = this.state && this.state.trends;
+
         const totalCount = trends && _.sum(trends.count.map(a => a.value));
+        const totalPoints = trends && trends.count.map(p => p.value);
+
+        const latestDuration = trends && trends.tp99Duration[trends.tp99Duration.length - 1].value / 1000;
+        const durationPoints = trends && trends.tp99Duration.map(p => p.value);
 
         return (
             <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until)}>
@@ -54,13 +59,13 @@ export default class TrendRow extends React.Component {
                     <div className="trace-trend-table_op-name">{operationName}</div>
                 </td>
                 <td className="trace-trend-table_cell">
-                    {trends && TrendsTableFormatters.countColumnFormatter(totalCount, {countPoints: trends.count})}
+                    {trends && <TrendSparklines.CountSparkline total={totalCount} points={totalPoints} />}
                 </td>
                 <td className="trace-trend-table_cell">
-                    {trends && TrendsTableFormatters.durationColumnFormatter(trends.tp99Duration[trends.tp99Duration.length - 1].value / 100, {tp99DurationPoints: trends.tp99Duration})}
+                    {trends && <TrendSparklines.DurationSparkline latest={latestDuration} points={durationPoints} /> }
                 </td>
                 <td className="trace-trend-table_cell">
-                    {trends && TrendsTableFormatters.successPercentFormatter(100, {successPercentPoints: trends.successCount.map(() => ({value: 100}))})}
+                    {trends && <TrendSparklines.SuccessPercentSparkline average={latestDuration} points={durationPoints} />}
                 </td>
             </tr>
         );

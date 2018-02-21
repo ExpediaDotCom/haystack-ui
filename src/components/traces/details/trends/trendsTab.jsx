@@ -39,6 +39,12 @@ export default class extends React.Component {
 
         return (
             <article>
+                <div className="text-right">
+                    <span>Trace trends for </span>
+                    <select className="time-range-selector" value="1h">
+                        <option key="1h" value="1h">last 1 hour</option>
+                    </select>
+                </div>
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
                         <tr>

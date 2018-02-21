@@ -15,11 +15,9 @@
  */
 
 import React from 'react';
-import {Sparklines, SparklinesCurve} from 'react-sparklines';
-
 import '../operation/operationResultsTable.less';
 
-import formatters from '../../../utils/formatters';
+import Sparklines from './trendSparklines';
 
 export default class TrendsTableFormatters {
 
@@ -48,63 +46,15 @@ export default class TrendsTableFormatters {
     }
 
     static countColumnFormatter(cell, row) {
-        const values = row.countPoints.map(d => d.value);
-
-        return (<div className="sparkline-container">
-            { !isNaN(cell) &&
-            <div className="sparkline-title">
-                total: <b>{formatters.toNumberString(cell)}</b>
-            </div>}
-            <div className="sparkline-graph">
-                <Sparklines className="sparkline" data={values} min={0} height={48}>
-                    <SparklinesCurve style={{ strokeWidth: 1.5 }} color="#36a2eb" />
-                </Sparklines>
-            </div>
-        </div>);
+        return <Sparklines.CountSparkline total={cell} points={row.countPoints.map(d => d.value)} />;
     }
 
     static durationColumnFormatter(cell, row) {
-        const values = row.tp99DurationPoints.map(d => d.value);
-
-        return (<div className="sparkline-container">
-            { !isNaN(cell) &&
-            <div className="sparkline-title">
-                latest: <b>{formatters.toDurationStringFromMs(cell)}</b>
-            </div>}
-            <div className="sparkline-graph">
-                <Sparklines className="sparkline" data={values} min={0} height={48}>
-                    <SparklinesCurve style={{ strokeWidth: 1 }} color="#e23474" />
-                </Sparklines>
-            </div>
-        </div>);
+        return <Sparklines.DurationSparkline latest={cell} points={row.tp99DurationPoints.map(d => d.value)} />;
     }
 
     static successPercentFormatter(cell, row) {
-        if (cell === null) {
-            return null;
-        }
-
-        let stateColor = 'green';
-        if (cell < 95) {
-            stateColor = 'red';
-        } else if (cell < 99) {
-            stateColor = 'orange';
-        }
-
-        const values = row.successPercentPoints.map(d => d.value);
-
-        return (<div className="sparkline-container ">
-            { !isNaN(cell) &&
-                <div className={'sparkline-title'}>
-                    average: <b className={`sparkline-percentColor ${stateColor}`}> {cell.toFixed(2)}% </b>
-                </div>
-            }
-            <div className="sparkline-graph">
-                <Sparklines className="sparkline" data={values} min={0} max={100} height={48}>
-                    <SparklinesCurve style={{ strokeWidth: 1.5 }} color="#4bc0c0" />
-                </Sparklines>
-            </div>
-        </div>);
+        return <Sparklines.SuccessPercentSparkline average={cell} points={row.successPercentPoints.map(d => d.value)} />;
     }
 
     static sortByName(a, b, order) {
