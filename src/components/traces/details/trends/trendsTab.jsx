@@ -23,11 +23,13 @@ import ServiceOperationTrendRow from './serviceOperationTrendRow';
 
 export default class extends React.Component {
     static propTypes = {
-        timelineSpans: PropTypes.array.isRequired
+        timelineSpans: PropTypes.array.isRequired,
+        from: PropTypes.number.isRequired,
+        until: PropTypes.number.isRequired
     };
 
     render() {
-        const {timelineSpans} = this.props;
+        const {timelineSpans, from, until} = this.props;
 
         const serviceOperationList = _.uniqWith(timelineSpans.map(span => ({
             serviceName: span.serviceName,
@@ -39,15 +41,17 @@ export default class extends React.Component {
             <article>
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
-                        <th width="60" className="trace-trend-table_cell">Operation</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Count</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Duration</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Success %</th>
+                        <tr>
+                            <th width="60" className="trace-trend-table_cell">Operation</th>
+                            <th width="20" className="trace-trend-table_cell text-right">Count</th>
+                            <th width="20" className="trace-trend-table_cell text-right">Duration</th>
+                            <th width="20" className="trace-trend-table_cell text-right">Success %</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {
                         serviceOperationList.map(serviceOp => (
-                            <ServiceOperationTrendRow serviceName={serviceOp.serviceName} operationName={serviceOp.operationName} />
+                            <ServiceOperationTrendRow serviceName={serviceOp.serviceName} operationName={serviceOp.operationName} from={from} until={until} />
                         ))
                     }
                     </tbody>

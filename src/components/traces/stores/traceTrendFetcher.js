@@ -35,7 +35,7 @@ fetcher.fetchOperationTrends = (serviceName, operationName, from, until) => {
             throw new OperationTrendsException(result);
         });
 
-    return deferred;
+    return deferred.promise;
 };
 
 export default fetcher;
