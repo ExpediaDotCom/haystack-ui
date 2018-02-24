@@ -33,11 +33,11 @@ function runOp(operation, url, response, next) {
                     response.json(result);
                 }
             },
-            err => ({
+            (err) => {
                 if (next) {
                     next(err);
                 }
-            })
+            }
         ).done();
 }
 
