@@ -21,7 +21,7 @@ const middleware = {};
 
 middleware.httpMetrics = (req, res, next) => {
     onFinished(res, () => {
-        metrics.meter(`http.${res.statusCode}`).mark();
+        metrics.meter(`http_${res.statusCode}`).mark();
     });
 
     next();
