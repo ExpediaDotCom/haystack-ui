@@ -18,7 +18,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
-const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const traceStore = require(`../connectors/traces/${config.connectors.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 const SERVICE_CACHE_MAX_AGE = 5 * 60 * 1000;

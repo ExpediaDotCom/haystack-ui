@@ -21,14 +21,14 @@ const _ = require('lodash');
 const config = require('../../../config/config');
 const cache = require('../../../routes/utils/cache');
 
-const traceStore = require(`../../traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
-const trendStore = require(`../../trends/${config.stores.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const traceStore = require(`../../traces/${config.connectors.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const trendStore = require(`../../trends/${config.connectors.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const errorConverter = require('../../utils/errorConverter');
-const logger = require('../../../support/logger').withIdentifier('support:haystack_trends');
+const logger = require('../../../utils/logger').withIdentifier('haystack_trends');
 
 const store = {};
-const metricTankUrl = config.stores.alerts.metricTankUrl;
+const metricTankUrl = config.connectors.alerts.metricTankUrl;
 
 const alertTypes = ['totalCount', 'durationTp99', 'failureCount'];
 

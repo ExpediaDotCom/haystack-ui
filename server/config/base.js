@@ -21,10 +21,10 @@ module.exports = {
     enableServiceLevelTrends: true,
     enableLatencyCostViewer: true,
 
-    // data stores to connect to
+    // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
-    // traces store must be there in stores config
-    stores: {
+    // traces store must be there in connectors config
+    connectors: {
         traces: {
             // name of config store module to use for fetching traces data from downstream
             // Options (store) :

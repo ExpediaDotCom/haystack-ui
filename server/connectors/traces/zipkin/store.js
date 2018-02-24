@@ -22,7 +22,7 @@ const errorConverter = require('../../utils/errorConverter');
 const objectUtils = require('../../utils/objectUtils');
 
 const store = {};
-const baseZipkinUrl = config.stores.traces.zipkinUrl;
+const baseZipkinUrl = config.connectors.traces.zipkinUrl;
 
 const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
 const DEFAULT_RESULTS_LIMIT = 40;

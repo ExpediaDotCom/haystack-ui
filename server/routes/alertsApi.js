@@ -18,7 +18,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const alertStore = require(`../stores/alerts/${config.stores.alerts.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const alertStore = require(`../connectors/alerts/${config.connectors.alerts.storeName}/store`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 

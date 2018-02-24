@@ -16,7 +16,7 @@
 
 const cache = require('./cache');
 const _ = require('lodash');
-const metrics = require('../../support/metrics');
+const metrics = require('../../utils/metrics');
 
 const responseHandler = {};
 

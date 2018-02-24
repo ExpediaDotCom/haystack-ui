@@ -22,7 +22,7 @@ const express = require('express');
 const onFinished = require('finished');
 const config = require('../config/config');
 const cache = require('./utils/cache');
-const metrics = require('../support/metrics');
+const metrics = require('../utils/metrics');
 
 const router = express.Router();
 
@@ -30,9 +30,9 @@ router.get('*', (req, res) => {
     const timer = metrics.timer('index').start();
 
     res.render('index', {
-        subsystems: Object.keys(config.stores),
+        subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
-        fieldKeys: config.stores.traces.fieldKeys,
+        fieldKeys: config.connectors.traces.fieldKeys,
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
         enableLatencyCostViewer: config.enableLatencyCostViewer,

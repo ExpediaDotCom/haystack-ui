@@ -19,10 +19,10 @@ const Q = require('q');
 const config = require('../../../config/config');
 const errorConverter = require('../../utils/errorConverter');
 const _ = require('lodash');
-const logger = require('../../../support/logger').withIdentifier('support:haystack_trends');
+const logger = require('../../../utils/logger').withIdentifier('haystack_trends');
 
 const store = {};
-const metricTankUrl = config.stores.trends.metricTankUrl;
+const metricTankUrl = config.connectors.trends.metricTankUrl;
 
 function getWildCardOperationTargetStat(service, timeWindow, metricStat) {
     return `haystack.serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;

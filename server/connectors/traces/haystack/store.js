@@ -32,7 +32,7 @@ const objectUtils = require('../../utils/objectUtils');
 const store = {};
 
 const client = new services.TraceReaderClient(
-    `${config.stores.traces.haystackHost}:${config.stores.traces.haystackPort}`,
+    `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`,
     grpc.credentials.createInsecure()); // TODO make client secure
 
 function generateCallDeadline() {
