@@ -19,20 +19,37 @@ const _ = require('lodash');
 
 const responseHandler = {};
 
+function runOp(operation, url, response, next) {
+    operation()
+        .then((result) => {
+                if (!_.isEmpty(result)) {
+                    const resultWithTimestamp = {
+                        data: result,
+                        fetchTimestamp: new Date().getTime()
+                    };
+                    cache.set(url, resultWithTimestamp);
+                }
+                if (response) {
+                    response.json(result);
+                }
+            },
+            err => {
+                if (next) {
+                    next(err);
+                }
+            }
+        ).done();
+}
+
 responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge) => (operation) => {
     const cachedItem = cache.get(url);
     if (cachedItem) {
-        response.json(cachedItem);
+        response.json(cachedItem.data);
+        if (new Date().getTime() - cachedItem.fetchTimestamp > maxAge) {
+            runOp(operation, url);
+        }
     } else {
-        operation()
-        .then((result) => {
-                if (!_.isEmpty(result)) {
-                    cache.set(url, result, maxAge);
-                }
-                response.json(result);
-            },
-            err => next(err)
-        ).done();
+        runOp(operation, url, response, next);
     }
 };
 
