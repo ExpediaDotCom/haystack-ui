@@ -8,6 +8,11 @@ module.exports = {
     // default timeout in ms for all the downlevels from store
     upstreamTimeout: 60000,
 
+    graphite: {
+        host: 'host',
+        port: 2003
+    },
+
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 

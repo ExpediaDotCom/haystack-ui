@@ -26,23 +26,33 @@ const router = express.Router();
 const TRACE_CACHE_MAX_AGE = 60 * 1000;
 
 router.get('/traces', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.findTraces(req.query));
+    handleResponsePromise(res, next, 'traces')(
+        () => traceStore.findTraces(req.query)
+    );
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getTrace(req.params.traceId));
-});
-
-router.get('/trace/:traceId/latencyCost', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getLatencyCost(req.params.traceId));
-});
-
-router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID')(
+        () => traceStore.getTrace(req.params.traceId)
+    );
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID')(
+        () => traceStore.getRawTrace(req.params.traceId)
+    );
+});
+
+router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID_SPANID')(
+        () => traceStore.getRawSpan(req.params.traceId, req.params.spanId)
+    );
+});
+
+router.get('/trace/:traceId/latencyCost', (req, res, next) => {
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID_latencyCost')(
+        () => traceStore.getLatencyCost(req.params.traceId)
+    );
 });
 
 module.exports = router;

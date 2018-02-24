@@ -19,12 +19,16 @@
  */
 
 const express = require('express');
+const onFinished = require('finished');
 const config = require('../config/config');
 const cache = require('./utils/cache');
+const metrics = require('../support/metrics');
 
 const router = express.Router();
 
 router.get('*', (req, res) => {
+    const timer = metrics.timer('index').start();
+
     res.render('index', {
         subsystems: Object.keys(config.stores),
         gaTrackingID: config.gaTrackingID,
@@ -33,6 +37,10 @@ router.get('*', (req, res) => {
         enableServiceLevelTrends: config.enableServiceLevelTrends,
         enableLatencyCostViewer: config.enableLatencyCostViewer,
         services: cache.get('/api/services') || null
+    });
+
+    onFinished(res, () => {
+        timer.end();
     });
 });
 

@@ -23,15 +23,21 @@ const alertStore = require(`../stores/alerts/${config.stores.alerts.storeName}/s
 const router = express.Router();
 
 router.get('/alerts/:serviceName', (req, res, next) => {
-    handleResponsePromise(res, next)(() => alertStore.getServiceAlerts(req.params.serviceName, req.query));
+    handleResponsePromise(res, next, 'alerts_SVC')(
+        () => alertStore.getServiceAlerts(req.params.serviceName, req.query)
+    );
 });
 
 router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
-    handleResponsePromise(res, next)(() => alertStore.getServiceUnhealthyAlertCount(req.params.serviceName));
+    handleResponsePromise(res, next, 'alerts_SVC_unhealthyCount')(
+        () => alertStore.getServiceUnhealthyAlertCount(req.params.serviceName)
+    );
 });
 
 router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
-    handleResponsePromise(res, next)(() => alertStore.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType));
+    handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
+        () => alertStore.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType)
+    );
 });
 
 module.exports = router;

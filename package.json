@@ -22,14 +22,18 @@
     "compression": "^1.6.2",
     "express": "^4.14.1",
     "express-winston": "^2.0.0",
+    "finished": "^1.2.2",
+    "flat": "^4.0.0",
     "google-protobuf": "^3.4.0",
     "grpc": "^1.7.0",
     "lodash": "^4.17.4",
     "lru-cache": "^4.1.1",
+    "measured": "^1.1.0",
     "moment": "^2.16.0",
     "pug": "^2.0.0-beta6",
     "q": "^1.5.0",
     "serve-favicon": "^2.3.2",
+    "statsd-client": "^0.4.2",
     "winston": "^2.3.0"
   },
   "devDependencies": {

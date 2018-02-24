@@ -24,11 +24,15 @@ const router = express.Router();
 const SERVICE_CACHE_MAX_AGE = 5 * 60 * 1000;
 
 router.get('/services', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE)(() => traceStore.getServices());
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'services')(
+        () => traceStore.getServices()
+    );
 });
 
 router.get('/operations', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE)(() => traceStore.getOperations(req.query.serviceName));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'operations')(
+        () => traceStore.getOperations(req.query.serviceName)
+    );
 });
 
 module.exports = router;

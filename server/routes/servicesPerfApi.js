@@ -29,7 +29,9 @@ router.get('/servicePerf', (req, res, next) => {
         from,
         until
     } = req.query;
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE)(() => trendStore.getServicePerfStats(granularity, from, until));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'servicePerf')(
+        () => trendStore.getServicePerfStats(granularity, from, until)
+    );
 });
 
 module.exports = router;
