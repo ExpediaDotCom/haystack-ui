@@ -19,15 +19,11 @@ const _ = require('lodash');
 
 const responseHandler = {};
 
-function runOp(operation, url, response, next) {
+function runOp(operation, url, maxAge, response, next) {
     operation()
         .then((result) => {
                 if (!_.isEmpty(result)) {
-                    const resultWithTimestamp = {
-                        data: result,
-                        fetchTimestamp: new Date().getTime()
-                    };
-                    cache.set(url, resultWithTimestamp);
+                    cache.set(url, result, maxAge);
                 }
                 if (response) {
                     response.json(result);
@@ -44,12 +40,17 @@ function runOp(operation, url, response, next) {
 responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge) => (operation) => {
     const cachedItem = cache.get(url);
     if (cachedItem) {
-        response.json(cachedItem.data);
-        if (new Date().getTime() - cachedItem.fetchTimestamp > maxAge) {
-            runOp(operation, url);
+        // check if the last cache.get entry was stale and hence expired
+        const isExpired = !cache.get(url);
+        if (isExpired) {
+            // set the cache key again so that next cache call doesn't force to make a downstream call
+            // but make a async refresh for the given key.
+            cache.set(url, cachedItem, maxAge);
+            runOp(operation, url, maxAge);
         }
+        response.json(cachedItem);
     } else {
-        runOp(operation, url, response, next);
+        runOp(operation, url, maxAge, response, next);
     }
 };
 
