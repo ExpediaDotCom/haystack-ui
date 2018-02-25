@@ -14,7 +14,6 @@
  *         limitations under the License.
  */
 
-const Q = require('q');
 const config = require('../../../config/config');
 const converter = require('./converter');
 const objectUtils = require('../../utils/objectUtils');

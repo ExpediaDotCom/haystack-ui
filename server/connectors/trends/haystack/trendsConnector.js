@@ -14,12 +14,12 @@
  *         limitations under the License.
  */
 
-const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
-const errorConverter = require('../../utils/errorConverter');
 const _ = require('lodash');
-const logger = require('../../../utils/logger').withIdentifier('haystack_trends');
+const fetcher = require('../../fetchers/restFetcher');
+
+const trendsFetcher = fetcher('trends');
 
 const connector = {};
 const metricTankUrl = config.connectors.trends.metricTankUrl;
@@ -61,7 +61,7 @@ function fromMetricTankOperationName(operationName) {
 
 function parseServiceResponse(data) {
     const parsedData = [];
-    JSON.parse(data).forEach((op) => {
+    data.forEach((op) => {
         const targetSplit = op.target.split('.');
 
         const serviceNameTagIndex = targetSplit.indexOf('serviceName');
@@ -81,36 +81,18 @@ function parseServiceResponse(data) {
 }
 
 function getTrendValues(target, from, until) {
-    const deferred = Q.defer();
-    const requestConfig = {
-        transformResponse: [data => parseServiceResponse(data, target)]
-    };
-
-    axios
-        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, requestConfig)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(new Error(error)))
-        .catch((error) => {
-            logger.log(errorConverter.fromAxiosError(error));
-        });
-
-    return deferred.promise;
+    return trendsFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+    .then(data => parseServiceResponse(data, target));
 }
 
 function fetchOperationTrendValues(target, from, until) {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
-        .then(response => deferred.resolve(response.data[0]
-                ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
-                : []),
-            error => deferred.reject(new Error(error)))
-        .catch((error) => {
-            logger.log(errorConverter.fromAxiosError(error));
-        });
-
-    return deferred.promise;
+    return trendsFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+    .then(data =>
+        (data[0] ?
+            data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
+            : []));
 }
 
 function fetchOperationDataPoints(operationTrends, trendStat) {
