@@ -159,9 +159,9 @@ const trace = [
     }
 ];
 
-const store = {};
+const connector = {};
 
-store.getServices = () => Q.fcall(() => ['root-service',
+connector.getServices = () => Q.fcall(() => ['root-service',
     'lannister-service',
     'stark-service',
     'tyrell-service',
@@ -171,7 +171,7 @@ store.getServices = () => Q.fcall(() => ['root-service',
     'westeros-service'
 ]);
 
-store.getOperations = () => Q.fcall(() => ['mormont-1',
+connector.getOperations = () => Q.fcall(() => ['mormont-1',
     'seaworth-1',
     'bolton-1',
     'baelish-1',
@@ -184,7 +184,7 @@ store.getOperations = () => Q.fcall(() => ['mormont-1',
     'tarley-1'
 ]);
 
-store.getLatencyCost = () => Q.fcall(() => [
+connector.getLatencyCost = () => Q.fcall(() => [
     {
         from: {
             serviceName: 'stark-service',
@@ -330,13 +330,13 @@ store.getLatencyCost = () => Q.fcall(() => [
     }
 ]);
 
-store.getTrace = () => Q.fcall(() => trace);
+connector.getTrace = () => Q.fcall(() => trace);
 
-store.getRawTrace = () => Q.fcall(() => trace);
+connector.getRawTrace = () => Q.fcall(() => trace);
 
-store.getRawSpan = () => Q.fcall(() => trace[0]);
+connector.getRawSpan = () => Q.fcall(() => trace[0]);
 
-store.findTraces = query => Q.fcall(() => {
+connector.findTraces = query => Q.fcall(() => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
     if (traceId) {
@@ -672,4 +672,4 @@ store.findTraces = query => Q.fcall(() => {
     ];
 });
 
-module.exports = store;
+module.exports = connector;

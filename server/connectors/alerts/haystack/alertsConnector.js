@@ -21,13 +21,13 @@ const _ = require('lodash');
 const config = require('../../../config/config');
 const cache = require('../../../routes/utils/cache');
 
-const traceStore = require(`../../traces/${config.connectors.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
-const trendStore = require(`../../trends/${config.connectors.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const tracesConnector = require(`../../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
+const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const errorConverter = require('../../utils/errorConverter');
 const logger = require('../../../utils/logger').withIdentifier('haystack_trends');
 
-const store = {};
+const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
 
 const alertTypes = ['totalCount', 'durationTp99', 'failureCount'];
@@ -39,7 +39,7 @@ function fetchOperations(serviceName) {
     if (cachedOps) {
         deferred.resolve(cachedOps);
     } else {
-        deferred.resolve(traceStore.getOperations(serviceName));
+        deferred.resolve(tracesConnector.getOperations(serviceName));
     }
 
     return deferred.promise;
@@ -48,7 +48,7 @@ function fetchOperations(serviceName) {
 function fetchOperationTrends(serviceName, granularity, from, until) {
     const deferred = Q.defer();
 
-    deferred.resolve(trendStore.getOperationStats(serviceName, granularity, from, until));
+    deferred.resolve(trendsConnector.getOperationStats(serviceName, granularity, from, until));
 
     return deferred.promise;
 }
@@ -143,7 +143,7 @@ function getOperationAlertsStats(serviceName, granularity, from, until) {
         );
 }
 
-store.getServiceAlerts = (serviceName, query) => {
+connector.getServiceAlerts = (serviceName, query) => {
     const defered = Q.defer();
 
     defered.resolve(getOperationAlertsStats(serviceName, query.granularity, query.from, query.until),
@@ -190,7 +190,7 @@ function getSelectedOperationDetails(serviceName, operationName, alertType) {
     return deferred.promise;
 }
 
-store.getAlertDetails = (serviceName, operationName, alertType) => {
+connector.getAlertDetails = (serviceName, operationName, alertType) => {
     const deferred = Q.defer();
 
     deferred.resolve(
@@ -201,7 +201,7 @@ store.getAlertDetails = (serviceName, operationName, alertType) => {
 };
 
 // no-op for now, TODO add the metrictank read logic
-store.getServiceUnhealthyAlertCount = () => Q.fcall(() => 0);
+connector.getServiceUnhealthyAlertCount = () => Q.fcall(() => 0);
 
-module.exports = store;
+module.exports = connector;
 

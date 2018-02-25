@@ -20,38 +20,38 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
-const traceStore = require(`../connectors/traces/${config.connectors.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 const TRACE_CACHE_MAX_AGE = 60 * 1000;
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next, 'traces')(
-        () => traceStore.findTraces(req.query)
+        () => tracesConnector.findTraces(req.query)
     );
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID')(
-        () => traceStore.getTrace(req.params.traceId)
+        () => tracesConnector.getTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID')(
-        () => traceStore.getRawTrace(req.params.traceId)
+        () => tracesConnector.getRawTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID_SPANID')(
-        () => traceStore.getRawSpan(req.params.traceId, req.params.spanId)
+        () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId)
     );
 });
 
 router.get('/trace/:traceId/latencyCost', (req, res, next) => {
     handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID_latencyCost')(
-        () => traceStore.getLatencyCost(req.params.traceId)
+        () => tracesConnector.getLatencyCost(req.params.traceId)
     );
 });
 

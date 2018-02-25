@@ -126,12 +126,12 @@ const alertDetails = [
         getAlertHistoryTimestamps()
 ];
 
-const store = {};
+const connector = {};
 
-store.getServiceAlerts = (service, query) => Q.fcall(() => getAlerts(query));
+connector.getServiceAlerts = (service, query) => Q.fcall(() => getAlerts(query));
 
-store.getAlertDetails = () => Q.fcall(() => alertDetails);
+connector.getAlertDetails = () => Q.fcall(() => alertDetails);
 
-store.getServiceUnhealthyAlertCount = () => Q.fcall(() => Math.floor(Math.random() * 3));
+connector.getServiceUnhealthyAlertCount = () => Q.fcall(() => Math.floor(Math.random() * 3));
 
-module.exports = store;
+module.exports = connector;

@@ -21,7 +21,7 @@ const converter = require('./converter');
 const errorConverter = require('../../utils/errorConverter');
 const objectUtils = require('../../utils/objectUtils');
 
-const store = {};
+const connector = {};
 const baseZipkinUrl = config.connectors.traces.zipkinUrl;
 
 const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
@@ -52,7 +52,7 @@ function mapQueryParams(query) {
         .join('&');
 }
 
-store.getServices = () => {
+connector.getServices = () => {
     const deferred = Q.defer();
     axios
         .get(`${baseZipkinUrl}/services`)
@@ -62,7 +62,7 @@ store.getServices = () => {
     return deferred.promise;
 };
 
-store.getOperations = (serviceName) => {
+connector.getOperations = (serviceName) => {
     const deferred = Q.defer();
 
     axios
@@ -73,7 +73,7 @@ store.getOperations = (serviceName) => {
     return deferred.promise;
 };
 
-store.getTrace = (traceId) => {
+connector.getTrace = (traceId) => {
     const deferred = Q.defer();
 
     axios
@@ -84,7 +84,7 @@ store.getTrace = (traceId) => {
     return deferred.promise;
 };
 
-store.getRawTrace = (traceId) => {
+connector.getRawTrace = (traceId) => {
     const deferred = Q.defer();
 
     axios
@@ -95,7 +95,7 @@ store.getRawTrace = (traceId) => {
     return deferred.promise;
 };
 
-store.getRawSpan = (traceId, spanId) => {
+connector.getRawSpan = (traceId, spanId) => {
     const deferred = Q.defer();
 
     axios
@@ -106,7 +106,7 @@ store.getRawSpan = (traceId, spanId) => {
     return deferred.promise;
 };
 
-store.findTraces = (query) => {
+connector.findTraces = (query) => {
     const deferred = Q.defer();
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
@@ -129,4 +129,4 @@ store.findTraces = (query) => {
 };
 
 
-module.exports = store;
+module.exports = connector;

@@ -18,25 +18,25 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const alertStore = require(`../connectors/alerts/${config.connectors.alerts.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const alertsConnector = require(`../connectors/alerts/${config.connectors.alerts.connectorName}/alertsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
 router.get('/alerts/:serviceName', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC')(
-        () => alertStore.getServiceAlerts(req.params.serviceName, req.query)
+        () => alertsConnector.getServiceAlerts(req.params.serviceName, req.query)
     );
 });
 
 router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_unhealthyCount')(
-        () => alertStore.getServiceUnhealthyAlertCount(req.params.serviceName)
+        () => alertsConnector.getServiceUnhealthyAlertCount(req.params.serviceName)
     );
 });
 
 router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
-        () => alertStore.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType)
+        () => alertsConnector.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType)
     );
 });
 

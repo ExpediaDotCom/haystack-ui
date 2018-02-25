@@ -17,7 +17,7 @@
 const Q = require('q');
 const _ = require('lodash');
 
-const store = {};
+const connector = {};
 
 function getValue(min, max) {
     return _.round((Math.random() * (max - min)) + min, 0);
@@ -40,7 +40,7 @@ function getRandomPercentageValues(timeWindow, dataPoints) {
     return valuesArr;
 }
 
-store.getServiceStats = (serviceName, granularity, from, until) => {
+connector.getServiceStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -61,7 +61,7 @@ store.getServiceStats = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getServicePerfStats = () => {
+connector.getServicePerfStats = () => {
     const deffered = Q.defer();
 
     deffered.resolve(
@@ -92,7 +92,7 @@ store.getServicePerfStats = () => {
     return deffered.promise;
 };
 
-store.getServiceTrends = (serviceName, granularity, from, until) => {
+connector.getServiceTrends = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -111,7 +111,7 @@ store.getServiceTrends = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getOperationStats = (serviceName, granularity, from, until) => {
+connector.getOperationStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -212,7 +212,7 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
+connector.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
     const deffered = Q.defer();
 
     const range = until - from;
@@ -231,4 +231,4 @@ store.getOperationTrends = (serviceName, operationName, granularity, from, until
     return deffered.promise;
 };
 
-module.exports = store;
+module.exports = connector;

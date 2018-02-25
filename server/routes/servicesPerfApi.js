@@ -18,7 +18,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
-const trendStore = require(`../connectors/trends/${config.connectors.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 const SERVICE_CACHE_MAX_AGE = 60 * 1000;
@@ -30,7 +30,7 @@ router.get('/servicePerf', (req, res, next) => {
         until
     } = req.query;
     handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'servicePerf')(
-        () => trendStore.getServicePerfStats(granularity, from, until)
+        () => trendsConnector.getServicePerfStats(granularity, from, until)
     );
 });
 

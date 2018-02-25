@@ -18,7 +18,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const trendStore = require(`../connectors/trends/${config.connectors.trends.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get('/trends/service/:serviceName/:type', (req, res, next) => {
     } = req.query;
 
     handleResponsePromise(res, next, 'trends_service_SVC_TYPE')(
-        () => trendStore.getServiceTrends(req.params.serviceName, granularity, from, until)
+        () => trendsConnector.getServiceTrends(req.params.serviceName, granularity, from, until)
     );
 });
 
@@ -42,7 +42,7 @@ router.get('/trends/service/:serviceName', (req, res, next) => {
     } = req.query;
 
     handleResponsePromise(res, next, 'trends_service_SVC_TYPE')(
-        () => trendStore.getServiceStats(req.params.serviceName, granularity, from, until)
+        () => trendsConnector.getServiceStats(req.params.serviceName, granularity, from, until)
     );
 });
 
@@ -54,7 +54,7 @@ router.get('/trends/operation/:serviceName/:operationName', (req, res, next) => 
     } = req.query;
 
     handleResponsePromise(res, next, 'trends_operation_SVC_OP')(
-        () => trendStore.getOperationTrends(req.params.serviceName, req.params.operationName, granularity, from, until)
+        () => trendsConnector.getOperationTrends(req.params.serviceName, req.params.operationName, granularity, from, until)
     );
 });
 
@@ -66,7 +66,7 @@ router.get('/trends/operation/:serviceName', (req, res, next) => {
     } = req.query;
 
     handleResponsePromise(res, next, 'trends_operation_SVC')(
-        () => trendStore.getOperationStats(req.params.serviceName, granularity, from, until)
+        () => trendsConnector.getOperationStats(req.params.serviceName, granularity, from, until)
     );
 });
 
