@@ -43,10 +43,11 @@ const SuccessGraph = ({successCount, failureCount, from, until}) => {
 
     const data = _.compact(timestamps.map((timestamp) => {
         const successItem = _.find(successCount, x => (x.timestamp === timestamp));
-        const successVal = (successItem && successItem.value) ? successItem.value : 0;
+        const successVal = (successItem && successItem.value && successItem.value !== null) ? successItem.value : 0;
 
         const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
-        const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
+        const failureVal = (failureItem && failureItem.value && failureItem.value !== null) ? failureItem.value : 0;
+        console.log(failureVal);
 
         if (successVal + failureVal) {
             return {
