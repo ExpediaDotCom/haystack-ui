@@ -47,7 +47,6 @@ const SuccessGraph = ({successCount, failureCount, from, until}) => {
 
         const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
         const failureVal = (failureItem && failureItem.value && failureItem.value !== null) ? failureItem.value : 0;
-        console.log(failureVal);
 
         if (successVal + failureVal) {
             return {
