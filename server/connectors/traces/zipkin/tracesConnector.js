@@ -14,15 +14,21 @@
  *         limitations under the License.
  */
 
-const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
 const converter = require('./converter');
-const errorConverter = require('../../utils/errorConverter');
 const objectUtils = require('../../utils/objectUtils');
+const fetcher = require('../../fetchers/restFetcher');
 
 const connector = {};
 const baseZipkinUrl = config.connectors.traces.zipkinUrl;
+
+const servicesFetcher = fetcher('getServices');
+const operationsFetcher = fetcher('getOperations');
+const traceFetcher = fetcher('getTrace');
+const searchTracesFetcher = fetcher('searchTraces');
+const rawTraceFetcher = fetcher('getRawTrace');
+const rawSpanFetcher = fetcher('getRawSpan');
 
 const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
 const DEFAULT_RESULTS_LIMIT = 40;
@@ -52,81 +58,42 @@ function mapQueryParams(query) {
         .join('&');
 }
 
-connector.getServices = () => {
-    const deferred = Q.defer();
-    axios
-        .get(`${baseZipkinUrl}/services`)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(errorConverter.fromAxiosError(error)));
+connector.getServices = () =>
+    servicesFetcher
+    .fetch(`${baseZipkinUrl}/services`);
 
-    return deferred.promise;
-};
+connector.getOperations = serviceName =>
+    operationsFetcher
+    .fetch(`${baseZipkinUrl}/spans?serviceName=${serviceName}`);
 
-connector.getOperations = (serviceName) => {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${baseZipkinUrl}/spans?serviceName=${serviceName}`)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(errorConverter.fromAxiosError(error)));
-
-    return deferred.promise;
-};
-
-connector.getTrace = (traceId) => {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${baseZipkinUrl}/trace/${traceId}`)
-        .then(response => deferred.resolve(converter.toHaystackTrace(response.data)),
-            error => deferred.reject(errorConverter.fromAxiosError(error)));
-
-    return deferred.promise;
-};
-
-connector.getRawTrace = (traceId) => {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${baseZipkinUrl}/trace/raw/${traceId}`)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(errorConverter.fromAxiosError(error)));
-
-    return deferred.promise;
-};
-
-connector.getRawSpan = (traceId, spanId) => {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(errorConverter.fromAxiosError(error)));
-
-    return deferred.promise;
-};
+connector.getTrace = traceId =>
+    traceFetcher
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`)
+    .then(result => converter.toHaystackTrace(result));
 
 connector.findTraces = (query) => {
-    const deferred = Q.defer();
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
     if (traceId) {
         // if search is for a trace perform getTrace instead of search
-        axios
-            .get(`${baseZipkinUrl}/trace/${traceId}`)
-            .then(response => deferred.resolve(converter.toHaystackSearchResult([response.data], query)),
-                error => deferred.reject(errorConverter.fromAxiosError(error)));
-    } else {
-        const queryUrl = mapQueryParams(query);
-
-        axios
-            .get(`${baseZipkinUrl}/traces?${queryUrl}`)
-            .then(response => deferred.resolve(converter.toHaystackSearchResult(response.data, query)),
-                error => deferred.reject(errorConverter.fromAxiosError(error)));
+        return traceFetcher
+        .fetch(`${baseZipkinUrl}/trace/${traceId}`)
+        .then(result => converter.toHaystackSearchResult([result], query));
     }
 
-    return deferred.promise;
+    const queryUrl = mapQueryParams(query);
+
+    return searchTracesFetcher
+    .fetch(`${baseZipkinUrl}/traces?${queryUrl}`)
+    .then(result => converter.toHaystackSearchResult(result, query));
 };
 
+connector.getRawTrace = traceId =>
+    rawTraceFetcher
+    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}`);
+
+connector.getRawSpan = (traceId, spanId) =>
+    rawSpanFetcher
+    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`);
 
 module.exports = connector;

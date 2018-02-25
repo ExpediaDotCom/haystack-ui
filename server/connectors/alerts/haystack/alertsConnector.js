@@ -14,18 +14,18 @@
  *         limitations under the License.
  */
 
-const axios = require('axios');
 const Q = require('q');
 const _ = require('lodash');
 
 const config = require('../../../config/config');
-const cache = require('../../../routes/utils/cache');
 
 const tracesConnector = require(`../../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
-const errorConverter = require('../../utils/errorConverter');
-const logger = require('../../../utils/logger').withIdentifier('haystack_trends');
+const fetcher = require('../../fetchers/restFetcher');
+
+const alertHistoryFetcher = fetcher('alertHistory');
+const serviceAlertsFetcher = fetcher('serviceAlerts');
 
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
@@ -33,24 +33,11 @@ const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const alertTypes = ['totalCount', 'durationTp99', 'failureCount'];
 
 function fetchOperations(serviceName) {
-    const deferred = Q.defer();
-    const cachedOps = cache.get(`/api/operations?serviceName=${serviceName}`);
-
-    if (cachedOps) {
-        deferred.resolve(cachedOps);
-    } else {
-        deferred.resolve(tracesConnector.getOperations(serviceName));
-    }
-
-    return deferred.promise;
+   return tracesConnector.getOperations(serviceName);
 }
 
 function fetchOperationTrends(serviceName, granularity, from, until) {
-    const deferred = Q.defer();
-
-    deferred.resolve(trendsConnector.getOperationStats(serviceName, granularity, from, until));
-
-    return deferred.promise;
+    return trendsConnector.getOperationStats(serviceName, granularity, from, until);
 }
 
 function toMetricTankOperationName(operationName) {
@@ -93,15 +80,11 @@ function parseOperationAlertsResponse(data) {
 }
 
 function fetchOperationAlerts(serviceName) {
-    const deferred = Q.defer();
-
     const target = `alertType.*.operationName.*.serviceName.${serviceName}.anomaly`;
-    axios
-        .get(`${metricTankUrl}/render?target=${target}`)
-        .then(response => deferred.resolve(parseOperationAlertsResponse(response.data)), error => deferred.reject(new Error(error)))
-        .catch(error => logger.log(errorConverter.fromAxiosError(error)));
 
-    return deferred.promise;
+    return serviceAlertsFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}`)
+    .then(result => parseOperationAlertsResponse(result));
 }
 
 function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTrends}) {
@@ -132,26 +115,6 @@ function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTr
         })));
 }
 
-function getOperationAlertsStats(serviceName, granularity, from, until) {
-    return Q
-        .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName), fetchOperationTrends(serviceName, granularity, from, until)])
-        .then(stats => mergeOperationAlertsAndTrends({
-                operations: stats[0],
-                operationAlerts: stats[1],
-                operationTrends: stats[2]
-            })
-        );
-}
-
-connector.getServiceAlerts = (serviceName, query) => {
-    const defered = Q.defer();
-
-    defered.resolve(getOperationAlertsStats(serviceName, query.granularity, query.from, query.until),
-        error => defered.reject(new Error(error)));
-
-    return defered.promise;
-};
-
 function parseAlertDetailResponse(data) {
     if (!data || !data.length) {
         return [];
@@ -177,27 +140,25 @@ function parseAlertDetailResponse(data) {
     return parsedData;
 }
 
-function getSelectedOperationDetails(serviceName, operationName, alertType) {
-    const deferred = Q.defer();
+connector.getServiceAlerts = (serviceName, query) => {
+    const { granularity, from, until} = query;
 
-    const target = `alertType.${alertType}.operationName.${toMetricTankOperationName(operationName)}.serviceName.${serviceName}.anomaly`;
-
-    axios
-        .get(`${metricTankUrl}/render?target=${target}`)
-        .then(response => deferred.resolve(parseAlertDetailResponse(response.data)), error => deferred.reject(new Error(error)))
-        .catch(error => logger.log(errorConverter.fromAxiosError(error)));
-
-    return deferred.promise;
-}
+    return Q
+    .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName), fetchOperationTrends(serviceName, granularity, from, until)])
+    .then(stats => mergeOperationAlertsAndTrends({
+            operations: stats[0],
+            operationAlerts: stats[1],
+            operationTrends: stats[2]
+        })
+    );
+};
 
 connector.getAlertDetails = (serviceName, operationName, alertType) => {
-    const deferred = Q.defer();
+    const target = `alertType.${alertType}.operationName.${toMetricTankOperationName(operationName)}.serviceName.${serviceName}.anomaly`;
 
-    deferred.resolve(
-        getSelectedOperationDetails(serviceName, operationName, alertType),
-        error => deferred.reject(new Error(error)));
-
-    return deferred.promise;
+    return alertHistoryFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}`)
+    .then(result => parseAlertDetailResponse(result));
 };
 
 // no-op for now, TODO add the metrictank read logic
