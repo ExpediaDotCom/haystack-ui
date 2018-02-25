@@ -17,23 +17,26 @@
 const axios = require('axios');
 const Q = require('q');
 const errorConverter = require('../utils/errorConverter');
-const logger = require('../../utils/logger').withIdentifier('fetcher');
+const logger = require('../../utils/logger').withIdentifier('fetcher.rest');
 const metrics = require('../../utils/metrics');
 
 const fetcher = fetcherName => ({
         fetch: (url) => {
             const deferred = Q.defer();
-            const timer = metrics.timer(`fetcher_${fetcherName}`).start();
+            const timer = metrics.timer(`fetcher_rest_${fetcherName}`).start();
 
             axios
             .get(url)
             .then((response) => {
                 timer.end();
                 logger.info(`fetch successful: ${url}`);
+
                 deferred.resolve(response.data);
             }, (error) => {
                 timer.end();
+                metrics.meter(`fetcher_rest_failure_${fetcherName}`).mark();
                 logger.error(`fetch failed: ${url}`);
+
                 deferred.reject(errorConverter.fromAxiosError(error));
             });
 
