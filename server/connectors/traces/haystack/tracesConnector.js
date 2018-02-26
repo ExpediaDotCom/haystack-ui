@@ -28,6 +28,10 @@ const errorConverter = require('../../utils/errorConverter');
 const protobufConverter = require('./protobufConverter');
 const searchRequestBuilder = require('./searchRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
+const fetcher = require('../../fetchers/grpcFetcher');
+
+const rawTraceFetcher = fetcher('getRawTrace');
+const rawSpanFetcher = fetcher('getRawSpan');
 
 const connector = {};
 
@@ -103,42 +107,22 @@ connector.getTrace = (traceId) => {
 };
 
 connector.getRawTrace = (traceId) => {
-    const deferred = Q.defer();
-
     const request = new messages.TraceRequest();
     request.setTraceid(traceId);
 
-    client.getRawTrace(request,
-        {deadline: generateCallDeadline()},
-        (error, result) => {
-            if (error || !result) {
-                deferred.reject(errorConverter.fromGrpcError(error));
-            } else {
-                deferred.resolve(protobufConverter.toTraceJson(messages.Trace.toObject(false, result)));
-            }
-        });
-
-    return deferred.promise;
+    return rawTraceFetcher
+    .fetch(request)
+    .then(result => protobufConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };
 
 connector.getRawSpan = (traceId, spanId) => {
-    const deferred = Q.defer();
-
     const request = new messages.SpanRequest();
     request.setTraceid(traceId);
     request.setSpanid(spanId);
 
-    client.getRawSpan(request,
-        {deadline: generateCallDeadline()},
-        (error, result) => {
-            if (error || !result) {
-                deferred.reject(errorConverter.fromGrpcError(error));
-            } else {
-                deferred.resolve(protobufConverter.toSpanJson(messages.Span.toObject(false, result)));
-            }
-        });
-
-    return deferred.promise;
+    return rawSpanFetcher
+    .fetch(request)
+    .then(result => protobufConverter.toSpanJson(messages.Span.toObject(false, result)));
 };
 
 connector.findTraces = (query) => {
