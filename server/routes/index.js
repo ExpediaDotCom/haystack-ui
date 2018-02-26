@@ -31,11 +31,11 @@ router.get('*', (req, res) => {
 
     res.render('index', {
         subsystems: Object.keys(config.connectors),
-        gaTrackingID: config.gaTrackingID,
-        fieldKeys: config.connectors.traces.fieldKeys,
-        enableServicePerformance: config.enableServicePerformance,
-        enableServiceLevelTrends: config.enableServiceLevelTrends,
-        enableLatencyCostViewer: config.enableLatencyCostViewer,
+        gaTrackingID: config.gaTrackingID || null,
+        fieldKeys: config.connectors.traces.fieldKeys || false,
+        enableServicePerformance: config.enableServicePerformance || false,
+        enableServiceLevelTrends: config.enableServiceLevelTrends || false,
+        enableLatencyCostViewer: config.enableLatencyCostViewer || false,
         services: cache.get('/api/services') || null
     });
 
