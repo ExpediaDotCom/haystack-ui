@@ -17,7 +17,7 @@
 
 const app = require('./app');
 const config = require('./config/config');
-const Server = require('./support/server');
+const Server = require('./utils/server');
 
 const server = new Server(app);
 

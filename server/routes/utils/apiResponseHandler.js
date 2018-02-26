@@ -16,6 +16,7 @@
 
 const cache = require('./cache');
 const _ = require('lodash');
+const metrics = require('../../utils/metrics');
 
 const responseHandler = {};
 
@@ -54,9 +55,13 @@ responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge)
     }
 };
 
-responseHandler.handleResponsePromise = (response, next) => operation => operation()
-    .then(result => response.json(result),
-        err => next(err))
+responseHandler.handleResponsePromise = (response, next, pathName) => (operation) => {
+    const timer = metrics.timer(pathName).start();
+
+    operation()
+    .then(result => response.json(result), err => next(err))
+    .fin(() => timer.end())
     .done();
+};
 
 module.exports = responseHandler;

@@ -13,3 +13,18 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+
+const onFinished = require('finished');
+const metrics = require('./metrics');
+
+const middleware = {};
+
+middleware.httpMetrics = (req, res, next) => {
+    onFinished(res, () => {
+        metrics.meter(`http_${res.statusCode}`).mark();
+    });
+
+    next();
+};
+
+module.exports = middleware;

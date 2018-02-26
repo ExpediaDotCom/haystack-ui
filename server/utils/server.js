@@ -19,7 +19,7 @@
 
 const OS = require('os');
 const cluster = require('cluster');
-const logger = require('./logger').withIdentifier('support:server');
+const logger = require('./logger').withIdentifier('server');
 
 class Server {
     constructor(expressApp) {

@@ -20,29 +20,39 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
-const traceStore = require(`../stores/traces/${config.stores.traces.storeName}/store`); // eslint-disable-line import/no-dynamic-require
+const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 const TRACE_CACHE_MAX_AGE = 60 * 1000;
 
 router.get('/traces', (req, res, next) => {
-    handleResponsePromise(res, next)(() => traceStore.findTraces(req.query));
+    handleResponsePromise(res, next, 'traces')(
+        () => tracesConnector.findTraces(req.query)
+    );
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getTrace(req.params.traceId));
-});
-
-router.get('/trace/:traceId/latencyCost', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getLatencyCost(req.params.traceId));
-});
-
-router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawSpan(req.params.traceId, req.params.spanId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID')(
+        () => tracesConnector.getTrace(req.params.traceId)
+    );
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE)(() => traceStore.getRawTrace(req.params.traceId));
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID')(
+        () => tracesConnector.getRawTrace(req.params.traceId)
+    );
+});
+
+router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID_SPANID')(
+        () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId)
+    );
+});
+
+router.get('/trace/:traceId/latencyCost', (req, res, next) => {
+    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID_latencyCost')(
+        () => tracesConnector.getLatencyCost(req.params.traceId)
+    );
 });
 
 module.exports = router;

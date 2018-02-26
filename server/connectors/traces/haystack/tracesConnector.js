@@ -29,17 +29,17 @@ const protobufConverter = require('./protobufConverter');
 const searchRequestBuilder = require('./searchRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
 
-const store = {};
+const connector = {};
 
 const client = new services.TraceReaderClient(
-    `${config.stores.traces.haystackHost}:${config.stores.traces.haystackPort}`,
+    `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`,
     grpc.credentials.createInsecure()); // TODO make client secure
 
 function generateCallDeadline() {
     return new Date().setMilliseconds(new Date().getMilliseconds() + config.upstreamTimeout);
 }
 
-store.getServices = () => {
+connector.getServices = () => {
     const deferred = Q.defer();
 
     const request = new messages.FieldValuesRequest();
@@ -58,7 +58,7 @@ store.getServices = () => {
     return deferred.promise;
 };
 
-store.getOperations = (serviceName) => {
+connector.getOperations = (serviceName) => {
     const deferred = Q.defer();
 
     const service = new messages.Field();
@@ -83,7 +83,7 @@ store.getOperations = (serviceName) => {
     return deferred.promise;
 };
 
-store.getTrace = (traceId) => {
+connector.getTrace = (traceId) => {
     const deferred = Q.defer();
 
     const request = new messages.TraceRequest();
@@ -102,7 +102,7 @@ store.getTrace = (traceId) => {
     return deferred.promise;
 };
 
-store.getRawTrace = (traceId) => {
+connector.getRawTrace = (traceId) => {
     const deferred = Q.defer();
 
     const request = new messages.TraceRequest();
@@ -121,7 +121,7 @@ store.getRawTrace = (traceId) => {
     return deferred.promise;
 };
 
-store.getRawSpan = (traceId, spanId) => {
+connector.getRawSpan = (traceId, spanId) => {
     const deferred = Q.defer();
 
     const request = new messages.SpanRequest();
@@ -141,7 +141,7 @@ store.getRawSpan = (traceId, spanId) => {
     return deferred.promise;
 };
 
-store.findTraces = (query) => {
+connector.findTraces = (query) => {
     const deferred = Q.defer();
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
@@ -180,4 +180,4 @@ store.findTraces = (query) => {
     return deferred.promise;
 };
 
-module.exports = store;
+module.exports = connector;

@@ -14,15 +14,15 @@
  *         limitations under the License.
  */
 
-const axios = require('axios');
 const Q = require('q');
 const config = require('../../../config/config');
-const errorConverter = require('../../utils/errorConverter');
 const _ = require('lodash');
-const logger = require('../../../support/logger').withIdentifier('support:haystack_trends');
+const fetcher = require('../../fetchers/restFetcher');
 
-const store = {};
-const metricTankUrl = config.stores.trends.metricTankUrl;
+const trendsFetcher = fetcher('trends');
+
+const connector = {};
+const metricTankUrl = config.connectors.trends.metricTankUrl;
 
 function getWildCardOperationTargetStat(service, timeWindow, metricStat) {
     return `haystack.serviceName.${service}.operationName.*.interval.${timeWindow}.stat.${metricStat}`;
@@ -61,7 +61,7 @@ function fromMetricTankOperationName(operationName) {
 
 function parseServiceResponse(data) {
     const parsedData = [];
-    JSON.parse(data).forEach((op) => {
+    data.forEach((op) => {
         const targetSplit = op.target.split('.');
 
         const serviceNameTagIndex = targetSplit.indexOf('serviceName');
@@ -81,36 +81,18 @@ function parseServiceResponse(data) {
 }
 
 function getTrendValues(target, from, until) {
-    const deferred = Q.defer();
-    const requestConfig = {
-        transformResponse: [data => parseServiceResponse(data, target)]
-    };
-
-    axios
-        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, requestConfig)
-        .then(response => deferred.resolve(response.data),
-            error => deferred.reject(new Error(error)))
-        .catch((error) => {
-            logger.log(errorConverter.fromAxiosError(error));
-        });
-
-    return deferred.promise;
+    return trendsFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+    .then(data => parseServiceResponse(data, target));
 }
 
 function fetchOperationTrendValues(target, from, until) {
-    const deferred = Q.defer();
-
-    axios
-        .get(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
-        .then(response => deferred.resolve(response.data[0]
-                ? response.data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
-                : []),
-            error => deferred.reject(new Error(error)))
-        .catch((error) => {
-            logger.log(errorConverter.fromAxiosError(error));
-        });
-
-    return deferred.promise;
+    return trendsFetcher
+    .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+    .then(data =>
+        (data[0] ?
+            data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
+            : []));
 }
 
 function fetchOperationDataPoints(operationTrends, trendStat) {
@@ -347,7 +329,7 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
         );
 }
 
-store.getServicePerfStats = (granularity, from, until) => {
+connector.getServicePerfStats = (granularity, from, until) => {
     const deffered = Q.defer();
     getServicePerfStatsResults(convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
         .then(results => deffered.resolve(results));
@@ -355,14 +337,14 @@ store.getServicePerfStats = (granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getServiceStats = (serviceName, granularity, from, until) => {
+connector.getServiceStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
     getServiceStatsResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
         .then(results => deffered.resolve(results));
     return deffered.promise;
 };
 
-store.getServiceTrends = (serviceName, granularity, from, until) => {
+connector.getServiceTrends = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
 
     getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
@@ -371,7 +353,7 @@ store.getServiceTrends = (serviceName, granularity, from, until) => {
     return deffered.promise;
 };
 
-store.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
+connector.getOperationTrends = (serviceName, operationName, granularity, from, until) => {
     const deffered = Q.defer();
 
     getOperationTrendResults(serviceName, toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10))
@@ -380,7 +362,7 @@ store.getOperationTrends = (serviceName, operationName, granularity, from, until
     return deffered.promise;
 };
 
-store.getOperationStats = (serviceName, granularity, from, until) => {
+connector.getOperationStats = (serviceName, granularity, from, until) => {
     const deffered = Q.defer();
     deffered.resolve(getOperationStatsResults(serviceName, convertGranularityToTimeWindow(granularity), parseInt(from / 1000, 10), parseInt(until / 1000, 10)),
         error => deffered.reject(new Error(error)));
@@ -388,4 +370,4 @@ store.getOperationStats = (serviceName, granularity, from, until) => {
 };
 
 
-module.exports = store;
+module.exports = connector;

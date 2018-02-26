@@ -5,8 +5,13 @@ module.exports = {
     // whether to start in cluster mode or not
     cluster: false,
 
-    // default timeout in ms for all the downlevels from store
+    // default timeout in ms for all the downlevels from connector
     upstreamTimeout: 60000,
+
+    graphite: {
+        host: 'host',
+        port: 2003
+    },
 
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
@@ -16,34 +21,34 @@ module.exports = {
     enableServiceLevelTrends: true,
     enableLatencyCostViewer: true,
 
-    // data stores to connect to
+    // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
-    // traces store must be there in stores config
-    stores: {
+    // traces connector must be there in connectors config
+    connectors: {
         traces: {
-            // name of config store module to use for fetching traces data from downstream
-            // Options (store) :
+            // name of config connector module to use for fetching traces data from downstream
+            // Options (connector) :
             //  - haystack - gets data from haystack query service
             //  - zipkin - bridge for using an existing zipkin api,
-            //             zipkin store expects a zipkin config field specifying zipking api url,
+            //             zipkin connector expects a zipkin config field specifying zipking api url,
             //             eg. zipkinUrl: 'http://<zipkin>/api/v1'}
             //  - stub - a stub used during development, will be removed in future
-            storeName: 'stub',
+            connectorName: 'stub',
             fieldKeys: ['traceId', 'error', 'minDuration']
         },
         trends: {
-            // name of config store module to use for fetching trends data from downstream
+            // name of config connector module to use for fetching trends data from downstream
             // Options :
             //  - haystack - gets data from Haystack Metric Tank Setup
-            //               haystack store also expects config field specifying metricTankUrl
+            //               haystack connector also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
-            storeName: 'stub'
+            connectorName: 'stub'
         },
         alerts: {
-            // name of config store module to use for fetching anomaly detection data from downstream
+            // name of config connector module to use for fetching anomaly detection data from downstream
             // Options :
             //  - stub - a stub used during development, will be removed in future
-            storeName: 'stub'
+            connectorName: 'stub'
         }
     }
 };

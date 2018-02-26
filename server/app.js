@@ -24,14 +24,18 @@ const favicon = require('serve-favicon');
 const compression = require('compression');
 const axios = require('axios');
 const Q = require('q');
+const os = require('os');
 
 const config = require('./config/config');
-const logger = require('./support/logger');
+const logger = require('./utils/logger');
 
 const indexRoute = require('./routes/index');
 const servicesApi = require('./routes/servicesApi');
 const tracesApi = require('./routes/tracesApi');
 const servicesPerfApi = require('./routes/servicesPerfApi');
+
+const metricsMiddleware = require('./utils/metricsMiddleware');
+const metricsReporter = require('./utils/metricsReporter');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
 
@@ -53,11 +57,12 @@ app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { 
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
 app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
+app.use(metricsMiddleware.httpMetrics);
 
 // ROUTING
 const apis = [servicesApi, tracesApi, servicesPerfApi];
-if (config.stores.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
-if (config.stores.alerts) apis.push(require('./routes/alertsApi')); // eslint-disable-line global-require
+if (config.connectors.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
+if (config.connectors.alerts) apis.push(require('./routes/alertsApi')); // eslint-disable-line global-require
 
 app.use('/api', ...apis);
 app.use('/', indexRoute);
@@ -67,5 +72,8 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     errorLogger.error(err);
     next(err);
 });
+
+// START METRICS REPORTING
+metricsReporter.start(config.graphite.host, config.graphite.port, `haystack.ui.ui.${os.hostname()}`, 60000);
 
 module.exports = app;
