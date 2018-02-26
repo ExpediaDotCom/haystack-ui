@@ -15,23 +15,21 @@
  */
 
 const express = require('express');
-const config = require('../config/config');
-const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
+const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
+const servicesConnector = require('../connectors/services/servicesConnector');
 
 const router = express.Router();
-const SERVICE_CACHE_MAX_AGE = 5 * 60 * 1000;
 
 router.get('/services', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'services')(
-        () => tracesConnector.getServices()
+    handleResponsePromise(res, next, req.originalUrl, 'services')(
+        () => servicesConnector.getServices()
     );
 });
 
 router.get('/operations', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, SERVICE_CACHE_MAX_AGE, 'operations')(
-        () => tracesConnector.getOperations(req.query.serviceName)
+    handleResponsePromise(res, next, req.originalUrl, 'operations')(
+        () => servicesConnector.getOperations(req.query.serviceName)
     );
 });
 

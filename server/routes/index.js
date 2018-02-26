@@ -21,7 +21,7 @@
 const express = require('express');
 const onFinished = require('finished');
 const config = require('../config/config');
-const cache = require('./utils/cache');
+const servicesConnector = require('../connectors/services/servicesConnector');
 const metrics = require('../utils/metrics');
 
 const router = express.Router();
@@ -36,7 +36,7 @@ router.get('*', (req, res) => {
         enableServicePerformance: config.enableServicePerformance || false,
         enableServiceLevelTrends: config.enableServiceLevelTrends || false,
         enableLatencyCostViewer: config.enableLatencyCostViewer || false,
-        services: cache.get('/api/services') || null
+        services: servicesConnector.getServicesSync() || null
     });
 
     onFinished(res, () => {

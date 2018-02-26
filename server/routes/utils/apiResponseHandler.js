@@ -14,52 +14,18 @@
  *         limitations under the License.
  */
 
-const cache = require('./cache');
-const _ = require('lodash');
 const metrics = require('../../utils/metrics');
 
 const responseHandler = {};
 
-function runOp(operation, url, maxAge, response, next) {
-    operation()
-        .then((result) => {
-                if (!_.isEmpty(result)) {
-                    cache.set(url, result, maxAge);
-                }
-                if (response) {
-                    response.json(result);
-                }
-            },
-            (err) => {
-                if (next) {
-                    next(err);
-                }
-            }
-        ).done();
-}
-
-responseHandler.handleResponsePromiseWithCaching = (response, next, url, maxAge) => (operation) => {
-    const cachedItem = cache.get(url);
-    if (cachedItem) {
-        // check if the last cache.get entry was stale and hence expired
-        const isExpired = !cache.get(url);
-        if (isExpired) {
-            // set the cache key again so that next cache call doesn't force to make a downstream call
-            // but make a async refresh for the given key.
-            cache.set(url, cachedItem, maxAge);
-            runOp(operation, url, maxAge);
-        }
-        response.json(cachedItem);
-    } else {
-        runOp(operation, url, maxAge, response, next);
-    }
-};
-
 responseHandler.handleResponsePromise = (response, next, pathName) => (operation) => {
-    const timer = metrics.timer(pathName).start();
+    const timer = metrics.timer(`http_rq_${pathName}`).start();
 
     operation()
-    .then(result => response.json(result), err => next(err))
+    .then(result => response.json(result), (err) => {
+        metrics.meter(`http_rq_${pathName}_failed`).mark();
+        next(err);
+    })
     .fin(() => timer.end())
     .done();
 };
