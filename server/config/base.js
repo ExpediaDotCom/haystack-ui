@@ -6,7 +6,7 @@ module.exports = {
     cluster: false,
 
     // default timeout in ms for all the downlevels from connector
-    upstreamTimeout: 60000,
+    upstreamTimeout: 55000,
 
     graphite: {
         host: 'host',
