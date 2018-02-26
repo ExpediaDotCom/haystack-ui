@@ -18,12 +18,10 @@
 const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-const handleResponsePromiseWithCaching = require('./utils/apiResponseHandler').handleResponsePromiseWithCaching;
 
 const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
-const TRACE_CACHE_MAX_AGE = 60 * 1000;
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next, 'traces')(
@@ -32,25 +30,25 @@ router.get('/traces', (req, res, next) => {
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID')(
+    handleResponsePromise(res, next, req.originalUrl, 'trace_TRACEID')(
         () => tracesConnector.getTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID')(
+    handleResponsePromise(res, next, req.originalUrl, 'trace_raw_TRACEID')(
         () => tracesConnector.getRawTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_raw_TRACEID_SPANID')(
+    handleResponsePromise(res, next, req.originalUrl, 'trace_raw_TRACEID_SPANID')(
         () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId)
     );
 });
 
 router.get('/trace/:traceId/latencyCost', (req, res, next) => {
-    handleResponsePromiseWithCaching(res, next, req.originalUrl, TRACE_CACHE_MAX_AGE, 'trace_TRACEID_latencyCost')(
+    handleResponsePromise(res, next, req.originalUrl, 'trace_TRACEID_latencyCost')(
         () => tracesConnector.getLatencyCost(req.params.traceId)
     );
 });

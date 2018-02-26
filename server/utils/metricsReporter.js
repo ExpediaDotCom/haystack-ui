@@ -33,7 +33,9 @@ reporter.start = (host, port, prefix, interval) => {
 
         // report to graphite
         Object.keys(flattenedMetrics).forEach((name) => {
-            statsd.gauge(name, flattenedMetrics[name]);
+            if (false) {
+                statsd.gauge(name, flattenedMetrics[name]);
+            }
         });
     }, interval);
 };

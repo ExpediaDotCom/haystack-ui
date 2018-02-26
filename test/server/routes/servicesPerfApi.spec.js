@@ -18,7 +18,7 @@ const server = require('../../../server/app.js');
 const request = require('supertest');
 
 describe('routes.servicePerfApi', () => {
-    it('returns http 200 for /api/services', (done) => {
+    it('returns http 200 for /api/servicePerf', (done) => {
         request(server)
             .get('/api/servicePerf')
             .expect(200)
@@ -30,4 +30,3 @@ describe('routes.servicePerfApi', () => {
             });
     });
 });
-
