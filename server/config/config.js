@@ -17,7 +17,6 @@
 
  */
 
-const _ = require('lodash');
 const baseConfiguration = require('../config/base');
 
 if (process.env.HAYSTACK_OVERRIDES_CONFIG_PATH) {
