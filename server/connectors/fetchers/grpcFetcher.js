@@ -49,7 +49,7 @@ const fetcher = fetcherName => ({
                 } else {
                     logger.info(`fetch successful: ${fetcherName}`);
 
-                    deferred.resolve(result.getValuesList());
+                    deferred.resolve(result);
                 }
             });
 
