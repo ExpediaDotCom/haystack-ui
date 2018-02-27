@@ -17,6 +17,7 @@ const _ = require('lodash');
 const Q = require('q');
 const cache = require('../../routes/utils/cache');
 const config = require('../../config/config');
+const logger = require('../../utils/logger').withIdentifier('servicesConnector');
 
 const tracesConnector = require(`../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 
@@ -33,6 +34,7 @@ function fetchAndSet(cacheKey, op, maxAge) {
             // set the cache key again so that next cache call doesn't force to make a downstream call
             // but make a async refresh for the given key.
             cache.set(cacheKey, cachedItem, maxAge);
+            logger.info(`cache expired for ${cacheKey}`);
 
             op()
             .then((result) => {
@@ -42,6 +44,7 @@ function fetchAndSet(cacheKey, op, maxAge) {
             });
         }
 
+        logger.info(`cache missed for ${cacheKey}`);
         return Q.fcall(() => cachedItem);
     }
 
@@ -59,6 +62,6 @@ connector.getServicesSync = () => cache.get('services');
 
 connector.getServices = () => fetchAndSet('services', () => tracesConnector.getServices(), 5 * 60 * 1000);
 
-connector.getOperations = serviceName => fetchAndSet(`operation-${serviceName}`, () => tracesConnector.getOperations(serviceName), 5 * 60 * 1000);
+connector.getOperations = serviceName => fetchAndSet(`operations-${serviceName}`, () => tracesConnector.getOperations(serviceName), 5 * 60 * 1000);
 
 module.exports = connector;
