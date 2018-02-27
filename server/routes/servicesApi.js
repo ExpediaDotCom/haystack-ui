@@ -22,13 +22,13 @@ const servicesConnector = require('../connectors/services/servicesConnector');
 const router = express.Router();
 
 router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'services')(
+    handleResponsePromise(res, next, 'services')(
         () => servicesConnector.getServices()
     );
 });
 
 router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'operations')(
+    handleResponsePromise(res, next, 'operations')(
         () => servicesConnector.getOperations(req.query.serviceName)
     );
 });

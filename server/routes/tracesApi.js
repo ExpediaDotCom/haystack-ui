@@ -30,25 +30,25 @@ router.get('/traces', (req, res, next) => {
 });
 
 router.get('/trace/:traceId', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'trace_TRACEID')(
+    handleResponsePromise(res, next, 'trace_TRACEID')(
         () => tracesConnector.getTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'trace_raw_TRACEID')(
+    handleResponsePromise(res, next, 'trace_raw_TRACEID')(
         () => tracesConnector.getRawTrace(req.params.traceId)
     );
 });
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'trace_raw_TRACEID_SPANID')(
+    handleResponsePromise(res, next, 'trace_raw_TRACEID_SPANID')(
         () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId)
     );
 });
 
 router.get('/trace/:traceId/latencyCost', (req, res, next) => {
-    handleResponsePromise(res, next, req.originalUrl, 'trace_TRACEID_latencyCost')(
+    handleResponsePromise(res, next, 'trace_TRACEID_latencyCost')(
         () => tracesConnector.getLatencyCost(req.params.traceId)
     );
 });
