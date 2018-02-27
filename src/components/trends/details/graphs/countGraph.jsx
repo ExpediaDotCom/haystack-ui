@@ -48,9 +48,9 @@ countChartOptions.scales.yAxes = [{
 }];
 
 const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) => {
-    const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
+    const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
+    const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
 
     if (!totalData.length && !successData && !failureData) {
         return (<MissingTrendGraph title="Count"/>);

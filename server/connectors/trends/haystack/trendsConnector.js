@@ -166,7 +166,7 @@ function fetchServiceStats({countValues, successValues, failureValues, tp99Value
         const successCount = fetchOperationDataPoints(serviceTrends, 'count.success-span');
         const failureCount = fetchOperationDataPoints(serviceTrends, 'count.failure-span');
         const tp99DurationPoints = fetchOperationDataPoints(serviceTrends, '*_99.duration');
-        const latestTp99DurationDatapoint = tp99DurationPoints[tp99DurationPoints.length - 1];
+        const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
         const opKV = {
             type: 'Incoming Requests',
@@ -192,7 +192,7 @@ function fetchOperationStats({countValues, successValues, failureValues, tp99Val
         const successCount = fetchOperationDataPoints(operationTrends, 'count.success-span');
         const failureCount = fetchOperationDataPoints(operationTrends, 'count.failure-span');
         const tp99DurationPoints = fetchOperationDataPoints(operationTrends, '*_99.duration');
-        const latestTp99DurationDatapoint = tp99DurationPoints[tp99DurationPoints.length - 1];
+        const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
         const opKV = {
             operationName,
