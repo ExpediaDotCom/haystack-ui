@@ -43,11 +43,10 @@ function fetchAndSet(cacheKey, op, maxAge) {
                 }
             });
         }
-
-        logger.info(`cache missed for ${cacheKey}`);
         return Q.fcall(() => cachedItem);
     }
 
+    logger.info(`cache missed for ${cacheKey}`);
     return op()
     .then((result) => {
         if (!_.isEmpty(result)) {
