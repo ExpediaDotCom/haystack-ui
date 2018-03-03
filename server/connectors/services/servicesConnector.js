@@ -25,6 +25,8 @@ const connector = {};
 
 function fetchAndSet(cacheKey, op, maxAge) {
     const cachedItem = cache.get(cacheKey);
+    logger.info(`cache state: ${cache}`);
+    logger.info(`cache item: ${cachedItem}`);
 
     if (cachedItem) {
         const isExpired = !cache.get(cacheKey);
