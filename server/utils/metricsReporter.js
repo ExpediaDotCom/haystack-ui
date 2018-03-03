@@ -14,7 +14,6 @@
  *         limitations under the License.
  */
 
-const StatsdClient = require('statsd-client');
 const flatten = require('flat');
 const metrics = require('./metrics');
 const logger = require('./logger').withIdentifier('metrics');
@@ -22,21 +21,12 @@ const logger = require('./logger').withIdentifier('metrics');
 const reporter = {};
 
 reporter.start = (host, port, prefix, interval) => {
-    const statsd = new StatsdClient({host, port, prefix});
-
     setInterval(() => {
         const flattenedMetrics = flatten(metrics.toJSON());
 
         // report to logs
         logger.info(prefix);
         logger.info(JSON.stringify(flattenedMetrics));
-
-        // report to graphite
-        Object.keys(flattenedMetrics).forEach((name) => {
-            if (false) {
-                statsd.gauge(name, flattenedMetrics[name]);
-            }
-        });
     }, interval);
 };
 
