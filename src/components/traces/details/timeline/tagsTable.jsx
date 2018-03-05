@@ -42,7 +42,7 @@ const TagsTable = ({tags}) => {
                                     <span className="ti-new-window"/> <span>{tag.value}</span>
                                 </a>
                             ) :
-                            (<span>{tag.value}</span>)
+                            (<span>{`${tag.value}`}</span>)
                         }
                     </td>
                 </tr>)
