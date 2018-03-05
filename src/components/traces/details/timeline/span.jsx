@@ -44,11 +44,9 @@ export default class Span extends React.Component {
     }
 
     static getSpanError(span) {
-        const errorTag = span.tags.find(tag => tag.key === 'error');
-        if (errorTag !== undefined) {
-            return errorTag.value;
-        }
-        return false;
+        return !!span.tags.find(
+            tag => (tag.key === 'error' && (tag.value === 'true' || tag.value === true))
+        );
     }
 
     constructor(props) {
@@ -130,7 +128,7 @@ export default class Span extends React.Component {
         const formattedDuration = `${formatters.toDurationMsString(duration)}`;
         const SpanBar = (<g>
             <text
-                className={Span.getSpanError(span) === 'true' ? 'span-label span-label_failure' : 'span-label'}
+                className={Span.getSpanError(span) ? 'span-label span-label_failure' : 'span-label'}
                 x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 2)}
                 textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
@@ -138,7 +136,7 @@ export default class Span extends React.Component {
             </text>
             <rect
                 id={span.traceId}
-                className={Span.getSpanError(span) === 'true' ? 'span-bar span-bar_failure' : 'span-bar'}
+                className={Span.getSpanError(span) ? 'span-bar span-bar_failure' : 'span-bar'}
                 height={9}
                 width={`${Math.max(spanWidthPercent, 0.4)}%`}
                 x={leftOffsetPercent < 99.6 ? `${leftOffsetPercent}%` : '99.6%'}
