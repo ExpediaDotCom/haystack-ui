@@ -13,56 +13,19 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-const _ = require('lodash');
-const Q = require('q');
-const cache = require('../../routes/utils/cache');
 const config = require('../../config/config');
-const logger = require('../../utils/logger').withIdentifier('servicesConnector');
+const LoaderBackedCache = require('../utils/LoaderBackedCache');
 
 const tracesConnector = require(`../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 
 const connector = {};
 
-function fetchAndSet(cacheKey, op, maxAge) {
-    const cachedItem = cache.get(cacheKey);
-    logger.info(`cache state: ${cache}`);
-    logger.info(`cache item: ${cachedItem}`);
+const serviceCache = new LoaderBackedCache(() => tracesConnector.getServices(), 5 * 60 * 1000);
+connector.getServices = () => serviceCache.get();
+connector.getServicesSync = () => serviceCache.getCached();
 
-    if (cachedItem) {
-        const isExpired = !cache.get(cacheKey);
-
-        // check if the last cache.get entry was stale and hence expired
-        if (isExpired) {
-            // set the cache key again so that next cache call doesn't force to make a downstream call
-            // but make a async refresh for the given key.
-            cache.set(cacheKey, cachedItem, maxAge);
-            logger.info(`cache expired for ${cacheKey}`);
-
-            op()
-            .then((result) => {
-                if (!_.isEmpty(result)) {
-                    cache.set(cacheKey, result, maxAge);
-                }
-            });
-        }
-        return Q.fcall(() => cachedItem);
-    }
-
-    logger.info(`cache missed for ${cacheKey}`);
-    return op()
-    .then((result) => {
-        if (!_.isEmpty(result)) {
-            cache.set(cacheKey, result, maxAge);
-        }
-
-        return result;
-    });
-}
-
-connector.getServicesSync = () => cache.get('services');
-
-connector.getServices = () => fetchAndSet('services', () => tracesConnector.getServices(), 5 * 60 * 1000);
-
-connector.getOperations = serviceName => fetchAndSet(`operations-${serviceName}`, () => tracesConnector.getOperations(serviceName), 5 * 60 * 1000);
+const operationsCache = new LoaderBackedCache(serviceName => tracesConnector.getOperations(serviceName), 5 * 60 * 1000);
+connector.getOperations = serviceName => operationsCache.get(serviceName);
+connector.getOperationsSync = serviceName => operationsCache.getCached(serviceName);
 
 module.exports = connector;
