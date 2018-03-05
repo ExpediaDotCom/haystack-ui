@@ -19,7 +19,7 @@ const converter = {};
 function toTagJson(pbTag) {
     return {
         key: pbTag.key,
-        value: pbTag.vstr || pbTag.vlong || pbTag.vdouble || pbTag.vbool || pbTag.vbytes
+        value: pbTag.vstr || pbTag.vlong || pbTag.vdouble || pbTag.vbytes || pbTag.vbool
     };
 }
 
