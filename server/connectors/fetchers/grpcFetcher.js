@@ -24,9 +24,15 @@ const grpc = require('grpc');
 const config = require('../../config/config');
 const services = require('../../../static_codegen/traceReader_grpc_pb');
 
+const grpcOptions = {
+    'grpc.max_receive_message_length': 10485760,
+    ...config.connectors.traces.grpcOptions
+};
+
 const client = new services.TraceReaderClient(
     `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`,
-    grpc.credentials.createInsecure()); // TODO make client secure
+    grpc.credentials.createInsecure(),
+    grpcOptions); // TODO make client secure
 
 function generateCallDeadline() {
     return new Date().setMilliseconds(new Date().getMilliseconds() + config.upstreamTimeout);
