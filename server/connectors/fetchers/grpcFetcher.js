@@ -24,8 +24,9 @@ const grpc = require('grpc');
 const config = require('../../config/config');
 const services = require('../../../static_codegen/traceReader_grpc_pb');
 
-const grpcOptions = config.connectors.traces.grpcOptions || {
-    'grpc.max_receive_message_length': 10485760
+const grpcOptions = {
+    'grpc.max_receive_message_length': 10485760,
+    ...config.connectors.traces.grpcOptions
 };
 
 const client = new services.TraceReaderClient(
