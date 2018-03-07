@@ -88,16 +88,29 @@ function getTrendValues(target, from, until) {
 
 function fetchOperationTrendValues(target, from, until) {
     return trendsFetcher
-    .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
-    .then(data =>
-        (data[0] ?
-            data[0].datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
-            : []));
+        .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+        .then(data =>
+            (data[0] ?
+                data[0].datapoints.map(datapoint => ({
+                    value: datapoint[0],
+                    timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])
+                }))
+                : []))
+        .then((datapoints) => {
+            if (datapoints.length !== 0 && datapoints[datapoints.length - 1].value === null) {
+                datapoints.pop();
+            }
+            return datapoints;
+        });
 }
 
-function fetchOperationDataPoints(operationTrends, trendStat) {
+function fetchDatapoints(operationTrends, trendStat) {
     const dataPoints = operationTrends.find(trend => trendStat in trend);
-    return (dataPoints ? dataPoints[trendStat] : []);
+    const trendStatDataPoints = dataPoints ? dataPoints[trendStat] : [];
+    if (trendStatDataPoints.length !== 0 && trendStatDataPoints[trendStatDataPoints.length - 1].value === null) {
+        trendStatDataPoints.pop();
+    }
+    return trendStatDataPoints;
 }
 
 function dataPointsSum(dataPoints) {
@@ -139,9 +152,9 @@ function fetchServicePerfStats({countValues, successValues, failureValues, tp99V
     const groupedByServiceName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.serviceName);
     Object.keys(groupedByServiceName).forEach((service) => {
         const serviceTrends = groupedByServiceName[service];
-        const count = dataPointsSum(fetchOperationDataPoints(serviceTrends, 'count.received-span'));
-        const successCount = dataPointsSum(fetchOperationDataPoints(serviceTrends, 'count.success-span'));
-        const failureCount = dataPointsSum(fetchOperationDataPoints(serviceTrends, 'count.failure-span'));
+        const count = dataPointsSum(fetchDatapoints(serviceTrends, 'count.received-span'));
+        const successCount = dataPointsSum(fetchDatapoints(serviceTrends, 'count.success-span'));
+        const failureCount = dataPointsSum(fetchDatapoints(serviceTrends, 'count.failure-span'));
         const successPercent = ((successCount / (successCount + failureCount)) * 100);
 
         const opKV = {
@@ -162,10 +175,10 @@ function fetchServiceStats({countValues, successValues, failureValues, tp99Value
     const groupedByServiceName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.serviceName);
     Object.keys(groupedByServiceName).forEach((serviceName) => {
         const serviceTrends = groupedByServiceName[serviceName];
-        const countPoints = fetchOperationDataPoints(serviceTrends, 'count.received-span');
-        const successCount = fetchOperationDataPoints(serviceTrends, 'count.success-span');
-        const failureCount = fetchOperationDataPoints(serviceTrends, 'count.failure-span');
-        const tp99DurationPoints = fetchOperationDataPoints(serviceTrends, '*_99.duration');
+        const countPoints = fetchDatapoints(serviceTrends, 'count.received-span');
+        const successCount = fetchDatapoints(serviceTrends, 'count.success-span');
+        const failureCount = fetchDatapoints(serviceTrends, 'count.failure-span');
+        const tp99DurationPoints = fetchDatapoints(serviceTrends, '*_99.duration');
         const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
         const opKV = {
@@ -188,10 +201,10 @@ function fetchOperationStats({countValues, successValues, failureValues, tp99Val
     const groupedByOperationName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.operationName);
     Object.keys(groupedByOperationName).forEach((operationName) => {
         const operationTrends = groupedByOperationName[operationName];
-        const countPoints = fetchOperationDataPoints(operationTrends, 'count.received-span');
-        const successCount = fetchOperationDataPoints(operationTrends, 'count.success-span');
-        const failureCount = fetchOperationDataPoints(operationTrends, 'count.failure-span');
-        const tp99DurationPoints = fetchOperationDataPoints(operationTrends, '*_99.duration');
+        const countPoints = fetchDatapoints(operationTrends, 'count.received-span');
+        const successCount = fetchDatapoints(operationTrends, 'count.success-span');
+        const failureCount = fetchDatapoints(operationTrends, 'count.failure-span');
+        const tp99DurationPoints = fetchDatapoints(operationTrends, '*_99.duration');
         const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
         const opKV = {
