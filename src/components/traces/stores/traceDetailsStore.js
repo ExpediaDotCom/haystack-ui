@@ -24,13 +24,12 @@ function TraceException(data) {
     this.data = data;
 }
 
-export function setChildExpandState(timelineSpans, parentId, display) {
-    const parent = timelineSpans.find(s => s.spanId === parentId);
+export function setChildExpandState(timelineSpans, parent) {
     parent.children.forEach((childId) => {
         const childSpan = timelineSpans.find(s => s.spanId === childId);
-        childSpan.display = display;
-        childSpan.expanded = display;
-        setChildExpandState(timelineSpans, childSpan.spanId, display);
+        childSpan.display = parent.expanded;
+        childSpan.expanded = parent.expanded;
+        setChildExpandState(timelineSpans, childSpan);
     });
 }
 
@@ -114,8 +113,8 @@ export class TraceDetailsStore {
 
     @action toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
-        setChildExpandState(this.timelineSpans, selectedParentId, !parent.expanded);
         parent.expanded = !parent.expanded;
+        setChildExpandState(this.timelineSpans, parent);
     }
 }
 
