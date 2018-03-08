@@ -16,10 +16,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
+
 import formatters from '../../../../utils/formatters';
 
 import Span from './span';
 
+@observer
 export default class TimelineTab extends React.Component {
     static propTypes = {
         timelineSpans: PropTypes.array.isRequired,
