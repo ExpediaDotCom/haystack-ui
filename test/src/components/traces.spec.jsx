@@ -519,9 +519,10 @@ describe('<Traces />', () => {
     it('renders the descendents on Span Click in the timeline view', () => {
         const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-        wrapper.find('[id="test-span-1"]').simulate('click');
-
+        const parentSpan = wrapper.find('[id="test-span-1"]');
         expect(wrapper.find('.span-bar')).to.have.length(4);
+        parentSpan.simulate('click');
+        expect(wrapper.find('.span-bar')).to.have.length(1);
     });
 
     it('properly renders the time pointers to depict duration', () => {
