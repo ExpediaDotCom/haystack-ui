@@ -57,6 +57,7 @@ function calculateShadowDuration(spans) {
 
 function findTag(tags, tagName) {
   const foundTag = tags.find(tag => tag.key && tag.key.toLowerCase() === tagName);
+  if (foundTag === undefined) return false;
   return foundTag && foundTag.value;
 }
 
