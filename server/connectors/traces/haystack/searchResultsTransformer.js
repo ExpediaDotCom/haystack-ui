@@ -87,7 +87,7 @@ function createQueriedServiceSummary(trace, serviceName, endToEndDuration) {
 }
 
 function createQueriedOperationSummary(trace, operationName, endToEndDuration) {
-  const operationSpans = trace.filter(span => span.operationName === operationName);
+  const operationSpans = trace.filter(span => span.operationName.toLowerCase() === operationName.toLowerCase());
   const operationShadowDuration = calculateShadowDuration(operationSpans);
   const percent = Math.floor((operationShadowDuration / endToEndDuration) * 100);
 
