@@ -24,6 +24,7 @@ export class UserStore {
             id: null,
             name: null,
             groups: null,
+            email: null,
             isLoggedIn: false
         };
     }
@@ -32,6 +33,7 @@ export class UserStore {
         this.user.id = userData.id;
         this.user.name = userData.userName;
         this.user.groups = userData.userGroups;
+        this.user.email = userData.email;
         this.user.isLoggedIn = true;
     }
 
@@ -39,6 +41,7 @@ export class UserStore {
         this.user.id = null;
         this.user.name = null;
         this.user.groups = null;
+        this.user.email = null;
         this.user.isLoggedIn = false;
     }
 }
