@@ -65,10 +65,10 @@ class LoginGateway extends React.Component {
             });
     }
 
-    privateRoute() {
+    privateRoute(disableSSO) {
         return (
             <Route render={() => (
-                this.isLoggedIn ? (
+                this.isLoggedIn || disableSSO ? (
                         <div>
                             <Main />
                         </div>
@@ -81,16 +81,18 @@ class LoginGateway extends React.Component {
     }
 
     render() {
+        const disableSSO = !window.haystackUiConfig.enableSSO;
+
         return (
             <Switch>
                 <Route
                     exact
                     path="/login"
                     render={() => (
-                        <LoginComponent redirectUrl={this.redirectUrl} />
+                        disableSSO ? <Redirect to={{ pathname: '/' }}/> : <LoginComponent redirectUrl={this.redirectUrl} />
                     )}
                 />
-                {this.privateRoute()}
+                {this.privateRoute(disableSSO)}
             </Switch>
         );
     }

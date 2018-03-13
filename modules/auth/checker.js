@@ -23,7 +23,7 @@
 
 module.exports = function (config) {
     return function (req, res, next) {
-        if (req.user || config.disable_auth) {
+        if (req.user || !config.enableSSO) {
             next();
         } else {
             res.status(401).end();
