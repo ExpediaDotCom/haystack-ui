@@ -19,7 +19,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
 import Perf from 'react-addons-perf';
-import LoginGateway from './loginFilter';
+import LoginGateway from './loginGateway';
 import storesInitializer from './stores/storesInitializer';
 import withTracker from './components/common/withTracker';
 
