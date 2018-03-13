@@ -19,7 +19,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
 import Perf from 'react-addons-perf';
-import LoginFilter from './loginFilter';
+import LoginGateway from './loginFilter';
 import storesInitializer from './stores/storesInitializer';
 import withTracker from './components/common/withTracker';
 
@@ -30,7 +30,7 @@ storesInitializer.init();
 // mount react components
 ReactDOM.render(
     <Router history={history}>
-        <Route component={withTracker(LoginFilter)}/>
+        <Route component={withTracker(LoginGateway)}/>
     </Router>
     , document.getElementById('root')
 );
