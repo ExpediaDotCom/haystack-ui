@@ -20,7 +20,7 @@ module.exports = {
     enableServicePerformance: true,
     enableServiceLevelTrends: true,
     enableLatencyCostViewer: true,
-
+    enableSSO: false,
     // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config

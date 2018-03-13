@@ -62,6 +62,7 @@ app.use(metricsMiddleware.httpMetrics);
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 // ROUTING
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
@@ -73,6 +74,12 @@ app.use('/user', require('./routes/user')(config));
 
 app.use('/api', ...apis);
 app.use('/', indexRoute);
+
+app.use((req, res, next) => {
+    if (req.user) res.cookie('userId', req.user.id);
+    else res.clearCookie('userId');
+    next();
+});
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars

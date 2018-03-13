@@ -20,7 +20,8 @@ html
             enableServicePerformance: !{JSON.stringify(enableServicePerformance || null)},
             enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || null)},
             enableLatencyCostViewer: !{JSON.stringify(enableLatencyCostViewer || null)},
-            services: !{JSON.stringify(services || null)}
+            services: !{JSON.stringify(services || null)},
+            enableSSO: !{JSON.stringify(enableSSO || null)}
         }
     script(async, defer, src='/bundles/js/app.js')
     script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js')
