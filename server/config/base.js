@@ -50,5 +50,8 @@ module.exports = {
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub'
         }
+    },
+    passport: {
+        // name of module to enable user authentication before entry
     }
 };
