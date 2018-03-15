@@ -19,14 +19,14 @@ function toCallNode(pbNode) {
     return {
         serviceName: pbNode.servicename,
         operationName: pbNode.operationname,
-        infrastructureProvider: pbNode.infrastructureprovider,
-        infrastructureLocation: pbNode.infrastructurelocation
+        infrastructureProvider: pbNode.infrastructureprovider || '',
+        infrastructureLocation: pbNode.infrastructurelocation || ''
     };
 }
 
 transformer.transform = pbCallGraph =>
     pbCallGraph.callsList.map(call => ({
-        networkDelta: call.networkdelta,
+        networkDelta: call.networkdelta / 1000,
         from: toCallNode(call.from),
         to: toCallNode(call.to)
     }));
