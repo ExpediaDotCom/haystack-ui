@@ -18,9 +18,10 @@
  */
 
 const messages = require('../../../../static_codegen/traceReader_pb');
-const searchResultsTransformer = require('./searchResultsTransformer');
-const protobufConverter = require('./protobufConverter');
-const searchRequestBuilder = require('./searchRequestBuilder');
+const searchResultsTransformer = require('./search/searchResultsTransformer');
+const callGraphResultTransformer = require('./protobufConverters/callGraphConverter');
+const protobufConverter = require('./protobufConverters/traceConverter');
+const searchRequestBuilder = require('./search/searchRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../fetchers/grpcFetcher');
 
@@ -29,6 +30,7 @@ const traceFetcher = fetcher('getTrace');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 const tracesSearchFetcher = fetcher('searchTraces');
+const traceCallGraphFetcher = fetcher('getTraceCallGraph');
 
 const connector = {};
 
@@ -110,6 +112,15 @@ connector.getRawSpan = (traceId, spanId) => {
     return rawSpanFetcher
     .fetch(request)
     .then(result => protobufConverter.toSpanJson(messages.Span.toObject(false, result)));
+};
+
+connector.getLatencyCost = (traceId) => {
+    const request = new messages.TraceRequest();
+    request.setTraceid(traceId);
+
+    return traceCallGraphFetcher
+    .fetch(request)
+    .then(result => callGraphResultTransformer.transform(messages.TraceCallGraph.toObject(false, result)));
 };
 
 module.exports = connector;

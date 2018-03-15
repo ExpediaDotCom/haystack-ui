@@ -13,7 +13,7 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-const searchResultsTransformer = require('../haystack/searchResultsTransformer');
+const searchResultsTransformer = require('../haystack/search/searchResultsTransformer');
 
 function convertSuccessTag(tags) {
   const successTag = tags.find(tag => tag.key.toLowerCase() === 'success');
