@@ -83,7 +83,8 @@ export default class Span extends React.Component {
             timelineWidthPercent,
             timePointersHeight,
             parentStartTimePercent,
-            parentIndex
+            parentIndex,
+            startTime
         } = this.props;
 
         const {
@@ -97,6 +98,7 @@ export default class Span extends React.Component {
         } = span;
 
         const depthFactor = depth * 0.5;
+
         // coordinates
         const verticalPadding = 6;
         const topY = timePointersHeight + (index * spanHeight);
@@ -108,7 +110,7 @@ export default class Span extends React.Component {
         const serviceLabelWidth = (maxServiceChars * 7.5);
         const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
 
-        // merged span
+        // merged span indicator
         const isMergedSpan = Span.getTagValue(span, auxillaryTags.IS_MERGED_SPAN);
         const clientServiceName = Span.getTagValue(span, auxillaryTags.CLIENT_SERVICE_NAME);
         const clientOperationName = Span.getTagValue(span, auxillaryTags.CLIENT_OPERATION_NAME);
@@ -179,10 +181,29 @@ export default class Span extends React.Component {
             </rect>
         </g>);
 
+
+        // client span bar
+        const clientDuration = isMergedSpan && Span.getTagValue(span, auxillaryTags.CLIENT_DURATION);
+        const clientStartTime = isMergedSpan && Span.getTagValue(span, auxillaryTags.CLIENT_START_TIME);
+        const clientStartTimePercent = isMergedSpan && (((clientStartTime - startTime) / totalDuration) * 100);
+        const clientLeftOffsetPercent = isMergedSpan && Span.getOffsetPercent(clientStartTimePercent, timelineWidthPercent);
+        const clientSpanWidthPercent = isMergedSpan && ((clientDuration / totalDuration) * 100) * (timelineWidthPercent / 100);
+
+        const ClientSpanBar = isMergedSpan && (<g>
+                <rect
+                    id={span.traceId}
+                    className="span-bar span-bar_client"
+                    height={9}
+                    width={`${clientSpanWidthPercent}%`}
+                    x={`${clientLeftOffsetPercent}%`}
+                    y={topY + (verticalPadding * 3)}
+                />
+            </g>);
+
         // invocation lines
         const horizontalLineY = topY + (verticalPadding * 3.8);
         const parentOffsetPercent = Span.getOffsetPercent(parentStartTimePercent, timelineWidthPercent);
-        const invocationLines = (<g>
+        const InvocationLines = (<g>
             <line
                 className="invocation-line"
                 x1={`${parentOffsetPercent}%`}
@@ -210,7 +231,8 @@ export default class Span extends React.Component {
                     onClick={this.openModal}
                 />
 
-                {invocationLines}
+                {ClientSpanBar}
+                {InvocationLines}
                 {ServiceName}
                 {SpanBar}
                 {expandable
@@ -237,7 +259,7 @@ export default class Span extends React.Component {
                     closeModal={this.closeModal}
                     serviceName={serviceName}
                     span={span}
-                    startTime={this.props.startTime}
+                    startTime={startTime}
                 />
                 <clipPath id="overflow">
                     <rect
