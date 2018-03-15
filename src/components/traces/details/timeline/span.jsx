@@ -21,6 +21,7 @@ import {observer} from 'mobx-react';
 import SpanDetailsModal from './spanDetailsModal';
 import formatters from '../../../../utils/formatters';
 import serviceColor from '../../../../utils/serviceColorMapper';
+import auxillaryTags from '../../utils/auxiliaryTags';
 
 @observer
 export default class Span extends React.Component {
@@ -47,6 +48,11 @@ export default class Span extends React.Component {
         return !!span.tags.find(
             tag => (tag.key === 'error' && (tag.value === 'true' || tag.value === true))
         );
+    }
+
+    static getTagValue(span, tagName) {
+        const tag = span.tags.find(t => (t.key === tagName));
+        return tag && tag.value;
     }
 
     constructor(props) {
@@ -102,9 +108,28 @@ export default class Span extends React.Component {
         const serviceLabelWidth = (maxServiceChars * 7.5);
         const trimmedServiceName = serviceName.length > maxServiceChars ? `${serviceName.substr(0, maxServiceChars)}...` : serviceName;
 
-        // TODO add tooltip text
+        // merged span
+        const isMergedSpan = Span.getTagValue(span, auxillaryTags.IS_MERGED_SPAN);
+        const clientServiceName = Span.getTagValue(span, auxillaryTags.CLIENT_SERVICE_NAME);
+        const clientOperationName = Span.getTagValue(span, auxillaryTags.CLIENT_OPERATION_NAME);
+
+        const fullOperationName = isMergedSpan ?
+            `${clientServiceName}: ${clientOperationName} + ${serviceName}: ${operationName}` :
+            operationName;
+
         const ServiceName = (
             <g>
+                {
+                    isMergedSpan &&
+                    <rect
+                        className={`service-pill ${serviceColor.toFillClass(clientServiceName)}`}
+                        height={pillHeight}
+                        width={serviceLabelWidth}
+                        y={topY + verticalPadding + 6}
+                        x={`${depthFactor + 2 + 0.5}%`}
+                        clipPath="url(#overflow)"
+                    />
+                }
                 <rect
                     className={`service-pill ${serviceColor.toFillClass(serviceName)}`}
                     height={pillHeight}
@@ -132,7 +157,7 @@ export default class Span extends React.Component {
                 x={leftOffsetPercent > 70 ? `${leftOffsetPercent + spanWidthPercent}%` : `${leftOffsetPercent}%`}
                 y={topY + (verticalPadding * 2)}
                 textAnchor={leftOffsetPercent > 70 ? 'end' : 'start'}
-            >{operationName}: {formattedDuration}
+            >{fullOperationName} [ {formattedDuration} ]
             </text>
             <rect
                 id={span.traceId}
@@ -150,7 +175,7 @@ export default class Span extends React.Component {
                 y={topY}
                 onClick={this.openModal}
             >
-                <title>{serviceName} : {operationName}</title>
+                <title>{fullOperationName}</title>
             </rect>
         </g>);
 
