@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Expedia, Inc.
+ * Copyright 2018 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -15,6 +15,20 @@
  */
 const transformer = {};
 
-transformer.transform = result => result;
+function toCallNode(pbNode) {
+    return {
+        serviceName: pbNode.servicename,
+        operationName: pbNode.operationname,
+        infrastructureProvider: pbNode.infrastructureprovider,
+        infrastructureLocation: pbNode.infrastructurelocation
+    };
+}
+
+transformer.transform = pbCallGraph =>
+    pbCallGraph.callsList.map(call => ({
+        networkDelta: call.networkdelta,
+        from: toCallNode(call.from),
+        to: toCallNode(call.to)
+    }));
 
 module.exports = transformer;
