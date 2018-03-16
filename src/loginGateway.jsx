@@ -26,6 +26,7 @@ import LoginComponent from './components/common/login';
 import Main from './main';
 import UiStore from './stores/userStore';
 
+
 @withRouter
 @observer
 class LoginGateway extends React.Component {
@@ -37,10 +38,11 @@ class LoginGateway extends React.Component {
         super(props);
 
         this.isLoggedIn = false;
-        this.redirectUrl = '/home';
+        this.redirectUrl = '/';
         this.state = {
             user: null
         };
+        this.getUserDetails = this.getUserDetails.bind(this);
     }
 
     componentWillMount() {

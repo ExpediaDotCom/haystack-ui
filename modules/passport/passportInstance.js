@@ -18,7 +18,7 @@ const passport = require('passport');
 const SamlStrategy = require('passport-saml').Strategy;
 const User = require('../cache/user');
 
-const loggedInHome = '/home';
+const loggedInHome = '/';
 const loginErrRedirect = '/loginErr';
 
 module.exports = (options, cb) => {

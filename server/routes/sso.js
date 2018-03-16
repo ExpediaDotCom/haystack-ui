@@ -19,8 +19,8 @@ const passport = require('passport');
 
 const router = express.Router();
 // protected route
-const loggedInHome = '/';
-const loginErrRedirect = '/loginErr';
+const loggedInHome = '/home';
+const loginErrRedirect = '/login?error=true';
 const winston = require('winston');
 
 // Utilize Lo-Dash utility library

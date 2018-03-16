@@ -20,9 +20,9 @@ import React from 'react';
 const Login = ({ redirectUrl }) => (
     <div className="row login-cover text-center">
         <div className="container">
-            <div className="jumbotron col-md-8 col-md-offset-2 m-y-lg login-box text-center">
+            <div className="jumbotron col-md-8 col-md-offset-2 login-box text-center">
                 <h1>Haystack</h1>
-                <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/home'}`} className="btn btn-primary">Sign in using SEA credentials</a>
+                <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/home'}`} className="btn btn-primary">Sign in</a>
             </div>
         </div>
     </div>
@@ -33,3 +33,4 @@ Login.propTypes = {
 };
 
 export default Login;
+
