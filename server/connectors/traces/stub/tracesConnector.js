@@ -189,12 +189,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         networkDelta: 65
     },
@@ -202,12 +202,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'tyrell-service',
             infrastructureProvider: '',
-            infrastructureRegion: ''
+            infrastructureLocation: ''
         },
         networkDelta: null
     },
@@ -215,12 +215,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'dragon-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-1'
+            infrastructureLocation: 'us-west-1'
         },
         networkDelta: 55
     },
@@ -228,12 +228,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'dragon-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-1'
+            infrastructureLocation: 'us-west-1'
         },
         networkDelta: 64
     },
@@ -241,12 +241,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'dragon-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-1'
+            infrastructureLocation: 'us-west-1'
         },
         to: {
             serviceName: 'blackwater-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-2'
+            infrastructureLocation: 'us-east-2'
         },
         networkDelta: 121
     },
@@ -254,12 +254,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'baratheon-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
+            infrastructureLocation: 'us-east-1'
         },
         networkDelta: 180
     },
@@ -267,12 +267,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'baratheon-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
+            infrastructureLocation: 'us-east-1'
         },
         to: {
             serviceName: 'blackwater-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-east-1'
+            infrastructureLocation: 'us-east-1'
         },
         networkDelta: 109
     },
@@ -280,12 +280,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         networkDelta: 99
     },
@@ -293,12 +293,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         networkDelta: 128
     },
@@ -306,12 +306,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         networkDelta: 77
     },
@@ -319,12 +319,12 @@ connector.getLatencyCost = () => Q.fcall(() => [
         from: {
             serviceName: 'stark-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-2'
+            infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
             infrastructureProvider: 'aws',
-            infrastructureRegion: 'us-west-3'
+            infrastructureLocation: 'us-west-3'
         },
         networkDelta: 98
     }

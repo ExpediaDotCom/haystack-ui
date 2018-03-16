@@ -83,10 +83,10 @@ export default class LatencyCost extends React.Component {
 
     static createNodes(rawEdges, environmentList) {
         const allNodes = _.flatten(rawEdges.map((edge) => {
-            const fromEnv = LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion);
+            const fromEnv = LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation);
             const fromServiceName = edge.from.serviceName;
 
-            const toEnv = LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion);
+            const toEnv = LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation);
             const toServiceName = edge.to.serviceName;
 
             return [{environment: fromEnv, name: fromServiceName}, {environment: toEnv, name: toServiceName}];
