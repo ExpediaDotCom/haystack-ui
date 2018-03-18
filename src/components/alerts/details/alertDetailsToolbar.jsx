@@ -47,16 +47,16 @@ export default class AlertDetailsToolbar extends React.Component {
         return (
             <div>
                 <div className="pull-left">
-                    <Link to={`/service/${this.props.serviceName}/trends?operationName=${this.props.operationName}`} className="btn btn-primary">
+                    <Link to={`/service/${this.props.serviceName}/trends?operationName=^${encodeURIComponent(this.props.operationName)}$`} className="btn btn-primary">
                         <span className="ti-stats-up"/> Jump to Trends
                     </Link>
                 </div>
                 <div className="btn-group btn-group-sm pull-right">
-                    <Link to={`/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}`} className="btn btn-default">
+                    <Link to={`/service/${this.props.serviceName}/traces?operationName=${encodeURIComponent(this.props.operationName)}`} className="btn btn-default">
                         <span className="ti-align-left"/> See Traces
                     </Link>
                     <Clipboard
-                        text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${this.props.operationName}&type=${this.props.type}`}
+                        text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${encodeURIComponent(this.props.operationName)}&type=${this.props.type}`}
                         onCopy={this.handleCopy}
                     >
                         <a role="button" className="btn btn-primary"><span className="ti-link"/> Share Alert</a>

@@ -64,7 +64,7 @@ export default class TrendRow extends React.Component {
     };
 
     static openTrendDetailInNewTab(serviceName, operationName, from, until) {
-        const tab = window.open(`/service/${serviceName}/trends?operationName=${encodeURIComponent(operationName)}&from=${from}&until=${until}`, '_blank');
+        const tab = window.open(`/service/${serviceName}/trends?operationName=^${encodeURIComponent(operationName)}$&from=${from}&until=${until}`, '_blank');
         tab.focus();
     }
 
