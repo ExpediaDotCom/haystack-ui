@@ -81,8 +81,8 @@ export default class OperationResultsTable extends React.Component {
         const tableHeaderStyle = {border: 'none'};
         const operation = this.props.operationStore.statsQuery.operationName;
         const filter = operation
-            ? {type: 'RegexFilter', defaultValue: operation, delay: 500, placeholder: 'Search Operations...'}
-            : {type: 'RegexFilter', delay: 500, placeholder: 'Search Operations...'};
+            ? {type: 'RegexFilter', defaultValue: operation, delay: 500, placeholder: 'FilterOperation (Regex)...'}
+            : {type: 'RegexFilter', delay: 500, placeholder: 'Filter Operations (Regex)...'};
 
         const options = {
             page: 1,  // which page you want to show as default
