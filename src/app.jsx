@@ -26,7 +26,6 @@ import withTracker from './components/common/withTracker';
 // app initializers
 Perf.start();
 storesInitializer.init();
-console.log('app.jsx');
 
 // mount react components
 ReactDOM.render(
