@@ -89,7 +89,7 @@ export default class TrendDetailsToolbar extends React.Component {
             timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
             timeWindow.toTimeRange(activeWindow.value).until}`;
         }
-        return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=${this.props.opName}&from=${activeWindow.from ||
+        return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=^${encodeURIComponent(this.props.opName)}$&from=${activeWindow.from ||
         timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
         timeWindow.toTimeRange(activeWindow.value).until}`;
     }

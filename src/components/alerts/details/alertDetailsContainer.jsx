@@ -53,11 +53,11 @@ export default class AlertDetailsContainer extends React.Component {
     }
 
     trendLinkCreator(startTimestamp, endTimestamp) {
-        return `/service/${this.props.serviceName}/trends?operationName=${this.props.operationName}&from=${startTimestamp / 1000}&until=${endTimestamp / 1000}`;
+        return `/service/${this.props.serviceName}/trends?operationName=^${encodeURIComponent(this.props.operationName)}$&from=${startTimestamp / 1000}&until=${endTimestamp / 1000}`;
     }
 
     traceLinkCreator(startTimestamp, endTimestamp) {
-        return `/service/${this.props.serviceName}/traces?operationName=${this.props.operationName}&startTime=${startTimestamp / 1000}&endTime=${endTimestamp / 1000}`;
+        return `/service/${this.props.serviceName}/traces?operationName=${encodeURIComponent(this.props.operationName)}&startTime=${startTimestamp / 1000}&endTime=${endTimestamp / 1000}`;
     }
 
     render() {

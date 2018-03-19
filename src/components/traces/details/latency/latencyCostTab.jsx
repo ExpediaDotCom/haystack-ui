@@ -36,19 +36,19 @@ export default class LatencyCost extends React.Component {
         latencyCost: PropTypes.object.isRequired
     };
 
-    static toEnvironmentString(infrastructureProvider, infrastructureRegion) {
-        return (infrastructureProvider || infrastructureRegion) ? `${infrastructureProvider} ${infrastructureRegion}` : 'NA';
+    static toEnvironmentString(infrastructureProvider, infrastructureLocation) {
+        return (infrastructureProvider || infrastructureLocation) ? `${infrastructureProvider} ${infrastructureLocation}` : 'NA';
     }
 
     static addEnvironmentInLatencyCost(rawEdges) {
         return rawEdges.map(edge => ({
             from: {
                 ...edge.from,
-                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion)
+                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
             },
             to: {
                 ...edge.to,
-                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion)
+                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
             },
             networkDelta: edge.networkDelta
         }));
@@ -59,8 +59,8 @@ export default class LatencyCost extends React.Component {
             _.uniqWith(
                 _.flatten(rawEdges.map(edge =>
                     [
-                        LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureRegion),
-                        LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureRegion)
+                        LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation),
+                        LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
                     ])),
                 _.isEqual
             );
