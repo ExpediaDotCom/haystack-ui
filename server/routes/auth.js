@@ -24,10 +24,10 @@ const passportInstance = require('../../modules/passport/passportInstance');
 module.exports = (config) => {
     const extractClaims = (profile, done) => {
         done(null, User.findOrCreate({
-            id: profile.id,
-            userName: profile.userName,
+            id: profile.nameID,
+            userName: profile[config.passport.given_name_schema],
             userGroups: profile[config.passport.user_group_schema],
-            email: profile.email
+            email: profile[config.passport.email_address_schema]
         }, (err, user) => {
             if (err) {
                 return done(err);
@@ -41,13 +41,15 @@ module.exports = (config) => {
             callbackUrl: `${config.passport.callback}?redirectUrl=${req.query.redirectUrl}`,
             entryPoint: config.passport.entry_point,
             issuer: config.passport.issuer,
+            acceptedClockSkewMs: -1,
             identifierFormat: config.passport.identifier_format
         };
-
         return passportInstance(options, extractClaims);
     };
 
-    router.get('/login', (req, res, next) => { getAuthenticate(req)(req, res, next); });
+    router.get('/login', (req, res, next) => {
+        getAuthenticate(req)(req, res, next);
+    });
 
     router.get('/logout', (req, res) => {
         req.logout();

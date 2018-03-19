@@ -22,7 +22,7 @@ const Login = ({ redirectUrl }) => (
         <div className="container">
             <div className="jumbotron col-md-8 col-md-offset-2 login-box text-center">
                 <h1>Haystack</h1>
-                <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/home'}`} className="btn btn-primary">Sign in</a>
+                <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/'}`} className="btn btn-primary">Sign in</a>
             </div>
         </div>
     </div>
