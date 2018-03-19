@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /*
  * Copyright 2018 Expedia, Inc.
  *
