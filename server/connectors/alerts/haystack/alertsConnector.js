@@ -18,8 +18,8 @@ const Q = require('q');
 const _ = require('lodash');
 
 const config = require('../../../config/config');
+const servicesConnector = require('../../services/servicesConnector');
 
-const tracesConnector = require(`../../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const fetcher = require('../../fetchers/restFetcher');
@@ -29,11 +29,12 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
+const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 
-const alertTypes = ['totalCount', 'durationTp99', 'failureCount'];
+const alertTypes = ['durationTP99'];
 
 function fetchOperations(serviceName) {
-   return tracesConnector.getOperations(serviceName);
+   return servicesConnector.getOperations(serviceName);
 }
 
 function fetchOperationTrends(serviceName, granularity, from, until) {
@@ -48,71 +49,62 @@ function fromMetricTankTarget(operationName) {
     return operationName.replace(/___/gi, '.');
 }
 
-function parseOperationAlertsResponse(data) {
-    const parsedData = [];
-
-    data.forEach((op) => {
+function parseOperationAlertsResponse(data, until) {
+    return data.map((op) => {
         const targetSplit = op.target.split('.');
 
         const operationNameTagIndex = targetSplit.indexOf('operationName');
         const alertTypeIndex = targetSplit.indexOf('alertType');
         const operationName = fromMetricTankTarget(targetSplit[operationNameTagIndex + 1]);
         const type = fromMetricTankTarget(targetSplit[alertTypeIndex + 1]);
+        const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
-        const latestDatapoint = op.datapoints.sort((a, b) => b[1] - a[1])[0];
-        const isUnhealthy = (latestDatapoint[0] === 1);
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
+        const timestamp = latestUnhealthy && latestUnhealthy[1] * 1000 * 1000;
 
-        let timestamp = latestDatapoint[1] * 1000 * 1000;
-        if (!isUnhealthy) {
-            const latestUnhealthy = op.datapoints.find(x => x[0]).sort((a, b) => b[1] - a[1]);
-            timestamp = latestUnhealthy[1] * 1000 * 1000;
-        }
-
-        parsedData.push({
+        return {
             operationName,
             type,
             isUnhealthy,
             timestamp
-        });
+        };
     });
-
-    return parsedData;
 }
 
-function fetchOperationAlerts(serviceName) {
-    const target = `alertType.*.operationName.*.serviceName.${serviceName}.anomaly`;
+function fetchOperationAlerts(serviceName, from, until) {
+    const target = `haystack.serviceName.${serviceName}.operationName.*.alertType.*.anomaly`;
 
     return serviceAlertsFetcher
-    .fetch(`${metricTankUrl}/render?target=${target}`)
-    .then(result => parseOperationAlertsResponse(result));
+        .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+        .then(result => parseOperationAlertsResponse(result, until));
 }
 
 function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTrends}) {
     const alertTypeToTrendMap = {
-        totalCount: 'countPoints',
-        durationTp99: 'tp99DurationPoints',
+        count: 'countPoints',
+        durationTP99: 'tp99DurationPoints',
         failureCount: 'failurePoints'
     };
 
     return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
-            const operationAlert = operationAlerts.find(alert => (alert.operationName === operation && alert.type === alertType));
-            const operationTrend = operationTrends.find(trend => (trend.operationName === operation));
+        const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
+        const operationTrend = operationTrends.find(trend => (trend.operationName.toLowerCase() === operation.toLowerCase()));
 
-            if (operationAlert) {
-                return {
-                    ...operationAlert,
-                    trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
-                };
-            }
-
+        if (operationAlert !== undefined) {
             return {
-                operationName: operation,
-                type: alertType,
-                isUnhealthy: false,
-                timestamp: null,
+                ...operationAlert,
                 trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
             };
-        })));
+        }
+
+        return {
+            operationName: operation,
+            type: alertType,
+            isUnhealthy: false,
+            timestamp: null,
+            trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
+        };
+    })));
 }
 
 function parseAlertDetailResponse(data) {
@@ -120,49 +112,43 @@ function parseAlertDetailResponse(data) {
         return [];
     }
 
-    const parsedData = [];
-    const sortedPoints = data[0].datapoints.sort((a, b) => a[1] - b[1]);
-    let lastHealthyPoint = sortedPoints[0][1];
+    const sortedUnhealthyPoints = data[0].datapoints.filter(p => p[0]).sort((a, b) => a[1] - b[1]);
 
-    sortedPoints.forEach((point, index) => {
-        if (!point[0]) {
-            if (index && sortedPoints[index - 1][0]) {
-                parsedData.push({
-                    startTimestamp: lastHealthyPoint * 1000 * 1000,
-                    endTimestamp: sortedPoints[index - 1][1] * 1000 * 1000
-                });
-            }
+    return sortedUnhealthyPoints.map(point => ({
+        startTimestamp: point[1] * 1000 * 1000,
+        endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
+    }));
+}
 
-            lastHealthyPoint = point[1];
-        }
-    });
-
-    return parsedData;
+function getActiveAlertCount(operationAlerts) {
+    return operationAlerts.filter(opAlert => opAlert.isUnhealthy).length;
 }
 
 connector.getServiceAlerts = (serviceName, query) => {
     const { granularity, from, until} = query;
 
     return Q
-    .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName), fetchOperationTrends(serviceName, granularity, from, until)])
-    .then(stats => mergeOperationAlertsAndTrends({
-            operations: stats[0],
-            operationAlerts: stats[1],
-            operationTrends: stats[2]
-        })
-    );
+        .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(from / 1000), Math.trunc(until / 1000)), fetchOperationTrends(serviceName, granularity, from, until)])
+        .then(stats => mergeOperationAlertsAndTrends({
+                operations: stats[0],
+                operationAlerts: stats[1],
+                operationTrends: stats[2]
+            })
+        );
 };
 
 connector.getAlertDetails = (serviceName, operationName, alertType) => {
-    const target = `alertType.${alertType}.operationName.${toMetricTankOperationName(operationName)}.serviceName.${serviceName}.anomaly`;
+    const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankOperationName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
-    .fetch(`${metricTankUrl}/render?target=${target}`)
-    .then(result => parseAlertDetailResponse(result));
+        .fetch(`${metricTankUrl}/render?target=${target}`)
+        .then(result => parseAlertDetailResponse(result));
 };
 
 // no-op for now, TODO add the metrictank read logic
-connector.getServiceUnhealthyAlertCount = () => Q.fcall(() => 0);
+connector.getServiceUnhealthyAlertCount = serviceName =>
+    fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
+    .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
 

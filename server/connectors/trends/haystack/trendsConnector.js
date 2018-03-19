@@ -50,6 +50,7 @@ function convertGranularityToTimeWindow(timespan) {
 function convertEpochTimeInSecondsToMillis(timestamp) {
     return timestamp * 1000;
 }
+
 function toMetricTankOperationName(operationName) {
     return operationName.replace(/\./gi, '___');
 }
@@ -180,8 +181,8 @@ function extractOperationSummary(values) {
         const operationTrends = groupedByOperationName[operationName];
 
         const countPoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.received-span');
-        const successCount = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.success-span');
-        const failureCount = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.failure-span');
+        const successPoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.success-span');
+        const failurePoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.failure-span');
         const tp99DurationPoints = extractTrendPointsForSingleServiceOperation(operationTrends, '*_99.duration');
         const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
@@ -189,10 +190,11 @@ function extractOperationSummary(values) {
             operationName,
             totalCount: dataPointsSum(countPoints),
             countPoints,
-            avgSuccessPercent: toSuccessPercent(successCount, failureCount),
-            successPercentPoints: toSuccessPercentPoints(successCount, failureCount),
+            avgSuccessPercent: toSuccessPercent(successPoints, failurePoints),
+            successPercentPoints: toSuccessPercentPoints(successPoints, failurePoints),
             latestTp99Duration: latestTp99DurationDatapoint && latestTp99DurationDatapoint.value,
-            tp99DurationPoints
+            tp99DurationPoints,
+            failurePoints
         };
     });
 }
