@@ -1,6 +1,6 @@
 module.exports = {
     // app port
-    port: 8080,
+    port: 8443,
 
     // whether to start in cluster mode or not
     cluster: false,
@@ -21,6 +21,7 @@ module.exports = {
     enableServiceLevelTrends: true,
     enableLatencyCostViewer: true,
     enableSSO: false,
+    sessionSecret: 'XXXXXXXXXXXXX',
     // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config

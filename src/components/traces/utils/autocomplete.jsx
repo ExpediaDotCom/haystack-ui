@@ -119,7 +119,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-    // Updates input field and UiStore props value
+    // Updates input field and userStore props value
     updateFieldKv(event) {
         this.props.uiState.setFieldsUsingKvString(event.target.value);
         this.setSuggestions(event.target.value);

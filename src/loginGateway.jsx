@@ -16,7 +16,6 @@
 
 import axios from 'axios';
 import createBrowserHistory from 'history/createBrowserHistory';
-import Cookies from 'js-cookie';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,24 +23,23 @@ import { Switch, Redirect, Route, withRouter } from 'react-router-dom';
 
 import LoginComponent from './components/common/login';
 import Main from './main';
-import UiStore from './stores/userStore';
+import userStore from './stores/userStore';
 
 
 @withRouter
 @observer
 class LoginGateway extends React.Component {
     static clearUserDetails() {
-        UiStore.clearUser();
+        userStore.clearUser();
     }
 
     constructor(props) {
         super(props);
-
-        this.isLoggedIn = false;
         this.redirectUrl = '/';
         this.state = {
             user: null
         };
+        this.isLoggedIn = false;
         this.getUserDetails = this.getUserDetails.bind(this);
     }
 
@@ -49,20 +47,19 @@ class LoginGateway extends React.Component {
         const customHistory = createBrowserHistory();
         this.redirectUrl = customHistory.location.pathname;
 
-        this.isLoggedIn = !!Cookies.get('userId');
-        if (this.isLoggedIn) this.getUserDetails();
-        else LoginGateway.clearUserDetails();
+        this.getUserDetails();
     }
 
 
     getUserDetails() {
         return axios.get('/user/details')
             .then((res) => {
-                UiStore.setUser(res.data);
-                // Update UI state to trigger re-render of Children Components
-                this.setState({ user: res.data });
+                userStore.setUser(res.data);
+                this.setState({user: res.data});
+                this.isLoggedIn = true;
             })
             .catch(() => {
+                userStore.clearUser();
                 LoginGateway.clearUserDetails();
             });
     }
@@ -101,11 +98,7 @@ class LoginGateway extends React.Component {
 }
 
 LoginGateway.propTypes = {
-    location: PropTypes.string
-};
-
-LoginGateway.defaultProps = {
-    location: '/'
+    location: PropTypes.object.isRequired
 };
 
 
