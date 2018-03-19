@@ -98,9 +98,9 @@ export default class AlertsTable extends React.Component {
     }
 
     static toAlertTypeString = (num) => {
-        if (num === 'totalCount') {
+        if (num === 'count') {
             return 'Total Count';
-        } else if (num === 'durationTp99') {
+        } else if (num === 'durationTP99') {
             return 'Duration TP99';
         } else if (num === 'failureCount') {
             return 'Failure Count';
@@ -210,7 +210,7 @@ export default class AlertsTable extends React.Component {
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing alerts { start } to { to } out of { total }</p>),
             hideSizePerPage: true, // Hide page size bar
-            defaultSortName: 'isUnhealthy',
+            defaultSortName: 'timestamp',
             defaultSortOrder: 'desc',  // default sort order
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
