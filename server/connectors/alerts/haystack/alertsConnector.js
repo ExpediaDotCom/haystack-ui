@@ -121,6 +121,10 @@ function parseAlertDetailResponse(data) {
     }));
 }
 
+function getActiveAlertCount(operationAlerts) {
+    return operationAlerts.filter(opAlert => opAlert.isUnhealthy).count;
+}
+
 connector.getServiceAlerts = (serviceName, query) => {
     const { granularity, from, until} = query;
 
@@ -143,7 +147,9 @@ connector.getAlertDetails = (serviceName, operationName, alertType) => {
 };
 
 // no-op for now, TODO add the metrictank read logic
-connector.getServiceUnhealthyAlertCount = () => {};
+connector.getServiceUnhealthyAlertCount = serviceName =>
+    fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
+    .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
 
