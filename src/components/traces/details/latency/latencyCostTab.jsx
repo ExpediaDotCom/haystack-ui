@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import hashUtils from '../../../../utils/hashUtil'
+import hashUtils from '../../../../utils/hashUtil';
 
 const borderColors = [
     '#36A2EB',
@@ -324,7 +324,7 @@ export default class LatencyCost extends React.Component {
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
                 <p>
                     <div className="text-muted">* Red edges represent cross datacenter calls</div>
-                    <div className="text-muted">* Network delta value are best estimates at haystack's end</div>
+                    <div className="text-muted">* Network delta value are best estimates</div>
                 </p>
             </article>
         );
