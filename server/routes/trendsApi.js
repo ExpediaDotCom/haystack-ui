@@ -15,12 +15,14 @@
  */
 
 const express = require('express');
+
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-
 const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
+const checker = require('../../modules/auth/checker');
 
 const router = express.Router();
+router.use(checker(config));
 
 router.get('/trends/service/:serviceName/:type', (req, res, next) => {
     const {
