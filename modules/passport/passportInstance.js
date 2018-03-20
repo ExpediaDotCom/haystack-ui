@@ -19,7 +19,7 @@ const SamlStrategy = require('passport-saml').Strategy;
 const User = require('../cache/user');
 
 const loggedInHome = '/';
-const loginErrRedirect = '/loginErr';
+const loginErrRedirect = '/login?error=true';
 
 module.exports = (options, cb) => {
     const serializeUser = (user, done) => {
