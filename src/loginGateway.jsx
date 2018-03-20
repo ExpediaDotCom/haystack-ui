@@ -37,9 +37,10 @@ class LoginGateway extends React.Component {
         super(props);
         this.redirectUrl = '/';
         this.state = {
-            user: null
+            user: null,
+            isLoggedIn: true
         };
-        this.isLoggedIn = false;
+        this.isLoggedIn = true;
         this.getUserDetails = this.getUserDetails.bind(this);
     }
 
@@ -55,11 +56,10 @@ class LoginGateway extends React.Component {
         return axios.get('/user/details')
             .then((res) => {
                 userStore.setUser(res.data);
-                this.setState({user: res.data});
-                this.isLoggedIn = true;
+                this.setState({user: res.data, isLoggedIn: true});
             })
             .catch(() => {
-                userStore.clearUser();
+                this.setState({isLoggedIn: false});
                 LoginGateway.clearUserDetails();
             });
     }
@@ -67,7 +67,7 @@ class LoginGateway extends React.Component {
     privateRoute(disableSSO) {
         return (
             <Route render={() => (
-                this.isLoggedIn || disableSSO ? (
+                this.state.isLoggedIn || disableSSO ? (
                         <div>
                             <Main />
                         </div>
