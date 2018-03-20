@@ -17,18 +17,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import hashUtils from '../../../../utils/hashUtil'
 
 const borderColors = [
     '#36A2EB',
-    '#FF6384',
+    '#47db2d',
     '#ff9f40',
-    '#4BC0C0'
+    '#4BC0C0',
+    '#7d3cc0',
+    '#3f30ad',
+    '#687c44'
 ];
 const backgroundColors = [
     '#D8ECFA',
-    '#FEB2C2',
+    '#ddf4d9',
     '#FFECDB',
-    '#DCF2F2'
+    '#DCF2F2',
+    '#f3e3f9',
+    '#d6d2f7',
+    '#e4eada'
 ];
 
 export default class LatencyCost extends React.Component {
@@ -65,7 +72,7 @@ export default class LatencyCost extends React.Component {
                 _.isEqual
             );
 
-        return environments.map((environment, index) => {
+        return environments.map((environment) => {
             if (environment === 'NA') {
                 return {
                     environment: 'NA',
@@ -73,10 +80,12 @@ export default class LatencyCost extends React.Component {
                     border: '#aaa'
                 };
             }
+            const index = Math.abs(hashUtils.calculateHash(environment)) % backgroundColors.length;
+
             return {
                 environment,
-                background: backgroundColors[index % backgroundColors.length],
-                border: borderColors[index % borderColors.length]
+                background: backgroundColors[index],
+                border: borderColors[index]
             };
         }).sort((e1, e2) => e1.environment.localeCompare(e2.environment));
     }
@@ -312,7 +321,11 @@ export default class LatencyCost extends React.Component {
         return (
             <article>
                 <LatencySummary />
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
+                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
+                <p>
+                    <div className="text-muted">* Red edges represent cross datacenter calls</div>
+                    <div className="text-muted">* Network delta value are best estimates at haystack's end</div>
+                </p>
             </article>
         );
     }
