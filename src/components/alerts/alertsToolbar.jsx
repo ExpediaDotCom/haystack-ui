@@ -73,7 +73,7 @@ export default class AlertsToolbar extends React.Component {
         return (
             <header>
                 <div className="pull-left">
-                    <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealty</div>
+                    <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealthy</div>
                     <div>out of {this.props.alertsStore.alerts.length} alerts for {this.props.serviceName}</div>
                 </div>
                 <div className="pull-right">
