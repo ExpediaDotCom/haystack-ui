@@ -22,8 +22,8 @@ import hashUtils from '../../../../utils/hashUtil';
 const borderColors = [
     '#36A2EB',
     '#47db2d',
-    '#ff9f40',
     '#4BC0C0',
+    '#ff9f40',
     '#7d3cc0',
     '#3f30ad',
     '#687c44'
@@ -31,8 +31,8 @@ const borderColors = [
 const backgroundColors = [
     '#D8ECFA',
     '#ddf4d9',
-    '#FFECDB',
     '#DCF2F2',
+    '#FFECDB',
     '#f3e3f9',
     '#d6d2f7',
     '#e4eada'
@@ -322,10 +322,12 @@ export default class LatencyCost extends React.Component {
             <article>
                 <LatencySummary />
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
-                <p>
-                    <div className="text-muted">* Red edges represent cross datacenter calls</div>
-                    <div className="text-muted">* Network delta value are best estimates</div>
-                </p>
+                <ul>
+                    <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>
+                    <li>Red edges represent cross datacenter calls</li>
+                    <li>Nodes represent a service(in a datacenter) calls</li>
+                    <li>Network delta value are best estimates</li>
+                </ul>
             </article>
         );
     }
