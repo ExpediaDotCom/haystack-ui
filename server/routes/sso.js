@@ -15,25 +15,30 @@
  */
 
 const express = require('express');
-
-const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-const servicesConnector = require('../connectors/services/servicesConnector');
-const checker = require('../../modules/auth/checker');
+const passport = require('passport');
 
 const router = express.Router();
-router.use(checker(config));
+// protected route
+const loggedInHome = '/home';
+const loginErrRedirect = '/login?error=true';
+const winston = require('winston');
 
-router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next, 'services')(
-        () => servicesConnector.getServices()
-    );
+// Utilize Lo-Dash utility library
+const logger = new (winston.Logger)({
+    transports: [
+        new (winston.transports.Console)({ timestamp: true })
+    ]
 });
 
-router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next, 'operations')(
-        () => servicesConnector.getOperations(req.query.serviceName)
-    );
-});
-
-module.exports = router;
+module.exports = () => {
+    router.post('/saml/consume', passport.authenticate('saml',
+        {
+            failureRedirect: loginErrRedirect,
+            failureFlash: true
+        }),
+        (req, res) => {
+            logger.info(`action=authentication, status=success, redirectUrl=${loggedInHome}`);
+            res.redirect(req.query.redirectUrl || loggedInHome);
+        });
+    return router;
+};

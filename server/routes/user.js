@@ -15,25 +15,17 @@
  */
 
 const express = require('express');
-
-const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-const servicesConnector = require('../connectors/services/servicesConnector');
-const checker = require('../../modules/auth/checker');
+const authChecker = require('../../modules/auth/checker');
 
 const router = express.Router();
-router.use(checker(config));
 
-router.get('/services', (req, res, next) => {
-    handleResponsePromise(res, next, 'services')(
-        () => servicesConnector.getServices()
-    );
-});
+module.exports = (config) => {
+    router.use(authChecker(config));
 
-router.get('/operations', (req, res, next) => {
-    handleResponsePromise(res, next, 'operations')(
-        () => servicesConnector.getOperations(req.query.serviceName)
-    );
-});
+    router.get('/details',
+        (req, res) => {
+            res.type('application/json').send(req.user);
+        });
 
-module.exports = router;
+    return router;
+};

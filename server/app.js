@@ -26,6 +26,12 @@ const axios = require('axios');
 const Q = require('q');
 const os = require('os');
 
+const passport = require('passport');
+const cacheResponseDirective = require('express-cache-response-directive');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+
 const config = require('./config/config');
 const logger = require('./utils/logger');
 
@@ -51,6 +57,10 @@ app.set('etag', false);
 app.set('x-powered-by', false);
 
 // MIDDLEWARE
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser(config.sessionSecret));
+app.use(cacheResponseDirective());
 app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
@@ -58,14 +68,28 @@ app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
 app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 app.use(metricsMiddleware.httpMetrics);
+app.use(session({ secret: config.sessionSecret }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 // ROUTING
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi')); // eslint-disable-line global-require
 
+app.use('/auth', require('./routes/auth')(config));
+app.use('/sso', require('./routes/sso')(config));
+app.use('/user', require('./routes/user')(config));
+
 app.use('/api', ...apis);
 app.use('/', indexRoute);
+
+app.use((req, res, next) => {
+    if (req.user) res.cookie('userId', req.user.id);
+    else res.clearCookie('userId');
+    next();
+});
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars

@@ -20,3 +20,6 @@ static_codegen
 .nyc_output/
 coverage
 
+# HTTPS Certs
+server.cert
+server.key
