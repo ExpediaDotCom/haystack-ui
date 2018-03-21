@@ -42,7 +42,9 @@ export default class LatencyTabContainer extends React.Component {
                         rejected: () => <Error />,
                         fulfilled: () => ((store.latencyCost && store.latencyCost.length)
                                 ? <LatencyCostTab latencyCost={store.latencyCost}/>
-                                : <h5>No service call found</h5>)
+                                : (<div className="well well-sm">
+                                        <h6>No span with parent-child relationship found</h6>
+                                    </div>))
                     })
                 }
             </section>
