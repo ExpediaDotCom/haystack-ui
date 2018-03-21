@@ -36,7 +36,7 @@ export default class AlertsToolbar extends React.Component {
         super(props);
 
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 1;
+        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 3;
         this.state = {
             options: timeWindow.presets,
             activeWindow
