@@ -15,11 +15,11 @@
  */
 
 const express = require('express');
-const User = require('../../modules/cache/user');
+const User = require('../sso/user');
 
 const router = express.Router();
 const loggedOutHome = '/login';
-const passportInstance = require('../../modules/passport/passportInstance');
+const passportInstance = require('../sso/passportInstance');
 
 module.exports = (config) => {
     const extractClaims = (profile, done) => {

@@ -15,7 +15,7 @@
  */
 
 const express = require('express');
-const authChecker = require('../../modules/auth/checker');
+const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
 

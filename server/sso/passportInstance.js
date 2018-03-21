@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 const passport = require('passport');
 const SamlStrategy = require('passport-saml').Strategy;
-const User = require('../cache/user');
+const User = require('./user');
 
 const loggedInHome = '/';
 const loginErrRedirect = '/loginErr';
