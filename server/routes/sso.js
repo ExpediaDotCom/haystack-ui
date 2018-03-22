@@ -15,25 +15,23 @@
  */
 
 const express = require('express');
-
-const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-
-const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-const checker = require('../sso/authChecker');
+const passport = require('passport');
+const logger = require('../utils/logger').withIdentifier('sso');
 
 const router = express.Router();
-router.use(checker(config));
+// protected route
+const loggedInHome = '/';
+const loginErrRedirect = '/login?error=true';
 
-router.get('/servicePerf', (req, res, next) => {
-    const {
-        granularity,
-        from,
-        until
-    } = req.query;
-    handleResponsePromise(res, next, 'servicePerf')(
-        () => trendsConnector.getServicePerfStats(granularity, from, until)
-    );
-});
-
-module.exports = router;
+module.exports = () => {
+    router.post('/saml/consume', passport.authenticate('saml',
+        {
+            failureRedirect: loginErrRedirect,
+            failureFlash: true
+        }),
+        (req, res) => {
+            logger.info(`action=authentication, status=success, redirectUrl=${loggedInHome}`);
+            res.redirect(req.query.redirectUrl || loggedInHome);
+        });
+    return router;
+};

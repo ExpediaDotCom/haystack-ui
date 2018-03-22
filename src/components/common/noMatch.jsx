@@ -17,27 +17,13 @@
 
 import React from 'react';
 import {Link} from 'react-router-dom';
-import PropTypes from 'prop-types';
 
-const NoMatch = ({location}) => (
+export default () => (
     <div className="primary-content__spacer container nomatch-panel">
         <div className="jumbotron">
             <h1>Sorry!</h1>
-            <p>
-                No trace found with the ID of
-                <strong> {location.pathname.slice(8, location.pathname.length)}</strong>
-            </p>
+            <p>Page not found</p>
             <p><Link to="/">Return to home</Link></p>
         </div>
     </div>
 );
-
-NoMatch.propTypes = {
-    location: PropTypes.shape({
-        params: PropTypes.shape({
-            pathname: PropTypes.array
-        })
-    }).isRequired
-};
-
-export default NoMatch;

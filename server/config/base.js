@@ -20,7 +20,8 @@ module.exports = {
     enableServicePerformance: true,
     enableServiceLevelTrends: true,
     enableLatencyCostViewer: true,
-
+    enableSSO: false,
+    sessionSecret: 'XXXXXXXXXXXXX',
     // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config
@@ -50,5 +51,8 @@ module.exports = {
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub'
         }
+    },
+    passport: {
+        // name of module to enable user authentication before entry
     }
 };

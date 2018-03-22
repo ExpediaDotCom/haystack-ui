@@ -20,6 +20,9 @@
 const OS = require('os');
 const cluster = require('cluster');
 const logger = require('./logger').withIdentifier('server');
+const https = require('https');
+const fs = require('fs');
+const config = require('../config/config');
 
 class Server {
     constructor(expressApp) {
@@ -27,9 +30,19 @@ class Server {
     }
 
     startInStandaloneMode() {
-        const activeApp = this.expressApp.listen(this.expressApp.get('port'), () => {
-            logger.info(`Express server listening : ${JSON.stringify(activeApp.address())}`);
-        });
+        const activeApp = this.expressApp;
+        const port = this.expressApp.get('port');
+
+        if (config.https && config.https.keyFile && config.https.certFile) {
+            https.createServer({
+                key: fs.readFileSync(config.https.keyFile),
+                cert: fs.readFileSync(config.https.certFile)
+            }, activeApp)
+            .listen(port, () => logger.info(`Express server listening on: ${port}`));
+        } else {
+            activeApp
+            .listen(port, () => logger.info(`Express server listening : ${port}`));
+        }
     }
 
     startInClusterMode() {

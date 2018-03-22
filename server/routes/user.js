@@ -15,25 +15,17 @@
  */
 
 const express = require('express');
-
-const config = require('../config/config');
-const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
-
-const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-const checker = require('../sso/authChecker');
+const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
-router.use(checker(config));
 
-router.get('/servicePerf', (req, res, next) => {
-    const {
-        granularity,
-        from,
-        until
-    } = req.query;
-    handleResponsePromise(res, next, 'servicePerf')(
-        () => trendsConnector.getServicePerfStats(granularity, from, until)
-    );
-});
+module.exports = (config) => {
+    router.use(authChecker(config));
 
-module.exports = router;
+    router.get('/details',
+        (req, res) => {
+            res.type('application/json').send(req.user);
+        });
+
+    return router;
+};

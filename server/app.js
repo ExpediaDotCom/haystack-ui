@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /*
 
   *  Copyright 2018 Expedia, Inc.
@@ -18,7 +19,6 @@
  */
 
 const path = require('path');
-
 const express = require('express');
 const favicon = require('serve-favicon');
 const compression = require('compression');
@@ -28,12 +28,6 @@ const os = require('os');
 
 const config = require('./config/config');
 const logger = require('./utils/logger');
-
-const indexRoute = require('./routes/index');
-const servicesApi = require('./routes/servicesApi');
-const tracesApi = require('./routes/tracesApi');
-const servicesPerfApi = require('./routes/servicesPerfApi');
-
 const metricsMiddleware = require('./utils/metricsMiddleware');
 const metricsReporter = require('./utils/metricsReporter');
 
@@ -50,7 +44,7 @@ app.set('view engine', 'pug');
 app.set('etag', false);
 app.set('x-powered-by', false);
 
-// MIDDLEWARE
+// MIDDLEWARE SETUP
 app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
@@ -59,13 +53,44 @@ app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 app.use(metricsMiddleware.httpMetrics);
 
+
+// MIDDLEWARE AND ROUTES FOR SSO
+if (config.enableSSO) {
+    const passport = require('passport');
+    const cacheResponseDirective = require('express-cache-response-directive');
+    const bodyParser = require('body-parser');
+    const session = require('express-session');
+
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(cacheResponseDirective());
+    app.use(session({ secret: config.sessionSecret }));
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    app.use('/auth', require('./routes/auth')(config));
+    app.use('/sso', require('./routes/sso')(config));
+    app.use('/user', require('./routes/user')(config));
+}
+
 // ROUTING
+const indexRoute = require('./routes/index');
+const servicesApi = require('./routes/servicesApi');
+const tracesApi = require('./routes/tracesApi');
+const servicesPerfApi = require('./routes/servicesPerfApi');
+
 const apis = [servicesApi, tracesApi, servicesPerfApi];
-if (config.connectors.trends) apis.push(require('./routes/trendsApi')); // eslint-disable-line global-require
-if (config.connectors.alerts) apis.push(require('./routes/alertsApi')); // eslint-disable-line global-require
+if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
+if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
 
 app.use('/api', ...apis);
 app.use('/', indexRoute);
+
+app.use((req, res, next) => {
+    if (req.user) res.cookie('userId', req.user.id);
+    else res.clearCookie('userId');
+    next();
+});
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
