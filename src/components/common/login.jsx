@@ -16,14 +16,16 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import './login.less';
 
 const Login = ({ redirectUrl }) => (
     <div className="row login-cover text-center">
-        <div className="container">
-            <div className="jumbotron col-md-8 col-md-offset-2 login-box text-center">
-                <h1>Haystack</h1>
-                <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/'}`} className="btn btn-primary">Sign in</a>
-            </div>
+        <div className="jumbotron login-box text-center">
+            <h1 className="login-box_title">
+                <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
+                <span>Haystack</span>
+            </h1>
+            <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/'}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
         </div>
     </div>
 );
