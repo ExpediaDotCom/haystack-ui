@@ -63,7 +63,7 @@ export default class OperationPicker extends React.Component {
                 className="search-bar-picker-select"
                 options={options}
                 onChange={this.handleChange}
-                value={operationName}
+                value={decodeURIComponent(operationName)}
                 clearable={false}
                 placeholder=""
               />

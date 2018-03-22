@@ -56,7 +56,7 @@ export default class AlertDetailsToolbar extends React.Component {
                         <span className="ti-align-left"/> See Traces
                     </Link>
                     <Clipboard
-                        text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=${encodeURIComponent(this.props.operationName)}&type=${this.props.type}`}
+                        text={`${window.location.protocol}//${window.location.host}/service/${this.props.serviceName}/alerts?operationName=^${encodeURIComponent(this.props.operationName)}$&type=${this.props.type}`}
                         onCopy={this.handleCopy}
                     >
                         <a role="button" className="btn btn-primary"><span className="ti-link"/> Share Alert</a>
