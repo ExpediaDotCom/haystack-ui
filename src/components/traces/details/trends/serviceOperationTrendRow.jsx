@@ -69,7 +69,7 @@ export default class TrendRow extends React.Component {
     }
 
     componentWillMount() {
-        fetcher.fetchOperationTrends(this.props.serviceName, encodeURIComponent(this.props.operationName), this.props.from, this.props.until)
+        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.from, this.props.until)
         .then((result) => {
             this.setState({trends: result});
         });
