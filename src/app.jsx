@@ -19,6 +19,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
 import Perf from 'react-addons-perf';
+import Main from './main';
 import LoginGateway from './loginGateway';
 import storesInitializer from './stores/storesInitializer';
 import withTracker from './components/common/withTracker';
@@ -30,7 +31,7 @@ storesInitializer.init();
 // mount react components
 ReactDOM.render(
     <Router history={history}>
-        <Route component={withTracker(LoginGateway)}/>
+        <Route component={window.haystackUiConfig.enableSSO ? withTracker(LoginGateway) : withTracker(Main)}/>
     </Router>
     , document.getElementById('root')
 );
