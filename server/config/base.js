@@ -1,6 +1,6 @@
 module.exports = {
     // app port
-    port: 8443,
+    port: 8080,
 
     // whether to start in cluster mode or not
     cluster: false,
