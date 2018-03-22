@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -16,27 +16,23 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import './login.less';
+import { Switch, Redirect, Route } from 'react-router-dom';
 
-const Login = ({ redirectUrl }) => (
-    <div className="login-cover text-center">
-        <div className="jumbotron login-box text-center">
-            <h1 className="login-box_title">
-                <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
-                <span>Haystack</span>
-            </h1>
-            <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/'}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
-        </div>
-    </div>
-);
+import Login from './login';
 
-Login.defaultProps = {
-    redirectUrl: ''
+const LoginGateway = ({location}) => {
+    const redirectUrl = location.pathname || '';
+
+    return (
+        <Switch>
+            <Route exact path="/login" render={() => <Login redirectUrl={redirectUrl} />}/>
+            <Route render={() => <Redirect to={{ pathname: '/login' }}/>}/>
+        </Switch>
+    );
 };
 
-Login.propTypes = {
-    redirectUrl: PropTypes.string
+LoginGateway.propTypes = {
+    location: PropTypes.object.isRequired
 };
 
-export default Login;
-
+export default LoginGateway;

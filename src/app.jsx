@@ -18,27 +18,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
-import Perf from 'react-addons-perf';
 import Main from './main';
-import LoginGateway from './loginGateway';
+import LoginGateway from './components/common/loginGateway';
 import storesInitializer from './stores/storesInitializer';
 import withTracker from './components/common/withTracker';
 
 // app initializers
-Perf.start();
 storesInitializer.init();
 
 // mount react components
 ReactDOM.render(
     <Router history={history}>
-        <Route component={window.haystackUiConfig.enableSSO ? withTracker(LoginGateway) : withTracker(Main)}/>
+        <Route component={window.haystackUiConfig.enableSSO && !window.haystackUiConfig.isLoggedIn
+            ? withTracker(LoginGateway)
+            : withTracker(Main)}
+        />
     </Router>
     , document.getElementById('root')
 );
-
-// measuring perf for development purposes
-// TODO remove once production ready
-Perf.stop();
-Perf.printWasted();
-Perf.printInclusive();
-Perf.printExclusive();

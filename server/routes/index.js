@@ -37,7 +37,8 @@ router.get('*', (req, res) => {
         enableServiceLevelTrends: config.enableServiceLevelTrends || false,
         enableLatencyCostViewer: config.enableLatencyCostViewer || false,
         services: servicesConnector.getServicesSync() || null,
-        enableSSO: config.enableSSO || false
+        enableSSO: config.enableSSO || false,
+        isLoggedIn: !!req.user || false
     });
 
     onFinished(res, () => {

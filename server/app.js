@@ -19,7 +19,6 @@
  */
 
 const path = require('path');
-
 const express = require('express');
 const favicon = require('serve-favicon');
 const compression = require('compression');
@@ -29,12 +28,6 @@ const os = require('os');
 
 const config = require('./config/config');
 const logger = require('./utils/logger');
-
-const indexRoute = require('./routes/index');
-const servicesApi = require('./routes/servicesApi');
-const tracesApi = require('./routes/tracesApi');
-const servicesPerfApi = require('./routes/servicesPerfApi');
-
 const metricsMiddleware = require('./utils/metricsMiddleware');
 const metricsReporter = require('./utils/metricsReporter');
 
@@ -51,7 +44,7 @@ app.set('view engine', 'pug');
 app.set('etag', false);
 app.set('x-powered-by', false);
 
-// MIDDLEWARE
+// MIDDLEWARE SETUP
 app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
@@ -83,6 +76,11 @@ if (config.enableSSO) {
 }
 
 // ROUTING
+const indexRoute = require('./routes/index');
+const servicesApi = require('./routes/servicesApi');
+const tracesApi = require('./routes/tracesApi');
+const servicesPerfApi = require('./routes/servicesPerfApi');
+
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
