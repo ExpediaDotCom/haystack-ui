@@ -60,18 +60,20 @@ export default class TrendsHeader extends React.Component {
         this.handleTimeChange = this.handleTimeChange.bind(this);
 
         const urlQuery = toQuery(this.props.location.search);
+        const operationName = urlQuery.operationName && decodeURIComponent(urlQuery.operationName);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(this.props.serviceName, state.activeWindow, urlQuery.operationName);
+        this.fetchTrends(this.props.serviceName, state.activeWindow, operationName);
 
         this.state = state;
     }
 
     componentWillReceiveProps(nextProps) {
         const urlQuery = toQuery(nextProps.location.search);
+        const operationName = urlQuery.operationName && decodeURIComponent(urlQuery.operationName);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(nextProps.serviceName, state.activeWindow, urlQuery.operationName);
+        this.fetchTrends(nextProps.serviceName, state.activeWindow, operationName);
 
         this.setState(state);
     }
