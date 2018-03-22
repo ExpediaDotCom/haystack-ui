@@ -51,7 +51,7 @@ const LogsTable = ({logs, startTime}) => {
             {flattenedLogs.map(log =>
                 (<tr>
                     <td>{log.key}</td>
-                    <td>{LogEnum[log.value]||log.value}</td>
+                    <td>{LogEnum[log.value] || log.value}</td>
                     <td>{formatters.toDurationString(log.timestamp - startTime)}</td>
                     <td>{formatters.toTimestringWithMs(log.timestamp)}</td>
                 </tr>)
