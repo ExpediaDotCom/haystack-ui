@@ -19,7 +19,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 const servicesConnector = require('../connectors/services/servicesConnector');
-const checker = require('../../modules/auth/checker');
+const checker = require('../sso/authChecker');
 
 const router = express.Router();
 router.use(checker(config));

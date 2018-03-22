@@ -21,7 +21,7 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
-const checker = require('../../modules/auth/checker');
+const checker = require('../sso/authChecker');
 
 const router = express.Router();
 router.use(checker(config));
