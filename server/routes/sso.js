@@ -16,19 +16,12 @@
 
 const express = require('express');
 const passport = require('passport');
+const logger = require('../utils/logger').withIdentifier('sso');
 
 const router = express.Router();
 // protected route
-const loggedInHome = '/home';
+const loggedInHome = '/';
 const loginErrRedirect = '/login?error=true';
-const winston = require('winston');
-
-// Utilize Lo-Dash utility library
-const logger = new (winston.Logger)({
-    transports: [
-        new (winston.transports.Console)({ timestamp: true })
-    ]
-});
 
 module.exports = () => {
     router.post('/saml/consume', passport.authenticate('saml',

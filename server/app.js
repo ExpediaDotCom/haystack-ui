@@ -58,13 +58,11 @@ app.use(metricsMiddleware.httpMetrics);
 if (config.enableSSO) {
     const passport = require('passport');
     const cacheResponseDirective = require('express-cache-response-directive');
-    const cookieParser = require('cookie-parser');
     const bodyParser = require('body-parser');
     const session = require('express-session');
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser(config.sessionSecret));
     app.use(cacheResponseDirective());
     app.use(session({ secret: config.sessionSecret }));
     app.use(passport.initialize());

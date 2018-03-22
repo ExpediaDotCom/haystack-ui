@@ -16,10 +16,10 @@
 
 const express = require('express');
 const User = require('../sso/user');
+const passportInstance = require('../sso/passportInstance');
 
 const router = express.Router();
 const loggedOutHome = '/login';
-const passportInstance = require('../sso/passportInstance');
 
 module.exports = (config) => {
     const extractClaims = (profile, done) => {
