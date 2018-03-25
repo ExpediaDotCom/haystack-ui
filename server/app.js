@@ -68,8 +68,8 @@ if (config.enableSSO) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use('/auth', require('./routes/auth')(config));
-    app.use('/sso', require('./routes/sso')(config));
+    app.use('/auth', require('./routes/auth'));
+    app.use('/sso', require('./routes/sso'));
     app.use('/user', require('./routes/user')(config));
 }
 

@@ -15,23 +15,17 @@
  */
 
 const express = require('express');
-const passport = require('passport');
+const authenticator = require('../sso/authenticator');
 const logger = require('../utils/logger').withIdentifier('sso');
 
-const router = express.Router();
-// protected route
 const loggedInHome = '/';
-const loginErrRedirect = '/login?error=true';
 
-module.exports = () => {
-    router.post('/saml/consume', passport.authenticate('saml',
-        {
-            failureRedirect: loginErrRedirect,
-            failureFlash: true
-        }),
-        (req, res) => {
-            logger.info(`action=authentication, status=success, redirectUrl=${loggedInHome}`);
-            res.redirect(req.query.redirectUrl || loggedInHome);
-        });
-    return router;
-};
+const router = express.Router();
+
+router.use('/saml/consume', authenticator,
+    (req, res) => {
+        logger.info(`action=authentication, status=success, redirectUrl=${loggedInHome}`);
+        res.redirect(req.query.redirectUrl || loggedInHome);
+    });
+
+module.exports = router;
