@@ -75,6 +75,7 @@ if (config.enableSSO) {
     app.use('/auth', require('./routes/auth'));
     app.use('/sso', require('./routes/sso'));
     app.use('/user', require('./routes/user'));
+    app.use('/api', authChecker.forApi);
 }
 
 // ROUTING

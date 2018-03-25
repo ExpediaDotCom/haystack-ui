@@ -15,11 +15,8 @@
  */
 
 const express = require('express');
-const config = require('../config/config');
-const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
-if (config.enableSSO) router.use(authChecker.forApi);
 
 router.get('/details', (req, res) => {
         res.type('application/json').send(req.user);

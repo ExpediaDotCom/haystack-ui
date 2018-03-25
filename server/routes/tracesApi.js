@@ -21,10 +21,8 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const tracesConnector = require(`../connectors/traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
-const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
-if (config.enableSSO) router.use(authChecker.forApi);
 
 router.get('/traces', (req, res, next) => {
     handleResponsePromise(res, next, 'traces')(

@@ -20,10 +20,8 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const trendsConnector = require(`../connectors/trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
-if (config.enableSSO) router.use(authChecker.forApi);
 
 router.get('/servicePerf', (req, res, next) => {
     const {
