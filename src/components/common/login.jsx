@@ -25,13 +25,13 @@ const Login = ({ redirectUrl }) => (
                 <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
                 <span>Haystack</span>
             </h1>
-            <a href={`/auth/login?redirectUrl=${redirectUrl !== '/login' ? redirectUrl : '/'}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
+            <a href={`/auth/login?redirectUrl=${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
         </div>
     </div>
 );
 
 Login.defaultProps = {
-    redirectUrl: ''
+    redirectUrl: '/'
 };
 
 Login.propTypes = {

@@ -21,6 +21,7 @@ const SamlStrategy = require('passport-saml').Strategy;
 const loggedInHome = '/';
 const loginErrRedirect = '/login?error=true';
 const IDENTIFIER_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
+const EMAIL_ADDRESS_SCHEMA = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
 passport.serializeUser((user, done) => {
     done(null, user);
@@ -32,14 +33,14 @@ passport.deserializeUser((user, done) => {
 
 passport.use(new SamlStrategy({
         path: '/sso/saml/consume?redirectUrl=/',
-        entryPoint: config.passport.entry_point,
-        issuer: config.passport.issuer,
+        entryPoint: config.saml.entry_point,
+        issuer: config.saml.issuer,
         acceptedClockSkewMs: -1,
         identifierFormat: IDENTIFIER_FORMAT
     },
     (profile, done) => done(null, {
         id: profile.nameID,
-        email: profile[config.passport.email_address_schema]
+        email: profile[EMAIL_ADDRESS_SCHEMA]
     })
 ));
 

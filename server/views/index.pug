@@ -14,15 +14,14 @@ html
     #root
     script.
         var haystackUiConfig = {
-            subsystems: !{JSON.stringify(subsystems)},
-            gaTrackingID: !{JSON.stringify(gaTrackingID)},
-            fieldKeys: !{JSON.stringify(fieldKeys)},
-            enableServicePerformance: !{JSON.stringify(enableServicePerformance || null)},
-            enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || null)},
-            enableLatencyCostViewer: !{JSON.stringify(enableLatencyCostViewer || null)},
+            subsystems: !{JSON.stringify(subsystems || [])},
+            gaTrackingID: !{JSON.stringify(gaTrackingID || '')},
+            fieldKeys: !{JSON.stringify(fieldKeys || '')},
+            enableServicePerformance: !{JSON.stringify(enableServicePerformance || false)},
+            enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || false)},
+            enableLatencyCostViewer: !{JSON.stringify(enableLatencyCostViewer || false)},
             services: !{JSON.stringify(services || null)},
-            enableSSO: !{JSON.stringify(enableSSO || null)},
-            isLoggedIn: !{JSON.stringify(isLoggedIn)}
+            enableSSO: !{JSON.stringify(enableSSO || false)}
         }
     script(async, defer, src='/bundles/js/app.js')
     script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js')

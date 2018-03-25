@@ -25,13 +25,13 @@ import TracesHome from './components/home/TracesHome';
 import ServiceTools from './components/layout/serviceTools';
 import HeaderSearchInterstitial from './components/layout/headerSearchInterstitial';
 import traceDetailsStore from './components/traces/stores/traceDetailsStore';
+import Login from './components/common/login';
 import NoMatch from './components/common/noMatch';
 
-export default () => (
-    <Route>
-        <div className="layout">
-            <Header/>
-            <article className="primary-content">
+const Layout = () => (
+    <div className="layout">
+        <Header/>
+        <article className="primary-content">
             { window.haystackUiConfig.subsystems && window.haystackUiConfig.subsystems.length === 1 && window.haystackUiConfig.subsystems[0] === 'traces' ?
                 <Switch>
                     <Route exact path="/" component={TracesHome}/>
@@ -45,8 +45,16 @@ export default () => (
                     <Route path="*" component={NoMatch}/>
                 </Switch>
             }
-            </article>
-            <Footer/>
-        </div>
+        </article>
+        <Footer/>
+    </div>
+);
+
+export default () => (
+    <Route>
+        <Switch>
+            <Route exact path="/login" component={Login}/>
+            <Route path="*" component={Layout}/>
+        </Switch>
     </Route>
 );

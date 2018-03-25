@@ -87,7 +87,6 @@
     "progress-bar-webpack-plugin": "^1.9.3",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
-    "react-addons-perf": "^15.4.2",
     "react-bootstrap-table": "^4.0.0-beta.9",
     "react-chartjs-2": "^1.1.2",
     "react-circular-progressbar": "^0.1.5",

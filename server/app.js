@@ -78,8 +78,7 @@ if (config.enableSSO) {
     app.use('/api', authChecker.forApi);
 }
 
-// ROUTING
-const indexRoute = require('./routes/index');
+// API ROUTING
 const servicesApi = require('./routes/servicesApi');
 const tracesApi = require('./routes/tracesApi');
 const servicesPerfApi = require('./routes/servicesPerfApi');
@@ -89,13 +88,15 @@ if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
 
 app.use('/api', ...apis);
-app.use('/', indexRoute);
 
-app.use((req, res, next) => {
-    if (req.user) res.cookie('userId', req.user.id);
-    else res.clearCookie('userId');
-    next();
-});
+// PAGE ROUTING
+const indexRoute = require('./routes/index');
+
+if (config.enableSSO) {
+    app.use('/login', require('./routes/login'));
+    app.use('/', authChecker.forPage);
+}
+app.use('/', indexRoute);
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars

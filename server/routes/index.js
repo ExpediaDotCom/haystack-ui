@@ -31,14 +31,13 @@ router.get('*', (req, res) => {
 
     res.render('index', {
         subsystems: Object.keys(config.connectors),
-        gaTrackingID: config.gaTrackingID || null,
-        fieldKeys: config.connectors.traces.fieldKeys || false,
-        enableServicePerformance: config.enableServicePerformance || false,
-        enableServiceLevelTrends: config.enableServiceLevelTrends || false,
-        enableLatencyCostViewer: config.enableLatencyCostViewer || false,
-        services: servicesConnector.getServicesSync() || null,
-        enableSSO: config.enableSSO || false,
-        isLoggedIn: !!req.user || false
+        gaTrackingID: config.gaTrackingID,
+        fieldKeys: config.connectors.traces.fieldKeys,
+        enableServicePerformance: config.enableServicePerformance,
+        enableServiceLevelTrends: config.enableServiceLevelTrends,
+        enableLatencyCostViewer: config.enableLatencyCostViewer,
+        services: servicesConnector.getServicesSync(),
+        enableSSO: config.enableSSO
     });
 
     onFinished(res, () => {
