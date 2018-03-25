@@ -15,7 +15,7 @@
  */
 
 const express = require('express');
-const authenticator = require('../sso/authenticator');
+const authenticator = require('../sso/samlSsoAuthenticator');
 
 const router = express.Router();
 

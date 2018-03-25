@@ -30,6 +30,7 @@ const config = require('./config/config');
 const logger = require('./utils/logger');
 const metricsMiddleware = require('./utils/metricsMiddleware');
 const metricsReporter = require('./utils/metricsReporter');
+const authChecker = require('./sso/authChecker');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
 
@@ -73,7 +74,7 @@ if (config.enableSSO) {
 
     app.use('/auth', require('./routes/auth'));
     app.use('/sso', require('./routes/sso'));
-    app.use('/user', require('./routes/user')(config));
+    app.use('/user', require('./routes/user'));
 }
 
 // ROUTING

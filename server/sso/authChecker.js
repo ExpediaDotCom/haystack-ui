@@ -14,19 +14,17 @@
  *         limitations under the License.
  */
 
-/**
- * Middleware to allow requests from only logged-in users
- * @param req The request object
- * @param res The response object
- * @param next The next middleware/handler in the chain
-*/
-
-module.exports = function (config) {
-    return function (req, res, next) {
-        if (req.user || !config.enableSSO) {
+function authChecker(errorHandler) {
+    return (req, res, next) => {
+        if (req.user) {
             next();
         } else {
-            res.status(401).end();
+            errorHandler(res);
         }
     };
+}
+
+module.exports = {
+    forPage: authChecker((res) => { res.redirect('/auth/login'); }),
+    forApi: authChecker((res) => { res.status(401).send('UNAUTHORIZED'); })
 };

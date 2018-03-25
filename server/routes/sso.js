@@ -15,7 +15,7 @@
  */
 
 const express = require('express');
-const authenticator = require('../sso/authenticator');
+const authenticator = require('../sso/samlSsoAuthenticator');
 const logger = require('../utils/logger').withIdentifier('sso');
 
 const loggedInHome = '/';
