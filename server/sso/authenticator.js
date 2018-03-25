@@ -17,39 +17,31 @@ const config = require('../config/config');
 
 const passport = require('passport');
 const SamlStrategy = require('passport-saml').Strategy;
-const User = require('./user');
 
 const loggedInHome = '/';
 const loginErrRedirect = '/login?error=true';
-const identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
+const IDENTIFIER_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user);
 });
 
-passport.deserializeUser((id, done) => {
-    User.findById(id, done);
+passport.deserializeUser((user, done) => {
+    done(null, user);
 });
 
 passport.use(new SamlStrategy({
-    path: '/sso/saml/consume?redirectUrl=/',
-    entryPoint: config.passport.entry_point,
-    issuer: config.passport.issuer,
-    acceptedClockSkewMs: -1,
-    identifierFormat
-}, (profile, done) => {
-    done(null, User.findOrCreate({
+        path: '/sso/saml/consume?redirectUrl=/',
+        entryPoint: config.passport.entry_point,
+        issuer: config.passport.issuer,
+        acceptedClockSkewMs: -1,
+        identifierFormat: IDENTIFIER_FORMAT
+    },
+    (profile, done) => done(null, {
         id: profile.nameID,
-        userName: profile[config.passport.given_name_schema],
-        userGroups: profile[config.passport.user_group_schema],
         email: profile[config.passport.email_address_schema]
-    }, (err, user) => {
-        if (err) {
-            return done(err);
-        }
-        return done(null, user);
-    }));
-}));
+    })
+));
 
 module.exports = passport.authenticate('saml',
     {

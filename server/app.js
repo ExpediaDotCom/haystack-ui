@@ -43,6 +43,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('etag', false);
 app.set('x-powered-by', false);
+app.set('trust proxy', 1);
 
 // MIDDLEWARE SETUP
 app.use(compression());
@@ -57,14 +58,16 @@ app.use(metricsMiddleware.httpMetrics);
 // MIDDLEWARE AND ROUTES FOR SSO
 if (config.enableSSO) {
     const passport = require('passport');
-    const cacheResponseDirective = require('express-cache-response-directive');
     const bodyParser = require('body-parser');
-    const session = require('express-session');
+    const cookieSession = require('cookie-session');
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cacheResponseDirective());
-    app.use(session({ secret: config.sessionSecret }));
+    app.use(cookieSession({
+        secret: config.sessionSecret,
+        maxAge: 60 * 60 * 1000
+    }));
+
     app.use(passport.initialize());
     app.use(passport.session());
 
