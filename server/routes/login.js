@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2017 Expedia, Inc.
  *
@@ -14,25 +15,12 @@
  *         limitations under the License.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Switch, Redirect, Route } from 'react-router-dom';
+const express = require('express');
 
-import Login from './login';
+const router = express.Router();
 
-const LoginGateway = ({location}) => {
-    const redirectUrl = location.pathname || '';
+router.get('/', (req, res) => {
+    res.render('index', {});
+});
 
-    return (
-        <Switch>
-            <Route exact path="/login" render={() => <Login redirectUrl={redirectUrl} />}/>
-            <Route render={() => <Redirect to={{ pathname: '/login' }}/>}/>
-        </Switch>
-    );
-};
-
-LoginGateway.propTypes = {
-    location: PropTypes.object.isRequired
-};
-
-export default LoginGateway;
+module.exports = router;

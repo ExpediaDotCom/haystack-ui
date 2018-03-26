@@ -30,8 +30,6 @@ import latencyCostStore from '../stores/latencyCostStore';
 
 import uiState from '../searchBar/searchBarUiStateStore';
 
-const enableLatencyCostViewer = (window.haystackUiConfig.enableLatencyCostViewer);
-
 @observer
 export default class TraceDetails extends React.Component {
     static propTypes = {
@@ -108,12 +106,9 @@ export default class TraceDetails extends React.Component {
                             <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                                 <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                             </li>
-                            {
-                                enableLatencyCostViewer &&
-                                (<li className={this.state.tabSelected === 2 ? 'active' : ''}>
+                            <li className={this.state.tabSelected === 2 ? 'active' : ''}>
                                     <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                                </li>)
-                            }
+                            </li>
                             <li className={this.state.tabSelected === 3 ? 'active' : ''}>
                                 <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
                             </li>

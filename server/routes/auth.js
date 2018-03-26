@@ -15,46 +15,18 @@
  */
 
 const express = require('express');
-const User = require('../sso/user');
-const passportInstance = require('../sso/passportInstance');
+const authenticator = require('../sso/samlSsoAuthenticator');
 
 const router = express.Router();
+
 const loggedOutHome = '/login';
 
-module.exports = (config) => {
-    const extractClaims = (profile, done) => {
-        done(null, User.findOrCreate({
-            id: profile.nameID,
-            userName: profile[config.passport.given_name_schema],
-            userGroups: profile[config.passport.user_group_schema],
-            email: profile[config.passport.email_address_schema]
-        }, (err, user) => {
-            if (err) {
-                return done(err);
-            }
-            return done(null, user);
-        }));
-    };
+router.get('/login', authenticator);
 
-    const getAuthenticate = (req) => {
-        const options = {
-            callbackUrl: `${config.passport.callback}?redirectUrl=${req.query.redirectUrl}`,
-            entryPoint: config.passport.entry_point,
-            issuer: config.passport.issuer,
-            acceptedClockSkewMs: -1,
-            identifierFormat: config.passport.identifier_format
-        };
-        return passportInstance(options, extractClaims);
-    };
+router.get('/logout', (req, res) => {
+    req.logout();
+    req.session = null;
+    res.redirect(loggedOutHome);
+});
 
-    router.get('/login', (req, res, next) => {
-        getAuthenticate(req)(req, res, next);
-    });
-
-    router.get('/logout', (req, res) => {
-        req.logout();
-        res.redirect(loggedOutHome);
-    });
-
-    return router;
-};
+module.exports = router;

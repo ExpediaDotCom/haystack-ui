@@ -30,6 +30,7 @@ const config = require('./config/config');
 const logger = require('./utils/logger');
 const metricsMiddleware = require('./utils/metricsMiddleware');
 const metricsReporter = require('./utils/metricsReporter');
+const authChecker = require('./sso/authChecker');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
 
@@ -43,6 +44,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('etag', false);
 app.set('x-powered-by', false);
+app.set('trust proxy', 1);
 
 // MIDDLEWARE SETUP
 app.use(compression());
@@ -57,24 +59,26 @@ app.use(metricsMiddleware.httpMetrics);
 // MIDDLEWARE AND ROUTES FOR SSO
 if (config.enableSSO) {
     const passport = require('passport');
-    const cacheResponseDirective = require('express-cache-response-directive');
     const bodyParser = require('body-parser');
-    const session = require('express-session');
+    const cookieSession = require('cookie-session');
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cacheResponseDirective());
-    app.use(session({ secret: config.sessionSecret }));
+    app.use(cookieSession({
+        secret: config.sessionSecret,
+        maxAge: config.sessionTimeout
+    }));
+
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use('/auth', require('./routes/auth')(config));
-    app.use('/sso', require('./routes/sso')(config));
-    app.use('/user', require('./routes/user')(config));
+    app.use('/auth', require('./routes/auth'));
+    app.use('/sso', require('./routes/sso'));
+    app.use('/user', require('./routes/user'));
+    app.use('/api', authChecker.forApi);
 }
 
-// ROUTING
-const indexRoute = require('./routes/index');
+// API ROUTING
 const servicesApi = require('./routes/servicesApi');
 const tracesApi = require('./routes/tracesApi');
 const servicesPerfApi = require('./routes/servicesPerfApi');
@@ -84,13 +88,15 @@ if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
 
 app.use('/api', ...apis);
-app.use('/', indexRoute);
 
-app.use((req, res, next) => {
-    if (req.user) res.cookie('userId', req.user.id);
-    else res.clearCookie('userId');
-    next();
-});
+// PAGE ROUTING
+const indexRoute = require('./routes/index');
+
+if (config.enableSSO) {
+    app.use('/login', require('./routes/login'));
+    app.use('/', authChecker.forPage);
+}
+app.use('/', indexRoute);
 
 // ERROR-HANDLING
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars

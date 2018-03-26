@@ -22,5 +22,5 @@ import Main from '../../src/main';
 
 it('renders correct routes', () => {
     const wrapper = shallow(<Main/>);
-    expect(wrapper.find('.layout')).to.have.length(1);
+    expect(wrapper.find('.layout')).to.have.length(0);
 });
