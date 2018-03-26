@@ -22,7 +22,7 @@ import {observer} from 'mobx-react';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
 
-const alertNavBarCounterRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertNavBarCounterRefreshInterval) || null;
+const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval) || null;
 
 @observer
 export default class AlertCounter extends React.Component {
@@ -31,10 +31,15 @@ export default class AlertCounter extends React.Component {
     };
 
     componentDidMount() {
+        alertsStore.fetchUnhealthyAlertCount(this.props.serviceName);
         this.timerID = setInterval(
             () => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName),
-            alertNavBarCounterRefreshInterval
+            alertsRefreshInterval
         );
+    }
+
+    componentWillReceiveProps(nextProp) {
+        alertsStore.fetchUnhealthyAlertCount(nextProp.serviceName);
     }
 
     componentWillUnmount() {

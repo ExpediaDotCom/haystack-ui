@@ -53,12 +53,10 @@ module.exports = {
             // name of config connector module to use for fetching anomaly detection data from downstream
             // Options :
             //  - stub - a stub used during development, will be removed in future
-            connectorName: 'stub'
+            connectorName: 'stub',
+            alertsRefreshInterval: 60000 // refresh interval for Alert Tab Unhealthy Counter
         }
-    },
-
-    // refresh interval for Alert Tab Unhealthy Counter
-    alertNavBarCounterRefreshInterval: 5000
+    }
 
     // use if you need SAML back SSO auth
     //
