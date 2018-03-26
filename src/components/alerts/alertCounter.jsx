@@ -22,11 +22,29 @@ import {observer} from 'mobx-react';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
 
+const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval) || null;
+
 @observer
 export default class AlertCounter extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired
     };
+
+    componentDidMount() {
+        alertsStore.fetchUnhealthyAlertCount(this.props.serviceName);
+        this.timerID = setInterval(
+            () => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName),
+            alertsRefreshInterval
+        );
+    }
+
+    componentWillReceiveProps(nextProp) {
+        alertsStore.fetchUnhealthyAlertCount(nextProp.serviceName);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
 
     render() {
         if (alertsStore.unhealthyAlertCount) {

@@ -36,7 +36,8 @@ router.get('*', (req, res) => {
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
         services: servicesConnector.getServicesSync(),
-        enableSSO: config.enableSSO
+        enableSSO: config.enableSSO,
+        alertsRefreshInterval: config.connectors.alerts.alertsRefreshInterval
     });
 
     onFinished(res, () => {

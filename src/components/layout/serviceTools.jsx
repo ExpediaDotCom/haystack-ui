@@ -26,7 +26,6 @@ import './serviceTools.less';
 import AlertCounter from '../alerts/alertCounter';
 import serviceStore from '../../stores/serviceStore';
 import ServiceToolsContainer from './serviceToolsContainer';
-import alertsStore from '../alerts/stores/serviceAlertsStore';
 
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
@@ -62,20 +61,11 @@ export default class ServiceTools extends Component {
         serviceStore.fetchServices();
     }
 
-    componentDidMount() {
-        if (isAlertsEnabled) {
-            alertsStore.fetchUnhealthyAlertCount(this.props.match.params.serviceName);
-        }
-    }
-
     setWrapperRef(node) {
         this.wrapperRef = node;
     }
 
     handleServiceChange(event) {
-        if (isAlertsEnabled) {
-            alertsStore.fetchUnhealthyAlertCount(event.value);
-        }
         const pathname = this.props.location.pathname;
         const activeView = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length);
         this.props.history.push(`/service/${event.value}/${activeView}`);
