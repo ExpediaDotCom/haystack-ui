@@ -66,7 +66,7 @@ if (config.enableSSO) {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieSession({
         secret: config.sessionSecret,
-        maxAge: 60 * 60 * 1000
+        maxAge: config.sessionTimeout
     }));
 
     app.use(passport.initialize());

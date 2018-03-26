@@ -28,7 +28,11 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
-    done(null, user);
+    if (user.id && user.timestamp && user.timestamp > (Date.now() - config.sessionTimeout)) {
+        done(null, user);
+    } else {
+        done('invalid user: timeout exceeded', null);
+    }
 });
 
 passport.use(new SamlStrategy({
@@ -40,7 +44,8 @@ passport.use(new SamlStrategy({
     },
     (profile, done) => done(null, {
         id: profile.nameID,
-        email: profile[EMAIL_ADDRESS_SCHEMA]
+        email: profile[EMAIL_ADDRESS_SCHEMA],
+        timestamp: Date.now()
     })
 ));
 

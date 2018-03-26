@@ -25,6 +25,7 @@ router.get('/login', authenticator);
 
 router.get('/logout', (req, res) => {
     req.logout();
+    req.session = null;
     res.redirect(loggedOutHome);
 });
 
