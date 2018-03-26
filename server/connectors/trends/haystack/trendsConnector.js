@@ -200,10 +200,10 @@ function extractOperationSummary(values) {
 }
 
 function getServicePerfStatsResults(timeWindow, from, until) {
-    const CountTarget = getServiceTargetStat('*', timeWindow, 'count.received-span');
-    const SuccessTarget = getServiceTargetStat('*', timeWindow, 'count.success-span');
-    const FailureTarget = getServiceTargetStat('*', timeWindow, 'count.failure-span');
-    const tp99Target = getServiceTargetStat('*', timeWindow, '*_99.duration');
+    const CountTarget = getServiceTargetStat('*', timeWindow, 'count', 'received-span');
+    const SuccessTarget = getServiceTargetStat('*', timeWindow, 'count', 'success-span');
+    const FailureTarget = getServiceTargetStat('*', timeWindow, 'count', 'failure-span');
+    const tp99Target = getServiceTargetStat('*', timeWindow, '*_99', 'duration');
 
 
     return Q.all([
@@ -225,14 +225,14 @@ function getServiceSummaryResults(serviceName, timeWindow, from, until) {
     const target = getServiceTargetStat(serviceName, timeWindow, 'count,*_99', 'received-span,success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
-    .then(values => extractServiceSummary(values));
+        .then(values => extractServiceSummary(values));
 }
 
 function getServiceTrendResults(serviceName, timeWindow, from, until) {
     const target = getServiceTargetStat(serviceName, timeWindow, 'count,mean,*_95,*_99', 'received-span,success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
-    .then(trends => ({
+        .then(trends => ({
             count: extractTrendPointsForSingleServiceOperation(trends, 'count.received-span'),
             successCount: extractTrendPointsForSingleServiceOperation(trends, 'count.success-span'),
             failureCount: extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span'),
@@ -246,7 +246,7 @@ function getOperationSummaryResults(service, timeWindow, from, until) {
     const target = createOperationTarget(service, '*', timeWindow, 'count,*_99', 'received-span,success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
-    .then(values => extractOperationSummary(values));
+        .then(values => extractOperationSummary(values));
 }
 
 function getOperationTrendResults(serviceName, operationName, timeWindow, from, until) {
@@ -254,13 +254,13 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
 
     return fetchTrendValues(target, from, until)
         .then(trends => ({
-                count: extractTrendPointsForSingleServiceOperation(trends, 'count.received-span'),
-                successCount: extractTrendPointsForSingleServiceOperation(trends, 'count.success-span'),
-                failureCount: extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span'),
-                meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
-                tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
-                tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
-            }));
+            count: extractTrendPointsForSingleServiceOperation(trends, 'count.received-span'),
+            successCount: extractTrendPointsForSingleServiceOperation(trends, 'count.success-span'),
+            failureCount: extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span'),
+            meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
+            tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
+            tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
+        }));
 }
 
 // api
