@@ -47,12 +47,20 @@ export default class AlertDetailsToolbar extends React.Component {
         return (
             <div>
                 <div className="pull-left">
-                    <Link to={`/service/${this.props.serviceName}/trends?operationName=^${encodeURIComponent(this.props.operationName)}$`} className="btn btn-primary">
+                    <Link
+                        to={`/service/${this.props.serviceName}/trends?operationName=^${encodeURIComponent(this.props.operationName)}$`}
+                        className="btn btn-primary"
+                        target="_blank"
+                    >
                         <span className="ti-stats-up"/> Jump to Trends
                     </Link>
                 </div>
                 <div className="btn-group btn-group-sm pull-right">
-                    <Link to={`/service/${this.props.serviceName}/traces?operationName=${encodeURIComponent(this.props.operationName)}`} className="btn btn-default">
+                    <Link
+                        to={`/service/${this.props.serviceName}/traces?operationName=${encodeURIComponent(this.props.operationName)}`}
+                        className="btn btn-default"
+                        target="_blank"
+                    >
                         <span className="ti-align-left"/> See Traces
                     </Link>
                     <Clipboard
