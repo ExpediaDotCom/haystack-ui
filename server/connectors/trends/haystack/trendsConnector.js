@@ -200,10 +200,10 @@ function extractOperationSummary(values) {
 }
 
 function getServicePerfStatsResults(timeWindow, from, until) {
-    const CountTarget = getServiceTargetStat('*', timeWindow, 'count.received-span');
-    const SuccessTarget = getServiceTargetStat('*', timeWindow, 'count.success-span');
-    const FailureTarget = getServiceTargetStat('*', timeWindow, 'count.failure-span');
-    const tp99Target = getServiceTargetStat('*', timeWindow, '*_99.duration');
+    const CountTarget = getServiceTargetStat('*', timeWindow, 'count', 'received-span');
+    const SuccessTarget = getServiceTargetStat('*', timeWindow, 'count', 'success-span');
+    const FailureTarget = getServiceTargetStat('*', timeWindow, 'count', 'failure-span');
+    const tp99Target = getServiceTargetStat('*', timeWindow, '*_99', 'duration');
 
 
     return Q.all([
