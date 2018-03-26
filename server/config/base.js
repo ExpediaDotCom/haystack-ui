@@ -55,7 +55,11 @@ module.exports = {
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub'
         }
-    }
+    },
+
+    // refresh interval for Alert Tab Unhealthy Counter
+    alertNavBarCounterRefreshInterval: 5000
+
     // use if you need SAML back SSO auth
     //
     // enableSSO: true, // flag for enabling sso

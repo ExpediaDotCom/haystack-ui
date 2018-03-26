@@ -20,7 +20,8 @@ html
             enableServicePerformance: !{JSON.stringify(enableServicePerformance || false)},
             enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || false)},
             services: !{JSON.stringify(services || null)},
-            enableSSO: !{JSON.stringify(enableSSO || false)}
+            enableSSO: !{JSON.stringify(enableSSO || false)},
+            alertNavBarCounterRefreshInterval: !{JSON.stringify(alertNavBarCounterRefreshInterval)}
         }
     script(async, defer, src='/bundles/js/app.js')
     script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js')
