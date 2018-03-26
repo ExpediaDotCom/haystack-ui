@@ -40,16 +40,16 @@ export default class Alerts extends React.Component {
 
     componentDidMount() {
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 1;
+        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 3;
         const activeWindowPreset = timeWindow.presets[activeWindow];
-        alertsStore.fetchServiceAlerts(this.state.serviceName, timeWindow.getLowerGranularity(activeWindowPreset.value).value, activeWindowPreset);
+        alertsStore.fetchServiceAlerts(this.state.serviceName, 300000, activeWindowPreset);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.match.params.serviceName !== this.state.serviceName) {
             this.setState({serviceName: nextProps.match.params.serviceName});
             const activeWindowPreset = timeWindow.presets[1];
-            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, timeWindow.getLowerGranularity(activeWindowPreset.value).value, activeWindowPreset);
+            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, 300000, activeWindowPreset);
         }
     }
 

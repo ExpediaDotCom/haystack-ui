@@ -26,7 +26,8 @@ import MockAdapter from 'axios-mock-adapter';
 import {OperationStore} from '../../../src/components/trends/stores/operationStore';
 import {ServiceStore} from '../../../src/components/trends/stores/serviceStore';
 
-const stubTime = {granularity: 1, from: 2, until: 3};
+const stubTime = {granularity: 60000, from: 1522000386792, until: 1522003986792};
+const stubQuery = 'granularity=60000&from=1522000386792&until=1522003986792';
 const stubService = 'TestService';
 const stubOperation = 'TestOperation';
 const stubType = 'IncomingRequests';
@@ -58,9 +59,9 @@ describe('OperationStore', () => {
     });
 
     it('fetches operation stats', (done) => {
-        server.onGet('/api/trends/operation/TestService?granularity=1&from=2&until=3').reply(200, stubTrend);
+        server.onGet(`/api/trends/operation/TestService?${stubQuery}`).reply(200, stubTrend);
 
-        store.fetchStats(stubService, stubTime);
+        store.fetchStats(stubService, stubTime, false, stubOperation);
 
         when(
             () => store.statsResults.length > 0,
@@ -71,7 +72,7 @@ describe('OperationStore', () => {
     });
 
     it('fetches operation trends', (done) => {
-        server.onGet('/api/trends/operation/TestService/TestOperation?granularity=1&from=2&until=3').reply(200, stubTrend);
+        server.onGet(`/api/trends/operation/TestService/TestOperation?${stubQuery}`).reply(200, stubTrend);
 
         store.fetchTrends(stubService, stubOperation, stubTime);
 
@@ -96,9 +97,9 @@ describe('ServiceStore', () => {
     });
 
     it('fetches service stats', (done) => {
-        server.onGet('/api/trends/service/TestService?granularity=1&from=2&until=3').reply(200, stubTrend);
+        server.onGet(`/api/trends/service/TestService?${stubQuery}`).reply(200, stubTrend);
 
-        store.fetchStats(stubService, stubTime);
+        store.fetchStats(stubService, stubTime, false);
 
         when(
             () => store.statsResults.length > 0,
@@ -109,7 +110,7 @@ describe('ServiceStore', () => {
     });
 
     it('fetches service trends', (done) => {
-        server.onGet('/api/trends/service/TestService/IncomingRequests?granularity=1&from=2&until=3').reply(200, stubTrend);
+        server.onGet(`/api/trends/service/TestService/IncomingRequests?${stubQuery}`).reply(200, stubTrend);
 
         store.fetchTrends(stubService, stubType, stubTime);
 
