@@ -35,7 +35,6 @@ router.get('*', (req, res) => {
         fieldKeys: config.connectors.traces.fieldKeys,
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
-        enableLatencyCostViewer: config.enableLatencyCostViewer,
         services: servicesConnector.getServicesSync(),
         enableSSO: config.enableSSO
     });
