@@ -42,11 +42,11 @@ function fetchOperationTrends(serviceName, granularity, from, until) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return operationName.replace(/\./gi, '___');
+    return operationName.replace(/\./gi, '___').replace(' ', '---');
 }
 
 function fromMetricTankTarget(operationName) {
-    return operationName.replace(/___/gi, '.');
+    return operationName.replace(/___/gi, '.').replace('---', ' ');
 }
 
 function parseOperationAlertsResponse(data, until) {
