@@ -21,7 +21,7 @@ html
             enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || false)},
             services: !{JSON.stringify(services || null)},
             enableSSO: !{JSON.stringify(enableSSO || false)},
-            alertsRefreshInterval: !{JSON.stringify(alertsRefreshInterval || -1)}
+            alertsRefreshInterval: !{JSON.stringify(alertsRefreshInterval || 60000)}
         }
     script(async, defer, src='/bundles/js/app.js')
     script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js')
