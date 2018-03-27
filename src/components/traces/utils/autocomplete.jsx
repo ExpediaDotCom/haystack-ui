@@ -71,7 +71,7 @@ export default class Autocomplete extends React.Component {
             }
         });
         this.setState({
-            fieldsString: arr,
+            fieldsString: arr.sort(),
             suggestionIndex: null
         });
         document.addEventListener('mousedown', this.handleOutsideClick);
