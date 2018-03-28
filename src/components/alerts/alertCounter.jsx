@@ -22,7 +22,7 @@ import {observer} from 'mobx-react';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
 
-const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval) || null;
+const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval);
 
 @observer
 export default class AlertCounter extends React.Component {

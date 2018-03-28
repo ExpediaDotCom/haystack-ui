@@ -23,7 +23,7 @@ import timeWindow from '../../utils/timeWindow';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 import './alerts';
 
-const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval) || null;
+const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval);
 
 @observer
 export default class AlertsToolbar extends React.Component {
