@@ -17,11 +17,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 
 import timeWindow from '../../utils/timeWindow';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 import './alerts';
+
+const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval) || null;
 
 @observer
 export default class AlertsToolbar extends React.Component {
@@ -39,11 +41,25 @@ export default class AlertsToolbar extends React.Component {
         const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 3;
         this.state = {
             options: timeWindow.presets,
-            activeWindow
+            activeWindow,
+            timerStart: new Date(),
+            timer: new Date(),
+            timerInit: true
         };
 
         this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.initRefresh = this.initRefresh.bind(this);
+        this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
+        this.stopRefresh = this.stopRefresh.bind(this);
+    }
+
+    componentDidMount() {
+        this.initRefresh();
+    }
+
+    componentWillUnmount() {
+        this.stopRefresh();
     }
 
     getUnhealthyAlerts() {
@@ -54,6 +70,44 @@ export default class AlertsToolbar extends React.Component {
             }
         });
         return unhealthyAlerts;
+    }
+
+    initRefresh() {
+        this.setState(
+            {
+                timerStart: new Date(),
+                timer: new Date()
+            }
+        );
+        this.storeRefreshTimerID = setInterval(
+            () => {
+                this.setState({timerStart: new Date()});
+                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
+            },
+            alertsRefreshInterval);
+        this.refreshDisplayTimerID = setInterval(
+            () => this.setState({timer: new Date()}),
+            1000);
+    }
+
+    stopRefresh() {
+        clearInterval(this.storeRefreshTimerID);
+        clearInterval(this.refreshDisplayTimerID);
+        this.setState(
+            {
+                timerStart: null,
+                timer: null
+            }
+        );
+    }
+
+    toggleAutoRefresh() {
+        this.setState({timerInit: !this.state.timerInit});
+        if (this.state.timerInit) {
+            this.stopRefresh();
+        } else {
+            this.initRefresh();
+        }
     }
 
     handleTimeChange(event) {
@@ -69,17 +123,35 @@ export default class AlertsToolbar extends React.Component {
     }
 
     render() {
+        const nextRefresh = (this.state.timer && this.state.timerStart) && (alertsRefreshInterval - (this.state.timer.getTime() - this.state.timerStart.getTime()));
         return (
-            <header>
+            <header className="alerts-toolbar clearfix">
                 <div className="pull-left">
                     <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealthy</div>
                     <div>out of {this.props.alertsStore.alerts.length} alerts for {this.props.serviceName}</div>
                 </div>
                 <div className="pull-right">
-                    <span>Show trend for </span>
-                    <select className="time-range-selector" onChange={this.handleTimeChange} defaultValue={this.state.activeWindow}>
-                        {this.state.options.map((window, index) => (<option key={window.longName} value={index}>last {window.longName}</option>))}
-                    </select>
+                    <div className="alerts-toolbar__time-range-selector">
+                        <span>Show trend for </span>
+                        <select
+                            className="time-range-selector"
+                            onChange={this.handleTimeChange}
+                            defaultValue={this.state.activeWindow}
+                        >
+                            {this.state.options.map((window, index) => (
+                                <option key={window.longName} value={index}>last {window.longName}</option>))}
+                        </select>
+                    </div>
+                    <div>
+                        <div className="pull-right">
+                            <span>Auto Refresh {this.state.timerInit ? `in ${Math.round(nextRefresh / 1000)} s` : ''} </span>
+                            <a
+                                role="button"
+                                tabIndex={-1}
+                                onClick={this.toggleAutoRefresh}
+                            >{this.state.timerInit === true ? 'Stop' : 'Start'}</a>
+                        </div>
+                    </div>
                 </div>
             </header>
         );
