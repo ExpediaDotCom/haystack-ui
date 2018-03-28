@@ -42,20 +42,20 @@ export default class AlertsToolbar extends React.Component {
         this.state = {
             options: timeWindow.presets,
             activeWindow,
-            timerStart: new Date(),
-            timer: new Date(),
-            timerInit: true
+            refreshTimer: new Date(),
+            countdownTimer: new Date(),
+            autoRefresh: true
         };
 
         this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.initRefresh = this.initRefresh.bind(this);
-        this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
+        this.startRefresh = this.startRefresh.bind(this);
         this.stopRefresh = this.stopRefresh.bind(this);
+        this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
     }
 
     componentDidMount() {
-        this.initRefresh();
+        this.startRefresh();
     }
 
     componentWillUnmount() {
@@ -72,41 +72,41 @@ export default class AlertsToolbar extends React.Component {
         return unhealthyAlerts;
     }
 
-    initRefresh() {
+    startRefresh() {
         this.setState(
             {
-                timerStart: new Date(),
-                timer: new Date()
+                refreshTimer: new Date(),
+                countdownTimer: new Date()
             }
         );
-        this.storeRefreshTimerID = setInterval(
+        this.refreshTimerRef = setInterval(
             () => {
-                this.setState({timerStart: new Date()});
+                this.setState({refreshTimer: new Date()});
                 this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
             },
             alertsRefreshInterval);
-        this.refreshDisplayTimerID = setInterval(
-            () => this.setState({timer: new Date()}),
+        this.countdownTimerRef = setInterval(
+            () => this.setState({countdownTimer: new Date()}),
             1000);
     }
 
     stopRefresh() {
-        clearInterval(this.storeRefreshTimerID);
-        clearInterval(this.refreshDisplayTimerID);
+        clearInterval(this.refreshTimerRef);
+        clearInterval(this.countdownTimerRef);
         this.setState(
             {
-                timerStart: null,
-                timer: null
+                refreshTimer: null,
+                countdownTimer: null
             }
         );
     }
 
     toggleAutoRefresh() {
-        this.setState({timerInit: !this.state.timerInit});
-        if (this.state.timerInit) {
+        this.setState({autoRefresh: !this.state.autoRefresh});
+        if (this.state.autoRefresh) {
             this.stopRefresh();
         } else {
-            this.initRefresh();
+            this.startRefresh();
         }
     }
 
@@ -123,7 +123,7 @@ export default class AlertsToolbar extends React.Component {
     }
 
     render() {
-        const nextRefresh = (this.state.timer && this.state.timerStart) && (alertsRefreshInterval - (this.state.timer.getTime() - this.state.timerStart.getTime()));
+        const countDownMiliSec = (this.state.countdownTimer && this.state.refreshTimer) && (alertsRefreshInterval - (this.state.countdownTimer.getTime() - this.state.refreshTimer.getTime()));
         return (
             <header className="alerts-toolbar clearfix">
                 <div className="pull-left">
@@ -144,12 +144,12 @@ export default class AlertsToolbar extends React.Component {
                     </div>
                     <div>
                         <div className="pull-right">
-                            <span>Auto Refresh {this.state.timerInit ? `in ${Math.round(nextRefresh / 1000)} s` : ''} </span>
+                            <span>Auto Refresh {this.state.autoRefresh ? `in ${Math.round(countDownMiliSec / 1000)} s` : ''} </span>
                             <a
                                 role="button"
                                 tabIndex={-1}
                                 onClick={this.toggleAutoRefresh}
-                            >{this.state.timerInit === true ? 'Stop' : 'Start'}</a>
+                            >{this.state.autoRefresh === true ? 'Stop' : 'Start'}</a>
                         </div>
                     </div>
                 </div>
