@@ -36,7 +36,7 @@ passport.deserializeUser((user, done) => {
 });
 
 passport.use(new SamlStrategy({
-        path: '/sso/saml/consume?redirectUrl=/',
+        callbackUrl: config.saml.callbackUrl,
         entryPoint: config.saml.entry_point,
         issuer: config.saml.issuer,
         acceptedClockSkewMs: -1,
