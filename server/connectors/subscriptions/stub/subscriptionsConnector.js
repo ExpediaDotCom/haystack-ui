@@ -54,7 +54,9 @@ function updateSubscription(subscriptionId, dispatcherId, res) {
     if (subscriptionId && dispatcherId) {
         return res.status(200).send('Subscription updated');
     }
-    return [];
+    return res.status(500).send({
+        err: 'Failed to update subscription'
+    });
 }
 
 const connector = {};

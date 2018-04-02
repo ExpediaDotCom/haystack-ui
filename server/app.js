@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /*
 
   *  Copyright 2018 Expedia, Inc.
