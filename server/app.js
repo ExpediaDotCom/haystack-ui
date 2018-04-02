@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 /*
 
   *  Copyright 2018 Expedia, Inc.
@@ -36,6 +35,8 @@ const errorLogger = logger.withIdentifier('invocation:failure');
 
 const app = express();
 
+const bodyParser = require('body-parser');
+
 // CONFIGURATIONS
 axios.defaults.timeout = config.upstreamTimeout;
 Q.longStackSupport = true;
@@ -54,15 +55,13 @@ app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
 app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 app.use(metricsMiddleware.httpMetrics);
-
+app.use(bodyParser.json());
 
 // MIDDLEWARE AND ROUTES FOR SSO
 if (config.enableSSO) {
     const passport = require('passport');
-    const bodyParser = require('body-parser');
     const cookieSession = require('cookie-session');
 
-    app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieSession({
         secret: config.sessionSecret,
@@ -86,6 +85,7 @@ const servicesPerfApi = require('./routes/servicesPerfApi');
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
+if (config.connectors.subscriptions) apis.push(require('./routes/subscribtionsApi'));
 
 app.use('/api', ...apis);
 

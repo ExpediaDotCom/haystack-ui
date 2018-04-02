@@ -55,6 +55,12 @@ module.exports = {
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
             alertsRefreshInterval: 60000 // refresh interval for Alert Tab Unhealthy Counter
+        },
+        subscriptions: {
+            // name of config connector module to use for fetching susbscriptions
+            // Options :
+            //  - stub - a stub used during development, will be removed in future
+            connectorName: 'stub'
         }
     }
 
