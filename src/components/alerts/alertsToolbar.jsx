@@ -42,7 +42,7 @@ export default class AlertsToolbar extends React.Component {
         this.state = {
             options: timeWindow.presets,
             activeWindow,
-            refreshTimer: new Date(),
+            autoRefreshTimer: new Date(),
             countdownTimer: new Date(),
             autoRefresh: true
         };
@@ -75,13 +75,13 @@ export default class AlertsToolbar extends React.Component {
     startRefresh() {
         this.setState(
             {
-                refreshTimer: new Date(),
+                autoRefreshTimer: new Date(),
                 countdownTimer: new Date()
             }
         );
-        this.refreshTimerRef = setInterval(
+        this.autoRefreshTimerRef = setInterval(
             () => {
-                this.setState({refreshTimer: new Date()});
+                this.setState({autoRefreshTimer: new Date()});
                 this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
             },
             alertsRefreshInterval);
@@ -91,11 +91,11 @@ export default class AlertsToolbar extends React.Component {
     }
 
     stopRefresh() {
-        clearInterval(this.refreshTimerRef);
+        clearInterval(this.autoRefreshTimerRef);
         clearInterval(this.countdownTimerRef);
         this.setState(
             {
-                refreshTimer: null,
+                autoRefreshTimer: null,
                 countdownTimer: null
             }
         );
@@ -123,7 +123,7 @@ export default class AlertsToolbar extends React.Component {
     }
 
     render() {
-        const countDownMiliSec = (this.state.countdownTimer && this.state.refreshTimer) && (alertsRefreshInterval - (this.state.countdownTimer.getTime() - this.state.refreshTimer.getTime()));
+        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (alertsRefreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
         return (
             <header className="alerts-toolbar clearfix">
                 <div className="pull-left">
