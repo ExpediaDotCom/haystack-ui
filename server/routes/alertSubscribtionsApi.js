@@ -18,7 +18,7 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const subscriptionsConnector = require(`../connectors/subscriptions/${config.connectors.subscriptions.connectorName}/subscriptionsConnector`); // eslint-disable-line import/no-dynamic-require
+const subscriptionsConnector = require(`../connectors/alerts/${config.connectors.alerts.subscriptions.connectorName}/subscriptionsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
@@ -32,24 +32,22 @@ router.get('/subscriptions/:serviceName/:operationName/:alertType', (req, res, n
     ;
 });
 
-router.post('/addsubscription', (req, res, next) => {
+router.post('/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
     () => subscriptionsConnector.addSubscription(
             req.body.serviceName,
             req.body.operationName,
             req.body.alertType,
             req.body.dispatcherType,    // smtp / slack
-            req.body.dispatcherId,      // emailId / slackId
-            res)
+            req.body.dispatcherId)      // emailId / slackId
     );
 });
 
-router.put('/updatesubscription/:subscriptionId', (req, res, next) => {
+router.put('/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.updateSubscription(
             req.params.subscriptionId,
-            req.body.dispatcherId,      // emailId or slackId
-            res)
+            req.body.dispatcherId)      // emailId or slackId
     );
 });
 
