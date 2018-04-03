@@ -32,7 +32,7 @@ router.get('/subscriptions/:serviceName/:operationName/:alertType', (req, res, n
     ;
 });
 
-router.post('/subscriptions', (req, res, next) => {
+router.post('/addsubscription', (req, res, next) => {
     handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
     () => subscriptionsConnector.addSubscription(
             req.body.serviceName,
@@ -43,7 +43,7 @@ router.post('/subscriptions', (req, res, next) => {
     );
 });
 
-router.put('/subscriptions/:subscriptionId', (req, res, next) => {
+router.put('/updatesubscription/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.updateSubscription(
             req.params.subscriptionId,
