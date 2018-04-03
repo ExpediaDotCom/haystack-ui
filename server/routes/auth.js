@@ -21,11 +21,9 @@ const router = express.Router();
 
 const loggedOutHome = '/login';
 
-const getAuthentication = (req) => {
-    return authenticator(req.query.redirectUrl);
-};
+const getAuthentication = req => authenticator(req.query.redirectUrl);
 
-router.get('/login', (req, res, next) => { getAuthentication(req)(req, res, next); });
+router.get('/login', (req, res, next) => getAuthentication(req)(req, res, next));
 
 router.get('/logout', (req, res) => {
     req.logout();
