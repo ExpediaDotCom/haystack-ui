@@ -15,17 +15,15 @@
  */
 
 const express = require('express');
-const authenticator = require('../sso/samlSsoAuthenticator');
+const authenticator = require('passport');
 const logger = require('../utils/logger').withIdentifier('sso');
-
-const loggedInHome = '/';
 
 const router = express.Router();
 
-router.use('/saml/consume', authenticator,
+router.use('/saml/consume', authenticator.authenticate('saml'),
     (req, res) => {
-        logger.info(`action=authentication, status=success, redirectUrl=${loggedInHome}`);
-        res.redirect(req.query.redirectUrl || loggedInHome);
+        logger.info(`action=authentication, status=success, redirectUrl=${req.query.redirectUrl}`);
+        res.redirect(req.query.redirectUrl);
     });
 
 module.exports = router;

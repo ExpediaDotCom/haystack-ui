@@ -19,12 +19,12 @@ function authChecker(errorHandler) {
         if (req.user) {
             next();
         } else {
-            errorHandler(res);
+            errorHandler(res, req.originalUrl);
         }
     };
 }
 
 module.exports = {
-    forPage: authChecker((res) => { res.redirect('/login'); }),
+    forPage: authChecker((res, redirectUrl) => { res.redirect(`/login${redirectUrl === '/' ? '' : `?redirectUrl=${redirectUrl}`}`); }),
     forApi: authChecker((res) => { res.status(401).send('UNAUTHORIZED'); })
 };

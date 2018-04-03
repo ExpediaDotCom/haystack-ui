@@ -53,7 +53,7 @@ const Layout = () => (
 export default () => (
     <Route>
         <Switch>
-            <Route exact path="/login" component={Login}/>
+            <Route exact path="/login" render={props => <Login {...props} />}/>
             <Route path="*" component={Layout}/>
         </Switch>
     </Route>
