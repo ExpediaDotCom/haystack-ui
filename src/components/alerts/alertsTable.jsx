@@ -174,7 +174,7 @@ export default class AlertsTable extends React.Component {
         };
 
         const operationFilter = this.state.operationName
-            ? {type: 'RegexFilter', defaultValue: this.state.operationName, delay: 500, placeholder: 'FilterOperation (Regex)...'}
+            ? {type: 'RegexFilter', defaultValue: decodeURIComponent(this.state.operationName), delay: 500, placeholder: 'FilterOperation (Regex)...'}
             : {type: 'RegexFilter', delay: 500, placeholder: 'FilterOperation (Regex)...'};
 
         const typeFilter = this.state.type
