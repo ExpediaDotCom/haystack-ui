@@ -16,22 +16,39 @@
 
 @import (reference) "../../app";
 
-.login-box {
-  margin-top: 150px;
+.login-cover {
+  position: relative;
+  height: 100%;
+  background-color: @gray-darker;
 }
 
-.login-box_title {
-  margin-top: 0;
+.login-box {
+  position: absolute;
+  top: 150px;
+  width: 100%;
+}
+
+.login-box_jumbotron {
+  .jumbotron;
+  display: inline-block;
+  width: 600px;
+  margin-right: 0;
+  margin-left: 0;
+  border-radius: 6px;
+  background-color: @gray-lighter;
+}
+
+.login-box_title.h1 {
+  color: @gray-dark;
 }
 
 .login-box_logo {
   width: 70px;
   margin-right: @spacing-s;
-  padding-bottom: @spacing-s;
+  padding-bottom: @spacing-l;
 }
 
 .login-box_btn {
-  margin-top: @spacing-s;
   padding-left: @spacing-xl !important;
   padding-right: @spacing-xl !important;
 }

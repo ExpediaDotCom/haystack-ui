@@ -15,28 +15,34 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import './login.less';
 
-const Login = ({ redirectUrl }) => (
-    <div className="login-cover text-center">
-        <div className="jumbotron login-box text-center">
-            <h1 className="login-box_title">
-                <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
-                <span>Haystack</span>
-            </h1>
-            <a href={`/auth/login?redirectUrl=${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
-        </div>
-    </div>
-);
+export default class Login extends Component {
+    static propTypes = {
+        redirectUrl: PropTypes.string
+    };
 
-Login.defaultProps = {
-    redirectUrl: '/'
-};
+    static defaultProps = {
+        redirectUrl: '/'
+    };
 
-Login.propTypes = {
-    redirectUrl: PropTypes.string
-};
+    componentDidMount() {
+        // eslint-disable-next-line no-undef
+        particlesJS.load('particles-js', 'scripts/particles.json');
+    }
 
-export default Login;
-
+    render() {
+        return (<div id="particles-js" className="login-cover text-center">
+            <div className="login-box text-center">
+                <div className="login-box_jumbotron">
+                    <div>
+                        <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
+                        <span className="h1 login-box_title">Haystack</span>
+                    </div>
+                    <a href={`/auth/login?redirectUrl=${this.props.redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
+                </div>
+            </div>
+        </div>);
+    }
+}
