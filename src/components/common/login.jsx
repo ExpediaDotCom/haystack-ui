@@ -20,19 +20,16 @@ import './login.less';
 
 export default class Login extends Component {
     static propTypes = {
-        redirectUrl: PropTypes.string
-    };
-
-    static defaultProps = {
-        redirectUrl: '/'
-    };
-
+        location: PropTypes.isRequired
+    }
     componentDidMount() {
         // eslint-disable-next-line no-undef
         particlesJS.load('particles-js', 'scripts/particles.json');
     }
 
     render() {
+        const redirectUrl = this.props.location.search;
+
         return (<div id="particles-js" className="login-cover text-center">
             <div className="login-box text-center">
                 <div className="login-box_jumbotron">
@@ -40,7 +37,7 @@ export default class Login extends Component {
                         <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
                         <span className="h1 login-box_title">Haystack</span>
                     </div>
-                    <a href={`/auth/login?redirectUrl=${this.props.redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
+                    <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
                 </div>
             </div>
         </div>);

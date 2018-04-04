@@ -23,34 +23,37 @@ const loginErrRedirect = '/login?error=true';
 const IDENTIFIER_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
 const EMAIL_ADDRESS_SCHEMA = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-    if (user.id && user.timestamp && user.timestamp > (Date.now() - config.sessionTimeout)) {
+module.exports = (redirectUrl) => {
+    passport.serializeUser((user, done) => {
         done(null, user);
-    } else {
-        done('invalid user: timeout exceeded', null);
-    }
-});
-
-passport.use(new SamlStrategy({
-        callbackUrl: config.saml.callbackUrl,
-        entryPoint: config.saml.entry_point,
-        issuer: config.saml.issuer,
-        acceptedClockSkewMs: -1,
-        identifierFormat: IDENTIFIER_FORMAT
-    },
-    (profile, done) => done(null, {
-        id: profile.nameID,
-        email: profile[EMAIL_ADDRESS_SCHEMA],
-        timestamp: Date.now()
-    })
-));
-
-module.exports = passport.authenticate('saml',
-    {
-        successRedirect: loggedInHome,
-        failureRedirect: loginErrRedirect
     });
+
+    passport.deserializeUser((user, done) => {
+        if (user.id && user.timestamp && user.timestamp > (Date.now() - config.sessionTimeout)) {
+            done(null, user);
+        } else {
+            done('invalid user: timeout exceeded', null);
+        }
+    });
+
+    passport.use(new SamlStrategy({
+            callbackUrl: `${config.saml.callbackUrl}?redirectUrl=${redirectUrl || '/'}`,
+            entryPoint: config.saml.entry_point,
+            issuer: config.saml.issuer,
+            acceptedClockSkewMs: -1,
+            identifierFormat: IDENTIFIER_FORMAT
+        },
+        (profile, done) => done(null, {
+            id: profile.nameID,
+            email: profile[EMAIL_ADDRESS_SCHEMA],
+            timestamp: Date.now()
+        })
+    ));
+
+    return passport.authenticate('saml',
+        {
+            successRedirect: loggedInHome,
+            failureRedirect: loginErrRedirect
+        });
+};
+
