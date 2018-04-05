@@ -19,6 +19,7 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const alertsConnector = require(`../connectors/alerts/${config.connectors.alerts.connectorName}/alertsConnector`); // eslint-disable-line import/no-dynamic-require
+const subscriptionsConnector = require(`../connectors/alerts/${config.connectors.alerts.connectorName}/subscriptionsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
@@ -34,9 +35,34 @@ router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
     );
 });
 
-router.get('/alert/:serviceName/:operationName/:alertType', (req, res, next) => {
+router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
         () => alertsConnector.getAlertDetails(req.params.serviceName, req.params.operationName, req.params.alertType)
+    );
+});
+
+router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
+    handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
+        () => subscriptionsConnector.getAlertSubscriptions(req.params.serviceName, req.params.operationName, req.params.alertType)
+    );
+});
+
+router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
+    handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
+        () => subscriptionsConnector.addSubscription(
+            req.body.serviceName,
+            req.body.operationName,
+            req.body.alertType,
+            req.body.dispatcherType,    // smtp / slack
+            req.body.dispatcherId)      // emailId / slackId
+    );
+});
+
+router.put('/updatesubscription/:subscriptionId', (req, res, next) => {
+    handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
+        () => subscriptionsConnector.updateSubscription(
+            req.params.subscriptionId,
+            req.body.dispatcherId)      // emailId or slackId
     );
 });
 

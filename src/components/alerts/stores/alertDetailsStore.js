@@ -23,15 +23,31 @@ function AlertsException(data) {
 }
 
 export class AlertDetailsStore {
-    @observable alertDetails = [];
-    @observable promiseState = null;
+    @observable alertHistory = [];
+    @observable alertSubscriptions = [];
+    @observable historyPromiseState = null;
+    @observable subscriptionsPromiseState = null;
 
-    @action fetchAlertDetails(serviceName, operationName, type) {
-        this.promiseState = fromPromise(
+
+    @action fetchAlertHistory(serviceName, operationName, type) {
+        this.historyPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}`)
+                .get(`/api/alert/${serviceName}/${operationName}/${type}/history`)
                 .then((result) => {
-                    this.alertDetails = result.data;
+                    this.alertHistory = result.data;
+                })
+                .catch((result) => {
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action fetchAlertSubscriptions(serviceName, operationName, type) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .get(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`)
+                .then((result) => {
+                    this.alertSubscriptions = result.data;
                 })
                 .catch((result) => {
                     throw new AlertsException(result);

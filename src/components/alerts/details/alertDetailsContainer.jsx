@@ -45,6 +45,13 @@ export default class AlertDetailsContainer extends React.Component {
         return formatters.toDurationStringInSecAndMin(end - start);
     }
 
+    static getSubscriptionType(subscription) {
+        if (subscription.dispatcherType === 'slack') {
+            return <div><img src="/images/slack.png" alt="Slack" className="alerts-slack-icon"/> Slack</div>;
+        }
+        return <div><span className="ti-email"/>  Email</div>;
+    }
+
     constructor(props) {
         super(props);
 
@@ -61,7 +68,7 @@ export default class AlertDetailsContainer extends React.Component {
     }
 
     render() {
-        const sortedResults = _.orderBy(this.props.alertDetailsStore.alertDetails, alert => alert.startTimestamp, ['desc']);
+        const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
 
         // eslint-disable-next-line no-unused-vars
         const Subscription = () => (
@@ -76,34 +83,22 @@ export default class AlertDetailsContainer extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="non-highlight-row">
-                            <td><span className="ti-email"/>  Slack</td>
-                            <td>haystck-notifications</td>
-                            <td>
-                                <div className="btn-group btn-group-sm">
-                                    <Link to={'#'} className="btn btn-default">
-                                        <span className="ti-pencil"/>
-                                    </Link>
-                                    <Link to={'#'} className="btn btn-default">
-                                        <span className="ti-trash"/>
-                                    </Link>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr className="non-highlight-row">
-                            <td><span className="ti-email"/>  Mail</td>
-                            <td>test@expedia.com</td>
-                            <td>
-                                <div className="btn-group btn-group-sm">
-                                    <Link to={'#'} className="btn btn-default">
-                                        <span className="ti-pencil"/>
-                                    </Link>
-                                    <Link to={'#'} className="btn btn-default">
-                                        <span className="ti-trash"/>
-                                    </Link>
-                                </div>
-                            </td>
-                        </tr>
+                        {this.props.alertDetailsStore.alertSubscriptions.length ? this.props.alertDetailsStore.alertSubscriptions.map(subscription => (
+                            <tr className="non-highlight-row subscription-row" key={Math.random()}>
+                                <td>{AlertDetailsContainer.getSubscriptionType(subscription)}</td>
+                                <td>{subscription.dispatcherIds[0]}</td>
+                                <td>
+                                    <div className="btn-group btn-group-sm">
+                                        <Link to={'#'} className="btn btn-default">
+                                            <span className="ti-pencil"/>
+                                        </Link>
+                                        <Link to={'#'} className="btn btn-default">
+                                            <span className="ti-trash"/>
+                                        </Link>
+                                    </div>
+                                </td>
+                            </tr>
+                        )) : <tr>No Subscriptions Found</tr>}
                     </tbody>
                 </table>
                 <div className="text-left">
@@ -126,7 +121,7 @@ export default class AlertDetailsContainer extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {sortedResults.length ? sortedResults.map(alert =>
+                    {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
                         (<tr className="non-highlight-row" key={Math.random()}>
                             <td><span className="alerts__bold">{AlertDetailsContainer.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertDetailsContainer.timestampFormatter(alert.startTimestamp)}</td>
                             <td className="text-right"><span className="alerts__bold">{AlertDetailsContainer.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
@@ -155,6 +150,7 @@ export default class AlertDetailsContainer extends React.Component {
                 </div>
                 <div className="row">
                     <History />
+                    <Subscription />
                 </div>
             </div>
         );

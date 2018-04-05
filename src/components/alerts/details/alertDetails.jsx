@@ -33,14 +33,15 @@ export default class AlertDetails extends React.Component {
     };
 
     componentDidMount() {
-        this.props.alertDetailsStore.fetchAlertDetails(this.props.serviceName, this.props.operationName, this.props.type);
+        this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type);
+        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type);
     }
 
     render() {
         return (
             <section className="table-row-details">
             {
-                this.props.alertDetailsStore.promiseState && this.props.alertDetailsStore.promiseState.case({
+                this.props.alertDetailsStore.historyPromiseState && this.props.alertDetailsStore.historyPromiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => (<AlertDetailsContainer

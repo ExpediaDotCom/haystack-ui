@@ -34,21 +34,21 @@ const subscriptions =
         }
     ];
 
-function getSubscriptions(serviceName, operationName, alertType) {
+function getAlertSubscriptions(serviceName, operationName, alertType) {
     if (serviceName && operationName && alertType) {
         return subscriptions;
     }
     throw new Error('Unable to get subscriptions');
 }
 
-function addSubscription(serviceName, operationName, alertType, dispatcherType, dispatcherId) {
+function addAlertSubscription(serviceName, operationName, alertType, dispatcherType, dispatcherId) {
     if (serviceName && operationName && alertType && dispatcherType && dispatcherId) {
         return 'New subscription created';
     }
     throw new Error('Unable to add subscription');
 }
 
-function updateSubscription(subscriptionId, dispatcherId) {
+function updateAlertSubscription(subscriptionId, dispatcherId) {
     if (subscriptionId && dispatcherId) {
         return 'Subscription updated';
     }
@@ -57,9 +57,9 @@ function updateSubscription(subscriptionId, dispatcherId) {
 
 const connector = {};
 
-connector.getSubscriptions = (serviceName, operationName, alertType) => Q.fcall(() => getSubscriptions(serviceName, operationName, alertType));
+connector.getAlertSubscriptions = (serviceName, operationName, alertType) => Q.fcall(() => getAlertSubscriptions(serviceName, operationName, alertType));
 
-connector.addSubscription = (serviceName, operationName, alertType, dispatcherType, dispatcherId) => Q.fcall(() => addSubscription(
+connector.addAlertSubscription = (serviceName, operationName, alertType, dispatcherType, dispatcherId) => Q.fcall(() => addAlertSubscription(
     serviceName,
     operationName,
     alertType,
@@ -67,6 +67,6 @@ connector.addSubscription = (serviceName, operationName, alertType, dispatcherTy
     dispatcherId)      // emailId / slackId
 );
 
-connector.updateSubscription = (subscriptionId, dispatcherId) => Q.fcall(() => updateSubscription(subscriptionId, dispatcherId));
+connector.updateAlertSubscription = (subscriptionId, dispatcherId) => Q.fcall(() => updateAlertSubscription(subscriptionId, dispatcherId));
 
 module.exports = connector;
