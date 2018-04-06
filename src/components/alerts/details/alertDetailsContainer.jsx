@@ -56,18 +56,61 @@ export default class AlertDetailsContainer extends React.Component {
         super(props);
 
         this.state = {
-            showNewSubscriptionBox: false
+            showNewSubscriptionBox: false,
+            subscriptionError: false
         };
 
         this.toggleSubscriptionBox = this.toggleSubscriptionBox.bind(this);
         this.trendLinkCreator = this.trendLinkCreator.bind(this);
         this.traceLinkCreator = this.traceLinkCreator.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSuccessfulNewSubscription = this.handleSuccessfulNewSubscription.bind(this);
+        this.handleNewSubscriptionError = this.handleNewSubscriptionError.bind(this);
+        this.setInputRef = this.setInputRef.bind(this);
+        this.setSelectRef = this.setSelectRef.bind(this);
+    }
+
+    setInputRef(node) {
+        this.inputRef = node;
+    }
+
+    setSelectRef(node) {
+        this.selectRef = node;
+    }
+
+    handleSuccessfulNewSubscription() {
+        this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type);
+        this.setState({
+            showNewSubscriptionBox: false,
+            subscriptionError: false
+        });
+    }
+
+    handleNewSubscriptionError() {
+        this.setState({
+            subscriptionError: true
+        });
     }
 
     toggleSubscriptionBox() {
         this.setState(prevState => ({
-            showNewSubscriptionBox: !prevState.showNewSubscriptionBox
+            showNewSubscriptionBox: !prevState.showNewSubscriptionBox,
+            subscriptionError: false
         }));
+    }
+
+    handleSubmit() {
+        const handle = this.inputRef.value;
+        const medium = this.selectRef.value;
+        this.props.alertDetailsStore.addNewSubscription(
+            this.props.serviceName,
+            this.props.operationName,
+            this.props.type,
+            medium,
+            handle,
+            this.handleSuccessfulNewSubscription,
+            this.handleNewSubscriptionError
+        );
     }
 
     trendLinkCreator(startTimestamp, endTimestamp) {
@@ -110,15 +153,33 @@ export default class AlertDetailsContainer extends React.Component {
                                 </td>
                             </tr>
                         )) : <tr>No Subscriptions Found</tr>}
+                        <tr className={showSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
+                            <td>
+                                <select className="alert-details__select" ref={this.setSelectRef}>
+                                    <option>Slack</option>
+                                    <option>Email</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input className="alert-details__input" placeholder="Medium Handle" ref={this.setInputRef}/>
+                            </td>
+                            <td>
+                                <div className="btn-group btn-group-sm">
+                                    <Link to={'#'} className="btn btn-success" onClick={this.handleSubmit}>
+                                        <span className="ti-plus"/>
+                                    </Link>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-                <div className="text-left">
-                    <a href={'#'} className="btn btn-sm btn-success" onClick={this.toggleSubscriptionBox}>
-                        <span className="ti-plus"/> Add Subscription
-                    </a>
+                <div className="text-left subscription-button">
+                    {showSubscriptionBox ?
+                        <button className="btn btn-sm btn-default" onClick={this.toggleSubscriptionBox}><div>Hide</div></button> :
+                        <button className="btn btn-sm btn-success" onClick={this.toggleSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
+                    }
                 </div>
-                <div className={showSubscriptionBox ? 'text-right' : 'hidden'}>
-                </div>
+                <div className={this.state.subscriptionError ? 'subscription-error' : 'hidden'}>Error adding subscription</div>
             </section>
         );
 

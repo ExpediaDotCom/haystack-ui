@@ -49,7 +49,7 @@ router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, 
 
 router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.addSubscription(
+        () => subscriptionsConnector.addAlertSubscription(
             req.params.serviceName,
             req.params.operationName,
             req.params.alertType,
@@ -60,7 +60,7 @@ router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req,
 
 router.put('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.updateSubscription(
+        () => subscriptionsConnector.updateAlertSubscription(
             req.params.subscriptionId,
             req.body.dispatcherId)      // emailId or slackId
     );

@@ -55,12 +55,13 @@ export class AlertDetailsStore {
         );
     }
 
-    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId) {
+    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
                 .post(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
-                .then(() => {})
+                .then(successCallback)
                 .catch((result) => {
+                    errorCallback();
                     throw new AlertsException(result);
                 })
         );
