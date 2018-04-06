@@ -54,6 +54,28 @@ export class AlertDetailsStore {
                 })
         );
     }
+
+    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .post(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
+                .then(() => {})
+                .catch((result) => {
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action updateSubscription(serviceName, operationName, type, dispatcherType, dispatcherId) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
+                .then(() => {})
+                .catch((result) => {
+                    throw new AlertsException(result);
+                })
+        );
+    }
 }
 
 export default new AlertDetailsStore();

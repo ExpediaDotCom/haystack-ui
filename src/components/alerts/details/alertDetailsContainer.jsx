@@ -55,8 +55,19 @@ export default class AlertDetailsContainer extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            showNewSubscriptionBox: false
+        };
+
+        this.toggleSubscriptionBox = this.toggleSubscriptionBox.bind(this);
         this.trendLinkCreator = this.trendLinkCreator.bind(this);
         this.traceLinkCreator = this.traceLinkCreator.bind(this);
+    }
+
+    toggleSubscriptionBox() {
+        this.setState(prevState => ({
+            showNewSubscriptionBox: !prevState.showNewSubscriptionBox
+        }));
     }
 
     trendLinkCreator(startTimestamp, endTimestamp) {
@@ -69,7 +80,7 @@ export default class AlertDetailsContainer extends React.Component {
 
     render() {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
-
+        const showSubscriptionBox = this.state.showNewSubscriptionBox;
         // eslint-disable-next-line no-unused-vars
         const Subscription = () => (
             <section className="subscriptions col-md-6">
@@ -102,9 +113,11 @@ export default class AlertDetailsContainer extends React.Component {
                     </tbody>
                 </table>
                 <div className="text-left">
-                    <Link to={'#'} className="btn btn-sm btn-success">
+                    <a href={'#'} className="btn btn-sm btn-success" onClick={this.toggleSubscriptionBox}>
                         <span className="ti-plus"/> Add Subscription
-                    </Link>
+                    </a>
+                </div>
+                <div className={showSubscriptionBox ? 'text-right' : 'hidden'}>
                 </div>
             </section>
         );

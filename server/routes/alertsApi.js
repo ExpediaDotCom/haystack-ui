@@ -50,15 +50,15 @@ router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, 
 router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.addSubscription(
-            req.body.serviceName,
-            req.body.operationName,
-            req.body.alertType,
+            req.params.serviceName,
+            req.params.operationName,
+            req.params.alertType,
             req.body.dispatcherType,    // smtp / slack
             req.body.dispatcherId)      // emailId / slackId
     );
 });
 
-router.put('/updatesubscription/:subscriptionId', (req, res, next) => {
+router.put('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.updateSubscription(
             req.params.subscriptionId,
