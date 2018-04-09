@@ -52,11 +52,11 @@ function convertEpochTimeInSecondsToMillis(timestamp) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return operationName.replace(/\./gi, '___');
+    return operationName.replace(/\./gi, '___').replace(' ', '---');
 }
 
 function fromMetricTankOperationName(operationName) {
-    return operationName.replace(/___/gi, '.');
+    return operationName.replace(/___/gi, '.').replace('---', ' ');
 }
 
 function toMilliseconds(micro) {

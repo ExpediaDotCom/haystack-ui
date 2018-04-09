@@ -67,7 +67,7 @@ const stubServiceSummaryResults = [
 
 const stubSearchResults = [
     {
-        operationName: 'Op 1',
+        operationName: 'Op---1',
         totalCount: 18800,
         countPoints: [
             {value: 180, timestamp: 1508431848839},
@@ -88,7 +88,7 @@ const stubSearchResults = [
             {value: 53, timestamp: 1508434548839}]
     },
     {
-        operationName: 'Op 2',
+        operationName: 'Op---2',
         totalCount: 1800,
         countPoints: [
             {value: 380, timestamp: 1508431848839},
@@ -109,7 +109,7 @@ const stubSearchResults = [
             {value: 153, timestamp: 1508434548839}]
     },
     {
-        operationName: 'Op 3',
+        operationName: 'Op---3',
         totalCount: 2800,
         countPoints: [
             {value: 1180, timestamp: 1508431848839},
@@ -130,7 +130,7 @@ const stubSearchResults = [
             {value: 573, timestamp: 1508434548839}]
     },
     {
-        operationName: 'Op 4',
+        operationName: 'Op---4',
         totalCount: 2800,
         countPoints: [
             {value: 1180, timestamp: 1508431848839},
