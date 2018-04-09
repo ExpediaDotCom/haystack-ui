@@ -62,7 +62,7 @@ export default class AlertHistory extends React.Component {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
 
         return (
-            <div className="col-md-6">
+            <div className="col-md-6 alert-history">
                 <h4>History</h4>
                 <table className="table">
                     <thead>
