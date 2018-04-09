@@ -60,7 +60,7 @@ export default class AlertDetailsContainer extends React.Component {
             subscriptionError: false
         };
 
-        this.toggleSubscriptionBox = this.toggleSubscriptionBox.bind(this);
+        this.toggleNewSubscriptionBox = this.toggleNewSubscriptionBox.bind(this);
         this.trendLinkCreator = this.trendLinkCreator.bind(this);
         this.traceLinkCreator = this.traceLinkCreator.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -92,7 +92,7 @@ export default class AlertDetailsContainer extends React.Component {
         });
     }
 
-    toggleSubscriptionBox() {
+    toggleNewSubscriptionBox() {
         this.setState(prevState => ({
             showNewSubscriptionBox: !prevState.showNewSubscriptionBox,
             subscriptionError: false
@@ -124,7 +124,6 @@ export default class AlertDetailsContainer extends React.Component {
     render() {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
         const showSubscriptionBox = this.state.showNewSubscriptionBox;
-        // eslint-disable-next-line no-unused-vars
         const Subscription = () => (
             <section className="subscriptions col-md-6">
                 <h4>Subscriptions</h4>
@@ -138,17 +137,17 @@ export default class AlertDetailsContainer extends React.Component {
                     </thead>
                     <tbody>
                         {this.props.alertDetailsStore.alertSubscriptions.length ? this.props.alertDetailsStore.alertSubscriptions.map(subscription => (
-                            <tr className="non-highlight-row subscription-row" key={Math.random()}>
+                            <tr className="non-highlight-row subscription-row" key={subscription.subscriptionId}>
                                 <td>{AlertDetailsContainer.getSubscriptionType(subscription)}</td>
                                 <td>{subscription.dispatcherIds[0]}</td>
                                 <td>
                                     <div className="btn-group btn-group-sm">
-                                        <Link to={'#'} className="btn btn-default">
+                                        <button className="btn btn-default">
                                             <span className="ti-pencil"/>
-                                        </Link>
-                                        <Link to={'#'} className="btn btn-default">
+                                        </button>
+                                        <button className="btn btn-default">
                                             <span className="ti-trash"/>
-                                        </Link>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -175,8 +174,8 @@ export default class AlertDetailsContainer extends React.Component {
                 </table>
                 <div className="text-left subscription-button">
                     {showSubscriptionBox ?
-                        <button className="btn btn-sm btn-default" onClick={this.toggleSubscriptionBox}><div>Hide</div></button> :
-                        <button className="btn btn-sm btn-success" onClick={this.toggleSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
+                        <button className="btn btn-sm btn-default" onClick={this.toggleNewSubscriptionBox}><div>Hide</div></button> :
+                        <button className="btn btn-sm btn-success" onClick={this.toggleNewSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
                     }
                 </div>
                 <div className={this.state.subscriptionError ? 'subscription-error' : 'hidden'}>Error adding subscription</div>
