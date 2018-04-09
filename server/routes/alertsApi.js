@@ -66,4 +66,10 @@ router.put('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscri
     );
 });
 
+router.delete('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscriptionId', (req, res, next) => {
+    handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
+        () => subscriptionsConnector.deleteAlertSubscription(req.params.subscriptionId)
+    );
+});
+
 module.exports = router;

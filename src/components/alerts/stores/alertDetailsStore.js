@@ -16,6 +16,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import _ from 'lodash';
 
 function AlertsException(data) {
     this.message = 'Unable to resolve promise';
@@ -67,11 +68,28 @@ export class AlertDetailsStore {
         );
     }
 
-    @action updateSubscription(serviceName, operationName, type, subscriptionId, dispatcherId) {
+    @action updateSubscription(serviceName, operationName, type, subscriptionId, dispatcherId, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
                 .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`, {dispatcherId})
-                .then(() => {})
+                .then(() => {
+                    const original = this.alertSubscriptions.find(subscription => subscription.subscriptionId === subscriptionId);
+                    original.dispatcherIds[0] = dispatcherId;
+                })
+                .catch((result) => {
+                    errorCallback();
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action deleteSubscription(serviceName, operationName, type, subscriptionId) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .delete(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`)
+                .then(() => {
+                    _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
+                })
                 .catch((result) => {
                     throw new AlertsException(result);
                 })

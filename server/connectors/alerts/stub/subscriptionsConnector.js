@@ -55,6 +55,13 @@ function updateAlertSubscription(subscriptionId, dispatcherId) {
     throw new Error('Unable to update subscription');
 }
 
+function deleteAlertSubscription(subscriptionId) {
+    if (subscriptionId) {
+        return 'Subscription deleted';
+    }
+    throw new Error('Unable to delete subscription');
+}
+
 const connector = {};
 
 connector.getAlertSubscriptions = (serviceName, operationName, alertType) => Q.fcall(() => getAlertSubscriptions(serviceName, operationName, alertType));
@@ -68,5 +75,8 @@ connector.addAlertSubscription = (serviceName, operationName, alertType, dispatc
 );
 
 connector.updateAlertSubscription = (subscriptionId, dispatcherId) => Q.fcall(() => updateAlertSubscription(subscriptionId, dispatcherId));
+
+connector.deleteAlertSubscription = subscriptionId => Q.fcall(() => deleteAlertSubscription(subscriptionId));
+
 
 module.exports = connector;
