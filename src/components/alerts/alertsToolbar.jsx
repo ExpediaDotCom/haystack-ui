@@ -82,7 +82,7 @@ export default class AlertsToolbar extends React.Component {
         this.autoRefreshTimerRef = setInterval(
             () => {
                 this.setState({autoRefreshTimer: new Date()});
-                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
+                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.options[this.state.activeWindow]);
             },
             alertsRefreshInterval);
         this.countdownTimerRef = setInterval(
