@@ -23,21 +23,9 @@ const loginErrRedirect = '/login?error=true';
 const IDENTIFIER_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
 const EMAIL_ADDRESS_SCHEMA = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
-module.exports = (redirectUrl) => {
-    passport.serializeUser((user, done) => {
-        done(null, user);
-    });
-
-    passport.deserializeUser((user, done) => {
-        if (user.id && user.timestamp && user.timestamp > (Date.now() - config.sessionTimeout)) {
-            done(null, user);
-        } else {
-            done('invalid user: timeout exceeded', null);
-        }
-    });
-
-    passport.use(new SamlStrategy({
-            callbackUrl: `${config.saml.callbackUrl}?redirectUrl=${redirectUrl || '/'}`,
+function createSamlStrategyWithRedirect(redirectUrl) {
+    return new SamlStrategy({
+            callbackUrl: `${config.saml.callbackUrl}?redirectUrl=${redirectUrl}`,
             entryPoint: config.saml.entry_point,
             issuer: config.saml.issuer,
             acceptedClockSkewMs: -1,
@@ -48,12 +36,34 @@ module.exports = (redirectUrl) => {
             email: profile[EMAIL_ADDRESS_SCHEMA],
             timestamp: Date.now()
         })
-    ));
+    );
+}
 
-    return passport.authenticate('saml',
-        {
-            successRedirect: loggedInHome,
-            failureRedirect: loginErrRedirect
-        });
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    if (user.id && user.timestamp && user.timestamp > (Date.now() - config.sessionTimeout)) {
+        done(null, user);
+    } else {
+        done('invalid user: timeout exceeded', null);
+    }
+});
+
+passport.use(createSamlStrategyWithRedirect('/'));
+
+module.exports = {
+    authenticator: passport,
+    authenticatorWithRedirect: (redirectUrl) => {
+        // no predefined way to do redirects
+        // falling back to using new saml object everytime for new login request
+        passport.use(createSamlStrategyWithRedirect(redirectUrl || '/'));
+
+        return passport.authenticate('saml',
+            {
+                successRedirect: loggedInHome,
+                failureRedirect: loginErrRedirect
+            });
+    }
 };
-
