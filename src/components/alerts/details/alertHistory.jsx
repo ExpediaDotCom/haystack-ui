@@ -21,17 +21,14 @@ import {observer} from 'mobx-react';
 import _ from 'lodash';
 import {Link} from 'react-router-dom';
 
-import AlertDetailsToolbar from './alertDetailsToolbar';
-import AlertSubscriptions from './alertSubscriptions';
 import formatters from '../../../utils/formatters';
 
 @observer
-export default class AlertDetailsContainer extends React.Component {
+export default class AlertHistory extends React.Component {
     static propTypes = {
         alertDetailsStore: PropTypes.object.isRequired,
         operationName: PropTypes.string.isRequired,
-        serviceName: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired
     };
 
     static timeAgoFormatter(cell) {
@@ -64,7 +61,7 @@ export default class AlertDetailsContainer extends React.Component {
     render() {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
 
-        const History = () => (
+        return (
             <div className="col-md-6">
                 <h4>History</h4>
                 <table className="table">
@@ -77,43 +74,25 @@ export default class AlertDetailsContainer extends React.Component {
                     </thead>
                     <tbody>
                     {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
-                        (<tr className="non-highlight-row" key={Math.random()}>
-                            <td><span className="alerts__bold">{AlertDetailsContainer.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertDetailsContainer.timestampFormatter(alert.startTimestamp)}</td>
-                            <td className="text-right"><span className="alerts__bold">{AlertDetailsContainer.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
-                            <td className="text-right">
-                                <div className="btn-group btn-group-sm">
-                                    <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-default">
-                                        <span className="ti-stats-up"/>
-                                    </Link>
-                                    <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-sm btn-default">
-                                        <span className="ti-align-left"/>
-                                    </Link>
-                                </div>
-                            </td>
-                        </tr>))
+                            (<tr className="non-highlight-row" key={Math.random()}>
+                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertHistory.timestampFormatter(alert.startTimestamp)}</td>
+                                <td className="text-right"><span className="alerts__bold">{AlertHistory.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
+                                <td className="text-right">
+                                    <div className="btn-group btn-group-sm">
+                                        <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-default">
+                                            <span className="ti-stats-up"/>
+                                        </Link>
+                                        <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} className="btn btn-sm btn-default">
+                                            <span className="ti-align-left"/>
+                                        </Link>
+                                    </div>
+                                </td>
+                            </tr>))
                         : (<tr className="non-highlight-row"><td>No past alert found</td><td/><td/></tr>)
                     }
                     </tbody>
                 </table>
             </div>
         );
-
-        return (
-            <div className="alert-details-container">
-                <div className="clearfix alert-details-container_header">
-                    <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} type={this.props.type}/>
-                </div>
-                <div className="row">
-                    <History />
-                    <AlertSubscriptions
-                        operationName={this.props.operationName}
-                        serviceName={this.props.serviceName}
-                        type={this.props.type}
-                        alertDetailsStore={this.props.alertDetailsStore}
-                    />
-                </div>
-            </div>
-        );
     }
-
 }
