@@ -22,6 +22,7 @@ import _ from 'lodash';
 import {Link} from 'react-router-dom';
 
 import AlertDetailsToolbar from './alertDetailsToolbar';
+import AlertSubscriptions from './alertSubscriptions';
 import formatters from '../../../utils/formatters';
 
 @observer
@@ -45,72 +46,11 @@ export default class AlertDetailsContainer extends React.Component {
         return formatters.toDurationStringInSecAndMin(end - start);
     }
 
-    static getSubscriptionType(subscription) {
-        if (subscription.dispatcherType === 'slack') {
-            return <div><img src="/images/slack.png" alt="Slack" className="alerts-slack-icon"/> Slack</div>;
-        }
-        return <div><span className="ti-email"/>  Email</div>;
-    }
-
     constructor(props) {
         super(props);
 
-        this.state = {
-            showNewSubscriptionBox: false,
-            subscriptionError: false
-        };
-
-        this.toggleNewSubscriptionBox = this.toggleNewSubscriptionBox.bind(this);
         this.trendLinkCreator = this.trendLinkCreator.bind(this);
         this.traceLinkCreator = this.traceLinkCreator.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSuccessfulNewSubscription = this.handleSuccessfulNewSubscription.bind(this);
-        this.handleNewSubscriptionError = this.handleNewSubscriptionError.bind(this);
-        this.setInputRef = this.setInputRef.bind(this);
-        this.setSelectRef = this.setSelectRef.bind(this);
-    }
-
-    setInputRef(node) {
-        this.inputRef = node;
-    }
-
-    setSelectRef(node) {
-        this.selectRef = node;
-    }
-
-    handleSuccessfulNewSubscription() {
-        this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type);
-        this.setState({
-            showNewSubscriptionBox: false,
-            subscriptionError: false
-        });
-    }
-
-    handleNewSubscriptionError() {
-        this.setState({
-            subscriptionError: true
-        });
-    }
-
-    toggleNewSubscriptionBox() {
-        this.setState(prevState => ({
-            showNewSubscriptionBox: !prevState.showNewSubscriptionBox,
-            subscriptionError: false
-        }));
-    }
-
-    handleSubmit() {
-        const handle = this.inputRef.value;
-        const medium = this.selectRef.value;
-        this.props.alertDetailsStore.addNewSubscription(
-            this.props.serviceName,
-            this.props.operationName,
-            this.props.type,
-            medium,
-            handle,
-            this.handleSuccessfulNewSubscription,
-            this.handleNewSubscriptionError
-        );
     }
 
     trendLinkCreator(startTimestamp, endTimestamp) {
@@ -123,64 +63,6 @@ export default class AlertDetailsContainer extends React.Component {
 
     render() {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
-        const showSubscriptionBox = this.state.showNewSubscriptionBox;
-        const Subscription = () => (
-            <section className="subscriptions col-md-6">
-                <h4>Subscriptions</h4>
-                <table className="subscriptions__table table">
-                    <thead>
-                        <tr>
-                            <th width="20%">Medium</th>
-                            <th width="60%">Medium Handle</th>
-                            <th width="15%">Modify</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.alertDetailsStore.alertSubscriptions.length ? this.props.alertDetailsStore.alertSubscriptions.map(subscription => (
-                            <tr className="non-highlight-row subscription-row" key={subscription.subscriptionId}>
-                                <td>{AlertDetailsContainer.getSubscriptionType(subscription)}</td>
-                                <td>{subscription.dispatcherIds[0]}</td>
-                                <td>
-                                    <div className="btn-group btn-group-sm">
-                                        <button className="btn btn-default">
-                                            <span className="ti-pencil"/>
-                                        </button>
-                                        <button className="btn btn-default">
-                                            <span className="ti-trash"/>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        )) : <tr>No Subscriptions Found</tr>}
-                        <tr className={showSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
-                            <td>
-                                <select className="alert-details__select" ref={this.setSelectRef}>
-                                    <option>Slack</option>
-                                    <option>Email</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input className="alert-details__input" placeholder="Medium Handle" ref={this.setInputRef}/>
-                            </td>
-                            <td>
-                                <div className="btn-group btn-group-sm">
-                                    <Link to={'#'} className="btn btn-success" onClick={this.handleSubmit}>
-                                        <span className="ti-plus"/>
-                                    </Link>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div className="text-left subscription-button">
-                    {showSubscriptionBox ?
-                        <button className="btn btn-sm btn-default" onClick={this.toggleNewSubscriptionBox}><div>Hide</div></button> :
-                        <button className="btn btn-sm btn-success" onClick={this.toggleNewSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
-                    }
-                </div>
-                <div className={this.state.subscriptionError ? 'subscription-error' : 'hidden'}>Error adding subscription</div>
-            </section>
-        );
 
         const History = () => (
             <div className="col-md-6">
@@ -223,7 +105,12 @@ export default class AlertDetailsContainer extends React.Component {
                 </div>
                 <div className="row">
                     <History />
-                    <Subscription />
+                    <AlertSubscriptions
+                        operationName={this.props.operationName}
+                        serviceName={this.props.serviceName}
+                        type={this.props.type}
+                        alertDetailsStore={this.props.alertDetailsStore}
+                    />
                 </div>
             </div>
         );

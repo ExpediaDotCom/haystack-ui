@@ -67,10 +67,10 @@ export class AlertDetailsStore {
         );
     }
 
-    @action updateSubscription(serviceName, operationName, type, dispatcherType, dispatcherId) {
+    @action updateSubscription(serviceName, operationName, type, subscriptionId, dispatcherId) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
+                .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`, {dispatcherId})
                 .then(() => {})
                 .catch((result) => {
                     throw new AlertsException(result);
