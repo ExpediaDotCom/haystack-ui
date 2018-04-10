@@ -23,11 +23,14 @@ import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
 
-const backgroundColorTotal = [['rgba(54, 162, 235, 0.2']];
+const backgroundColorTotal = [['rgba(54, 162, 235, 0.2)']];
 const borderColorTotal = [['rgba(54, 162, 235, 1)']];
 
-const backgroundColorSuccess = [['rgba(75, 192, 192, 0.2']];
+const backgroundColorSuccess = [['rgba(75, 192, 192, 0.2)']];
 const borderColorSuccess = [['rgba(75, 192, 192, 1)']];
+
+const backgroundColorAmbiguous = [['rgba(255, 206, 86, 0.2)']];
+const borderColorAmbiguous = [['rgba(255, 206, 86, 1)']];
 
 const backgroundColorFailure = [['rgba(229, 28, 35, 0.2)']];
 const borderColorFailure = [['rgba(229, 28, 35, 1)']];
@@ -47,12 +50,13 @@ countChartOptions.scales.yAxes = [{
     }
 }];
 
-const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) => {
+const CountGraph = ({countPoints, successPoints, failurePoints, ambiguousPoints, from, until}) => {
     const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
     const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
     const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
+    const ambiguousData = ambiguousPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
 
-    if (!totalData.length && !successData && !failureData) {
+    if (!totalData.length && !successData && !failureData && !ambiguousData) {
         return (<MissingTrendGraph title="Count"/>);
     }
 
@@ -66,6 +70,15 @@ const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) =>
 
     const chartData = {
         datasets: [
+            {
+                label: 'Ambiguous',
+                data: ambiguousData,
+                backgroundColor: backgroundColorAmbiguous,
+                borderColor: borderColorAmbiguous,
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 3
+            },
             {
                 label: 'Failure  ',
                 data: failureData,
@@ -106,6 +119,7 @@ const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) =>
 
 CountGraph.propTypes = {
     countPoints: PropTypes.object.isRequired,
+    ambiguousPoints: PropTypes.object.isRequired,
     successPoints: PropTypes.object.isRequired,
     failurePoints: PropTypes.object.isRequired,
     from: PropTypes.number.isRequired,

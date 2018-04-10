@@ -19,6 +19,7 @@ const _ = require('lodash');
 
 const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
+const metricpointNameEncoder = require('../../utils/metricpointNameEncoder');
 
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
@@ -34,7 +35,7 @@ const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 const alertTypes = ['durationTP99'];
 
 function fetchOperations(serviceName) {
-   return servicesConnector.getOperations(serviceName);
+    return servicesConnector.getOperations(serviceName);
 }
 
 function fetchOperationTrends(serviceName, granularity, from, until) {
@@ -42,11 +43,11 @@ function fetchOperationTrends(serviceName, granularity, from, until) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return operationName.replace(/\./gi, '___');
+    return metricpointNameEncoder.encodeMetricpointName(operationName);
 }
 
 function fromMetricTankTarget(operationName) {
-    return operationName.replace(/___/gi, '.');
+    return metricpointNameEncoder.decodeMetricpointName(operationName);
 }
 
 function parseOperationAlertsResponse(data, until) {
@@ -148,7 +149,6 @@ connector.getAlertDetails = (serviceName, operationName, alertType) => {
 // no-op for now, TODO add the metrictank read logic
 connector.getServiceUnhealthyAlertCount = serviceName =>
     fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
-    .then(result => getActiveAlertCount(result));
+        .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
-
