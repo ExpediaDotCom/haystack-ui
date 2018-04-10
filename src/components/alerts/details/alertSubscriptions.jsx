@@ -150,6 +150,24 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     render() {
+        const HandleSubscriptionModifyButtons = () => (<div className="btn-group btn-group-sm">
+            <button onClick={this.handleSubmitModifiedSubscription} className="btn btn-success">
+                <span className="ti-check"/>
+            </button>
+            <button onClick={this.handleCancelModifiedSubscription} className="btn btn-danger">
+                <span className="ti-na"/>
+            </button>
+        </div>);
+
+        const DefaultSubscriptionButtons = subscription => (<div className="btn-group btn-group-sm">
+            <button onClick={() => this.handleModifySubscription(subscription.subscription.subscriptionId)} className="btn btn-default">
+                <span className="ti-pencil"/>
+            </button>
+            <button onClick={() => this.handleDeleteSubscription(subscription.subscription.subscriptionId)} className="btn btn-default">
+                <span className="ti-trash"/>
+            </button>
+        </div>);
+
         const showNewSubscriptionBox = this.state.showNewSubscriptionBox;
 
         return (
@@ -178,26 +196,12 @@ export default class AlertSubscriptions extends React.Component {
                             </td>
                             <td>
                                 {this.state.activeModifyBox === subscription.subscriptionId ?
-                                    <div className="btn-group btn-group-sm">
-                                        <button onClick={this.handleSubmitModifiedSubscription} className="btn btn-success">
-                                            <span className="ti-check"/>
-                                        </button>
-                                        <button onClick={this.handleCancelModifiedSubscription} className="btn btn-danger">
-                                            <span className="ti-na"/>
-                                        </button>
-                                    </div> :
-                                    <div className="btn-group btn-group-sm">
-                                        <button onClick={() => this.handleModifySubscription(subscription.subscriptionId)} className="btn btn-default">
-                                            <span className="ti-pencil"/>
-                                        </button>
-                                        <button onClick={() => this.handleDeleteSubscription(subscription.subscriptionId)} className="btn btn-default">
-                                            <span className="ti-trash"/>
-                                        </button>
-                                    </div>
+                                    <HandleSubscriptionModifyButtons /> :
+                                    <DefaultSubscriptionButtons subscription={subscription} />
                                 }
                             </td>
                         </tr>
-                   )) : <tr>No Subscriptions Found</tr>}
+                    )) : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>}
                         <tr className={showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
                             <td>
                                 <select className="alert-details__select" ref={this.setSelectRef}>
@@ -225,7 +229,7 @@ export default class AlertSubscriptions extends React.Component {
                 </table>
                 <div className="text-left subscription-button">
                     {showNewSubscriptionBox ?
-                        <button className="btn btn-sm btn-default" onClick={this.toggleNewSubscriptionBox}><div>Hide</div></button> :
+                        <button className="btn btn-sm btn-default" onClick={this.toggleNewSubscriptionBox}><div>Cancel</div></button> :
                         <button className="btn btn-sm btn-success" onClick={this.toggleNewSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
                     }
                 </div>
