@@ -29,6 +29,7 @@ export default class Login extends Component {
 
     render() {
         const redirectUrl = this.props.location.search;
+        const ssoAdfsDomain = window.haystackUiConfig.ssoAdfsDomain;
 
         return (<div id="particles-js" className="login-cover text-center">
             <div className="login-box text-center">
@@ -37,7 +38,9 @@ export default class Login extends Component {
                         <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
                         <span className="h1 login-box_title">Haystack</span>
                     </div>
-                    <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in</a>
+                    <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in
+                        {ssoAdfsDomain && ` with ${ssoAdfsDomain}`}
+                    </a>
                 </div>
             </div>
         </div>);
