@@ -15,6 +15,7 @@
  */
 import Q from 'q';
 import axios from 'axios';
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
 
 const fetcher = {};
 
@@ -32,6 +33,9 @@ fetcher.fetchOperationTrends = (serviceName, operationName, from, until) => {
             deferred.resolve(result.data);
         })
         .catch((result) => {
+            if (result.response.status === 401) {
+                authenticationTimeoutStore.timedOut = true;
+            }
             throw new OperationTrendsException(result);
         });
 

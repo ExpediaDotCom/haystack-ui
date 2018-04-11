@@ -18,6 +18,8 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 import _ from 'lodash';
 
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+
 function AlertsException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
@@ -91,6 +93,9 @@ export class AlertDetailsStore {
                     _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })
                 .catch((result) => {
+                    if (result.response.status === 401) {
+                        authenticationTimeoutStore.timedOut = true;
+                    }
                     throw new AlertsException(result);
                 })
         );

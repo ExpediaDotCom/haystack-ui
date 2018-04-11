@@ -18,9 +18,14 @@ import React from 'react';
 import {withRouter, Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
+import {observer} from 'mobx-react';
+
+import authenticationTimeoutStore from '../../stores/authenticationTimeoutStore';
+import AuthenticationTimeoutModal from './authenticationTimeoutModal';
 
 import './header.less';
 
+@observer
 class SearchBar extends React.Component {
     static propTypes = {
         history: PropTypes.shape({
@@ -53,6 +58,7 @@ class SearchBar extends React.Component {
     render() {
         return (
             <header>
+                {window.haystackUiConfig.enableSSO && authenticationTimeoutStore.timedOut ? <AuthenticationTimeoutModal /> : null}
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">

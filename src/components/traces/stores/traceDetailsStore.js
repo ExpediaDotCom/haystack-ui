@@ -19,6 +19,8 @@ import _ from 'lodash';
 import {observable, action, computed} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
     this.data = data;
@@ -72,6 +74,9 @@ export class TraceDetailsStore {
                     this.spans = result.data;
                 })
                 .catch((result) => {
+                    if (result.response.status === 401) {
+                        authenticationTimeoutStore.timedOut = true;
+                    }
                     throw new TraceException(result);
                 })
         );

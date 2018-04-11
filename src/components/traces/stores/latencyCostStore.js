@@ -17,6 +17,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
 
 function TraceException(data) {
     this.message = 'Unable to resolve promise';
@@ -39,6 +40,9 @@ export class LatencyCostStore {
                 this.latencyCost = result.data;
             })
             .catch((result) => {
+                if (result.response.status === 401) {
+                    authenticationTimeoutStore.timedOut = true;
+                }
                 throw new TraceException(result);
             })
         );

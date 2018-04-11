@@ -17,7 +17,9 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+
 import { toQueryUrlString } from '../../../utils/queryParser';
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
 
 function OperationStoreException(data) {
     this.message = 'Unable to resolve promise';
@@ -44,6 +46,9 @@ export class OperationStore {
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange, operationName};
                         this.statsResults = [];
+                        if (result.response.status === 401) {
+                            authenticationTimeoutStore.timedOut = true;
+                        }
                         throw new OperationStoreException(result);
                     })
         );
@@ -60,6 +65,9 @@ export class OperationStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
+                    if (result.response.status === 401) {
+                        authenticationTimeoutStore.timedOut = true;
+                    }
                     throw new OperationStoreException(result);
                 })
         );

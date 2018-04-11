@@ -17,6 +17,8 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 
+import authenticationTimeoutStore from './authenticationTimeoutStore';
+
 export class OperationStore {
     @observable operations = [];
 
@@ -28,6 +30,11 @@ export class OperationStore {
             })
             .then((response) => {
                 this.operations = ['all', ...response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))];
+            })
+            .catch((result) => {
+                if (result.response.status === 401) {
+                    authenticationTimeoutStore.timedOut = true;
+                }
             });
     }
 }

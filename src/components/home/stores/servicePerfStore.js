@@ -18,6 +18,8 @@ import axios from 'axios';
 import {action, observable} from 'mobx';
 import {fromPromise} from 'mobx-utils';
 
+import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+
 export class ServicePerfStore {
     @observable servicePerfStats = [];
     @observable promiseState = { case: ({empty}) => empty() };
@@ -29,6 +31,9 @@ export class ServicePerfStore {
                 url: `/api/servicePerf?timeWindow=${timeWindow}&from=${from}&until=${until}`
             })
             .then((response) => {
+                if (result.response.status === 401) {
+                    authenticationTimeoutStore.timedOut = true;
+                }
                 this.servicePerfStats = response.data;
             })
         );
