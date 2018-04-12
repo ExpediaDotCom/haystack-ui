@@ -14,10 +14,22 @@
  *         limitations under the License.
  */
 
-import {observable} from 'mobx';
+import {action} from 'mobx';
 
-export class AuthenticationTimeoutStore {
-    @observable timedOut = false;
+import authenticationStore from './authenticationStore';
+
+function HaystackApiException(data) {
+    this.message = 'Unable to resolve promise';
+    this.data = data;
 }
 
-export default new AuthenticationTimeoutStore();
+export class ErrorHandlingStore {
+    @action handleError(result) {
+        if (result.response.status === 401) {
+            authenticationStore.timedOut = true;
+        }
+        throw new HaystackApiException(result);
+    }
+}
+
+export default new ErrorHandlingStore();

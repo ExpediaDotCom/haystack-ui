@@ -17,9 +17,9 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 
-import authenticationTimeoutStore from './authenticationTimeoutStore';
+import { ErrorHandlingStore } from './errorHandlingStore';
 
-export class ServiceStore {
+export class ServiceStore extends ErrorHandlingStore {
     @observable services = [];
 
     @action fetchServices() {
@@ -38,9 +38,7 @@ export class ServiceStore {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         })
         .catch((result) => {
-            if (result.response.status === 401) {
-                authenticationTimeoutStore.timedOut = true;
-            }
+            this.handleError(result);
         });
     }
 }

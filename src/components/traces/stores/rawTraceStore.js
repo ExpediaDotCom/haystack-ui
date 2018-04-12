@@ -16,14 +16,10 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
-import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function RawTraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
 
-export class RawTraceStore {
+export class RawTraceStore extends ErrorHandlingStore {
     @observable rawTrace = [];
 
     @observable promiseState = null;
@@ -36,10 +32,7 @@ export class RawTraceStore {
                     this.rawTrace = result.data;
                 })
                 .catch((result) => {
-                    if (result.response.status === 401) {
-                        authenticationTimeoutStore.timedOut = true;
-                    }
-                    throw new RawTraceException(result);
+                    this.handleError(result);
                 })
         );
     }

@@ -13,25 +13,11 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import Q from 'q';
-import axios from 'axios';
-import ErrorHandlingStore from '../../../stores/errorHandlingStore';
 
-const fetcher = {};
+import {observable} from 'mobx';
 
-fetcher.fetchOperationTrends = (serviceName, operationName, from, until) => {
-    const deferred = Q.defer();
+export class AuthenticationStore {
+    @observable timedOut = false;
+}
 
-    axios
-        .get(`/api/trends/operation/${serviceName}/${encodeURIComponent(operationName)}?granularity=60000&from=${from}&until=${until}`)
-        .then((result) => {
-            deferred.resolve(result.data);
-        })
-        .catch((result) => {
-            ErrorHandlingStore.handleError(result);
-        });
-
-    return deferred.promise;
-};
-
-export default fetcher;
+export default new AuthenticationStore();

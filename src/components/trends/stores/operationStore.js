@@ -19,14 +19,9 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
 import { toQueryUrlString } from '../../../utils/queryParser';
-import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function OperationStoreException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
-
-export class OperationStore {
+export class OperationStore extends ErrorHandlingStore {
     @observable statsPromiseState = { case: ({empty}) => empty() };
     @observable trendsPromiseState = { case: ({empty}) => empty() };
     @observable statsResults = [];
@@ -46,10 +41,7 @@ export class OperationStore {
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange, operationName};
                         this.statsResults = [];
-                        if (result.response.status === 401) {
-                            authenticationTimeoutStore.timedOut = true;
-                        }
-                        throw new OperationStoreException(result);
+                        this.handleError(result);
                     })
         );
     }
@@ -65,10 +57,7 @@ export class OperationStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
-                    if (result.response.status === 401) {
-                        authenticationTimeoutStore.timedOut = true;
-                    }
-                    throw new OperationStoreException(result);
+                    this.handleError(result);
                 })
         );
     }

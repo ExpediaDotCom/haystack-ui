@@ -27,18 +27,18 @@ const modalStyles = {
         width: '45%',
         maxWidth: '1240px',
         top: '30%',
-        bottom: '55%',
+        bottom: 'auto',
         left: '0',
         right: '0',
         marginLeft: 'auto',
-        marginRight: 'auto'
+        marginRight: 'auto',
     }
 };
 
 export default () => (
     <Modal isOpen style={modalStyles} contentLabel={'Modal'}>
         <header className="clearfix">
-            <h4 className="text-center">Session Expired</h4>
+            <h4 className="text-center underlined">Session Expired</h4>
             <h5 className="text-center">Please <a href={`/auth/login?redirectUrl=${window.location.pathname}`}>login</a> to continue where you left off.</h5>
         </header>
     </Modal>

@@ -18,7 +18,7 @@ import axios from 'axios';
 import {action, observable} from 'mobx';
 import {fromPromise} from 'mobx-utils';
 
-import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+import authenticationTimeoutStore from '../../../stores/errorHandlingStore';
 
 export class ServicePerfStore {
     @observable servicePerfStats = [];

@@ -20,12 +20,7 @@ import { fromPromise } from 'mobx-utils';
 
 import { toDurationMicroseconds } from '../utils/presets';
 import { toQueryUrlString } from '../../../utils/queryParser';
-import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
-
-function TraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export function formatResults(results) {
     return results.map((result) => {
@@ -43,7 +38,7 @@ export function formatResults(results) {
     });
 }
 
-export class TracesSearchStore {
+export class TracesSearchStore extends ErrorHandlingStore {
     @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
@@ -67,11 +62,7 @@ export class TracesSearchStore {
                 .catch((result) => {
                     this.searchQuery = query;
                     this.searchResults = [];
-                    if (result.response.status === 401) {
-                        authenticationTimeoutStore.timedOut = true;
-                    }
-
-                    throw new TraceException(result);
+                    this.handleError(result);
                 })
         );
     }

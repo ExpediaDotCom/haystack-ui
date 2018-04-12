@@ -18,14 +18,9 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 import _ from 'lodash';
 
-import authenticationTimeoutStore from '../../../stores/authenticationTimeoutStore';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function AlertsException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
-
-export class AlertDetailsStore {
+export class AlertDetailsStore extends ErrorHandlingStore {
     @observable alertHistory = [];
     @observable alertSubscriptions = [];
     @observable historyPromiseState = null;
@@ -40,7 +35,7 @@ export class AlertDetailsStore {
                     this.alertHistory = result.data;
                 })
                 .catch((result) => {
-                    throw new AlertsException(result);
+                    this.handleError(result);
                 })
         );
     }
@@ -53,7 +48,7 @@ export class AlertDetailsStore {
                     this.alertSubscriptions = result.data;
                 })
                 .catch((result) => {
-                    throw new AlertsException(result);
+                    this.handleError(result);
                 })
         );
     }
@@ -65,7 +60,7 @@ export class AlertDetailsStore {
                 .then(successCallback)
                 .catch((result) => {
                     errorCallback();
-                    throw new AlertsException(result);
+                    this.handleError(result);
                 })
         );
     }
@@ -80,7 +75,7 @@ export class AlertDetailsStore {
                 })
                 .catch((result) => {
                     errorCallback();
-                    throw new AlertsException(result);
+                    this.handleError(result);
                 })
         );
     }
@@ -93,10 +88,7 @@ export class AlertDetailsStore {
                     _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })
                 .catch((result) => {
-                    if (result.response.status === 401) {
-                        authenticationTimeoutStore.timedOut = true;
-                    }
-                    throw new AlertsException(result);
+                    this.handleError(result);
                 })
         );
     }
