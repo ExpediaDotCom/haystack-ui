@@ -64,6 +64,13 @@ timeWindow.presets = [
         value: 7 * 24 * 60 * 60 * 1000,
         from: moment(nowInMilliseconds).subtract(7, 'd').valueOf(),
         until: nowInMilliseconds
+    },
+    {
+        shortName: '30d',
+        longName: '30 days',
+        value: 30 * 24 * 60 * 60 * 1000,
+        from: moment(nowInMilliseconds).subtract(30, 'd').valueOf(),
+        until: nowInMilliseconds
     }
 ];
 
