@@ -54,7 +54,7 @@ module.exports = {
             // Options :
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
-            alertsRefreshInterval: 60000, // refresh interval for Alert Tab Unhealthy Counter
+            alertsRefreshInterval: 60000 // refresh interval for Alert Tab Unhealthy Counter
         }
     }
 
