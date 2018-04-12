@@ -101,6 +101,7 @@ connector.getServiceTrends = (serviceName, granularity, from, until) => {
 
     deffered.resolve({
         count: getRandomValues(mins, points),
+        ambiguousCount: getRandomValues(mins, points),
         successCount: getRandomValues(mins, points),
         failureCount: getRandomValues(mins, points),
         meanDuration: getRandomValues(mins, points),
@@ -127,6 +128,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14530,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -138,6 +140,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14153,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -149,6 +152,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14353,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -160,6 +164,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 31453,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -171,6 +176,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 31453,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -182,6 +188,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 81453,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -193,6 +200,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 91453,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         },
@@ -204,6 +212,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 1453,
             tp99DurationPoints: getRandomValues(mins, points),
+            ambiguousPoints: getRandomValues(mins, points),
             successPoints: getRandomValues(mins, points),
             failurePoints: getRandomValues(mins, points)
         }
@@ -221,6 +230,7 @@ connector.getOperationTrends = (serviceName, operationName, granularity, from, u
 
     deffered.resolve({
         count: getRandomValues(mins, points),
+        ambiguousCount: getRandomValues(mins, points),
         successCount: getRandomValues(mins, points),
         failureCount: getRandomValues(mins, points),
         meanDuration: getRandomValues(mins, points),

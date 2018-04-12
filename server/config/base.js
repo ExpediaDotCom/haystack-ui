@@ -47,6 +47,8 @@ module.exports = {
             //  - haystack - gets data from Haystack Metric Tank Setup
             //               haystack connector also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
+            enableBase64EncodedNames: false,
+            enableMetricpointPeriodReplacement: true,
             connectorName: 'stub'
         },
         alerts: {

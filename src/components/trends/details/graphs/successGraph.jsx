@@ -36,10 +36,11 @@ successChartOptions.scales.yAxes = [{
     }
 }];
 
-const SuccessGraph = ({successCount, failureCount, from, until}) => {
+const SuccessGraph = ({successCount, failureCount, ambiguousCount, from, until}) => {
     const successTimestamps = successCount.map(point => point.timestamp);
     const failureTimestamps = failureCount.map(point => point.timestamp);
-    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+    const ambiguousTimestamps = ambiguousCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps, ...ambiguousTimestamps]);
 
     const data = _.compact(timestamps.map((timestamp) => {
         const successItem = _.find(successCount, x => (x.timestamp === timestamp));
@@ -48,10 +49,13 @@ const SuccessGraph = ({successCount, failureCount, from, until}) => {
         const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
         const failureVal = (failureItem && failureItem.value && failureItem.value !== null) ? failureItem.value : 0;
 
-        if (successVal + failureVal) {
+        const ambiguousItem = _.find(ambiguousCount, x => (x.timestamp === timestamp));
+        const ambiguousVal = (ambiguousItem && ambiguousItem.value && ambiguousItem.value !== null) ? ambiguousItem.value : 0;
+
+        if (successVal + failureVal + ambiguousVal) {
             return {
                 x: new Date(timestamp),
-                y: (100 - ((failureVal / (successVal + failureVal)) * 100)).toFixed(3)
+                y: (100 - (((failureVal + ambiguousVal) / (successVal + failureVal + ambiguousVal)) * 100)).toFixed(3)
             };
         }
         return null;
@@ -94,6 +98,7 @@ const SuccessGraph = ({successCount, failureCount, from, until}) => {
 SuccessGraph.propTypes = {
     successCount: PropTypes.object.isRequired,
     failureCount: PropTypes.object.isRequired,
+    ambiguousCount: PropTypes.object.isRequired,
     from: PropTypes.number.isRequired,
     until: PropTypes.number.isRequired
 };
