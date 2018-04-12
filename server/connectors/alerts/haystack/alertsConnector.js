@@ -137,7 +137,7 @@ connector.getServiceAlerts = (serviceName, query) => {
         );
 };
 
-connector.getAlertDetails = (serviceName, operationName, alertType) => {
+connector.getAlertHistory = (serviceName, operationName, alertType) => {
     const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankOperationName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
@@ -145,7 +145,6 @@ connector.getAlertDetails = (serviceName, operationName, alertType) => {
         .then(result => parseAlertDetailResponse(result));
 };
 
-// no-op for now, TODO add the metrictank read logic
 connector.getServiceUnhealthyAlertCount = serviceName =>
     fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
     .then(result => getActiveAlertCount(result));

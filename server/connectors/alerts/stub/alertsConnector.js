@@ -130,7 +130,7 @@ const connector = {};
 
 connector.getServiceAlerts = (service, query) => Q.fcall(() => getAlerts(query));
 
-connector.getAlertDetails = () => Q.fcall(() => alertDetails);
+connector.getAlertHistory = () => Q.fcall(() => alertDetails);
 
 connector.getServiceUnhealthyAlertCount = () => Q.fcall(() => Math.floor(Math.random() * 3));
 

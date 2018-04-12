@@ -150,6 +150,14 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     render() {
+        const {
+            activeModifyBox,
+            showNewSubscriptionBox,
+            subscriptionError
+        } = this.state;
+
+        const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
+
         const HandleSubscriptionModifyButtons = () => (<div className="btn-group btn-group-sm">
             <button onClick={this.handleSubmitModifiedSubscription} className="btn btn-success">
                 <span className="ti-check"/>
@@ -168,7 +176,52 @@ export default class AlertSubscriptions extends React.Component {
             </button>
         </div>);
 
-        const showNewSubscriptionBox = this.state.showNewSubscriptionBox;
+        const SubscriptionRow = ({subscription}) => (
+            <tr className="non-highlight-row subscription-row" key={subscription.subscriptionId}>
+                <td>{AlertSubscriptions.getSubscriptionType(subscription)}</td>
+                <td>
+                    <input
+                        ref={node => this.setModifyInputRefs(subscription.subscriptionId, node)}
+                        onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.handleCancelModifiedSubscription, this.handleSubmitModifiedSubscription)}
+                        placeholder={subscription.dispatcherIds[0]}
+                        disabled
+                        className="alert-subscription-handle"
+                    />
+                </td>
+                <td>
+                    {activeModifyBox === subscription.subscriptionId ?
+                        <HandleSubscriptionModifyButtons /> :
+                        <DefaultSubscriptionButtons subscription={subscription} />
+                    }
+                </td>
+            </tr>
+        );
+
+        const NewSubscription = () => (
+            <tr className={showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
+                <td>
+                    <select className="alert-details__select" ref={this.setSelectRef}>
+                        <option>Slack</option>
+                        <option>Email</option>
+                    </select>
+                </td>
+                <td>
+                    <input
+                        className="alert-details__input"
+                        placeholder="Medium Handle"
+                        onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
+                        ref={this.setNewInputRef}
+                    />
+                </td>
+                <td>
+                    <div className="btn-group btn-group-sm">
+                        <button className="btn btn-success" onClick={this.handleSubmit}>
+                            <span className="ti-plus"/>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        );
 
         return (
             <section className="subscriptions col-md-6">
@@ -182,49 +235,12 @@ export default class AlertSubscriptions extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {this.props.alertDetailsStore.alertSubscriptions.length ? this.props.alertDetailsStore.alertSubscriptions.map(subscription => (
-                        <tr className="non-highlight-row subscription-row" key={subscription.subscriptionId}>
-                            <td>{AlertSubscriptions.getSubscriptionType(subscription)}</td>
-                            <td>
-                                <input
-                                    ref={node => this.setModifyInputRefs(subscription.subscriptionId, node)}
-                                    onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.handleCancelModifiedSubscription, this.handleSubmitModifiedSubscription)}
-                                    placeholder={subscription.dispatcherIds[0]}
-                                    disabled
-                                    className="alert-subscription-handle"
-                                />
-                            </td>
-                            <td>
-                                {this.state.activeModifyBox === subscription.subscriptionId ?
-                                    <HandleSubscriptionModifyButtons /> :
-                                    <DefaultSubscriptionButtons subscription={subscription} />
-                                }
-                            </td>
-                        </tr>
-                    )) : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>}
-                        <tr className={showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
-                            <td>
-                                <select className="alert-details__select" ref={this.setSelectRef}>
-                                    <option>Slack</option>
-                                    <option>Email</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input
-                                    className="alert-details__input"
-                                    placeholder="Medium Handle"
-                                    onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
-                                    ref={this.setNewInputRef}
-                                />
-                            </td>
-                            <td>
-                                <div className="btn-group btn-group-sm">
-                                    <button className="btn btn-success" onClick={this.handleSubmit}>
-                                        <span className="ti-plus"/>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        {
+                            alertSubscriptions.length
+                                ? alertSubscriptions.map(subscription => <SubscriptionRow subscription={subscription}/>)
+                                : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
+                        }
+                        <NewSubscription/>
                     </tbody>
                 </table>
                 <div className="text-left subscription-button">
@@ -233,7 +249,7 @@ export default class AlertSubscriptions extends React.Component {
                         <button className="btn btn-sm btn-success" onClick={this.toggleNewSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
                     }
                 </div>
-                <div className={this.state.subscriptionError ? 'subscription-error' : 'hidden'}>Could not process subscription. Please try again.</div>
+                <div className={subscriptionError ? 'subscription-error' : 'hidden'}>Could not process subscription. Please try again.</div>
             </section>
         );
     }
