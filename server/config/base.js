@@ -35,7 +35,7 @@ module.exports = {
             // Options (connector) :
             //  - haystack - gets data from haystack query service
             //  - zipkin - bridge for using an existing zipkin api,
-            //             zipkin connector expects a zipkin config field specifying zipking api url,
+            //             zipkin connector expects a zipkin config field specifying zipkin api url,
             //             eg. zipkinUrl: 'http://<zipkin>/api/v1'}
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
@@ -54,13 +54,7 @@ module.exports = {
             // Options :
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
-            alertsRefreshInterval: 60000, // refresh interval for Alert Tab Unhealthy Counter
-            subscriptions: {
-                // name of config connector module to use for managing subscriptions
-                // Options :
-                //  - stub - a stub used during development, will be removed in future
-                connectorName: 'stub'
-            }
+            alertsRefreshInterval: 60000 // refresh interval for Alert Tab Unhealthy Counter
         }
     }
 

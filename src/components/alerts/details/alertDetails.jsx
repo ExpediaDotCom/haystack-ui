@@ -19,7 +19,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
-import AlertDetailsContainer from './alertDetailsContainer';
+import AlertDetailsToolbar from './alertDetailsToolbar';
+import AlertSubscriptions from './alertSubscriptions';
+import AlertHistory from './alertHistory';
 import Loading from '../../common/loading';
 import Error from '../../common/error';
 
@@ -33,24 +35,44 @@ export default class AlertDetails extends React.Component {
     };
 
     componentDidMount() {
-        this.props.alertDetailsStore.fetchAlertDetails(this.props.serviceName, this.props.operationName, this.props.type);
+        this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type);
+        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type);
     }
 
     render() {
         return (
             <section className="table-row-details">
-            {
-                this.props.alertDetailsStore.promiseState && this.props.alertDetailsStore.promiseState.case({
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => (<AlertDetailsContainer
-                        alertDetailsStore={this.props.alertDetailsStore}
-                        serviceName={encodeURIComponent(this.props.serviceName)}
-                        operationName={encodeURIComponent(this.props.operationName)}
-                        type={this.props.type}
-                    />)
-                })
-            }
+                <div className="alert-details-container">
+                    <div className="clearfix alert-details-container_header">
+                        <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} type={this.props.type}/>
+                    </div>
+                    <div className="row">
+                        {
+                            this.props.alertDetailsStore.historyPromiseState && this.props.alertDetailsStore.historyPromiseState.case({
+                                pending: () => <Loading />,
+                                rejected: () => <Error />,
+                                fulfilled: () => (<AlertHistory
+                                    operationName={this.props.operationName}
+                                    serviceName={this.props.serviceName}
+                                    alertDetailsStore={this.props.alertDetailsStore}
+                                />)
+                            })
+                        }
+                        {
+                            this.props.alertDetailsStore.subscriptionsPromiseState && this.props.alertDetailsStore.subscriptionsPromiseState.case({
+                                pending: () => <Loading />,
+                                rejected: () => <Error />,
+                                fulfilled: () => (<AlertSubscriptions
+                                    operationName={this.props.operationName}
+                                    serviceName={this.props.serviceName}
+                                    type={this.props.type}
+                                    alertDetailsStore={this.props.alertDetailsStore}
+                                />)
+                            })
+                        }
+
+                    </div>
+                </div>
         </section>
         );
     }

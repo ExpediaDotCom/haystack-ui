@@ -16,6 +16,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import _ from 'lodash';
 
 function AlertsException(data) {
     this.message = 'Unable to resolve promise';
@@ -23,15 +24,71 @@ function AlertsException(data) {
 }
 
 export class AlertDetailsStore {
-    @observable alertDetails = [];
-    @observable promiseState = null;
+    @observable alertHistory = [];
+    @observable alertSubscriptions = [];
+    @observable historyPromiseState = null;
+    @observable subscriptionsPromiseState = null;
 
-    @action fetchAlertDetails(serviceName, operationName, type) {
-        this.promiseState = fromPromise(
+
+    @action fetchAlertHistory(serviceName, operationName, type) {
+        this.historyPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}`)
+                .get(`/api/alert/${serviceName}/${operationName}/${type}/history`)
                 .then((result) => {
-                    this.alertDetails = result.data;
+                    this.alertHistory = result.data;
+                })
+                .catch((result) => {
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action fetchAlertSubscriptions(serviceName, operationName, type) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .get(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`)
+                .then((result) => {
+                    this.alertSubscriptions = result.data;
+                })
+                .catch((result) => {
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId, successCallback, errorCallback) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .post(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
+                .then(successCallback)
+                .catch((result) => {
+                    errorCallback();
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action updateSubscription(serviceName, operationName, type, subscriptionId, dispatcherId, errorCallback) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`, {dispatcherId})
+                .then(() => {
+                    const original = this.alertSubscriptions.find(subscription => subscription.subscriptionId === subscriptionId);
+                    original.dispatcherIds[0] = dispatcherId;
+                })
+                .catch((result) => {
+                    errorCallback();
+                    throw new AlertsException(result);
+                })
+        );
+    }
+
+    @action deleteSubscription(serviceName, operationName, type, subscriptionId) {
+        this.subscriptionsPromiseState = fromPromise(
+            axios
+                .delete(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`)
+                .then(() => {
+                    _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })
                 .catch((result) => {
                     throw new AlertsException(result);

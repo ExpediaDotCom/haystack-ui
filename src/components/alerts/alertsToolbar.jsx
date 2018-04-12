@@ -44,7 +44,7 @@ export default class AlertsToolbar extends React.Component {
             activeWindow,
             autoRefreshTimer: new Date(),
             countdownTimer: new Date(),
-            autoRefresh: true
+            autoRefresh: false
         };
 
         this.getUnhealthyAlerts = this.getUnhealthyAlerts.bind(this);
@@ -52,10 +52,6 @@ export default class AlertsToolbar extends React.Component {
         this.startRefresh = this.startRefresh.bind(this);
         this.stopRefresh = this.stopRefresh.bind(this);
         this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
-    }
-
-    componentDidMount() {
-        this.startRefresh();
     }
 
     componentWillUnmount() {

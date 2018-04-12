@@ -94,3 +94,51 @@
 .alerts-toolbar__time-range-selector {
   margin-bottom: @spacing-xs;
 }
+
+.alerts-slack-icon {
+  height: 16px;
+  width: 16px;
+  margin-top: -3px;
+}
+
+.alert-details__select {
+  margin-top: 6px;
+  padding-left: 5px;
+  background-color: @white;
+  display: inline-block;
+  width: 100%;
+  .Select-placeholder {
+    color: @white;
+  }
+}
+
+.alert-details__input {
+  background-color: @white;
+  width: 100%;
+}
+
+.subscription-button {
+  display: inline;
+}
+
+.subscription-error {
+  color: red;
+  font-weight: 600;
+  width: 50%;
+  float: right;
+}
+
+.alert-subscription-handle {
+  width: 100%;
+  border: 0;
+  padding-left: 4px;
+  &::-webkit-input-placeholder {
+    color: @gray-dark;
+  }
+  &::-moz-placeholder { /* Firefox 19+ */
+    color: @gray-dark;
+  }
+  &:-ms-input-placeholder { /* IE 10+ */
+    color: @gray-dark;
+  }
+}

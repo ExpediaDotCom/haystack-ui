@@ -31,6 +31,8 @@ const stubAlert = [{}];
 
 const stubDetails = [{}];
 
+const stubSubscriptions = [{}];
+
 describe('ServiceAlertsStore', () => {
     let server = null;
     const store = new ServiceAlertsStore();
@@ -70,13 +72,25 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert details', (done) => {
-        server.onGet('/api/alert/svc/op/type').reply(200, stubDetails);
-        store.fetchAlertDetails('svc', 'op', 'type');
+        server.onGet('/api/alert/svc/op/type/history').reply(200, stubDetails);
+        store.fetchAlertHistory('svc', 'op', 'type');
 
         when(
-            () => store.alertDetails.length > 0,
+            () => store.alertHistory.length > 0,
             () => {
-                expect(store.alertDetails).to.have.length(1);
+                expect(store.alertHistory).to.have.length(1);
+                done();
+            });
+    });
+
+    it('fetches alert subscriptions', (done) => {
+        server.onGet('/api/alert/svc/op/type/subscriptions').reply(200, stubSubscriptions);
+        store.fetchAlertSubscriptions('svc', 'op', 'type');
+
+        when(
+            () => store.alertSubscriptions.length > 0,
+            () => {
+                expect(store.alertSubscriptions).to.have.length(1);
                 done();
             });
     });

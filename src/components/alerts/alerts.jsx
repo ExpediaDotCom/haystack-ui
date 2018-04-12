@@ -58,7 +58,6 @@ export default class Alerts extends React.Component {
             <section className="alerts-panel">
                 <AlertsView serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
             </section>
-
         );
     }
 }

@@ -51,6 +51,23 @@ const stubLocation = {
     search: ''
 };
 
+const stubSubscriptions = [
+    {
+        subscriptionId: 101,
+        dispatcherType: 'slack',
+        dispatcherIds: [
+            '#stub-subscription-1'
+        ]
+    },
+    {
+        subscriptionId: 102,
+        dispatcherType: 'smtp',
+        dispatcherIds: [
+            'stub-subscription@2.com'
+        ]
+    }
+];
+
 function getValue(min, max) {
     return _.round((Math.random() * (max - min)) + min, 0);
 }
@@ -118,12 +135,17 @@ function createStubServiceAlertsStore(alertResults, promise) {
     return store;
 }
 
-function createStubAlertDetailsStore(alertDetails, promise) {
+function createStubAlertDetailsStore(alertDetails, promise, alertSubscriptions) {
     const store = new AlertDetailsStore();
 
-    sinon.stub(store, 'fetchAlertDetails', () => {
-        store.alertDetails = alertDetails;
-        store.promiseState = promise;
+    sinon.stub(store, 'fetchAlertHistory', () => {
+        store.alertHistory = alertDetails;
+        store.historyPromiseState = promise;
+    });
+
+    sinon.stub(store, 'fetchAlertSubscriptions', () => {
+        store.alertSubscriptions = alertSubscriptions;
+        store.subscriptionsPromiseState = promise;
     });
 
     return store;
@@ -169,28 +191,31 @@ describe('<AlertsView />', () => {
 
 describe('<AlertDetails />', () => {
     it('should render error if promise is rejected', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, rejectedPromise);
+        const detailsStore = createStubAlertDetailsStore(stubDetails, rejectedPromise, stubSubscriptions);
         const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
-        expect(wrapper.find('.error-message_text')).to.have.length(1);
+        expect(wrapper.find('.error-message_text')).to.have.length(2);
         expect(wrapper.find('.loading')).to.have.length(0);
-        expect(wrapper.find('.alert-details-container')).to.have.length(0);
+        expect(wrapper.find('.subscription-row')).to.have.length(0);
+        expect(wrapper.find('.alert-history')).to.have.length(0);
     });
 
     it('should render loading if promise is pending', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, pendingPromise);
+        const detailsStore = createStubAlertDetailsStore(stubDetails, pendingPromise, stubSubscriptions);
         const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
-        expect(wrapper.find('.loading')).to.have.length(1);
+        expect(wrapper.find('.loading')).to.have.length(2);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.alert-details-container')).to.have.length(0);
+        expect(wrapper.find('.subscription-row')).to.have.length(0);
+        expect(wrapper.find('.alert-history')).to.have.length(0);
     });
     it('should render the alert details with successful details promise', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise);
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
         const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.alert-details-container')).to.have.length(1);
+        expect(wrapper.find('.subscription-row')).to.have.length(2);
+        expect(wrapper.find('.alert-history')).to.have.length(1);
     });
 });
