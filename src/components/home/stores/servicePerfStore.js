@@ -31,10 +31,12 @@ export class ServicePerfStore {
                 url: `/api/servicePerf?timeWindow=${timeWindow}&from=${from}&until=${until}`
             })
             .then((response) => {
+                this.servicePerfStats = response.data;
+            })
+            .catch((result) => {
                 if (result.response.status === 401) {
                     authenticationTimeoutStore.timedOut = true;
                 }
-                this.servicePerfStats = response.data;
             })
         );
     }

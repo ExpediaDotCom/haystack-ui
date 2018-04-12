@@ -26,8 +26,8 @@ const modalStyles = {
     content: {
         width: '45%',
         maxWidth: '1240px',
-        top: '25%',
-        bottom: '65%',
+        top: '30%',
+        bottom: '55%',
         left: '0',
         right: '0',
         marginLeft: 'auto',
@@ -38,9 +38,8 @@ const modalStyles = {
 export default () => (
     <Modal isOpen style={modalStyles} contentLabel={'Modal'}>
         <header className="clearfix">
-            <div className="text-center">
-                Authentication has timed out. Please <span role="button" className="modal-link" tabIndex={0} onClick={() => window.location.reload()}>reload</span> the page
-            </div>
+            <h4 className="text-center">Session Expired</h4>
+            <h5 className="text-center">Please <a href={`/auth/login?redirectUrl=${window.location.pathname}`}>login</a> to continue where you left off.</h5>
         </header>
     </Modal>
 );
