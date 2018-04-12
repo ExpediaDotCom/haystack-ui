@@ -31,7 +31,7 @@ const modalStyles = {
         left: '0',
         right: '0',
         marginLeft: 'auto',
-        marginRight: 'auto',
+        marginRight: 'auto'
     }
 };
 

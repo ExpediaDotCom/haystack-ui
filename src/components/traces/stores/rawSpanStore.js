@@ -31,7 +31,7 @@ export class RawSpanStore extends ErrorHandlingStore {
                     this.rawSpan = result.data;
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    RawSpanStore.handleError(result);
                 })
         );
     }

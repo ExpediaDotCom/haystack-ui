@@ -69,7 +69,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
                     this.spans = result.data;
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    TraceDetailsStore.handleError(result);
                 })
         );
     }

@@ -38,7 +38,7 @@ export class ServiceStore extends ErrorHandlingStore {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         })
         .catch((result) => {
-            this.handleError(result);
+            ServiceStore.handleError(result);
         });
     }
 }

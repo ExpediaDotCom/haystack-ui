@@ -32,7 +32,7 @@ export class RawTraceStore extends ErrorHandlingStore {
                     this.rawTrace = result.data;
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    RawTraceStore.handleError(result);
                 })
         );
     }

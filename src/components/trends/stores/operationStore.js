@@ -41,7 +41,7 @@ export class OperationStore extends ErrorHandlingStore {
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange, operationName};
                         this.statsResults = [];
-                        this.handleError(result);
+                        OperationStore.handleError(result);
                     })
         );
     }
@@ -57,7 +57,7 @@ export class OperationStore extends ErrorHandlingStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
-                    this.handleError(result);
+                    OperationStore.handleError(result);
                 })
         );
     }

@@ -14,8 +14,6 @@
  *         limitations under the License.
  */
 
-import {action} from 'mobx';
-
 import authenticationStore from './authenticationStore';
 
 function HaystackApiException(data) {
@@ -24,7 +22,7 @@ function HaystackApiException(data) {
 }
 
 export class ErrorHandlingStore {
-    @action handleError(result) {
+    static handleError(result) {
         if (result.response.status === 401) {
             authenticationStore.timedOut = true;
         }

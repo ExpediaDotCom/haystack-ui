@@ -18,9 +18,9 @@ import axios from 'axios';
 import {action, observable} from 'mobx';
 import {fromPromise} from 'mobx-utils';
 
-import authenticationTimeoutStore from '../../../stores/errorHandlingStore';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export class ServicePerfStore {
+export class ServicePerfStore extends ErrorHandlingStore {
     @observable servicePerfStats = [];
     @observable promiseState = { case: ({empty}) => empty() };
 
@@ -34,9 +34,7 @@ export class ServicePerfStore {
                 this.servicePerfStats = response.data;
             })
             .catch((result) => {
-                if (result.response.status === 401) {
-                    authenticationTimeoutStore.timedOut = true;
-                }
+                ServicePerfStore.handleError(result);
             })
         );
     }

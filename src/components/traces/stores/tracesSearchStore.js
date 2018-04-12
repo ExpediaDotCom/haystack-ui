@@ -62,7 +62,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
                 .catch((result) => {
                     this.searchQuery = query;
                     this.searchResults = [];
-                    this.handleError(result);
+                    TracesSearchStore.handleError(result);
                 })
         );
     }

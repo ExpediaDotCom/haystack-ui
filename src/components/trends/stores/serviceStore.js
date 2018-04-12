@@ -41,7 +41,7 @@ export class ServiceStore extends ErrorHandlingStore {
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange};
                         this.statsResults = [];
-                        this.handleError(result);
+                        ServiceStore.handleError(result);
                     })
         );
     }
@@ -57,7 +57,7 @@ export class ServiceStore extends ErrorHandlingStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
-                    this.handleError(result);
+                    ServiceStore.handleError(result);
                 })
         );
     }

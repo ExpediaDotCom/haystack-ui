@@ -20,8 +20,8 @@ import './login.less';
 
 export default class Login extends Component {
     static propTypes = {
-        location: PropTypes.isRequired
-    }
+        location: PropTypes.object.isRequired
+    };
     componentDidMount() {
         // eslint-disable-next-line no-undef
         particlesJS.load('particles-js', 'scripts/particles.json');
@@ -39,7 +39,7 @@ export default class Login extends Component {
                         <span className="h1 login-box_title">Haystack</span>
                     </div>
                     <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in
-                        {ssoAdfsDomain && ` with ${ssoAdfsDomain}`}
+                        {ssoAdfsDomain && ` with ${ssoAdfsDomain} credentials`}
                     </a>
                 </div>
             </div>

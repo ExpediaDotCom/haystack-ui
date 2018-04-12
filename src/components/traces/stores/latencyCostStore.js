@@ -35,7 +35,7 @@ export class LatencyCostStore extends ErrorHandlingStore {
                 this.latencyCost = result.data;
             })
             .catch((result) => {
-                this.handleError(result);
+                LatencyCostStore.handleError(result);
             })
         );
     }

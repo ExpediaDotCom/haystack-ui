@@ -35,7 +35,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
                     this.alertHistory = result.data;
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -48,7 +48,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
                     this.alertSubscriptions = result.data;
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -60,7 +60,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
                 .then(successCallback)
                 .catch((result) => {
                     errorCallback();
-                    this.handleError(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -75,7 +75,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
                 })
                 .catch((result) => {
                     errorCallback();
-                    this.handleError(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -88,7 +88,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
                     _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })
                 .catch((result) => {
-                    this.handleError(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }

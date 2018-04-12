@@ -31,7 +31,7 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
             this.unhealthyAlertCount = result.data;
         })
         .catch((result) => {
-            this.handleError(result);
+            ServiceAlertsStore.handleError(result);
         });
     }
 
@@ -44,7 +44,7 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
                 this.alerts = result.data;
             })
             .catch((result) => {
-                this.handleError(result);
+                ServiceAlertsStore.handleError(result);
             })
         );
     }

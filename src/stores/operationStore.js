@@ -32,7 +32,7 @@ export class OperationStore extends ErrorHandlingStore {
                 this.operations = ['all', ...response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))];
             })
             .catch((result) => {
-                this.handleError(result);
+                OperationStore.handleError(result);
             });
     }
 }
