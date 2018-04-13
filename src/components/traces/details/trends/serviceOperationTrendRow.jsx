@@ -23,10 +23,11 @@ import TrendSparklines from '../../../trends/utils/trendSparklines';
 import fetcher from '../../stores/traceTrendFetcher';
 
 // TODO dedupe code and push it to server side
-function toSuccessPercentPoints(successCount, failureCount) {
+function toSuccessPercentPoints(successCount, failureCount, ambiguousCount) {
     const successTimestamps = successCount.map(point => point.timestamp);
     const failureTimestamps = failureCount.map(point => point.timestamp);
-    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+    const ambiguousTimestamps = ambiguousCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps, ...ambiguousTimestamps]);
 
     return _.compact(timestamps.map((timestamp) => {
         const successItem = _.find(successCount, x => (x.timestamp === timestamp));
@@ -35,24 +36,27 @@ function toSuccessPercentPoints(successCount, failureCount) {
         const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
         const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
 
-        if (successVal + failureVal) {
-            return (100 - ((failureVal / (successVal + failureVal)) * 100));
-        }
+        const ambiguousItem = _.find(ambiguousCount, x => (x.timestamp === timestamp));
+        const ambiguousVal = (ambiguousItem && ambiguousItem.value) ? ambiguousItem.value : 0;
 
+        if (successVal + failureVal + ambiguousVal) {
+            return (100 - (((failureVal + ambiguousVal) / (successVal + failureVal + ambiguousVal)) * 100));
+        }
         return null;
     }));
 }
 
 // TODO dedupe code and push it to server side
-function toAvgSuccessPercent(successPoints, failurePoints) {
+function toAvgSuccessPercent(successPoints, failurePoints, ambiguousPoints) {
     const successCount = successPoints.reduce(((accumulator, dataPoint) => (accumulator + dataPoint.value)), 0);
     const failureCount = failurePoints.reduce(((accumulator, dataPoint) => (accumulator + dataPoint.value)), 0);
+    const ambiguousCount = ambiguousPoints.reduce(((accumulator, dataPoint) => (accumulator + dataPoint.value)), 0);
 
-    if (successCount + failureCount === 0) {
+    if (successCount + failureCount + ambiguousCount === 0) {
         return null;
     }
 
-    return 100 - ((failureCount / (successCount + failureCount)) * 100);
+    return 100 - (((failureCount + ambiguousCount) / (successCount + failureCount + ambiguousCount)) * 100);
 }
 
 export default class TrendRow extends React.Component {
@@ -60,8 +64,7 @@ export default class TrendRow extends React.Component {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
         from: PropTypes.number.isRequired,
-        until: PropTypes.number.isRequired,
-        granularity: PropTypes.number.isRequired
+        until: PropTypes.number.isRequired
     };
 
     static openTrendDetailInNewTab(serviceName, operationName, from, until) {
@@ -70,14 +73,7 @@ export default class TrendRow extends React.Component {
     }
 
     componentWillMount() {
-        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.granularity, this.props.from, this.props.until)
-        .then((result) => {
-            this.setState({trends: result});
-        });
-    }
-
-    componentWillReceiveProps(nextprops) {
-        fetcher.fetchOperationTrends(nextprops.serviceName, nextprops.operationName, nextprops.granularity, nextprops.from, nextprops.until)
+        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.from, this.props.until)
             .then((result) => {
                 this.setState({trends: result});
             });
@@ -86,15 +82,15 @@ export default class TrendRow extends React.Component {
     render() {
         const {serviceName, operationName, from, until} = this.props;
         const trends = this.state && this.state.trends;
-        
+
         const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
         const totalPoints = trends && trends.count && trends.count.map(p => p.value);
 
         const latestDuration = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration[trends.tp99Duration.length - 1].value / 1000;
         const durationPoints = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration.map(p => p.value);
 
-        const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount);
-        const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount);
+        const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount, trends.ambiguousCount);
+        const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount, trends.ambiguousCount);
 
         return (
             <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until)}>

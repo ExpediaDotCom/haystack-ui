@@ -33,6 +33,7 @@ export default class GraphContainer extends React.Component {
             meanDuration,
             tp95Duration,
             tp99Duration,
+            ambiguousCount,
             failureCount,
             successCount
         } = this.props.trendsStore.trendsResults;
@@ -44,9 +45,11 @@ export default class GraphContainer extends React.Component {
 
         return (
             <div className="row">
-                <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} from={from} until={until}/>
+                <CountGraph countPoints={count} ambiguousPoints={ambiguousCount} successPoints={successCount} failurePoints={failureCount}
+                            from={from} until={until}/>
                 <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} from={from} until={until} />
-                <SuccessGraph successCount={successCount} failureCount={failureCount} from={from} until={until} />
+                <SuccessGraph successCount={successCount} failureCount={failureCount} ambiguousCount={ambiguousCount} from={from}
+                              until={until}/>
             </div>
         );
     }
