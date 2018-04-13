@@ -8,9 +8,9 @@
     "coverage": "nyc --extension .jsx npm test && nyc report --reporter=text-lcov | coveralls",
     "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json --ignore-pattern 'public/*' --ignore-pattern 'static_codegen/*' --ignore-pattern 'coverage/*' . && echo 'Done' ",
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-core/register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" ",
-    "build": "npm run clean && npm run codegen && webpack -p",
+    "build": "npm run clean && npm run codegen && npm run coverage && webpack -p",
     "start": "node server/start.js",
-    "start:dev": "npm run clean && npm run codegen && webpack -d && nodemon --ignore 'public/*' server/start.js",
+    "start:dev": "npm run clean && npm run codegen && npm run test && webpack -d && nodemon --ignore 'public/*' server/start.js",
     "watch": "webpack -w -d --progress"
   },
   "engines": {
