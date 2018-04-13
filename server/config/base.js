@@ -38,8 +38,7 @@ module.exports = {
             //             zipkin connector expects a zipkin config field specifying zipkin api url,
             //             eg. zipkinUrl: 'http://<zipkin>/api/v1'}
             //  - stub - a stub used during development, will be removed in future
-            connectorName: 'stub',
-            fieldKeys: ['traceId', 'error', 'minDuration']
+            connectorName: 'stub'
         },
         trends: {
             // name of config connector module to use for fetching trends data from downstream

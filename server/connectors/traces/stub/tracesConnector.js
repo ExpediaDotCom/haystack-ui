@@ -184,6 +184,8 @@ connector.getOperations = () => Q.fcall(() => ['mormont-1',
     'tarley-1'
 ]);
 
+connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error', 'minDuration', 'guid', 'testid']);
+
 connector.getLatencyCost = () => Q.fcall(() => [
     {
         from: {
