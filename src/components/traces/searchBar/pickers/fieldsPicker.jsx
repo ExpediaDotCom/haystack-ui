@@ -20,19 +20,17 @@ import PropTypes from 'prop-types';
 
 import Autocomplete from '../../utils/autocomplete';
 
-const fieldKeys = (window.haystackUiConfig && window.haystackUiConfig.fieldKeys) || null;
-
 @observer
 export default class TimeWindowPicker extends React.Component {
     static propTypes = {
-        uiState: PropTypes.object.isRequired
+        uiState: PropTypes.object.isRequired,
+        options: PropTypes.array.isRequired
     };
 
     render() {
-        // Import custom autosuggestion key list and pass in to autocomplete component with options={}
         return (
             <div className="search-bar-pickers_fields">
-                <Autocomplete uiState={this.props.uiState} options={fieldKeys} />
+                <Autocomplete uiState={this.props.uiState} options={this.props.options} />
             </div>
         );
     }

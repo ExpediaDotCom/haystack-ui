@@ -26,6 +26,7 @@ const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../fetchers/grpcFetcher');
 
 const fieldValueFetcher = fetcher('getFieldValues');
+const fieldNameFetcher = fetcher('getFieldNames');
 const traceFetcher = fetcher('getTrace');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
@@ -42,6 +43,9 @@ connector.getServices = () => {
     .fetch(request)
     .then(result => result.getValuesList());
 };
+
+connector.getSearchableKeys = () => fieldNameFetcher
+        .then(result => result.getValuesList());
 
 connector.getOperations = (serviceName) => {
     const service = new messages.Field();

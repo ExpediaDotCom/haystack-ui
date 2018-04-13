@@ -24,10 +24,11 @@ import TraceResults from './results/traceResults';
 import tracesSearchStore from './stores/tracesSearchStore';
 import serviceStore from '../../stores/serviceStore';
 import operationStore from '../../stores/operationStore';
+import searchableKeysStore from './stores/searchableKeysStore';
 
 const Traces = ({history, location, match}) => (
     <section className="traces-panel">
-        <SearchBar tracesSearchStore={tracesSearchStore} serviceStore={serviceStore} operationStore={operationStore} history={history} location={location} match={match}/>
+        <SearchBar searchableKeysStore={searchableKeysStore} tracesSearchStore={tracesSearchStore} serviceStore={serviceStore} operationStore={operationStore} history={history} location={location} match={match}/>
         <TraceResults tracesSearchStore={tracesSearchStore} location={location}/>
     </section>
 );

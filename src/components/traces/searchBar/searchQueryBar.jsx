@@ -32,7 +32,8 @@ export default class SearchQueryBar extends React.Component {
         query: PropTypes.object.isRequired,
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired,
-        searchCallback: PropTypes.func.isRequired
+        searchCallback: PropTypes.func.isRequired,
+        searchableKeysStore: PropTypes.array.isRequired
     };
 
     constructor(props) {
@@ -79,7 +80,7 @@ export default class SearchQueryBar extends React.Component {
                     <form onSubmit={this.handleSubmit}>
                         <div className="search-bar-headers">
                             { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
-                                && <div className="search-bar-headers_service">Service</div>}
+                            && <div className="search-bar-headers_service">Service</div>}
                             <div className="search-bar-headers_operation">Operation</div>
                             <div className="search-bar-headers_fields">Fields <i>(in key=value format)</i></div>
                         </div>
@@ -87,7 +88,7 @@ export default class SearchQueryBar extends React.Component {
                             { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
                             && <ServicePicker uiState={uiState} serviceStore={this.props.serviceStore}/>}
                             <OperationPicker uiState={uiState} operationStore={this.props.operationStore}/>
-                            <FieldsPicker uiState={uiState}/>
+                            <FieldsPicker uiState={uiState} options={this.props.searchableKeysStore.keys}/>
                             <TimeWindowPicker uiState={uiState}/>
                             <div className="search-bar-pickers_submit">
                                 <button

@@ -30,6 +30,12 @@ router.get('/traces', (req, res, next) => {
     );
 });
 
+router.get('/traces/searchableKeys', (req, res, next) => {
+    handleResponsePromise(res, next, 'trace_searchableKeys')(
+        () => tracesConnector.getSearchableKeys()
+    );
+});
+
 router.get('/trace/:traceId', (req, res, next) => {
     handleResponsePromise(res, next, 'trace_TRACEID')(
         () => tracesConnector.getTrace(req.params.traceId)
