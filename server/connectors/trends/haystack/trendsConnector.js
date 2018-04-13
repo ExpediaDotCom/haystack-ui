@@ -18,6 +18,7 @@ const Q = require('q');
 const config = require('../../../config/config');
 const _ = require('lodash');
 const fetcher = require('../../fetchers/restFetcher');
+const metricpointNameEncoder = require('../../utils/metricpointNameEncoder');
 
 const trendsFetcher = fetcher('trends');
 
@@ -52,11 +53,11 @@ function convertEpochTimeInSecondsToMillis(timestamp) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return operationName.replace(/\./gi, '___');
+    return metricpointNameEncoder.encodeMetricpointName(operationName);
 }
 
 function fromMetricTankOperationName(operationName) {
-    return operationName.replace(/___/gi, '.');
+    return metricpointNameEncoder.decodeMetricpointName(operationName);
 }
 
 function toMilliseconds(micro) {
@@ -69,7 +70,7 @@ function groupResponseByServiceOperation(data) {
 
         const serviceNameTagIndex = targetSplit.indexOf('serviceName');
         const operationNameTagIndex = targetSplit.indexOf('operationName');
-        const serviceName = (serviceNameTagIndex !== -1) ? targetSplit[serviceNameTagIndex + 1] : null;
+        const serviceName = (serviceNameTagIndex !== -1) ? fromMetricTankOperationName(targetSplit[serviceNameTagIndex + 1]) : null;
         const operationName = (operationNameTagIndex !== -1) ? fromMetricTankOperationName(targetSplit[operationNameTagIndex + 1]) : null;
         const trendStatTagIndex = targetSplit.indexOf('stat');
         const trendStat = `${targetSplit[trendStatTagIndex + 1]}.${targetSplit[trendStatTagIndex + 2]}`;
@@ -113,6 +114,7 @@ function toSuccessPercent(successPoints, failurePoints) {
 function toSuccessPercentPoints(successCount, failureCount) {
     const successTimestamps = successCount.map(point => point.timestamp);
     const failureTimestamps = failureCount.map(point => point.timestamp);
+
     const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
 
     return _.compact(timestamps.map((timestamp) => {
@@ -268,15 +270,15 @@ connector.getServicePerfStats = (granularity, from, until) =>
     getServicePerfStatsResults(convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getServiceStats = (serviceName, granularity, from, until) =>
-    getServiceSummaryResults(serviceName, convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getServiceSummaryResults(toMetricTankOperationName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getServiceTrends = (serviceName, granularity, from, until) =>
-    getServiceTrendResults(serviceName, convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getServiceTrendResults(toMetricTankOperationName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getOperationStats = (serviceName, granularity, from, until) =>
-    getOperationSummaryResults(serviceName, convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getOperationSummaryResults(toMetricTankOperationName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getOperationTrends = (serviceName, operationName, granularity, from, until) =>
-    getOperationTrendResults(serviceName, toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getOperationTrendResults(toMetricTankOperationName(serviceName), toMetricTankOperationName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 module.exports = connector;

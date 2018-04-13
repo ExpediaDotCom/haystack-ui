@@ -46,7 +46,8 @@ module.exports = {
             //  - haystack - gets data from Haystack Metric Tank Setup
             //               haystack connector also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
-            connectorName: 'stub'
+            connectorName: 'stub',
+            encoder: 'periodreplacement'
         },
         alerts: {
             // name of config connector module to use for fetching anomaly detection data from downstream
