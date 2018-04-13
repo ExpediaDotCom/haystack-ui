@@ -32,7 +32,6 @@ router.get('*', (req, res) => {
     res.render('index', {
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
-        fieldKeys: config.connectors.traces.fieldKeys,
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
         services: servicesConnector.getServicesSync(),

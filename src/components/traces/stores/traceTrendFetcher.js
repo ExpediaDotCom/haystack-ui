@@ -19,11 +19,11 @@ import ErrorHandlingStore from '../../../stores/errorHandlingStore';
 
 const fetcher = {};
 
-fetcher.fetchOperationTrends = (serviceName, operationName, from, until) => {
+fetcher.fetchOperationTrends = (serviceName, operationName, granularity, from, until) => {
     const deferred = Q.defer();
 
     axios
-        .get(`/api/trends/operation/${serviceName}/${encodeURIComponent(operationName)}?granularity=60000&from=${from}&until=${until}`)
+        .get(`/api/trends/operation/${serviceName}/${encodeURIComponent(operationName)}?granularity=${granularity}&from=${from}&until=${until}`)
         .then((result) => {
             deferred.resolve(result.data);
         })

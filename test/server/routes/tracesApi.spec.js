@@ -41,4 +41,16 @@ describe('routes.tracesApi', () => {
                 return done();
             });
     });
+
+    it('returns searchable keys for /api/trace/searchableKeys', (done) => {
+        request(server)
+            .get('/api/trace/searchableKeys')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
 });
