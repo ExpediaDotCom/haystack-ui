@@ -45,7 +45,8 @@ connector.getServices = () => {
 };
 
 connector.getSearchableKeys = () => fieldNameFetcher
-        .then(result => result.getValuesList());
+    .fetch()
+    .then(result => result.getValuesList());
 
 connector.getOperations = (serviceName) => {
     const service = new messages.Field();
