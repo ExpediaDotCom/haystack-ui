@@ -19,7 +19,7 @@ const _ = require('lodash');
 
 const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
-const metricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
+const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
@@ -42,12 +42,12 @@ function fetchOperationTrends(serviceName, granularity, from, until) {
     return trendsConnector.getOperationStats(serviceName, granularity, from, until);
 }
 
-function toMetricTankOperationName(operationName) {
-    return new metricpointNameEncoder().encodeMetricpointName(operationName);
+function toMetricTankEncodedName(name) {
+    return new MetricpointNameEncoder().encodeMetricpointName(name);
 }
 
-function fromMetricTankTarget(operationName) {
-    return new metricpointNameEncoder().decodeMetricpointName(operationName);
+function fromMetricTankTarget(name) {
+    return new MetricpointNameEncoder().decodeMetricpointName(name);
 }
 
 function parseOperationAlertsResponse(data, until) {
@@ -139,7 +139,7 @@ connector.getServiceAlerts = (serviceName, query) => {
 };
 
 connector.getAlertDetails = (serviceName, operationName, alertType) => {
-    const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankOperationName(operationName)}.alertType.${alertType}.anomaly`;
+    const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankEncodedName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
         .fetch(`${metricTankUrl}/render?target=${target}`)
