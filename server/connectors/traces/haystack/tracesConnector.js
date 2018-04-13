@@ -49,7 +49,7 @@ connector.getSearchableKeys = () => {
 
     return fieldNameFetcher
         .fetch(request)
-        .then(result => result.getValuesList());
+        .then(result => result.getNamesList());
 };
 
 connector.getOperations = (serviceName) => {
