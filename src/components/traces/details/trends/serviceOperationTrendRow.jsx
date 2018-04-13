@@ -60,7 +60,8 @@ export default class TrendRow extends React.Component {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
         from: PropTypes.number.isRequired,
-        until: PropTypes.number.isRequired
+        until: PropTypes.number.isRequired,
+        granularity: PropTypes.number.isRequired
     };
 
     static openTrendDetailInNewTab(serviceName, operationName, from, until) {
@@ -69,10 +70,17 @@ export default class TrendRow extends React.Component {
     }
 
     componentWillMount() {
-        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.from, this.props.until)
+        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.granularity, this.props.from, this.props.until)
         .then((result) => {
             this.setState({trends: result});
         });
+    }
+
+    componentWillReceiveProps(nextprops) {
+        fetcher.fetchOperationTrends(nextprops.serviceName, nextprops.operationName, nextprops.granularity, nextprops.from, nextprops.until)
+            .then((result) => {
+                this.setState({trends: result});
+            });
     }
 
     render() {

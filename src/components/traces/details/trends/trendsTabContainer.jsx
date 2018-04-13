@@ -41,7 +41,7 @@ export default class extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <TrendsTab timelineSpans={store.timelineSpans} from={Date.now() - (60 * 60 * 1000)} until={Date.now()} />
+                                ? <TrendsTab timelineSpans={store.timelineSpans} />
                                 : <Error />)
                     })
                 }
