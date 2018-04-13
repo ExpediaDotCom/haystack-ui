@@ -138,7 +138,7 @@ connector.getServiceAlerts = (serviceName, query) => {
         );
 };
 
-connector.getAlertDetails = (serviceName, operationName, alertType) => {
+connector.getAlertHistory = (serviceName, operationName, alertType) => {
     const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankEncodedName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
