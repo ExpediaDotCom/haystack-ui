@@ -44,9 +44,13 @@ connector.getServices = () => {
     .then(result => result.getValuesList());
 };
 
-connector.getSearchableKeys = () => fieldNameFetcher
-    .fetch()
-    .then(result => result.getValuesList());
+connector.getSearchableKeys = () => {
+    const request = new messages.Empty();
+
+    return fieldNameFetcher
+        .fetch(request)
+        .then(result => result.getValuesList());
+};
 
 connector.getOperations = (serviceName) => {
     const service = new messages.Field();
