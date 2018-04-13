@@ -19,7 +19,7 @@ const _ = require('lodash');
 
 const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
-const metricpointNameEncoder = require('../../utils/metricpointNameEncoder');
+const metricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
@@ -43,11 +43,11 @@ function fetchOperationTrends(serviceName, granularity, from, until) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return metricpointNameEncoder.encodeMetricpointName(operationName);
+    return new metricpointNameEncoder().encodeMetricpointName(operationName);
 }
 
 function fromMetricTankTarget(operationName) {
-    return metricpointNameEncoder.decodeMetricpointName(operationName);
+    return new metricpointNameEncoder().decodeMetricpointName(operationName);
 }
 
 function parseOperationAlertsResponse(data, until) {

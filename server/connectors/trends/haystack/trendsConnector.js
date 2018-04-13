@@ -18,7 +18,7 @@ const Q = require('q');
 const config = require('../../../config/config');
 const _ = require('lodash');
 const fetcher = require('../../fetchers/restFetcher');
-const metricpointNameEncoder = require('../../utils/metricpointNameEncoder');
+const metricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
 const trendsFetcher = fetcher('trends');
 
@@ -53,11 +53,11 @@ function convertEpochTimeInSecondsToMillis(timestamp) {
 }
 
 function toMetricTankOperationName(operationName) {
-    return metricpointNameEncoder.encodeMetricpointName(operationName);
+    return new metricpointNameEncoder().encodeMetricpointName(operationName);
 }
 
 function fromMetricTankOperationName(operationName) {
-    return metricpointNameEncoder.decodeMetricpointName(operationName);
+    return new metricpointNameEncoder().decodeMetricpointName(operationName);
 }
 
 function toMilliseconds(micro) {
