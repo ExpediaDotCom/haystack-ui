@@ -17,13 +17,9 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function TraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
-
-export class LatencyCostStore {
+export class LatencyCostStore extends ErrorHandlingStore {
     @observable latencyCost = [];
     @observable promiseState = null ;
     traceId = null;
@@ -39,7 +35,7 @@ export class LatencyCostStore {
                 this.latencyCost = result.data;
             })
             .catch((result) => {
-                throw new TraceException(result);
+                LatencyCostStore.handleError(result);
             })
         );
     }

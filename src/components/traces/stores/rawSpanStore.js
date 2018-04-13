@@ -16,13 +16,9 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function RawSpanException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
-
-export class RawSpanStore {
+export class RawSpanStore extends ErrorHandlingStore {
     @observable rawSpan = [];
 
     @observable promiseState = null;
@@ -35,7 +31,7 @@ export class RawSpanStore {
                     this.rawSpan = result.data;
                 })
                 .catch((result) => {
-                    throw new RawSpanException(result);
+                    RawSpanStore.handleError(result);
                 })
         );
     }

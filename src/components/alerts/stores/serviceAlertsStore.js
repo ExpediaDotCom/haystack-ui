@@ -17,12 +17,9 @@ import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
-function AlertsException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export class ServiceAlertsStore {
+export class ServiceAlertsStore extends ErrorHandlingStore {
     @observable unhealthyAlertCount = null;
     @observable alerts = [];
     @observable promiseState = null;
@@ -34,7 +31,7 @@ export class ServiceAlertsStore {
             this.unhealthyAlertCount = result.data;
         })
         .catch((result) => {
-            throw new AlertsException(result);
+            ServiceAlertsStore.handleError(result);
         });
     }
 
@@ -47,7 +44,7 @@ export class ServiceAlertsStore {
                 this.alerts = result.data;
             })
             .catch((result) => {
-                throw new AlertsException(result);
+                ServiceAlertsStore.handleError(result);
             })
         );
     }

@@ -17,14 +17,11 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+
 import { toQueryUrlString } from '../../../utils/queryParser';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function OperationStoreException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
-
-export class OperationStore {
+export class OperationStore extends ErrorHandlingStore {
     @observable statsPromiseState = { case: ({empty}) => empty() };
     @observable trendsPromiseState = { case: ({empty}) => empty() };
     @observable statsResults = [];
@@ -44,7 +41,7 @@ export class OperationStore {
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange, operationName};
                         this.statsResults = [];
-                        throw new OperationStoreException(result);
+                        OperationStore.handleError(result);
                     })
         );
     }
@@ -60,7 +57,7 @@ export class OperationStore {
                 .catch((result) => {
                     this.trendsQuery = query;
                     this.trendsResults = [];
-                    throw new OperationStoreException(result);
+                    OperationStore.handleError(result);
                 })
         );
     }

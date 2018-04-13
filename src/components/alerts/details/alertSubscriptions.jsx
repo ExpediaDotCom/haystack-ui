@@ -236,7 +236,7 @@ export default class AlertSubscriptions extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            alertSubscriptions.length
+                            alertSubscriptions && alertSubscriptions.length
                                 ? alertSubscriptions.map(subscription => <SubscriptionRow subscription={subscription}/>)
                                 : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
                         }

@@ -13,25 +13,21 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import Q from 'q';
-import axios from 'axios';
-import ErrorHandlingStore from '../../../stores/errorHandlingStore';
 
-const fetcher = {};
+import authenticationStore from './authenticationStore';
 
-fetcher.fetchOperationTrends = (serviceName, operationName, granularity, from, until) => {
-    const deferred = Q.defer();
+function HaystackApiException(data) {
+    this.message = 'Unable to resolve promise';
+    this.data = data;
+}
 
-    axios
-        .get(`/api/trends/operation/${serviceName}/${encodeURIComponent(operationName)}?granularity=${granularity}&from=${from}&until=${until}`)
-        .then((result) => {
-            deferred.resolve(result.data);
-        })
-        .catch((result) => {
-            ErrorHandlingStore.handleError(result);
-        });
+export class ErrorHandlingStore {
+    static handleError(result) {
+        if (result.response.status === 401) {
+            authenticationStore.timedOut = true;
+        }
+        throw new HaystackApiException(result);
+    }
+}
 
-    return deferred.promise;
-};
-
-export default fetcher;
+export default new ErrorHandlingStore();

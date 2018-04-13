@@ -18,7 +18,9 @@ import axios from 'axios';
 import {action, observable} from 'mobx';
 import {fromPromise} from 'mobx-utils';
 
-export class ServicePerfStore {
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
+
+export class ServicePerfStore extends ErrorHandlingStore {
     @observable servicePerfStats = [];
     @observable promiseState = { case: ({empty}) => empty() };
 
@@ -30,6 +32,9 @@ export class ServicePerfStore {
             })
             .then((response) => {
                 this.servicePerfStats = response.data;
+            })
+            .catch((result) => {
+                ServicePerfStore.handleError(result);
             })
         );
     }

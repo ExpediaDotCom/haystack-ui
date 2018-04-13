@@ -18,12 +18,9 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 import _ from 'lodash';
 
-function AlertsException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export class AlertDetailsStore {
+export class AlertDetailsStore extends ErrorHandlingStore {
     @observable alertHistory = [];
     @observable alertSubscriptions = [];
     @observable historyPromiseState = null;
@@ -38,7 +35,7 @@ export class AlertDetailsStore {
                     this.alertHistory = result.data;
                 })
                 .catch((result) => {
-                    throw new AlertsException(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -51,7 +48,7 @@ export class AlertDetailsStore {
                     this.alertSubscriptions = result.data;
                 })
                 .catch((result) => {
-                    throw new AlertsException(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -63,7 +60,7 @@ export class AlertDetailsStore {
                 .then(successCallback)
                 .catch((result) => {
                     errorCallback();
-                    throw new AlertsException(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -78,7 +75,7 @@ export class AlertDetailsStore {
                 })
                 .catch((result) => {
                     errorCallback();
-                    throw new AlertsException(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }
@@ -91,7 +88,7 @@ export class AlertDetailsStore {
                     _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })
                 .catch((result) => {
-                    throw new AlertsException(result);
+                    AlertDetailsStore.handleError(result);
                 })
         );
     }

@@ -17,7 +17,9 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 
-export class ServiceStore {
+import { ErrorHandlingStore } from './errorHandlingStore';
+
+export class ServiceStore extends ErrorHandlingStore {
     @observable services = [];
 
     @action fetchServices() {
@@ -34,6 +36,9 @@ export class ServiceStore {
         })
         .then((response) => {
             this.services = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        })
+        .catch((result) => {
+            ServiceStore.handleError(result);
         });
     }
 }

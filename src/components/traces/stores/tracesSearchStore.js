@@ -17,13 +17,10 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+
 import { toDurationMicroseconds } from '../utils/presets';
 import { toQueryUrlString } from '../../../utils/queryParser';
-
-function TraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export function formatResults(results) {
     return results.map((result) => {
@@ -41,7 +38,7 @@ export function formatResults(results) {
     });
 }
 
-export class TracesSearchStore {
+export class TracesSearchStore extends ErrorHandlingStore {
     @observable promiseState = { case: ({empty}) => empty() };
     @observable searchQuery = null;
     @observable searchResults = [];
@@ -65,7 +62,7 @@ export class TracesSearchStore {
                 .catch((result) => {
                     this.searchQuery = query;
                     this.searchResults = [];
-                    throw new TraceException(result);
+                    TracesSearchStore.handleError(result);
                 })
         );
     }

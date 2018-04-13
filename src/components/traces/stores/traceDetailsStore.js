@@ -19,10 +19,7 @@ import _ from 'lodash';
 import {observable, action, computed} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
-function TraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export function setChildExpandState(timelineSpans, parent) {
     parent.children.forEach((childId) => {
@@ -56,7 +53,7 @@ function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration)
     .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1, traceStartTime, totalDuration)));
 }
 
-export class TraceDetailsStore {
+export class TraceDetailsStore extends ErrorHandlingStore {
     @observable promiseState = null;
     @observable spans = [];
     traceId = null;
@@ -72,7 +69,7 @@ export class TraceDetailsStore {
                     this.spans = result.data;
                 })
                 .catch((result) => {
-                    throw new TraceException(result);
+                    TraceDetailsStore.handleError(result);
                 })
         );
     }

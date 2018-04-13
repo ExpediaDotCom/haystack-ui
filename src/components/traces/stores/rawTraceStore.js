@@ -16,13 +16,10 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-function RawTraceException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
 
-export class RawTraceStore {
+export class RawTraceStore extends ErrorHandlingStore {
     @observable rawTrace = [];
 
     @observable promiseState = null;
@@ -35,7 +32,7 @@ export class RawTraceStore {
                     this.rawTrace = result.data;
                 })
                 .catch((result) => {
-                    throw new RawTraceException(result);
+                    RawTraceStore.handleError(result);
                 })
         );
     }
