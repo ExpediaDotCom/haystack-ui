@@ -14,18 +14,12 @@
  *         limitations under the License.
  */
 
-const baseConfig = require('../../../config/config');
 const PeriodReplacementEncoder = require('../encoders/PeriodReplacementEncoder');
 const Base64Encoder = require('../encoders/Base64Encoder');
 const NoopEncoder = require('../encoders/NoopEncoder');
 
 class MetricpointNameEncoder {
-    constructor(inputConfig) {
-        let config = inputConfig;
-        if (!config) {
-            config = baseConfig;
-        }
-        const encoderType = config.connectors.trends.encoder;
+    constructor(encoderType) {
         if (encoderType === 'periodreplacement') {
             this.encoder = PeriodReplacementEncoder;
         } else if (encoderType === 'base64') {

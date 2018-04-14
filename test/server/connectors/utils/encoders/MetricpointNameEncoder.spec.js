@@ -24,32 +24,20 @@ const NoopEncoder = require('../../../../../server/connectors/utils/encoders/Noo
 const PeriodReplacementEncoder = require('../../../../../server/connectors/utils/encoders/PeriodReplacementEncoder');
 
 describe('MetricpointNameEncoder', () => {
-    let config = {};
-
-    beforeEach(() => {
-        config = {connectors: {trends: {}}};
-    });
-
     it('sets the correct encoder - base64', () => {
-        config.connectors.trends.encoder = 'base64';
-
-        const encoder = new MetricpointNameEncoder(config);
+        const encoder = new MetricpointNameEncoder('base64');
 
         expect(encoder.encoder).equals(Base64Encoder);
     });
 
     it('sets the correct encoder - periodreplacement', () => {
-        config.connectors.trends.encoder = 'periodreplacement';
-
-        const encoder = new MetricpointNameEncoder(config);
+        const encoder = new MetricpointNameEncoder('periodreplacement');
 
         expect(encoder.encoder).equals(PeriodReplacementEncoder);
     });
 
     it('defaults in all other cases', () => {
-        config.connectors.trends.encoder = 'asdf';
-
-        const encoder = new MetricpointNameEncoder(config);
+        const encoder = new MetricpointNameEncoder('noop');
 
         expect(encoder.encoder).equals(NoopEncoder);
     });

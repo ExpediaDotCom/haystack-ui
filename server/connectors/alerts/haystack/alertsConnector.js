@@ -30,6 +30,7 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
+const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 
 const alertTypes = ['durationTP99'];
@@ -42,22 +43,14 @@ function fetchOperationTrends(serviceName, granularity, from, until) {
     return trendsConnector.getOperationStats(serviceName, granularity, from, until);
 }
 
-function toMetricTankEncodedName(name) {
-    return new MetricpointNameEncoder().encodeMetricpointName(name);
-}
-
-function fromMetricTankTarget(name) {
-    return new MetricpointNameEncoder().decodeMetricpointName(name);
-}
-
 function parseOperationAlertsResponse(data, until) {
     return data.map((op) => {
         const targetSplit = op.target.split('.');
 
         const operationNameTagIndex = targetSplit.indexOf('operationName');
         const alertTypeIndex = targetSplit.indexOf('alertType');
-        const operationName = fromMetricTankTarget(targetSplit[operationNameTagIndex + 1]);
-        const type = fromMetricTankTarget(targetSplit[alertTypeIndex + 1]);
+        const operationName = metricpointNameEncoder.decodeMetricpointName(targetSplit[operationNameTagIndex + 1]);
+        const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
         const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
@@ -139,7 +132,7 @@ connector.getServiceAlerts = (serviceName, query) => {
 };
 
 connector.getAlertHistory = (serviceName, operationName, alertType) => {
-    const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankEncodedName(operationName)}.alertType.${alertType}.anomaly`;
+    const target = `haystack.serviceName.${serviceName}.operationName.${metricpointNameEncoder.encodeMetricpointName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
         .fetch(`${metricTankUrl}/render?target=${target}`)

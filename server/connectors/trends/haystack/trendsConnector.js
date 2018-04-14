@@ -24,6 +24,7 @@ const trendsFetcher = fetcher('trends');
 
 const connector = {};
 const metricTankUrl = config.connectors.trends.metricTankUrl;
+const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 
 function createOperationTarget(service, operationName, timeWindow, metricStats, metricNames) {
     return `haystack.serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.{${metricStats}}.{${metricNames}}`;
@@ -52,14 +53,6 @@ function convertEpochTimeInSecondsToMillis(timestamp) {
     return timestamp * 1000;
 }
 
-function toMetricTankEncodedName(name) {
-    return new MetricpointNameEncoder().encodeMetricpointName(name);
-}
-
-function fromMetricTankEncodedName(operationName) {
-    return new MetricpointNameEncoder().decodeMetricpointName(operationName);
-}
-
 function toMilliseconds(micro) {
     return Math.ceil(micro / 1000);
 }
@@ -70,8 +63,8 @@ function groupResponseByServiceOperation(data) {
 
         const serviceNameTagIndex = targetSplit.indexOf('serviceName');
         const operationNameTagIndex = targetSplit.indexOf('operationName');
-        const serviceName = (serviceNameTagIndex !== -1) ? fromMetricTankEncodedName(targetSplit[serviceNameTagIndex + 1]) : null;
-        const operationName = (operationNameTagIndex !== -1) ? fromMetricTankEncodedName(targetSplit[operationNameTagIndex + 1]) : null;
+        const serviceName = (serviceNameTagIndex !== -1) ? metricpointNameEncoder.decodeMetricpointName(targetSplit[serviceNameTagIndex + 1]) : null;
+        const operationName = (operationNameTagIndex !== -1) ? metricpointNameEncoder.decodeMetricpointName(targetSplit[operationNameTagIndex + 1]) : null;
         const trendStatTagIndex = targetSplit.indexOf('stat');
         const trendStat = `${targetSplit[trendStatTagIndex + 1]}.${targetSplit[trendStatTagIndex + 2]}`;
 
@@ -269,15 +262,15 @@ connector.getServicePerfStats = (granularity, from, until) =>
     getServicePerfStatsResults(convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getServiceStats = (serviceName, granularity, from, until) =>
-    getServiceSummaryResults(toMetricTankEncodedName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getServiceSummaryResults(metricpointNameEncoder.encodeMetricpointName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getServiceTrends = (serviceName, granularity, from, until) =>
-    getServiceTrendResults(toMetricTankEncodedName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getServiceTrendResults(metricpointNameEncoder.encodeMetricpointName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getOperationStats = (serviceName, granularity, from, until) =>
-    getOperationSummaryResults(toMetricTankEncodedName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getOperationSummaryResults(metricpointNameEncoder.encodeMetricpointName(serviceName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getOperationTrends = (serviceName, operationName, granularity, from, until) =>
-    getOperationTrendResults(toMetricTankEncodedName(serviceName), toMetricTankEncodedName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+    getOperationTrendResults(metricpointNameEncoder.encodeMetricpointName(serviceName), metricpointNameEncoder.encodeMetricpointName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 module.exports = connector;
