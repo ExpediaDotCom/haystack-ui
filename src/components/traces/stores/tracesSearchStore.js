@@ -15,12 +15,12 @@
  */
 
 import axios from 'axios';
-import {observable, action} from 'mobx';
-import { fromPromise } from 'mobx-utils';
+import {action, observable} from 'mobx';
+import {fromPromise} from 'mobx-utils';
 
-import { toDurationMicroseconds } from '../utils/presets';
-import { toQueryUrlString } from '../../../utils/queryParser';
-import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
+import {toDurationMicroseconds} from '../utils/presets';
+import {toQueryUrlString} from '../../../utils/queryParser';
+import {ErrorHandlingStore} from '../../../stores/errorHandlingStore';
 
 export function formatResults(results) {
     return results.map((result) => {
@@ -45,7 +45,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
 
     @action fetchSearchResults(query) {
         const queryUrlString = toQueryUrlString({...query,
-            serviceName: query.serviceName,
+            serviceName: decodeURIComponent(query.serviceName),
             operationName: query.operationName === 'all' ? null : query.operationName,
             startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
             endTime: query.endTime ? query.endTime * 1000 : (Date.now() - (30 * 1000)) * 1000,

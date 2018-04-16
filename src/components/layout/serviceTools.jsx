@@ -157,7 +157,7 @@ export default class ServiceTools extends Component {
                                     {
                                         serviceChangeToggleOpen ?
                                             <ServiceChange/> :
-                                            <span className="serviceToolsTab__title-name">{trimmedServiceName}</span>
+                                            <span className="serviceToolsTab__title-name">{decodeURIComponent(trimmedServiceName)}</span>
                                     }
                                     <span
                                         className={serviceChangeToggleOpen ?
