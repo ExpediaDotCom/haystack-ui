@@ -28,7 +28,7 @@ export default class OperationPicker extends React.Component {
     };
 
     static convertToValueLabelMap(operationList) {
-      return operationList.map(operation => ({value: operation, label: operation}));
+        return operationList.map(operation => ({value: operation, label: operation}));
     }
 
     constructor(props) {
@@ -45,28 +45,28 @@ export default class OperationPicker extends React.Component {
     }
 
     handleChange(event) {
-      this.props.uiState.setOperationName(event.value);
+        this.props.uiState.setOperationName(event.value);
     }
 
     render() {
-      const operationName = this.props.uiState.operationName || (this.props.operationStore.operations.length ? this.props.operationStore.operations[0] : '');
+        const operationName = (this.props.uiState.operationName || (this.props.operationStore.operations.length ? this.props.operationStore.operations[0] : '')).toLowerCase();
 
-      // default to current operation if there is no operation in store
-      const options = this.props.operationStore.operations.length
-          ? OperationPicker.convertToValueLabelMap(this.props.operationStore.operations)
-          : OperationPicker.convertToValueLabelMap([operationName]);
+        // default to current operation if there is no operation in store
+        const options = this.props.operationStore.operations.length
+            ? OperationPicker.convertToValueLabelMap(this.props.operationStore.operations)
+            : OperationPicker.convertToValueLabelMap([operationName]);
 
         return (
             <div className="search-bar-pickers_operation">
-              <Select
-                name="operation-list"
-                className="search-bar-picker-select"
-                options={options}
-                onChange={this.handleChange}
-                value={decodeURIComponent(operationName)}
-                clearable={false}
-                placeholder=""
-              />
+                <Select
+                    name="operation-list"
+                    className="search-bar-picker-select"
+                    options={options}
+                    onChange={this.handleChange}
+                    value={decodeURIComponent(operationName)}
+                    clearable={false}
+                    placeholder=""
+                />
             </div>);
     }
 }

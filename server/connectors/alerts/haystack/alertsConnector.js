@@ -19,6 +19,7 @@ const _ = require('lodash');
 
 const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
+const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
@@ -29,24 +30,17 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
+const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 
 const alertTypes = ['durationTP99'];
 
 function fetchOperations(serviceName) {
-   return servicesConnector.getOperations(serviceName);
+    return servicesConnector.getOperations(serviceName);
 }
 
 function fetchOperationTrends(serviceName, granularity, from, until) {
     return trendsConnector.getOperationStats(serviceName, granularity, from, until);
-}
-
-function toMetricTankOperationName(operationName) {
-    return operationName.replace(/\./gi, '___');
-}
-
-function fromMetricTankTarget(operationName) {
-    return operationName.replace(/___/gi, '.');
 }
 
 function parseOperationAlertsResponse(data, until) {
@@ -55,8 +49,8 @@ function parseOperationAlertsResponse(data, until) {
 
         const operationNameTagIndex = targetSplit.indexOf('operationName');
         const alertTypeIndex = targetSplit.indexOf('alertType');
-        const operationName = fromMetricTankTarget(targetSplit[operationNameTagIndex + 1]);
-        const type = fromMetricTankTarget(targetSplit[alertTypeIndex + 1]);
+        const operationName = metricpointNameEncoder.decodeMetricpointName(targetSplit[operationNameTagIndex + 1]);
+        const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
         const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
@@ -138,7 +132,7 @@ connector.getServiceAlerts = (serviceName, query) => {
 };
 
 connector.getAlertHistory = (serviceName, operationName, alertType) => {
-    const target = `haystack.serviceName.${serviceName}.operationName.${toMetricTankOperationName(operationName)}.alertType.${alertType}.anomaly`;
+    const target = `haystack.serviceName.${serviceName}.operationName.${metricpointNameEncoder.encodeMetricpointName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
         .fetch(`${metricTankUrl}/render?target=${target}`)
@@ -147,7 +141,6 @@ connector.getAlertHistory = (serviceName, operationName, alertType) => {
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
     fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
-    .then(result => getActiveAlertCount(result));
+        .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
-
