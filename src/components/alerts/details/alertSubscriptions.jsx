@@ -87,9 +87,11 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     handleModifySubscription(alertId) {
-        this.setState({activeModifyBox: alertId});
-        this.modifyInputRefs[alertId].disabled = false;
-        this.modifyInputRefs[alertId].focus();
+        this.setState({activeModifyBox: alertId, showNewSubscriptionBox: false}, () => {
+                this.modifyInputRefs[alertId].disabled = false;
+                this.modifyInputRefs[alertId].focus();
+            }
+        );
     }
 
     handleSubscriptionError() {
@@ -109,7 +111,7 @@ export default class AlertSubscriptions extends React.Component {
             this.handleSubscriptionError
         );
         this.modifyInputRefs[this.state.activeModifyBox].disabled = true;
-        this.setState({activeModifyBox: null, subscriptionError: false});
+        this.setState({activeModifyBox: null});
     }
 
     handleCancelModifiedSubscription() {
@@ -130,7 +132,8 @@ export default class AlertSubscriptions extends React.Component {
     toggleNewSubscriptionBox() {
         this.setState(prevState => ({
             showNewSubscriptionBox: !prevState.showNewSubscriptionBox,
-            subscriptionError: false
+            subscriptionError: false,
+            activeModifyBox: null
         }));
         this.newInputRef.value = '';
     }
@@ -159,16 +162,16 @@ export default class AlertSubscriptions extends React.Component {
         const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
 
         const HandleSubscriptionModifyButtons = () => (<div className="btn-group btn-group-sm">
-            <button onClick={this.handleSubmitModifiedSubscription} className="btn btn-success">
+            <button onClick={() => this.handleSubmitModifiedSubscription()} className="btn btn-success alert-modify-submit">
                 <span className="ti-check"/>
             </button>
-            <button onClick={this.handleCancelModifiedSubscription} className="btn btn-danger">
+            <button onClick={() => this.handleCancelModifiedSubscription()} className="btn btn-danger alert-modify-cancel">
                 <span className="ti-na"/>
             </button>
         </div>);
 
         const DefaultSubscriptionButtons = subscription => (<div className="btn-group btn-group-sm">
-            <button onClick={() => this.handleModifySubscription(subscription.subscription.subscriptionId)} className="btn btn-default">
+            <button onClick={() => this.handleModifySubscription(subscription.subscription.subscriptionId)} className="btn btn-default alert-modify">
                 <span className="ti-pencil"/>
             </button>
             <button onClick={() => this.handleDeleteSubscription(subscription.subscription.subscriptionId)} className="btn btn-default">
@@ -198,7 +201,7 @@ export default class AlertSubscriptions extends React.Component {
         );
 
         const NewSubscription = () => (
-            <tr className={showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
+            <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
                 <td>
                     <select className="alert-details__select" ref={this.setSelectRef}>
                         <option>Slack</option>

@@ -68,6 +68,30 @@ const stubSubscriptions = [
     }
 ];
 
+const stubAddedSubscription = [
+    {
+        subscriptionId: 101,
+        dispatcherType: 'slack',
+        dispatcherIds: [
+            '#stub-subscription-1'
+        ]
+    },
+    {
+        subscriptionId: 102,
+        dispatcherType: 'smtp',
+        dispatcherIds: [
+            'stub-subscription@2.com'
+        ]
+    },
+    {
+        subscriptionId: 101,
+        dispatcherType: 'slack',
+        dispatcherIds: [
+            '#added-subscription-1'
+        ]
+    }
+];
+
 function getValue(min, max) {
     return _.round((Math.random() * (max - min)) + min, 0);
 }
@@ -148,6 +172,30 @@ function createStubAlertDetailsStore(alertDetails, promise, alertSubscriptions) 
         store.subscriptionsPromiseState = promise;
     });
 
+    sinon.stub(store, 'addNewSubscription', () => {
+        store.alertSubscriptions = stubAddedSubscription;
+    });
+
+    sinon.stub(store, 'updateSubscription', () => {
+        store.alertSubscriptions[0] = {
+            subscriptionId: 101,
+            dispatcherType: 'slack',
+            dispatcherIds: [
+                '#updated-subscription-1'
+            ]
+        };
+    });
+
+    sinon.stub(store, 'deleteSubscription', () => {
+        store.alertSubscriptions = [{
+            subscriptionId: 102,
+            dispatcherType: 'smtp',
+            dispatcherIds: [
+                'stub-subscription@2.com'
+            ]
+        }];
+    });
+
     return store;
 }
 
@@ -217,5 +265,65 @@ describe('<AlertDetails />', () => {
         expect(wrapper.find('.error-message_text')).to.have.length(0);
         expect(wrapper.find('.subscription-row')).to.have.length(2);
         expect(wrapper.find('.alert-history')).to.have.length(1);
+    });
+    it('should successfully add a subscription', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
+
+        wrapper.find('.btn-success').first().simulate('click');
+        wrapper.find('.alert-details__input').value = '#updated-subscription-1';
+        wrapper.find('.ti-plus').first().simulate('click');
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(3);
+    });
+
+    it('should successfully delete a subscription', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
+
+        wrapper.find('.ti-trash').first().simulate('click');
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(1);
+    });
+
+    it('should successfully delete a subscription', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
+
+        wrapper.find('.ti-trash').first().simulate('click');
+
+        expect(wrapper.find('.alert-subscription-handle')).to.have.length(1);
+    });
+
+    it('should change modify state when subscription modify button is pressed', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+
+        wrapper.find('.alert-modify').first().simulate('click');
+        expect(wrapper.find('.alert-modify-submit')).to.have.length(1);
+
+        wrapper.find('.alert-modify-cancel').simulate('click');
+        expect(wrapper.find('.alert-modify-submit')).to.have.length(0);
+    });
+
+    it('should successfully update a subscription', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        wrapper.find('.alert-modify').first().simulate('click');
+
+        // Find, update, and submit new subscription value
+        const target = wrapper.find('.alert-subscription-handle').first();
+        target.value = '#updated-subscription-1';
+        wrapper.find('.alert-modify-submit').simulate('click');
+
+        // Get new value (placeholder) of subscription name
+        const newTarget = wrapper.find('.alert-subscription-handle').first();
+        expect(newTarget.node.placeholder).to.equal('#updated-subscription-1');
     });
 });
