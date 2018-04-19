@@ -49,7 +49,10 @@ connector.getSearchableKeys = () => {
 
     return fieldNameFetcher
         .fetch(request)
-        .then(result => result.getNamesList());
+        .then((result) => {
+            const results = result.getNamesList();
+            return results.push('traceId');
+        });
 };
 
 connector.getOperations = (serviceName) => {
