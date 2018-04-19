@@ -114,7 +114,7 @@ export default class AlertsTable extends React.Component {
 
         const query = toQuery(this.props.location.search);
         const operationName = query.operationName;
-        const type = 'durationTp99'; // change it later to query.type when we have more types i.e.count and failure count
+        const type = query.type;
 
         this.state = {
             expanding: [],
@@ -165,7 +165,8 @@ export default class AlertsTable extends React.Component {
 
     render() {
         const typeSelection = {
-            durationTp99: 'Duration TP99'
+            durationTp99: 'Duration TP99',
+            failureCount: 'Failure Count'
         };
 
         const statusSelection = {

@@ -29,6 +29,7 @@ export class SearchableKeysStore {
             url: '/api/traces/searchableKeys'
         })
         .then((response) => {
+            response.data.push('traceId');
             this.keys = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         });
     }
