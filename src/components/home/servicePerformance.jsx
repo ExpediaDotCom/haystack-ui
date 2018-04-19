@@ -103,7 +103,7 @@ export default class ServicePerformance extends Component {
 
     handleNodeClick() {
         if (this.state.hoveredNode) {
-            this.props.history.push(`/service/${this.state.hoveredNode}/trends`);
+            this.props.history.push(`/service/${encodeURIComponent(this.state.hoveredNode)}/trends`);
         }
     }
 

@@ -30,7 +30,7 @@ class MetricpointNameEncoder {
     }
 
     encodeMetricpointName(operationName) {
-        return this.encoder.encode(operationName);
+        return this.encoder.encode(decodeURIComponent(operationName));
     }
 
     decodeMetricpointName(operationName) {
