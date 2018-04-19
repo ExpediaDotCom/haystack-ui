@@ -43,17 +43,21 @@ export default class TrendDetailsToolbar extends React.Component {
     constructor(props) {
         super(props);
 
-        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.setTimeWindowWrapperRef = this.setTimeWindowWrapperRef.bind(this);
         this.hideTimePicker = this.hideTimePicker.bind(this);
         this.showTimePicker = this.showTimePicker.bind(this);
-        this.handleOutsideClick = this.handleOutsideClick.bind(this);
+        this.handleTimeWindowOutsideClick = this.handleTimeWindowOutsideClick.bind(this);
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.fetchTrends = this.fetchTrends.bind(this);
+        this.handleGranularityDropdownOutsideClick = this.handleGranularityDropdownOutsideClick.bind(this);
         this.toggleGranularityDropdown = this.toggleGranularityDropdown.bind(this);
+        this.hideGranularityDropdown = this.hideGranularityDropdown.bind(this);
+        this.showGranularityDropdown = this.showGranularityDropdown.bind(this);
         this.updateGranularity = this.updateGranularity.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
         this.setClipboardText = this.setClipboardText.bind(this);
+        this.setGranularityWrapperRef = this.setGranularityWrapperRef.bind(this);
 
         const {
             from,
@@ -79,8 +83,12 @@ export default class TrendDetailsToolbar extends React.Component {
         this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
     }
 
-    setWrapperRef(node) {
-        this.wrapperRef = node;
+    setGranularityWrapperRef(node) {
+        this.granularityWrapperRef = node;
+    }
+
+    setTimeWindowWrapperRef(node) {
+        this.timeWindowWrapperRef = node;
     }
 
     setClipboardText(activeWindow) {
@@ -95,18 +103,18 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     hideTimePicker() {
-        document.removeEventListener('mousedown', this.handleOutsideClick);
+        document.removeEventListener('mousedown', this.handleTimeWindowOutsideClick);
         this.setState({showCustomTimeRangePicker: false});
     }
 
     showTimePicker() {
-        document.addEventListener('mousedown', this.handleOutsideClick);
+        document.addEventListener('mousedown', this.handleTimeWindowOutsideClick);
         this.setState({showCustomTimeRangePicker: true});
     }
 
 
-    handleOutsideClick(e) {
-        if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+    handleTimeWindowOutsideClick(e) {
+        if (this.timeWindowWrapperRef && !this.timeWindowWrapperRef.contains(e.target)) {
             this.hideTimePicker();
         }
     }
@@ -116,12 +124,33 @@ export default class TrendDetailsToolbar extends React.Component {
         setTimeout(() => this.setState({showCopied: false}), 2000);
     }
 
+    handleGranularityDropdownOutsideClick(e) {
+        if (this.granularityWrapperRef && !this.granularityWrapperRef.contains(e.target)) {
+            this.hideGranularityDropdown();
+        }
+    }
+
     toggleGranularityDropdown() {
-        this.setState({granularityDropdownOpen: !this.state.granularityDropdownOpen});
+        if (this.state.granularityDropdownOpen) {
+            this.hideGranularityDropdown();
+        } else {
+            this.showGranularityDropdown();
+        }
+    }
+
+    hideGranularityDropdown() {
+        document.addEventListener('mousedown', this.handleGranularityDropdownOutsideClick);
+        this.setState({granularityDropdownOpen: false});
+    }
+
+    showGranularityDropdown() {
+        document.addEventListener('mousedown', this.handleGranularityDropdownOutsideClick);
+        this.setState({granularityDropdownOpen: true});
     }
 
     updateGranularity(granularity) {
-        this.setState({granularityDropdownOpen: false, activeGranularity: granularity});
+        this.hideGranularityDropdown();
+        this.setState({activeGranularity: granularity});
         this.fetchTrends(this.state.activeWindow, granularity);
     }
 
@@ -186,7 +215,7 @@ export default class TrendDetailsToolbar extends React.Component {
             <div className="trend-details-toolbar clearfix">
                 <div className="pull-left trend-details-toolbar__time-range">
                     <div>Time Range</div>
-                    <div ref={this.setWrapperRef}>
+                    <div ref={this.setTimeWindowWrapperRef}>
                         <div className="btn-group btn-group-sm">
                             {timeWindow.presets.map(preset => (
                                 <PresetOption
@@ -217,7 +246,7 @@ export default class TrendDetailsToolbar extends React.Component {
                             <span>{this.state.activeGranularity.shortName}</span>
                             <span className="caret"/>
                         </button>
-                        <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <ul ref={this.setGranularityWrapperRef} className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li>
                                 {metricGranularity.options.map(option => (
                                     <a
