@@ -50,8 +50,10 @@ connector.getSearchableKeys = () => {
     return fieldNameFetcher
         .fetch(request)
         .then((result) => {
-            const results = result.getNamesList();
-            return results.push('traceId');
+            const keys = result.getNamesList();
+            // additional keys that are not part of index
+            keys.push('traceId');
+            return keys;
         });
 };
 
