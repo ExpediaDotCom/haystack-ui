@@ -33,7 +33,7 @@ const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 
-const alertTypes = ['durationTP99'];
+const alertTypes = ['durationTP99', 'failureCount'];
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
