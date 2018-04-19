@@ -42,6 +42,17 @@ export default class TrendTimeRangePicker extends React.Component {
         this.handleFromChange = this.handleFromChange.bind(this);
         this.handleToChange = this.handleToChange.bind(this);
         this.isToValid = this.isToValid.bind(this);
+        this.checkForEnterPress = this.checkForEnterPress.bind(this);
+    }
+
+    componentDidMount() {
+        document.addEventListener('keyup', this.checkForEnterPress);
+    }
+
+    checkForEnterPress(e) {
+        if (e.keyCode === 13) {
+            this.handleApply();
+        }
     }
 
     handleFromChange(from) {
@@ -53,6 +64,7 @@ export default class TrendTimeRangePicker extends React.Component {
     }
 
     handleApply() {
+        document.removeEventListener('keyup', this.checkForEnterPress);
         this.props.customTimeRangeChangeCallback({ from: this.state.from.valueOf(), to: this.state.to.valueOf() });
     }
 
