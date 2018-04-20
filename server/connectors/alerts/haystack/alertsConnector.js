@@ -23,7 +23,7 @@ const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEnco
 
 const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
-const fetcher = require('../../fetchers/restFetcher');
+const fetcher = require('../../operations/restFetcher');
 
 const alertHistoryFetcher = fetcher('alertHistory');
 const serviceAlertsFetcher = fetcher('serviceAlerts');

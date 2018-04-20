@@ -19,7 +19,7 @@ const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
 const alertsConnector = require(`../connectors/alerts/${config.connectors.alerts.connectorName}/alertsConnector`); // eslint-disable-line import/no-dynamic-require
-const subscriptionsConnector = require(`../connectors/alerts/${config.connectors.alerts.connectorName}/subscriptionsConnector`); // eslint-disable-line import/no-dynamic-require
+const subscriptionsConnector = require(`../connectors/alerts/${config.connectors.alerts.subscriptions.connectorName}/subscriptionsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, n
 });
 
 router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
-    handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
+    handleResponsePromise(res, next, 'getsubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.getAlertSubscriptions(req.params.serviceName, req.params.operationName, req.params.alertType)
     );
 });
@@ -58,7 +58,7 @@ router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req,
     );
 });
 
-router.put('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscriptionId', (req, res, next) => {
+router.put('/alert/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.updateAlertSubscription(
             req.params.subscriptionId,
@@ -66,8 +66,8 @@ router.put('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscri
     );
 });
 
-router.delete('/alert/:serviceName/:operationName/:alertType/subscriptions/:subscriptionId', (req, res, next) => {
-    handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
+router.delete('/alert/subscriptions/:subscriptionId', (req, res, next) => {
+    handleResponsePromise(res, next, 'deletesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.deleteAlertSubscription(req.params.subscriptionId)
     );
 });

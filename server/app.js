@@ -40,6 +40,7 @@ const bodyParser = require('body-parser');
 
 // CONFIGURATIONS
 axios.defaults.timeout = config.upstreamTimeout;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 Q.longStackSupport = true;
 app.set('port', config.port);
 app.set('views', path.join(__dirname, 'views'));
