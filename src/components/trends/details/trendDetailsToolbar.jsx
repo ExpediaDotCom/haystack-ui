@@ -20,6 +20,7 @@ import Clipboard from 'react-copy-to-clipboard';
 import {Link} from 'react-router-dom';
 import timeWindow from '../../../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
+import linkBuilder from '../../../utils/linkBuilder';
 
 import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
@@ -89,9 +90,13 @@ export default class TrendDetailsToolbar extends React.Component {
             timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
             timeWindow.toTimeRange(activeWindow.value).until}`;
         }
-        return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=^${encodeURIComponent(this.props.opName)}$&from=${activeWindow.from ||
-        timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
-        timeWindow.toTimeRange(activeWindow.value).until}`;
+
+        return linkBuilder.withAbsoluteUrl(linkBuilder.createTrendsLink({
+            serviceName: this.props.serviceName,
+            operationName: this.props.opName,
+            from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
+            until: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
+        }));
     }
 
     hideTimePicker() {
@@ -245,7 +250,13 @@ export default class TrendDetailsToolbar extends React.Component {
                             <Link
                                 role="button"
                                 className="btn btn-sm btn-default"
-                                to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
+                                to={
+                                    linkBuilder.createTracesLink({
+                                        serviceName: this.props.serviceName,
+                                        operationName: this.props.opName,
+                                        timePreset: this.state.activeWindow.shortName
+                                    })
+                                }
                             ><span
                                 className="ti-align-left"
                             /> See Traces</Link>

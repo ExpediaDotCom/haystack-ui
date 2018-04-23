@@ -27,6 +27,7 @@ import TrendsTabContainer from './trends/trendsTabContainer';
 
 import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
+import linkBuilder from '../../../utils/linkBuilder';
 
 import uiState from '../searchBar/searchBarUiStateStore';
 
@@ -34,7 +35,6 @@ import uiState from '../searchBar/searchBarUiStateStore';
 export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
-        location: PropTypes.object.isRequired,
         traceDetailsStore: PropTypes.object.isRequired
     };
 
@@ -79,9 +79,14 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
-        const {traceId, location, traceDetailsStore} = this.props;
+        const {traceId, traceDetailsStore} = this.props;
 
-        const traceUrl = `${window.location.protocol}//${window.location.host}${location.pathname}?serviceName=${uiState.serviceName}${uiState.operationName ? `&operationName=${uiState.operationName}` : ''}&traceId=${traceId}`;
+        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
+            serviceName: uiState.serviceName,
+            operationName: uiState.operationName,
+            traceId
+        }));
+
         return (
             <section className="table-row-details">
                 <div className="tabs-nav-container clearfix">
