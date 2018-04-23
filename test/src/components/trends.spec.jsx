@@ -17,10 +17,10 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { shallow, mount } from 'enzyme';
-import { expect } from 'chai';
+import {mount, shallow} from 'enzyme';
+import {expect} from 'chai';
 import sinon from 'sinon';
-import { MemoryRouter } from 'react-router';
+import {MemoryRouter} from 'react-router';
 
 import Trends from '../../../src/components/trends/trends';
 import TrendsHeader from '../../../src/components/trends/trendsHeader';
@@ -173,6 +173,13 @@ const stubOperationResults = {
         {value: 286, timestamp: 1508432248583},
         {value: 46, timestamp: 1508432308583},
         {value: 164, timestamp: 1508432368583}
+    ],
+    ambiguousCount: [
+        {value: 10, timestamp: 1508432128583},
+        {value: 784, timestamp: 1508432188583},
+        {value: 483, timestamp: 1508432248583},
+        {value: 28, timestamp: 1508432308583},
+        {value: 948, timestamp: 1508432368583}
     ],
     meanDuration: [
         {value: 606, timestamp: 1508432128583},
@@ -339,7 +346,7 @@ describe('<Trends />', () => {
     it('should call operation fetchStats upon expanding a trend', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
         // eslint-disable-next-line
-        const wrapper = mount(<MemoryRouter>
+        mount(<MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
         </MemoryRouter>); // MemoryRouter used to keep Link component from reading or writing to address-bar
         expect(operationStore.fetchStats.calledOnce);
