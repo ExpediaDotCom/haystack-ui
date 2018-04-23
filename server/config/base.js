@@ -24,9 +24,8 @@ module.exports = {
 
     // Feature switches
     enableServicePerformance: true,
-    enableServiceLevelTrends: true, // enable
+    enableServiceLevelTrends: true,
 
-    // data connectors to connect to
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config
     connectors: {
@@ -59,7 +58,8 @@ module.exports = {
                 // name of config connector module to use for managing subscriptions
                 // Options :
                 //  - stub - a stub used during development, will be removed in future
-                connectorName: 'stub'
+                connectorName: 'stub',
+                enabled: true
             }
         }
     }
