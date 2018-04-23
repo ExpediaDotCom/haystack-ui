@@ -21,7 +21,8 @@ html
             services: !{JSON.stringify(services || null)},
             enableSSO: !{JSON.stringify(enableSSO || false)},
             ssoAdfsDomain: !{JSON.stringify(ssoAdfsDomain || '')},
-            alertsRefreshInterval: !{JSON.stringify(alertsRefreshInterval || 60000)}
+            alertsRefreshInterval: !{JSON.stringify(alertsRefreshInterval || 60000)},
+            enableAlertSubscriptions: !{JSON.stringify(enableAlertSubscriptions || false)}
         }
     script(async, defer, src='/bundles/js/app.js')
     script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js')

@@ -35,6 +35,6 @@ global.document = window.document;
 global.navigator = {
     userAgent: 'node.js'
 };
-global.window.haystackUiConfig = {subsystems: ['traces', 'trends']};
-
+global.window.haystackUiConfig = {subsystems: ['traces', 'trends', 'alerts']};
+global.window.haystackUiConfig.enableAlertSubscriptions = true;
 copyProps(window, global);
