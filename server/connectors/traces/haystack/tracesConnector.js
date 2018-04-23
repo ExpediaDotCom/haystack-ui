@@ -23,7 +23,7 @@ const callGraphResultTransformer = require('./protobufConverters/callGraphConver
 const protobufConverter = require('./protobufConverters/traceConverter');
 const searchRequestBuilder = require('./search/searchRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
-const fetcher = require('../../fetchers/grpcFetcher');
+const fetcher = require('../../operations/grpcFetcher');
 
 const fieldValueFetcher = fetcher('getFieldValues');
 const fieldNameFetcher = fetcher('getFieldNames');
