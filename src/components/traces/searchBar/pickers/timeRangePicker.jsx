@@ -16,8 +16,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import DateTime from 'react-datetime';
-import moment from 'moment';
+
+import TimeRangeWindow from '../../../common/timeRangeWindow';
 import { toPresetDisplayText } from '../../utils/presets';
 import './timeRangePicker.less';
 
@@ -39,36 +39,17 @@ export default class TimeRangePicker extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            startDateTime: moment().subtract(1, 'h'),
-            endDateTime: moment()
-        };
 
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.handleCustomTimeRange = this.handleCustomTimeRange.bind(this);
-        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
-        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
-        this.toValid = this.toValid.bind(this);
     }
 
-    handleCustomTimeRange() {
-        this.props.timeRangeChangeCallback(null, this.state.startDateTime.valueOf(), this.state.endDateTime.valueOf());
+    handleCustomTimeRange(window) {
+        this.props.timeRangeChangeCallback(null, window.from, window.to);
     }
 
     handlePresetSelection(preset) {
         this.props.timeRangeChangeCallback(preset);
-    }
-
-    handleChangeStartDate(value) {
-        this.setState({startDateTime: value});
-    }
-
-    handleChangeEndDate(value) {
-        this.setState({endDateTime: value});
-    }
-
-    toValid(current) {
-        return current > moment(this.state.startDateTime).subtract(1, 'day') && current < DateTime.moment();
     }
 
     render() {
@@ -76,28 +57,12 @@ export default class TimeRangePicker extends React.Component {
             <a className="timerange-picker__preset" key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
         </li>);
 
-        function fromValid(current) {
-            return current.isBefore(DateTime.moment());
-        }
-
         return (
             <div className="timerange-picker">
-                <div className="timerange-picker__custom">
-                    <h5>Time Range</h5>
-                    <div className="form-group">
-                        <h6>From :</h6>
-                        <DateTime className="datetimerange-picker" isValidDate={fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
-                        <h6>To :</h6>
-                        <DateTime className="datetimerange-picker" isValidDate={this.toValid} value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
-                    </div>
-                    <button
-                        type="button"
-                        className="btn btn-primary btn-sm custom-timerange-apply"
-                        onClick={this.handleCustomTimeRange}
-                    >
-                        Apply
-                    </button>
-                </div>
+                <TimeRangeWindow
+                    className="timerange-picker__custom"
+                    customTimeRangeChangeCallback={this.handleCustomTimeRange}
+                />
                 <div className="timerange-picker__presets">
                     <h5>Presets</h5>
                     <div className="timerange-picker__presets__listblock">

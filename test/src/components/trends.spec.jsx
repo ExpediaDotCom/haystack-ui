@@ -370,17 +370,17 @@ describe('<Trends />', () => {
         </MemoryRouter>);
 
         // Clicking modal
-        expect(wrapper.find('.custom-timerange-picker')).to.have.length(0);
+        expect(wrapper.find('.trend-timerange-picker')).to.have.length(0);
         wrapper.find('.custom-btn').simulate('click');
-        expect(wrapper.find('.custom-timerange-picker')).to.have.length(1);
+        expect(wrapper.find('.trend-timerange-picker')).to.have.length(1);
         wrapper.find('.custom-btn').simulate('click');
-        expect(wrapper.find('.custom-timerange-picker')).to.have.length(0);
+        expect(wrapper.find('.trend-timerange-picker')).to.have.length(0);
 
         // Custom time picker
         wrapper.find('.custom-btn').simulate('click');
         wrapper.find('.custom-timerange-picker__datetime-from').simulate('click');
         wrapper.find('.rdtOld').first().simulate('click');
-        wrapper.find('.custom-timerange-picker').simulate('click');
+        wrapper.find('.trend-timerange-picker').simulate('click');
         wrapper.find('.btn-apply').simulate('click');
         expect(wrapper.find('.timerange-picker')).to.have.length(0);
     });

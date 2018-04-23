@@ -22,7 +22,7 @@ import timeWindow from '../../../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
 
 import './trendDetailsToolbar.less';
-import TrendTimeRangePicker from '../../common/timeRangePicker';
+import TimeRangeWindow from '../../common/timeRangeWindow';
 
 export default class TrendDetailsToolbar extends React.Component {
 
@@ -231,7 +231,10 @@ export default class TrendDetailsToolbar extends React.Component {
                             </button>
                         </div>
                         { this.state.showCustomTimeRangePicker
-                            ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} from={parseInt(this.state.activeWindow.from, 10)} to={parseInt(this.state.activeWindow.until, 10)}/>
+                            ? <TimeRangeWindow
+                                className="trend-timerange-picker"
+                                customTimeRangeChangeCallback={this.customTimeRangeChangeCallback}
+                            />
                             : null
                         }
                     </div>
