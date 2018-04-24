@@ -17,7 +17,7 @@
 const Q = require('q');
 const config = require('../../../config/config');
 const _ = require('lodash');
-const fetcher = require('../../fetchers/restFetcher');
+const fetcher = require('../../operations/restFetcher');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
 const trendsFetcher = fetcher('trends');

@@ -103,9 +103,6 @@ export default class AlertSubscriptions extends React.Component {
 
     handleSubmitModifiedSubscription() {
         this.props.alertDetailsStore.updateSubscription(
-            this.props.serviceName,
-            this.props.operationName,
-            this.props.type,
             this.state.activeModifyBox,
             this.modifyInputRefs[this.state.activeModifyBox].value,
             this.handleSubscriptionError
@@ -122,9 +119,6 @@ export default class AlertSubscriptions extends React.Component {
 
     handleDeleteSubscription(subscriptionId) {
         this.props.alertDetailsStore.deleteSubscription(
-            this.props.serviceName,
-            this.props.operationName,
-            this.props.type,
             subscriptionId
         );
     }

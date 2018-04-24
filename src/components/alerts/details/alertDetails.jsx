@@ -40,6 +40,8 @@ export default class AlertDetails extends React.Component {
     }
 
     render() {
+        const enableAlertSubscriptions = window.haystackUiConfig.enableAlertSubscriptions;
+
         return (
             <section className="table-row-details">
                 <div className="alert-details-container">
@@ -59,7 +61,7 @@ export default class AlertDetails extends React.Component {
                             })
                         }
                         {
-                            this.props.alertDetailsStore.subscriptionsPromiseState && this.props.alertDetailsStore.subscriptionsPromiseState.case({
+                            enableAlertSubscriptions && this.props.alertDetailsStore.subscriptionsPromiseState && this.props.alertDetailsStore.subscriptionsPromiseState.case({
                                 pending: () => <Loading />,
                                 rejected: () => <Error />,
                                 fulfilled: () => (<AlertSubscriptions

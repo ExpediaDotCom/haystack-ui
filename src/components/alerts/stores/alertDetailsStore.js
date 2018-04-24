@@ -65,10 +65,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action updateSubscription(serviceName, operationName, type, subscriptionId, dispatcherId, errorCallback) {
+    @action updateSubscription(subscriptionId, dispatcherId, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .put(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`, {dispatcherId})
+                .put(`/api/alert/subscriptions/${subscriptionId}`, {dispatcherId})
                 .then(() => {
                     const original = this.alertSubscriptions.find(subscription => subscription.subscriptionId === subscriptionId);
                     original.dispatcherIds[0] = dispatcherId;
@@ -80,10 +80,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action deleteSubscription(serviceName, operationName, type, subscriptionId) {
+    @action deleteSubscription(subscriptionId) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .delete(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions/${subscriptionId}`)
+                .delete(`/api/alert/subscriptions/${subscriptionId}`)
                 .then(() => {
                     _.remove(this.alertSubscriptions, subscription => subscription.subscriptionId === subscriptionId);
                 })

@@ -17,7 +17,7 @@
 const config = require('../../../config/config');
 const converter = require('./converter');
 const objectUtils = require('../../utils/objectUtils');
-const fetcher = require('../../fetchers/restFetcher');
+const fetcher = require('../../operations/restFetcher');
 
 const connector = {};
 const baseZipkinUrl = config.connectors.traces.zipkinUrl;

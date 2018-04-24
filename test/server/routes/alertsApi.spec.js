@@ -82,9 +82,9 @@ describe('routes.alertsApi', () => {
             });
     });
 
-    it('returns http 200 for PUT /api/alert/:serviceName/:operationName/:alertType/subscriptions:subscriptionId', (done) => {
+    it('returns http 200 for PUT /api/alert/subscriptions:subscriptionId', (done) => {
         request(server)
-            .put('/api/alert/service/operation/count/subscriptions/1')
+            .put('/api/alert/subscriptions/1')
             .type('form')
             .send({dispatcherId: '#test'})
             .set('Content-Type', 'application/json')
@@ -98,9 +98,9 @@ describe('routes.alertsApi', () => {
             });
     });
 
-    it('returns http 200 for DELETE /api/alert/:serviceName/:operationName/:alertType/subscriptions:subscriptionId', (done) => {
+    it('returns http 200 for DELETE /api/alert/subscriptions:subscriptionId', (done) => {
         request(server)
-            .delete('/api/alert/service/operation/count/subscriptions/1')
+            .delete('/api/alert/subscriptions/1')
             .expect(200)
             .end((err) => {
                 if (err) {
