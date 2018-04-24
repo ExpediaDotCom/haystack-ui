@@ -61,6 +61,21 @@ export class ServiceStore extends ErrorHandlingStore {
                 })
         );
     }
+
+    @action refreshTrends(service, operation, query) {
+        const queryUrlString = toQueryUrlString(query);
+        axios
+            .get(`/api/trends/service/${service}/${operation}?${queryUrlString}`)
+            .then((result) => {
+                this.trendsResults = result.data;
+                this.trendsQuery = query;
+            })
+            .catch((result) => {
+                this.trendsQuery = query;
+                this.trendsResults = [];
+                ServiceStore.handleError(result);
+            });
+    }
 }
 
 export default new ServiceStore();
