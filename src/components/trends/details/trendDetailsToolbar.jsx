@@ -188,7 +188,6 @@ export default class TrendDetailsToolbar extends React.Component {
 
     customTimeRangeChangeCallback(updatedWindow) {
         const activeWindow = timeWindow.toCustomTimeRange(updatedWindow.from, updatedWindow.to);
-
         const updatedGranularity = timeWindow.getLowerGranularity(activeWindow.value);
         this.hideTimePicker();
         this.setState({
@@ -277,7 +276,7 @@ export default class TrendDetailsToolbar extends React.Component {
                             <Link
                                 role="button"
                                 className="btn btn-sm btn-default"
-                                to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&timePreset=${this.state.activeWindow.shortName}`}
+                                to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&startTime=${this.state.activeWindow.from}&endTime=${this.state.activeWindow.until}`}
                             ><span
                                 className="ti-align-left"
                             /> See Traces</Link>
