@@ -22,6 +22,7 @@ import _ from 'lodash';
 import {Link} from 'react-router-dom';
 
 import formatters from '../../../utils/formatters';
+import linkBuilder from '../../../utils/linkBuilder';
 
 @observer
 export default class AlertHistory extends React.Component {
@@ -56,14 +57,24 @@ export default class AlertHistory extends React.Component {
         const from = (startTimestamp / 1000) - AlertHistory.timeBufferAroundAlert;
         const until = (endTimestamp / 1000) + AlertHistory.timeBufferAroundAlert;
 
-        return `/service/${this.props.serviceName}/trends?operationName=^${encodeURIComponent(this.props.operationName)}$&from=${from}&until=${until}`;
+        return linkBuilder.createTrendsLink({
+            serviceName: this.props.serviceName,
+            operationName: this.props.operationName,
+            from,
+            until
+        });
     }
 
     traceLinkCreator(startTimestamp, endTimestamp) {
         const from = startTimestamp / 1000;
         const until = endTimestamp / 1000;
 
-        return `/service/${this.props.serviceName}/traces?operationName=${encodeURIComponent(this.props.operationName)}&startTime=${from}&endTime=${until}`;
+        return linkBuilder.createTracesLink({
+            serviceName: this.props.serviceName,
+            operationName: this.props.operationName,
+            from,
+            until
+        });
     }
 
     render() {

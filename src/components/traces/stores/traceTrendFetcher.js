@@ -23,7 +23,7 @@ fetcher.fetchOperationTrends = (serviceName, operationName, granularity, from, u
     const deferred = Q.defer();
 
     axios
-        .get(`/api/trends/operation/${serviceName}/${encodeURIComponent(operationName)}?granularity=${granularity}&from=${from}&until=${until}`)
+        .get(`/api/trends/operation/${encodeURIComponent(serviceName)}/${encodeURIComponent(operationName)}?granularity=${granularity}&from=${from}&until=${until}`)
         .then((result) => {
             deferred.resolve(result.data);
         })

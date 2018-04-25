@@ -21,6 +21,7 @@ import _ from 'lodash';
 import colorMapper from '../../../../utils/serviceColorMapper';
 import TrendSparklines from '../../../trends/utils/trendSparklines';
 import fetcher from '../../stores/traceTrendFetcher';
+import linkBuilder from '../../../../utils/linkBuilder';
 
 // TODO dedupe code and push it to server side
 function toSuccessPercentPoints(successCount, failureCount) {
@@ -65,7 +66,9 @@ export default class TrendRow extends React.Component {
     };
 
     static openTrendDetailInNewTab(serviceName, operationName, from, until) {
-        const tab = window.open(`/service/${serviceName}/trends?operationName=^${encodeURIComponent(operationName)}$&from=${from}&until=${until}`, '_blank');
+        const tab = window.open(
+            linkBuilder.createTrendsLink({serviceName, operationName, from, until}),
+            '_blank');
         tab.focus();
     }
 

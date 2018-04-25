@@ -45,7 +45,8 @@ export default class OperationResultsTable extends React.Component {
     }
 
     componentDidMount() {
-        const opName = this.props.operationStore.statsQuery.operationName;
+        const opName = this.props.operationStore.statsQuery.filters && this.props.operationStore.statsQuery.filters.operationName;
+
         if (opName) {
             this.handleExpand(opName, true);
         }
@@ -79,10 +80,6 @@ export default class OperationResultsTable extends React.Component {
     render() {
         const tableHeaderRightAlignedStyle = {border: 'none', textAlign: 'right'};
         const tableHeaderStyle = {border: 'none'};
-        const operation = this.props.operationStore.statsQuery.operationName;
-        const filter = operation
-            ? {type: 'RegexFilter', defaultValue: operation, delay: 500, placeholder: 'FilterOperation (Regex)...'}
-            : {type: 'RegexFilter', delay: 500, placeholder: 'Filter Operations (Regex)...'};
 
         const options = {
             page: 1,  // which page you want to show as default
@@ -113,12 +110,32 @@ export default class OperationResultsTable extends React.Component {
             selected: this.state.selected
         };
 
+        const {
+            operationName,
+            gtCount,
+            ltSuccessPercent
+        } = this.props.operationStore.statsQuery.filters || {};
+
+        const operationNameFilter = operationName
+            ? {type: 'RegexFilter', defaultValue: operationName, delay: 500, placeholder: 'FilterOperation (Regex)...'}
+            : {type: 'RegexFilter', delay: 500, placeholder: 'Filter Operations (Regex)...'};
+
         const numberFilterFormatter = {
             type: 'NumberFilter',
             delay: 500,
             numberComparators: ['>', '<'],
             defaultValue: { comparator: '>' }
         };
+
+        const countDefaultFilter = { comparator: '>' };
+        if (gtCount) {
+            countDefaultFilter.number = gtCount;
+        }
+
+        const percentDefaultFilter = { comparator: '<' };
+        if (ltSuccessPercent) {
+            percentDefaultFilter.number = ltSuccessPercent;
+        }
 
         return (
             <BootstrapTable
@@ -142,7 +159,7 @@ export default class OperationResultsTable extends React.Component {
                     sortFunc={trendTableFormatters.sortByName}
                     caretRender={trendTableFormatters.getCaret}
                     thStyle={tableHeaderStyle}
-                    filter={filter}
+                    filter={operationNameFilter}
                     headerText={'All operations for the service'}
                 ><OperationResultsTable.Header name="Operation"/></TableHeaderColumn>
                 <TableHeaderColumn
@@ -153,6 +170,7 @@ export default class OperationResultsTable extends React.Component {
                     sortFunc={trendTableFormatters.sortByTotalCount}
                     filter={{
                         ...numberFilterFormatter,
+                        defaultValue: countDefaultFilter,
                         placeholder: 'Total Count...'
                     }}
                     caretRender={trendTableFormatters.getCaret}
@@ -180,7 +198,7 @@ export default class OperationResultsTable extends React.Component {
                     sortFunc={trendTableFormatters.sortByAvgPercentage}
                     filter={{
                         ...numberFilterFormatter,
-                        defaultValue: { comparator: '<' },
+                        defaultValue: percentDefaultFilter,
                         placeholder: 'Avg Success %...'
                     }}
                     caretRender={trendTableFormatters.getCaret}

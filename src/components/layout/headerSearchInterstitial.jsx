@@ -22,6 +22,7 @@ import {observer} from 'mobx-react';
 
 import Loading from '../common/loading';
 import Error from '../common/error';
+import linkBuilder from '../../utils/linkBuilder';
 
 @observer
 export default class HeaderSearchInterstitial extends React.Component {
@@ -49,7 +50,13 @@ export default class HeaderSearchInterstitial extends React.Component {
                         if (this.props.traceDetailsStore.spans && this.props.traceDetailsStore.spans.length) {
                             const rootSpan = (this.props.traceDetailsStore.spans.find(span => !span.parentSpanId));
                             return (<Redirect
-                                to={`/service/${rootSpan.serviceName}/traces?serviceName=${rootSpan.serviceName}&operationName=${encodeURIComponent(rootSpan.operationName)}&traceId=${this.props.match.params.traceId}`}
+                                to={
+                                    linkBuilder.createTracesLink({
+                                        serviceName: rootSpan.serviceName,
+                                        operationName: rootSpan.operationName,
+                                        traceId: this.props.match.params.traceId
+                                    })
+                                }
                             />);
                         }
                         return <Error errorMessage={`TraceId ${this.props.match.params.traceId} not found.`}/>;

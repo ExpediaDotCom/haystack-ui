@@ -24,6 +24,7 @@ import RawSpan from './rawSpan';
 import Modal from '../../../common/modal';
 import rawSpanStore from '../../stores/rawSpanStore';
 import formatters from '../../../../utils/formatters';
+import linkBuilder from '../../../../utils/linkBuilder';
 
 export default class SpanDetailsModal extends React.Component {
     constructor(props) {
@@ -77,7 +78,12 @@ export default class SpanDetailsModal extends React.Component {
                     : (<div className="btn-group-sm pull-right">
                             <Link
                                 className="btn btn-primary"
-                                to={`/service/${encodeURIComponent(this.props.serviceName)}/trends?operationName=^${encodeURIComponent(this.props.span.operationName)}$`}
+                                to={
+                                    linkBuilder.createTrendsLink({
+                                        serviceName: this.props.serviceName,
+                                        operationName: this.props.span.operationName
+                                    })
+                                }
                             >
                                 <span className="ti-stats-up"/> Operation Trends
                             </Link>

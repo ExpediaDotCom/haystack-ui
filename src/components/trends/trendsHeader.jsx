@@ -53,6 +53,14 @@ export default class TrendsHeader extends React.Component {
         };
     }
 
+    static createInitFilters(urlQuery) {
+        return {
+            operationName: urlQuery.operationName && decodeURIComponent(urlQuery.operationName),
+            ltSuccessPercent: urlQuery.ltSuccessPercent && decodeURIComponent(urlQuery.ltSuccessPercent),
+            gtCount: urlQuery.gtCount && decodeURIComponent(urlQuery.gtCount)
+        };
+    }
+
     constructor(props) {
         super(props);
 
@@ -60,25 +68,23 @@ export default class TrendsHeader extends React.Component {
         this.handleTimeChange = this.handleTimeChange.bind(this);
 
         const urlQuery = toQuery(this.props.location.search);
-        const operationName = urlQuery.operationName && decodeURIComponent(urlQuery.operationName);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(this.props.serviceName, state.activeWindow, operationName);
+        this.fetchTrends(this.props.serviceName, state.activeWindow, TrendsHeader.createInitFilters(urlQuery));
 
         this.state = state;
     }
 
     componentWillReceiveProps(nextProps) {
         const urlQuery = toQuery(nextProps.location.search);
-        const operationName = urlQuery.operationName && decodeURIComponent(urlQuery.operationName);
         const state = TrendsHeader.createInitState(urlQuery);
 
-        this.fetchTrends(nextProps.serviceName, state.activeWindow, operationName);
+        this.fetchTrends(nextProps.serviceName, state.activeWindow, TrendsHeader.createInitFilters(urlQuery));
 
         this.setState(state);
     }
 
-    fetchTrends(serviceName, window, operationName) {
+    fetchTrends(serviceName, window, filters) {
         const granularity = timeWindow.getLowerGranularity(window.value);
         const query = {
             granularity: granularity.value,
@@ -86,7 +92,7 @@ export default class TrendsHeader extends React.Component {
             until: window.until
         };
         this.props.serviceStore.fetchStats(serviceName, query, window.isCustomTimeRange);
-        this.props.operationStore.fetchStats(serviceName, query, window.isCustomTimeRange, operationName);
+        this.props.operationStore.fetchStats(serviceName, query, window.isCustomTimeRange, filters);
     }
 
     handleTimeChange(event) {
