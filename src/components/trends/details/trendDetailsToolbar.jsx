@@ -180,17 +180,7 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     refreshTrends() {
-        const query = {
-            granularity: this.state.activeGranularity.value,
-            from: this.state.activeWindow.from,
-            until: this.state.activeWindow.until
-        };
-
-        if (this.props.opName) {
-            this.props.trendsStore.refreshTrends(this.props.serviceName, this.props.opName, query);
-        } else {
-            this.props.trendsStore.refreshTrends(this.props.serviceName, this.props.statsType, query);
-        }
+        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
     }
 
     enableAutoRefresh() {
