@@ -198,8 +198,8 @@ export default class AlertSubscriptions extends React.Component {
             <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
                 <td>
                     <select className="alert-details__select" ref={this.setSelectRef}>
-                        <option>Slack</option>
-                        <option>Email</option>
+                        <option value="slack">Slack</option>
+                        <option value="smtp">Email</option>
                     </select>
                 </td>
                 <td>
