@@ -23,7 +23,7 @@ import timeWindow from '../../utils/timeWindow';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 import './alerts';
 
-const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.alertsRefreshInterval);
+const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
 
 @observer
 export default class AlertsToolbar extends React.Component {
@@ -80,7 +80,7 @@ export default class AlertsToolbar extends React.Component {
                 this.setState({autoRefreshTimer: new Date()});
                 this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.options[this.state.activeWindow]);
             },
-            alertsRefreshInterval);
+            refreshInterval);
         this.countdownTimerRef = setInterval(
             () => this.setState({countdownTimer: new Date()}),
             1000);
@@ -119,7 +119,7 @@ export default class AlertsToolbar extends React.Component {
     }
 
     render() {
-        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (alertsRefreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
         return (
             <header className="alerts-toolbar clearfix">
                 <div className="pull-left">

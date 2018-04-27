@@ -19,6 +19,9 @@ module.exports = {
         port: 2003
     },
 
+    // Refresh interval for auto refreshing trends and alerts
+    refreshInterval: 60000,
+
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
@@ -53,7 +56,6 @@ module.exports = {
             // Options :
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
-            alertsRefreshInterval: 60000, // refresh interval for Alert Tab Unhealthy Counter
             subscriptions: {
                 // name of config connector module to use for managing subscriptions
                 // Options :

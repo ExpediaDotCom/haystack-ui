@@ -25,6 +25,8 @@ import linkBuilder from '../../../utils/linkBuilder';
 import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
 
+const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
+
 export default class TrendDetailsToolbar extends React.Component {
 
     static propTypes = {
@@ -55,6 +57,9 @@ export default class TrendDetailsToolbar extends React.Component {
         this.handleCopy = this.handleCopy.bind(this);
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
         this.setClipboardText = this.setClipboardText.bind(this);
+        this.refreshTrends = this.refreshTrends.bind(this);
+        this.enableAutoRefresh = this.enableAutoRefresh.bind(this);
+        this.disableAutoRefresh = this.disableAutoRefresh.bind(this);
 
         const {
             from,
@@ -72,7 +77,10 @@ export default class TrendDetailsToolbar extends React.Component {
             activeGranularity,
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
-            clipboardText: this.setClipboardText(activeWindow)
+            clipboardText: this.setClipboardText(activeWindow),
+            autoRefreshEnabled: false,
+            autoRefreshTimer: null,
+            countdownTimer: null
         };
     }
 
@@ -176,7 +184,48 @@ export default class TrendDetailsToolbar extends React.Component {
         this.fetchTrends(activeWindow, updatedGranularity);
     }
 
+    refreshTrends() {
+        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
+    }
+
+    enableAutoRefresh() {
+        this.setState({
+            autoRefreshEnabled: true
+        });
+        this.setState(
+            {
+                autoRefreshTimer: new Date(),
+                countdownTimer: new Date()
+            }
+        );
+        this.autoRefreshTimerRef = setInterval(
+            () => {
+                this.setState({autoRefreshTimer: new Date()});
+                this.refreshTrends();
+            },
+            refreshInterval);
+        this.countdownTimerRef = setInterval(
+            () => this.setState({countdownTimer: new Date()}),
+            1000);
+    }
+
+    disableAutoRefresh() {
+        this.setState({
+            autoRefreshEnabled: false
+        });
+        clearInterval(this.autoRefreshTimerRef);
+        clearInterval(this.countdownTimerRef);
+        this.setState(
+            {
+                autoRefreshTimer: null,
+                countdownTimer: null
+            }
+        );
+    }
+
     render() {
+        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+
         const PresetOption = ({preset}) => (
             <button
                 className={preset === this.state.activeWindow ? 'btn btn-primary' : 'btn btn-default'}
@@ -234,6 +283,19 @@ export default class TrendDetailsToolbar extends React.Component {
                                     >{option.shortName}</a>))}
                             </li>
                         </ul>
+                    </div>
+                </div>
+                <div className="pull-left autorefresh-group">
+                    <div>Auto Refresh {this.state.autoRefreshEnabled ? `in ${Math.round(countDownMiliSec / 1000)}s` : ''}</div>
+                    <div className="btn-group btn-group-sm">
+                        <button
+                            className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'primary' : 'default'}`}
+                            onClick={this.state.autoRefreshEnabled ? null : this.enableAutoRefresh}
+                        >On</button>
+                        <button
+                            className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'default' : 'primary'}`}
+                            onClick={this.state.autoRefreshEnabled ? this.disableAutoRefresh : null}
+                        >Off</button>
                     </div>
                 </div>
                 <div className="pull-right btn-group btn-group-sm">
