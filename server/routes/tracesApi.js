@@ -60,4 +60,10 @@ router.get('/trace/:traceId/latencyCost', (req, res, next) => {
     );
 });
 
+router.get('/trace/:traceId/latencyCostTrends', (req, res, next) => {
+    handleResponsePromise(res, next, 'trace_TRACEID_latencyCost')(
+        () => tracesConnector.getLatencyCostTrends(req.params.traceId)
+    );
+});
+
 module.exports = router;

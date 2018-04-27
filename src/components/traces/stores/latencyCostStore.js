@@ -21,7 +21,8 @@ import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export class LatencyCostStore extends ErrorHandlingStore {
     @observable latencyCost = [];
-    @observable promiseState = null ;
+    @observable latencyCostTrends = [];
+    @observable promiseState = null;
     traceId = null;
 
     @action fetchLatencyCost(traceId) {
@@ -37,6 +38,19 @@ export class LatencyCostStore extends ErrorHandlingStore {
             .catch((result) => {
                 LatencyCostStore.handleError(result);
             })
+        );
+    }
+
+    @action fetchLatencyCostTrends(traceId) {
+        this.promiseState = fromPromise(
+            axios
+                .get(`/api/trace/${traceId}/latencyCostTrends`)
+                .then((result) => {
+                    this.latencyCostTrends = result.data;
+                })
+                .catch((result) => {
+                    LatencyCostStore.handleError(result);
+                })
         );
     }
 }

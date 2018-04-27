@@ -17,6 +17,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { observer } from 'mobx-react';
+
 import hashUtils from '../../../../utils/hashUtil';
 
 const borderColors = [
@@ -38,9 +40,10 @@ const backgroundColors = [
     '#e4eada'
 ];
 
+@observer
 export default class LatencyCost extends React.Component {
     static propTypes = {
-        latencyCost: PropTypes.object.isRequired
+        store: PropTypes.object.isRequired
     };
 
     static toEnvironmentString(infrastructureProvider, infrastructureLocation) {
@@ -200,14 +203,45 @@ export default class LatencyCost extends React.Component {
         };
     }
 
-    componentWillMount() {
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.latencyCost);
+    constructor(props) {
+        super(props);
+
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCost);
         const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
-        this.setState({latencyCostWithEnvironment, environmentList});
+        this.state = {
+            latencyCostWithEnvironment,
+            environmentList,
+            showTrends: false
+        };
+
+        this.renderGraph = this.renderGraph.bind(this);
+        this.toggleTrends = this.toggleTrends.bind(this);
     }
 
     componentDidMount() {
+        this.renderGraph();
+    }
+
+    toggleTrends() {
+        if (this.state.showTrends) {
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCost);
+            const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+
+            this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
+                this.renderGraph();
+            });
+        } else {
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCostTrends);
+            const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+
+            this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {
+                this.renderGraph();
+            });
+        }
+    }
+
+    renderGraph() {
         const {latencyCostWithEnvironment, environmentList} = this.state;
 
         const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
@@ -274,7 +308,7 @@ export default class LatencyCost extends React.Component {
     }
 
     render() {
-        const {latencyCostWithEnvironment, environmentList} = this.state;
+        const {latencyCostWithEnvironment, environmentList, showTrends} = this.state;
         const summary = LatencyCost.calculateLatencySummary(latencyCostWithEnvironment);
 
         const LatencySummary = () =>
@@ -321,6 +355,12 @@ export default class LatencyCost extends React.Component {
         return (
             <article>
                 <LatencySummary />
+                <button
+                    onClick={this.toggleTrends}
+                    className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
+                >
+                    {showTrends ? 'Show Single Trace Latency' : 'Show Latency TP95 Trend'}
+                </button>
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
                 <ul>
                     <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>

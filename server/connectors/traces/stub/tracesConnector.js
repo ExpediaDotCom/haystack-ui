@@ -332,6 +332,100 @@ connector.getLatencyCost = () => Q.fcall(() => [
     }
 ]);
 
+connector.getLatencyCostTrends = () => Q.fcall(() => [
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        to: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        networkDelta: 85
+    },
+    {
+        from: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        to: {
+            serviceName: 'tyrell-service',
+            infrastructureProvider: '',
+            infrastructureLocation: ''
+        },
+        networkDelta: 33
+    },
+    {
+        from: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        to: {
+            serviceName: 'dragon-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-1'
+        },
+        networkDelta: 98
+    },
+    {
+        from: {
+            serviceName: 'dragon-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-1'
+        },
+        to: {
+            serviceName: 'blackwater-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-east-2'
+        },
+        networkDelta: 55
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        to: {
+            serviceName: 'baratheon-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-east-1'
+        },
+        networkDelta: 180
+    },
+    {
+        from: {
+            serviceName: 'baratheon-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-east-1'
+        },
+        to: {
+            serviceName: 'blackwater-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-east-1'
+        },
+        networkDelta: 44
+    },
+    {
+        from: {
+            serviceName: 'stark-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-2'
+        },
+        to: {
+            serviceName: 'westeros-service',
+            infrastructureProvider: 'aws',
+            infrastructureLocation: 'us-west-3'
+        },
+        networkDelta: 40
+    }
+]);
+
 connector.getTrace = () => Q.fcall(() => trace);
 
 connector.getRawTrace = () => Q.fcall(() => trace);
