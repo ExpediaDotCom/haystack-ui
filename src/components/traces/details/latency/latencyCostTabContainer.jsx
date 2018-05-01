@@ -31,7 +31,6 @@ export default class LatencyTabContainer extends React.Component {
 
     componentWillMount() {
         this.props.store.fetchLatencyCost(this.props.traceId);
-        this.props.store.fetchLatencyCostTrends(this.props.traceId);
     }
 
     render() {
@@ -41,7 +40,7 @@ export default class LatencyTabContainer extends React.Component {
                 { store.promiseState && store.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
-                        fulfilled: () => ((store.latencyCost && store.latencyCost.length)
+                        fulfilled: () => ((store.latencyCost.latencyCost && store.latencyCost.latencyCost.length)
                                 ? <LatencyCostTab store={store} />
                                 : (<div className="well well-sm">
                                         <h6>No span with parent-child relationship found</h6>

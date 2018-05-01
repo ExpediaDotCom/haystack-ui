@@ -205,8 +205,11 @@ export default class LatencyCost extends React.Component {
 
     constructor(props) {
         super(props);
+        
+        this.latencyCost = this.props.store.latencyCost.latencyCost;
+        this.latencyCostTrends = this.props.store.latencyCost.latencyCostTrends;
 
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCost);
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCost);
         const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
         this.state = {
@@ -225,14 +228,14 @@ export default class LatencyCost extends React.Component {
 
     toggleTrends() {
         if (this.state.showTrends) {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCost);
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCost);
             const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
             this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
                 this.renderGraph();
             });
         } else {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.props.store.latencyCostTrends);
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCostTrends.tp95);
             const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
             this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {

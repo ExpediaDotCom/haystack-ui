@@ -186,245 +186,246 @@ connector.getOperations = () => Q.fcall(() => ['mormont-1',
 
 connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error', 'minDuration', 'guid', 'testid']);
 
-connector.getLatencyCost = () => Q.fcall(() => [
-    {
+const latencyCost = {
+    latencyCost: [{
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         networkDelta: 65
     },
     {
         from: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'tyrell-service',
-            infrastructureProvider: '',
-            infrastructureLocation: ''
+                infrastructureProvider: '',
+                infrastructureLocation: ''
         },
         networkDelta: null
     },
     {
         from: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'dragon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-1'
         },
         networkDelta: 55
     },
     {
         from: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'dragon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-1'
         },
         networkDelta: 64
     },
     {
         from: {
             serviceName: 'dragon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-1'
         },
         to: {
             serviceName: 'blackwater-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-east-2'
         },
         networkDelta: 121
     },
     {
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'baratheon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-east-1'
         },
         networkDelta: 180
     },
     {
         from: {
             serviceName: 'baratheon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-east-1'
         },
         to: {
             serviceName: 'blackwater-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-east-1'
         },
         networkDelta: 109
     },
     {
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         networkDelta: 99
     },
     {
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         networkDelta: 128
     },
     {
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         networkDelta: 77
     },
     {
         from: {
             serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
         },
         to: {
             serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-3'
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-3'
         },
         networkDelta: 98
+    }],
+    latencyCostTrends: {
+        tp95: [{
+            from: {
+                serviceName: 'stark-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'westeros-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            networkDelta: 85
+        },
+        {
+            from: {
+                serviceName: 'westeros-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'tyrell-service',
+                    infrastructureProvider: '',
+                    infrastructureLocation: ''
+            },
+            networkDelta: 33
+        },
+        {
+            from: {
+                serviceName: 'westeros-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'dragon-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-1'
+            },
+            networkDelta: 98
+        },
+        {
+            from: {
+                serviceName: 'dragon-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-1'
+            },
+            to: {
+                serviceName: 'blackwater-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-east-2'
+            },
+            networkDelta: 55
+        },
+        {
+            from: {
+                serviceName: 'stark-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'baratheon-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-east-1'
+            },
+            networkDelta: 180
+        },
+        {
+            from: {
+                serviceName: 'baratheon-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-east-1'
+            },
+            to: {
+                serviceName: 'blackwater-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-east-1'
+            },
+            networkDelta: 44
+        },
+        {
+            from: {
+                serviceName: 'stark-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'westeros-service',
+                    infrastructureProvider: 'aws',
+                    infrastructureLocation: 'us-west-3'
+            },
+            networkDelta: 40
+        }]
     }
-]);
+};
 
-connector.getLatencyCostTrends = () => Q.fcall(() => [
-    {
-        from: {
-            serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        to: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        networkDelta: 85
-    },
-    {
-        from: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        to: {
-            serviceName: 'tyrell-service',
-            infrastructureProvider: '',
-            infrastructureLocation: ''
-        },
-        networkDelta: 33
-    },
-    {
-        from: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        to: {
-            serviceName: 'dragon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-1'
-        },
-        networkDelta: 98
-    },
-    {
-        from: {
-            serviceName: 'dragon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-1'
-        },
-        to: {
-            serviceName: 'blackwater-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-2'
-        },
-        networkDelta: 55
-    },
-    {
-        from: {
-            serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        to: {
-            serviceName: 'baratheon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
-        },
-        networkDelta: 180
-    },
-    {
-        from: {
-            serviceName: 'baratheon-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
-        },
-        to: {
-            serviceName: 'blackwater-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-east-1'
-        },
-        networkDelta: 44
-    },
-    {
-        from: {
-            serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        to: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-3'
-        },
-        networkDelta: 40
-    }
-]);
+connector.getLatencyCost = () => Q.fcall(() => latencyCost);
 
 connector.getTrace = () => Q.fcall(() => trace);
 
