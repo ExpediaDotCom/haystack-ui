@@ -50,7 +50,7 @@ export default class LatencyCost extends React.Component {
         return (infrastructureProvider || infrastructureLocation) ? `${infrastructureProvider} ${infrastructureLocation}` : 'NA';
     }
 
-    static addEnvironmentInLatencyCost(rawEdges) {
+    static addEnvironmentInSingleTraceLatencyCost(rawEdges) {
         return rawEdges.map(edge => ({
             from: {
                 ...edge.from,
@@ -61,6 +61,21 @@ export default class LatencyCost extends React.Component {
                 environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
             },
             networkDelta: edge.networkDelta
+        }));
+    }
+
+    static addEnvironmentInAggregatedAverageLatencyCost(rawEdges) {
+        return rawEdges.map(edge => ({
+            from: {
+                ...edge.from,
+                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
+            },
+            to: {
+                ...edge.to,
+                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
+            },
+            networkDelta: edge.networkDelta,
+            count: edge.count
         }));
     }
 
@@ -126,7 +141,7 @@ export default class LatencyCost extends React.Component {
         });
     }
 
-    static createEdges(rawEdges, nodes) {
+    static createSingleTraceEdges(rawEdges, nodes) {
         const edges = [];
         rawEdges.forEach((rawEdge) => {
             const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
@@ -152,10 +167,32 @@ export default class LatencyCost extends React.Component {
                 });
             }
         });
-        return LatencyCost.labelEdges(edges);
+        return LatencyCost.labelSingleTraceEdges(edges);
     }
 
-    static labelEdges(edges) {
+    static createAggregatedEdges(rawEdges, nodes) {
+        const edges = [];
+        rawEdges.forEach((rawEdge) => {
+            const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
+            const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
+            const networkDelta = rawEdge.networkDelta;
+            const count = rawEdge.count;
+            const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
+            edges.push({
+                from: fromIndex,
+                to: toIndex,
+                networkDelta,
+                count,
+                color: {
+                    color: isSameEnv ? '#333333' : '#dd0000',
+                    hover: isSameEnv ? '#333333' : '#dd0000'
+                }
+            });
+        });
+        return LatencyCost.labelAggregatedEdges(edges);
+    }
+
+    static labelSingleTraceEdges(edges) {
         return edges.map((edge) => {
             let label = '';
             if (edge.overlappingEdges > 1) {
@@ -163,6 +200,16 @@ export default class LatencyCost extends React.Component {
             } else {
                 label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
             }
+            return {
+                ...edge,
+                label
+            };
+        });
+    }
+
+    static labelAggregatedEdges(edges) {
+        return edges.map((edge) => {
+            const label = `Mean: ${edge.networkDelta}ms\nCount: ${edge.count}`;
             return {
                 ...edge,
                 label
@@ -209,7 +256,7 @@ export default class LatencyCost extends React.Component {
         this.latencyCost = this.props.store.latencyCost.latencyCost;
         this.latencyCostTrends = this.props.store.latencyCost.latencyCostTrends;
 
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCost);
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
         const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
         this.state = {
@@ -228,14 +275,14 @@ export default class LatencyCost extends React.Component {
 
     toggleTrends() {
         if (this.state.showTrends) {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCost);
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
             const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
             this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
                 this.renderGraph();
             });
         } else {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInLatencyCost(this.latencyCostTrends.tp95);
+            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInAggregatedAverageLatencyCost(this.latencyCostTrends);
             const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
             this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {
@@ -245,10 +292,10 @@ export default class LatencyCost extends React.Component {
     }
 
     renderGraph() {
-        const {latencyCostWithEnvironment, environmentList} = this.state;
+        const {latencyCostWithEnvironment, environmentList, showTrends} = this.state;
 
         const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
-        const edges = LatencyCost.createEdges(latencyCostWithEnvironment, nodes);
+        const edges = showTrends ? LatencyCost.createAggregatedEdges(latencyCostWithEnvironment, nodes) : LatencyCost.createSingleTraceEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
         const container = this.graphContainer;
         const options = {
@@ -301,7 +348,7 @@ export default class LatencyCost extends React.Component {
             },
             physics: {
                 hierarchicalRepulsion: {
-                    nodeDistance: 140
+                    nodeDistance: 180
                 }
             }
         };
@@ -321,15 +368,27 @@ export default class LatencyCost extends React.Component {
                     <tr>
                         <td>Network time</td>
                         <td>
-                            <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
-                            <span>({summary.measuredCalls} measured out of {summary.calls} calls)</span>
+                            {
+                                !showTrends ?
+                                <div>
+                                    <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
+                                    <span>({summary.measuredCalls} measured out of {summary.calls} calls)</span>
+                                </div> :
+                                <span className="latency-summary__primary-info">Mean: {summary.networkTime}</span>
+                            }
                         </td>
                     </tr>
                     <tr>
                         <td>Network time cross datacenters</td>
                         <td>
-                            <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
-                            <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
+                            {
+                                !showTrends ?
+                                    <div>
+                                        <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
+                                        <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
+                                    </div> :
+                                    <span className="latency-summary__primary-info">Mean: {summary.networkTime}</span>
+                            }
                         </td>
                     </tr>
                     <tr>
@@ -362,7 +421,7 @@ export default class LatencyCost extends React.Component {
                     onClick={this.toggleTrends}
                     className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
                 >
-                    {showTrends ? 'Show Single Trace Latency' : 'Show Latency TP95 Trend'}
+                    {showTrends ? 'Show Single Trace Latency' : 'Show Aggregated Average Latency'}
                 </button>
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
                 <ul>
