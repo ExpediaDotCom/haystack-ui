@@ -341,8 +341,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-west-2'
         },
-        count: 18534,
-        networkDelta: 21
+        tp99NetworkDelta: 333,
+        meanNetworkDelta: 21
     },
     {
         from: {
@@ -355,8 +355,8 @@ const latencyCost = {
                 infrastructureProvider: '',
                 infrastructureLocation: ''
         },
-        count: 3131,
-        networkDelta: 31
+        tp99NetworkDelta: 1031,
+        meanNetworkDelta: 310
     },
     {
         from: {
@@ -369,8 +369,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-west-1'
         },
-        count: 981,
-        networkDelta: 88
+        tp99NetworkDelta: 198,
+        meanNetworkDelta: 88
     },
     {
         from: {
@@ -383,8 +383,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-east-2'
         },
-        count: 155,
-        networkDelta: 30
+        tp99NetworkDelta: 355,
+        meanNetworkDelta: 301
     },
     {
         from: {
@@ -397,8 +397,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-east-1'
         },
-        count: 150,
-        networkDelta: 21
+        tp99NetworkDelta: 34,
+        meanNetworkDelta: 21
     },
     {
         from: {
@@ -411,8 +411,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-east-1'
         },
-        count: 331,
-        networkDelta: 31
+        tp99NetworkDelta: 50,
+        meanNetworkDelta: 31
     },
     {
         from: {
@@ -425,8 +425,8 @@ const latencyCost = {
                 infrastructureProvider: 'aws',
                 infrastructureLocation: 'us-west-3'
         },
-        count: 441,
-        networkDelta: 45
+        tp99NetworkDelta: 46,
+        meanNetworkDelta: 45
     }]
 };
 

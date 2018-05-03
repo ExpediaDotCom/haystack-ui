@@ -74,8 +74,8 @@ export default class LatencyCost extends React.Component {
                 ...edge.to,
                 environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
             },
-            networkDelta: edge.networkDelta,
-            count: edge.count
+            meanNetworkDelta: edge.meanNetworkDelta,
+            tp99NetworkDelta: edge.tp99NetworkDelta
         }));
     }
 
@@ -141,85 +141,13 @@ export default class LatencyCost extends React.Component {
         });
     }
 
-    static createSingleTraceEdges(rawEdges, nodes) {
-        const edges = [];
-        rawEdges.forEach((rawEdge) => {
-            const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
-            const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
-            const networkDelta = rawEdge.networkDelta;
-            const existingEdge = edges.findIndex(e => e.from === fromIndex && e.to === toIndex);
-            if (existingEdge > -1) {
-                if (edges[existingEdge] && networkDelta) {
-                    edges[existingEdge].networkDelta += networkDelta;
-                }
-                edges[existingEdge].overlappingEdges += 1;
-            } else {
-                const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
-                edges.push({
-                    from: fromIndex,
-                    to: toIndex,
-                    networkDelta,
-                    overlappingEdges: 1,
-                    color: {
-                        color: isSameEnv ? '#333333' : '#dd0000',
-                        hover: isSameEnv ? '#333333' : '#dd0000'
-                    }
-                });
-            }
-        });
-        return LatencyCost.labelSingleTraceEdges(edges);
-    }
-
-    static createAggregatedEdges(rawEdges, nodes) {
-        const edges = [];
-        rawEdges.forEach((rawEdge) => {
-            const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
-            const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
-            const networkDelta = rawEdge.networkDelta;
-            const count = rawEdge.count;
-            const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
-            edges.push({
-                from: fromIndex,
-                to: toIndex,
-                networkDelta,
-                count,
-                color: {
-                    color: isSameEnv ? '#333333' : '#dd0000',
-                    hover: isSameEnv ? '#333333' : '#dd0000'
-                }
-            });
-        });
-        return LatencyCost.labelAggregatedEdges(edges);
-    }
-
-    static labelSingleTraceEdges(edges) {
-        return edges.map((edge) => {
-            let label = '';
-            if (edge.overlappingEdges > 1) {
-                label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
-            } else {
-                label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
-            }
-            return {
-                ...edge,
-                label
-            };
-        });
-    }
-
-    static labelAggregatedEdges(edges) {
-        return edges.map((edge) => {
-            const label = `Mean: ${edge.networkDelta}ms\nCount: ${edge.count}`;
-            return {
-                ...edge,
-                label
-            };
-        });
-    }
-
     static calculateLatencySummary(rawEdges) {
         let networkTime = 0;
+        let meanNetworkTime = 0;
+        let tp99NetworkTime = 0;
         let networkTimeCrossDc = 0;
+        let meanNetworkTimeCrossDc = 0;
+        let tp99NetworkTimeCrossDc = 0;
         let calls = 0;
         let measuredCalls = 0;
         let crossDcCalls = 0;
@@ -227,22 +155,33 @@ export default class LatencyCost extends React.Component {
 
         rawEdges.forEach((edge) => {
             const networkDelta = edge.networkDelta ? edge.networkDelta : 0;
+            const meanNetworkDelta = edge.meanNetworkDelta ? edge.meanNetworkDelta : 0;
+            const tp99NetworkDelta = edge.tp99NetworkDelta ? edge.tp99NetworkDelta : 0;
+
             const isMeasured = (edge.networkDelta !== null && edge.networkDelta !== undefined);
             const isSameEnv = (edge.from.environment === edge.to.environment);
 
             calls += 1;
             if (isMeasured) measuredCalls += 1;
             networkTime += networkDelta;
+            meanNetworkTime += meanNetworkDelta;
+            tp99NetworkTime += tp99NetworkDelta;
             if (!isSameEnv) {
                 crossDcCalls += 1;
                 networkTimeCrossDc += networkDelta;
+                meanNetworkTimeCrossDc += meanNetworkDelta;
+                tp99NetworkTimeCrossDc += tp99NetworkDelta;
                 if (isMeasured) crossDcMeasuredCalls += 1;
             }
         });
 
         return {
             networkTime,
+            meanNetworkTime,
+            tp99NetworkTime,
             networkTimeCrossDc,
+            meanNetworkTimeCrossDc,
+            tp99NetworkTimeCrossDc,
             calls,
             measuredCalls,
             crossDcCalls,
@@ -265,37 +204,93 @@ export default class LatencyCost extends React.Component {
             showTrends: false
         };
 
+        this.createEdges = this.createEdges.bind(this);
+        this.labelEdges = this.labelEdges.bind(this);
         this.renderGraph = this.renderGraph.bind(this);
-        this.toggleTrends = this.toggleTrends.bind(this);
+        this.viewSingleTraceLatency = this.viewSingleTraceLatency.bind(this);
+        this.viewAggregatedAverageLatency = this.viewAggregatedAverageLatency.bind(this);
     }
 
     componentDidMount() {
         this.renderGraph();
     }
 
-    toggleTrends() {
-        if (this.state.showTrends) {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
-            const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
 
-            this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
-                this.renderGraph();
-            });
-        } else {
-            const latencyCostWithEnvironment = LatencyCost.addEnvironmentInAggregatedAverageLatencyCost(this.latencyCostTrends);
-            const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+    createEdges(rawEdges, nodes) {
+        const showTrends = this.state.showTrends;
+        const edges = [];
+        rawEdges.forEach((rawEdge) => {
+            const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
+            const toIndex = nodes.find(node => node.name === rawEdge.to.serviceName && node.environment === rawEdge.to.environment).id;
+            const networkDelta = !showTrends ? rawEdge.networkDelta : null;
+            const meanNetworkDelta = showTrends ? rawEdge.meanNetworkDelta : null;
+            const tp99NetworkDelta = showTrends ? rawEdge.tp99NetworkDelta : null;
+            const existingEdge = edges.findIndex(e => e.from === fromIndex && e.to === toIndex);
+            if (!showTrends && existingEdge > -1) {
+                if (edges[existingEdge] && networkDelta) {
+                    edges[existingEdge].networkDelta += networkDelta;
+                }
+                edges[existingEdge].overlappingEdges += 1;
+            } else {
+                const isSameEnv = (rawEdge.from.environment === rawEdge.to.environment);
+                edges.push({
+                    from: fromIndex,
+                    to: toIndex,
+                    networkDelta,
+                    meanNetworkDelta,
+                    tp99NetworkDelta,
+                    overlappingEdges: 1,
+                    color: {
+                        color: isSameEnv ? '#333333' : '#dd0000',
+                        hover: isSameEnv ? '#333333' : '#dd0000'
+                    }
+                });
+            }
+        });
+        return this.labelEdges(edges);
+    }
 
-            this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {
-                this.renderGraph();
-            });
-        }
+
+    labelEdges(edges) {
+        return edges.map((edge) => {
+            let label = '';
+            if (this.state.showTrends) {
+                label = `Mean: ${edge.meanNetworkDelta}ms\nTP99: ${edge.tp99NetworkDelta}ms`;
+            } else if (edge.overlappingEdges > 1) {
+                label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
+            } else {
+                label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
+            }
+            return {
+                ...edge,
+                label
+            };
+        });
+    }
+
+    viewSingleTraceLatency() {
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
+        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+
+        this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
+            this.renderGraph();
+        });
+    }
+
+    viewAggregatedAverageLatency() {
+        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInAggregatedAverageLatencyCost(this.latencyCostTrends);
+        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+
+        this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {
+            this.renderGraph();
+        });
     }
 
     renderGraph() {
-        const {latencyCostWithEnvironment, environmentList, showTrends} = this.state;
+        const {latencyCostWithEnvironment, environmentList} = this.state;
 
         const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
-        const edges = showTrends ? LatencyCost.createAggregatedEdges(latencyCostWithEnvironment, nodes) : LatencyCost.createSingleTraceEdges(latencyCostWithEnvironment, nodes);
+        const edges = this.createEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
         const container = this.graphContainer;
         const options = {
@@ -374,7 +369,7 @@ export default class LatencyCost extends React.Component {
                                     <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
                                     <span>({summary.measuredCalls} measured out of {summary.calls} calls)</span>
                                 </div> :
-                                <span className="latency-summary__primary-info">Mean: {summary.networkTime}</span>
+                                <span className="latency-summary__primary-info">Mean: {summary.meanNetworkTime}ms, TP99: {summary.tp99NetworkTime}ms</span>
                             }
                         </td>
                     </tr>
@@ -387,7 +382,7 @@ export default class LatencyCost extends React.Component {
                                         <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
                                         <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
                                     </div> :
-                                    <span className="latency-summary__primary-info">Mean: {summary.networkTime}</span>
+                                    <span className="latency-summary__primary-info">Mean: {summary.meanNetworkTimeCrossDc}ms, TP99: {summary.tp99NetworkTimeCrossDc}ms</span>
                             }
                         </td>
                     </tr>
@@ -417,12 +412,20 @@ export default class LatencyCost extends React.Component {
         return (
             <article>
                 <LatencySummary />
-                <button
-                    onClick={this.toggleTrends}
-                    className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
-                >
-                    {showTrends ? 'Show Single Trace Latency' : 'Show Aggregated Average Latency'}
-                </button>
+                <div className="text-center">
+                <div className="btn-group">
+                    <button
+                        onClick={this.viewSingleTraceLatency}
+                        className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
+                        disabled={!showTrends}
+                    >Show Single Trace Latency</button>
+                    <button
+                        onClick={this.viewAggregatedAverageLatency}
+                        className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
+                        disabled={showTrends}
+                    >Show Aggregated Average Latency</button>
+                </div>
+                </div>
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
                 <ul>
                     <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>
