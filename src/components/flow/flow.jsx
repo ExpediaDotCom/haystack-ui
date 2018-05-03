@@ -16,12 +16,14 @@
  */
 
 import React from 'react';
+
+import flowStore from './stores/flowStore';
+import FlowContainer from './flowContainer';
 import './flow.less';
-import WorkInProgress from '../common/workInProgress';
 
 export default () => (
     <section className="flow-panel">
-        <WorkInProgress />
+        <FlowContainer store={flowStore} />
     </section>
 );
 

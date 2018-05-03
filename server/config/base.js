@@ -63,6 +63,12 @@ module.exports = {
                 connectorName: 'stub',
                 enabled: true
             }
+        },
+        flow: {
+            // name of config connector module to use for fetching dependency graph data from downstream
+            // options :
+            // - stub - a stub used during development, will be removed in future
+            connectorName: 'stub'
         }
     }
 
