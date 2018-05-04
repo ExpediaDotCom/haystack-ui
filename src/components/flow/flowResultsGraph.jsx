@@ -26,9 +26,9 @@ export default class FlowResultsGraph extends React.Component {
 
     static createNodes(rawEdges) {
         const allNodes = _.flatten(rawEdges.map((edge) => {
-            const fromServiceName = edge.graphEdge.source;
+            const fromServiceName = edge.source;
 
-            const toServiceName = edge.graphEdge.destination;
+            const toServiceName = edge.destination;
 
             return [{name: fromServiceName}, {name: toServiceName}];
         }));
@@ -53,8 +53,8 @@ export default class FlowResultsGraph extends React.Component {
     static createEdges(rawEdges, nodes) {
         const edges = [];
         rawEdges.forEach((rawEdge) => {
-            const fromIndex = nodes.find(node => node.name === rawEdge.graphEdge.source).id;
-            const toIndex = nodes.find(node => node.name === rawEdge.graphEdge.destination).id;
+            const fromIndex = nodes.find(node => node.name === rawEdge.source).id;
+            const toIndex = nodes.find(node => node.name === rawEdge.destination).id;
             edges.push({
                 from: fromIndex,
                 to: toIndex,
@@ -139,7 +139,7 @@ export default class FlowResultsGraph extends React.Component {
         network.on('click', (properties) => {
             const nodeIndex = properties.nodes[0];
             const node = nodes[nodeIndex];
-            node ? this.props.history.push(`/service/${encodeURIComponent(node.name)}/trends`) : null;
+            if (node) this.props.history.push(`/service/${encodeURIComponent(node.name)}/trends`);
         });
         return network;
     }

@@ -28,7 +28,7 @@ export class FlowStore extends ErrorHandlingStore {
             axios
                 .get('/api/flow')
                 .then((result) => {
-                    this.serviceGraph = result.data.graphEdges;
+                    this.serviceGraph = result.data.edges;
                 })
                 .catch((result) => {
                     FlowStore.handleError(result);

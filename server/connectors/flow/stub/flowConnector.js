@@ -19,116 +19,56 @@ const Q = require('q');
 const connector = {};
 
 const serviceGraph = {
-    graphEdges: [
+    edges: [
         {
-            graphEdge: {
-                source: 'stark-service',
-                destination: 'baratheon-service',
-                operation: 'baratheon-1'
-            },
-            edgeStats: {
-                count: 29734,
-                lastSeen: 1525368653926
-            }
+            source: 'stark-service',
+            destination: 'baratheon-service',
+            operation: 'baratheon-1'
         },
         {
-            graphEdge: {
-                source: 'stark-service',
-                destination: 'grayjoy-service',
-                operation: 'grayjoy-1'
-            },
-            edgeStats: {
-                count: 2000,
-                lastSeen: 1525368653926
-            }
+            source: 'stark-service',
+            destination: 'grayjoy-service',
+            operation: 'grayjoy-1'
         },
         {
-            graphEdge: {
-                source: 'baratheon-service',
-                destination: 'lannister-service',
-                operation: 'lannister-1'
-            },
-            edgeStats: {
-                count: 29734,
-                lastSeen: 1525368653926
-            }
+            source: 'baratheon-service',
+            destination: 'lannister-service',
+            operation: 'lannister-1'
         },
         {
-            graphEdge: {
-                source: 'baratheon-service',
-                destination: 'clegane-service',
-                operation: 'clegane-1'
-            },
-            edgeStats: {
-                count: 150,
-                lastSeen: 1525368653926
-            }
+            source: 'baratheon-service',
+            destination: 'clegane-service',
+            operation: 'clegane-1'
         },
         {
-            graphEdge: {
-                source: 'lannister-service',
-                destination: 'tyrell-service',
-                operation: 'tyrell-1'
-            },
-            edgeStats: {
-                count: 238,
-                lastSeen: 1525366748274
-            }
+            source: 'lannister-service',
+            destination: 'tyrell-service',
+            operation: 'tyrell-1'
         },
         {
-            graphEdge: {
-                source: 'tyrell-service',
-                destination: 'targaryen-service',
-                operation: 'targaryen-1'
-            },
-            edgeStats: {
-                count: 33,
-                lastSeen: 1525367895155
-            }
+            source: 'tyrell-service',
+            destination: 'targaryen-service',
+            operation: 'targaryen-1'
         },
         {
-            graphEdge: {
-                source: 'tyrell-service',
-                destination: 'tully-service',
-                operation: 'tully-1'
-            },
-            edgeStats: {
-                count: 51,
-                lastSeen: 1525367895155
-            }
+            source: 'tyrell-service',
+            destination: 'tully-service',
+            operation: 'tully-1'
         },
         {
-            graphEdge: {
-                source: 'targaryen-service',
-                destination: 'dragon-service',
-                operation: 'dragon-1'
-            },
-            edgeStats: {
-                count: 19,
-                lastSeen: 1525367774587
-            }
+            source: 'targaryen-service',
+            destination: 'dragon-service',
+            operation: 'dragon-1'
         },
         {
-            graphEdge: {
-                source: 'targaryen-service',
-                destination: 'drogo-service',
-                operation: 'drogo-1'
-            },
-            edgeStats: {
-                count: 25,
-                lastSeen: 1525367774587
-            }
+            source: 'targaryen-service',
+            destination: 'drogo-service',
+            operation: 'drogo-1'
         },
         {
-            graphEdge: {
-                source: 'targaryen-service',
-                destination: 'mormont-service',
-                operation: 'mormont-1'
-            },
-            edgeStats: {
-                count: 25,
-                lastSeen: 1525367774587
-            }
+            source: 'targaryen-service',
+            destination: 'mormont-service',
+            operation: 'mormont-1'
         }
     ]
 };
