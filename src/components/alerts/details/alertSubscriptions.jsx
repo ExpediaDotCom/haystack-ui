@@ -18,6 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
+import _ from 'lodash';
 
 @observer
 export default class AlertSubscriptions extends React.Component {
@@ -29,7 +30,7 @@ export default class AlertSubscriptions extends React.Component {
     };
 
     static getSubscriptionType(subscription) {
-        if (subscription.dispatcherType === 'slack') {
+        if (subscription.dispatcherType.toLowerCase() === 'slack') {
             return <div><img src="/images/slack.png" alt="Slack" className="alerts-slack-icon"/> Slack</div>;
         }
         return <div><span className="ti-email"/>  Email</div>;
@@ -102,9 +103,24 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     handleSubmitModifiedSubscription() {
+        const subscriptionId = this.state.activeModifyBox;
+        let handle = this.modifyInputRefs[this.state.activeModifyBox].value;
+
+        const foundSub = _.find(this.props.alertDetailsStore.alertSubscriptions, sub =>
+            sub.subscriptionId === subscriptionId
+        );
+
+        if (!handle) {
+            return;
+        }
+
+        if (foundSub.dispatcherType.toLowerCase() === 'slack' && !handle.startsWith('#')) {
+            handle = `#${handle}`;  // prepend # for slack channels
+        }
+
         this.props.alertDetailsStore.updateSubscription(
-            this.state.activeModifyBox,
-            this.modifyInputRefs[this.state.activeModifyBox].value,
+            subscriptionId,
+            handle,
             this.handleSubscriptionError
         );
         this.modifyInputRefs[this.state.activeModifyBox].disabled = true;
@@ -133,8 +149,17 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     handleSubmit() {
-        const handle = this.newInputRef.value;
+        let handle = this.newInputRef.value;
         const medium = this.selectRef.value;
+
+        if (!handle) {
+            return;
+        }
+
+        if (medium === 'slack' && !handle.startsWith('#')) {
+            handle = `#${handle}`;  // prepend # for slack channels
+        }
+
         this.props.alertDetailsStore.addNewSubscription(
             this.props.serviceName,
             this.props.operationName,
@@ -205,7 +230,7 @@ export default class AlertSubscriptions extends React.Component {
                 <td>
                     <input
                         className="alert-details__input"
-                        placeholder="Medium Handle"
+                        placeholder="Email Id or Public Slack Channel Id"
                         onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
                         ref={this.setNewInputRef}
                     />
