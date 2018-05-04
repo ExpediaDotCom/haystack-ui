@@ -29,17 +29,17 @@ export class OperationStore extends ErrorHandlingStore {
     @observable trendsResults = [];
     @observable trendsQuery = {};
 
-    @action fetchStats(service, query, isCustomTimeRange, operationName) {
+    @action fetchStats(service, query, isCustomTimeRange, filters) {
         const queryUrlString = toQueryUrlString(query);
         this.statsPromiseState = fromPromise(
                 axios
                     .get(`/api/trends/operation/${service}?${queryUrlString}`)
                     .then((result) => {
-                        this.statsQuery = {...query, isCustomTimeRange, operationName};
+                        this.statsQuery = {...query, isCustomTimeRange, filters};
                         this.statsResults = result.data;
                     })
                     .catch((result) => {
-                        this.statsQuery = {...query, isCustomTimeRange, operationName};
+                        this.statsQuery = {...query, isCustomTimeRange, filters};
                         this.statsResults = [];
                         OperationStore.handleError(result);
                     })

@@ -15,6 +15,7 @@
  */
 
 const express = require('express');
+const authenticator = require('../sso/samlSsoAuthenticator').authenticator;
 const authenticatorWithRedirect = require('../sso/samlSsoAuthenticator').authenticatorWithRedirect;
 
 const router = express.Router();
@@ -24,6 +25,8 @@ const loggedOutHome = '/login';
 const authenticate = req => authenticatorWithRedirect(req.query.redirectUrl);
 
 router.get('/login', (req, res, next) => authenticate(req)(req, res, next));
+
+router.get('/renewlogin', (req, res, next) => authenticator(req)(req, res, next));
 
 router.get('/logout', (req, res) => {
     req.logout();

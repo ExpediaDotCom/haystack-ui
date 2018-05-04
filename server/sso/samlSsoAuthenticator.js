@@ -22,6 +22,9 @@ const loggedInHome = '/';
 const loginErrRedirect = '/login?error=true';
 const IDENTIFIER_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
 const EMAIL_ADDRESS_SCHEMA = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
+const SECURITY_GROUPS_SCHEMA = 'http://schemas.xmlsoap.org/claims/Group';
+
+const logger = require('../utils/logger').withIdentifier('sso');
 
 function createSamlStrategyWithRedirect(redirectUrl) {
     return new SamlStrategy({
@@ -31,11 +34,22 @@ function createSamlStrategyWithRedirect(redirectUrl) {
             acceptedClockSkewMs: -1,
             identifierFormat: IDENTIFIER_FORMAT
         },
-        (profile, done) => done(null, {
-            id: profile.nameID,
-            email: profile[EMAIL_ADDRESS_SCHEMA],
-            timestamp: Date.now()
-        })
+        (profile, done) => {
+            const groups = profile[SECURITY_GROUPS_SCHEMA] || [];
+            const requiredSecurityGroup = config.saml.securityGroupName;
+
+            if (requiredSecurityGroup && !groups.includes(requiredSecurityGroup)) {
+                logger.info(`User '${profile[EMAIL_ADDRESS_SCHEMA]}' attempted to log in but was not part of '${requiredSecurityGroup}' security group`);
+                return done(null, false);
+            }
+
+            return done(null, {
+                id: profile.nameID,
+                email: profile[EMAIL_ADDRESS_SCHEMA],
+                timestamp: Date.now(),
+                groups
+            });
+        }
     );
 }
 

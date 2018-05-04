@@ -20,9 +20,12 @@ import Clipboard from 'react-copy-to-clipboard';
 import {Link} from 'react-router-dom';
 import timeWindow from '../../../utils/timeWindow';
 import metricGranularity from '../utils/metricGranularity';
+import linkBuilder from '../../../utils/linkBuilder';
 
 import './trendDetailsToolbar.less';
 import TimeRangeWindow from '../../common/timeRangeWindow';
+
+const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
 
 export default class TrendDetailsToolbar extends React.Component {
 
@@ -58,6 +61,9 @@ export default class TrendDetailsToolbar extends React.Component {
         this.customTimeRangeChangeCallback = this.customTimeRangeChangeCallback.bind(this);
         this.setClipboardText = this.setClipboardText.bind(this);
         this.setGranularityWrapperRef = this.setGranularityWrapperRef.bind(this);
+        this.refreshTrends = this.refreshTrends.bind(this);
+        this.enableAutoRefresh = this.enableAutoRefresh.bind(this);
+        this.disableAutoRefresh = this.disableAutoRefresh.bind(this);
 
         const {
             from,
@@ -75,7 +81,10 @@ export default class TrendDetailsToolbar extends React.Component {
             activeGranularity,
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
-            clipboardText: this.setClipboardText(activeWindow)
+            clipboardText: this.setClipboardText(activeWindow),
+            autoRefreshEnabled: false,
+            autoRefreshTimer: null,
+            countdownTimer: null
         };
     }
 
@@ -97,9 +106,13 @@ export default class TrendDetailsToolbar extends React.Component {
             timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
             timeWindow.toTimeRange(activeWindow.value).until}`;
         }
-        return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?operationName=^${encodeURIComponent(this.props.opName)}$&from=${activeWindow.from ||
-        timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
-        timeWindow.toTimeRange(activeWindow.value).until}`;
+
+        return linkBuilder.withAbsoluteUrl(linkBuilder.createTrendsLink({
+            serviceName: this.props.serviceName,
+            operationName: this.props.opName,
+            from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
+            until: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
+        }));
     }
 
     hideTimePicker() {
@@ -199,7 +212,48 @@ export default class TrendDetailsToolbar extends React.Component {
         this.fetchTrends(activeWindow, updatedGranularity);
     }
 
+    refreshTrends() {
+        this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
+    }
+
+    enableAutoRefresh() {
+        this.setState({
+            autoRefreshEnabled: true
+        });
+        this.setState(
+            {
+                autoRefreshTimer: new Date(),
+                countdownTimer: new Date()
+            }
+        );
+        this.autoRefreshTimerRef = setInterval(
+            () => {
+                this.setState({autoRefreshTimer: new Date()});
+                this.refreshTrends();
+            },
+            refreshInterval);
+        this.countdownTimerRef = setInterval(
+            () => this.setState({countdownTimer: new Date()}),
+            1000);
+    }
+
+    disableAutoRefresh() {
+        this.setState({
+            autoRefreshEnabled: false
+        });
+        clearInterval(this.autoRefreshTimerRef);
+        clearInterval(this.countdownTimerRef);
+        this.setState(
+            {
+                autoRefreshTimer: null,
+                countdownTimer: null
+            }
+        );
+    }
+
     render() {
+        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+
         const PresetOption = ({preset}) => (
             <button
                 className={preset === this.state.activeWindow ? 'btn btn-primary' : 'btn btn-default'}
@@ -262,6 +316,19 @@ export default class TrendDetailsToolbar extends React.Component {
                         </ul>
                     </div>
                 </div>
+                <div className="pull-left autorefresh-group">
+                    <div>Auto Refresh {this.state.autoRefreshEnabled ? `in ${Math.round(countDownMiliSec / 1000)}s` : ''}</div>
+                    <div className="btn-group btn-group-sm">
+                        <button
+                            className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'primary' : 'default'}`}
+                            onClick={this.state.autoRefreshEnabled ? null : this.enableAutoRefresh}
+                        >On</button>
+                        <button
+                            className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'default' : 'primary'}`}
+                            onClick={this.state.autoRefreshEnabled ? this.disableAutoRefresh : null}
+                        >Off</button>
+                    </div>
+                </div>
                 <div className="pull-right btn-group btn-group-sm">
                     {
                         this.state.showCopied && (
@@ -276,7 +343,13 @@ export default class TrendDetailsToolbar extends React.Component {
                             <Link
                                 role="button"
                                 className="btn btn-sm btn-default"
-                                to={`/service/${this.props.serviceName}/traces?serviceName=${this.props.serviceName}&operationName=${this.props.opName}&startTime=${this.state.activeWindow.from}&endTime=${this.state.activeWindow.until}`}
+                                to={
+                                    linkBuilder.createTracesLink({
+                                        serviceName: this.props.serviceName,
+                                        operationName: this.props.opName,
+                                        timePreset: this.state.activeWindow.shortName
+                                    })
+                                }
                             ><span
                                 className="ti-align-left"
                             /> See Traces</Link>
