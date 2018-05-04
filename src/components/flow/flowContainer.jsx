@@ -24,9 +24,10 @@ import FlowResultsGraph from './flowResultsGraph';
 import Error from '../common/error';
 
 @observer
-export default class TraceResults extends React.Component {
+export default class FlowContainer extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired
+        store: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -42,7 +43,7 @@ export default class TraceResults extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.store.serviceGraph && this.props.store.serviceGraph.length)
-                        ? <FlowResultsGraph store={this.props.store} />
+                        ? <FlowResultsGraph history={this.props.history} store={this.props.store} />
                         : <Error />)
                 })
                 }

@@ -42,7 +42,7 @@ export default class Home extends Component {
         return (
             <article className="home-panel">
                 <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
-                {enableFlow && <Flow />}
+                {enableFlow && <Flow history={this.props.history}/>}
                 {enableServicePerformance && <ServicePerformance servicePerfStore={servicePerfStore} servicePerfStats={servicePerfStore.servicePerfStats} history={this.props.history} />}
             </article>
         );

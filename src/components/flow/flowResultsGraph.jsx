@@ -20,7 +20,8 @@ import _ from 'lodash';
 
 export default class FlowResultsGraph extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired
+        store: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     static createNodes(rawEdges) {
@@ -84,7 +85,7 @@ export default class FlowResultsGraph extends React.Component {
                 }
             },
             interaction: {
-                selectable: false,
+                selectable: true,
                 zoomView: true,
                 dragView: true,
                 hover: true
@@ -133,13 +134,20 @@ export default class FlowResultsGraph extends React.Component {
         };
 
         // eslint-disable-next-line no-undef
-        return new vis.Network(container, data, options);
+        const network = new vis.Network(container, data, options);
+
+        network.on('click', (properties) => {
+            const nodeIndex = properties.nodes[0];
+            const node = nodes[nodeIndex];
+            node ? this.props.history.push(`/service/${encodeURIComponent(node.name)}/trends`) : null;
+        });
+        return network;
     }
 
     render() {
         return (
             <article>
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
+                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
             </article>
         );
     }

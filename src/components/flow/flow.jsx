@@ -16,14 +16,20 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import flowStore from './stores/flowStore';
 import FlowContainer from './flowContainer';
 import './flow.less';
 
-export default () => (
+const Flow = props => (
     <section className="flow-panel">
-        <FlowContainer store={flowStore} />
+        <FlowContainer store={flowStore} history={props.history}/>
     </section>
 );
 
+Flow.propTypes = {
+    history: PropTypes.object.isRequired
+};
+
+export default Flow;
