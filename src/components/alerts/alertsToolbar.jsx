@@ -121,11 +121,7 @@ export default class AlertsToolbar extends React.Component {
     render() {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
         return (
-            <header className="alerts-toolbar clearfix">
-                <div className="pull-left">
-                    <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealthy</div>
-                    <div>out of {this.props.alertsStore.alerts.length} alerts for {this.props.serviceName}</div>
-                </div>
+            <header className="alerts-toolbar">
                 <div className="pull-right">
                     <div className="alerts-toolbar__time-range-selector">
                         <span>Show trend for </span>

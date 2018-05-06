@@ -233,7 +233,7 @@ describe('<AlertsView />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(3);
+        expect(wrapper.find('.tr-no-border')).to.have.length(1);
     });
 });
 

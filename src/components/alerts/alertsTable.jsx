@@ -32,15 +32,26 @@ export default class AlertsTable extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        alertsStore: PropTypes.object.isRequired
+        alerts: PropTypes.array.isRequired
     };
 
     static nameColumnFormatter(cell) {
         return `<div class="table__primary">${cell}</div>`;
     }
 
-    static typeColumnFormatter(cell) {
-        return `<div class="table__primary">${AlertsTable.toAlertTypeString(cell)}</div>`;
+    static sortByTimestampAndHealthAndOperationName(a, b, order) {
+        if (a.timestamp === b.timestamp) {
+            if (order === 'desc') {
+                return a.operationName.localeCompare(b.operationName);
+            }
+            return b.operationName.localeCompare(a.operationName);
+        }
+
+        if (order === 'desc') {
+            return b.timestamp - a.timestamp;
+        }
+
+        return a.timestamp - b.timestamp;
     }
 
     static statusColumnFormatter(cell) {
@@ -63,8 +74,8 @@ export default class AlertsTable extends React.Component {
             return (
                 <div className="sparkline-container">
                     <div className="sparkline-graph">
-                        <Sparklines className="sparkline" data={trends} min={0} height={40}>
-                            <SparklinesCurve style={{ strokeWidth: 1 }} color={'#36a2eb'} />
+                        <Sparklines className="sparkline" data={trends} min={0} height={25}>
+                            <SparklinesCurve style={{ strokeWidth: 0.5 }} color={'#36a2eb'} />
                         </Sparklines>
                     </div>
                 </div>
@@ -114,28 +125,15 @@ export default class AlertsTable extends React.Component {
 
         const query = toQuery(this.props.location.search);
         const operationName = query.operationName;
-        const type = query.type;
 
         this.state = {
             expanding: [],
             selected: [],
-            type,
             operationName
         };
 
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.state.type && this.state.operationName) {
-            this.props.alertsStore.alerts.forEach((item, index) => {
-                if (item.type === this.state.type && item.operationName === this.state.operationName) {
-                    this.handleExpand(index, true);
-                }
-                return null;
-            });
-        }
     }
 
     handleExpand(rowKey, isExpand) {
@@ -164,29 +162,12 @@ export default class AlertsTable extends React.Component {
     }
 
     render() {
-        const typeSelection = {
-            durationTp99: 'Duration TP99',
-            failureCount: 'Failure Count'
-        };
-
-        const statusSelection = {
-            true: 'Unhealthy',
-            false: 'Healthy'
-        };
-
         const operationFilter = this.state.operationName
             ? {type: 'RegexFilter', defaultValue: decodeURIComponent(this.state.operationName), delay: 500, placeholder: 'FilterOperation (Regex)...'}
             : {type: 'RegexFilter', delay: 500, placeholder: 'FilterOperation (Regex)...'};
 
-        const typeFilter = this.state.type
-            ? {type: 'SelectFilter', options: typeSelection, defaultValue: this.state.type, delay: 500, placeholder: 'All'}
-            : {type: 'SelectFilter', options: typeSelection, delay: 500, placeholder: 'All'};
-
-        const statusFilter = {type: 'SelectFilter', options: statusSelection, delay: 500, placeholder: 'Both'};
-
-        const results = this.props.alertsStore.alerts.map((result, index) => ({...result, alertId: index})).sort(
-            (a, b) => a.operationName.toLowerCase().localeCompare(b.operationName.toLowerCase())
-        );
+        const results = this.props.alerts
+        .map((result, index) => ({...result, alertId: index, timestamp: result.timestamp || 0}));
 
         const selectRowProp = {
             clickToSelect: true,
@@ -248,18 +229,7 @@ export default class AlertsTable extends React.Component {
                     ><AlertsTable.Header name="Operation"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
-                        dataField="type"
-                        width="20"
-                        dataFormat={AlertsTable.typeColumnFormatter}
-                        dataSort
-                        filter={typeFilter}
-                        thStyle={tableHeaderStyle}
-                        headerText={'Alert Type'}
-                    ><AlertsTable.Header name="Alert Type"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        caretRender={AlertsTable.getCaret}
                         dataField="isUnhealthy"
-                        filter={statusFilter}
                         width="8"
                         dataFormat={AlertsTable.statusColumnFormatter}
                         dataSort
@@ -272,13 +242,14 @@ export default class AlertsTable extends React.Component {
                         dataField="timestamp"
                         width="20"
                         dataSort
+                        sortFunc={AlertsTable.sortByTimestampAndHealthAndOperationName}
                         thStyle={tableHeaderStyle}
                         headerText={'Alert Timestamp'}
                     ><AlertsTable.Header name="Status Changed"/></TableHeaderColumn>
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
                         dataField="trend"
-                        width="20"
+                        width="40"
                         dataFormat={AlertsTable.trendColumnFormatter}
                         dataSort
                         thStyle={tableHeaderStyle}
