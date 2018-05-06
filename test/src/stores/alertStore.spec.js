@@ -72,8 +72,8 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert details', (done) => {
-        server.onGet('/api/alert/svc/op/type/history').reply(200, stubDetails);
-        store.fetchAlertHistory('svc', 'op', 'type');
+        server.onGet('/api/alert/svc/op/type/history?from=8600000').reply(200, stubDetails);
+        store.fetchAlertHistory('svc', 'op', 'type', 8600000);
 
         when(
             () => store.alertHistory.length > 0,

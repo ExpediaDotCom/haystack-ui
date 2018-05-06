@@ -29,7 +29,8 @@ export default class AlertHistory extends React.Component {
     static propTypes = {
         alertDetailsStore: PropTypes.object.isRequired,
         operationName: PropTypes.string.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        historyWindow: PropTypes.number.isRequired
     };
 
     static timeAgoFormatter(cell) {
@@ -82,7 +83,12 @@ export default class AlertHistory extends React.Component {
 
         return (
             <div className="col-md-6 alert-history">
-                <h4>History</h4>
+                <header>
+                    <h4>History
+                        <span className="h6"> ({sortedHistoryResults.length} times unhealthy in last {this.props.historyWindow / 86400000} day)</span>
+                    </h4>
+
+                </header>
                 <table className="table">
                     <thead>
                     <tr>

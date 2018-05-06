@@ -37,7 +37,12 @@ router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
 
 router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
-        () => alertsConnector.getAlertHistory(req.params.serviceName, req.params.operationName, req.params.alertType)
+        () => alertsConnector.getAlertHistory(
+            req.params.serviceName,
+            req.params.operationName,
+            req.params.alertType,
+            req.query.from
+        )
     );
 });
 
