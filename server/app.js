@@ -87,7 +87,7 @@ const servicesPerfApi = require('./routes/servicesPerfApi');
 const apis = [servicesApi, tracesApi, servicesPerfApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
-if (config.connectors.flow) apis.push(require('./routes/flowApi'));
+if (config.connectors.serviceGraph) apis.push(require('./routes/serviceGraphApi'));
 
 app.use('/api', ...apis);
 

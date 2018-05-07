@@ -19,10 +19,10 @@ const Q = require('q');
 const fetcher = require('../../operations/restFetcher');
 const config = require('../../../config/config');
 
-const trendsFetcher = fetcher('flow');
+const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
-const serviceGraphUrl = config.connectors.flow.serviceGraphUrl;
+const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
 
 function fetchServiceGraph() {
     return trendsFetcher

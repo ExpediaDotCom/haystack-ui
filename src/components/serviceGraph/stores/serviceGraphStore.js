@@ -19,22 +19,22 @@ import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export class FlowStore extends ErrorHandlingStore {
+export class ServiceGraphStore extends ErrorHandlingStore {
     @observable serviceGraph = [];
     @observable promiseState = null ;
 
-    @action fetchFlow() {
+    @action fetchServiceGraph() {
         this.promiseState = fromPromise(
             axios
-                .get('/api/flow')
+                .get('/api/serviceGraph')
                 .then((result) => {
                     this.serviceGraph = result.data.edges;
                 })
                 .catch((result) => {
-                    FlowStore.handleError(result);
+                    ServiceGraphStore.handleError(result);
                 })
         );
     }
 }
 
-export default new FlowStore();
+export default new ServiceGraphStore();

@@ -20,11 +20,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../common/loading';
-import FlowResultsGraph from './flowResultsGraph';
+import ServiceGraphResults from './serviceGraphResults';
 import Error from '../common/error';
 
 @observer
-export default class FlowContainer extends React.Component {
+export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
@@ -33,7 +33,7 @@ export default class FlowContainer extends React.Component {
     constructor(props) {
         super(props);
 
-        this.props.store.fetchFlow();
+        this.props.store.fetchServiceGraph();
     }
 
     render() {
@@ -45,7 +45,7 @@ export default class FlowContainer extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.store.serviceGraph && this.props.store.serviceGraph.length)
-                        ? <FlowResultsGraph history={this.props.history} store={this.props.store} />
+                        ? <ServiceGraphResults history={this.props.history} store={this.props.store} />
                         : <Error />)
                 })
                 }

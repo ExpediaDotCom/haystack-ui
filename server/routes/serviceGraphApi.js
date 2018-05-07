@@ -18,13 +18,13 @@ const express = require('express');
 const config = require('../config/config');
 const handleResponsePromise = require('./utils/apiResponseHandler').handleResponsePromise;
 
-const flowConnector = require(`../connectors/flow/${config.connectors.flow.connectorName}/flowConnector`); // eslint-disable-line import/no-dynamic-require
+const serviceGraphConnector = require(`../connectors/serviceGraph/${config.connectors.serviceGraph.connectorName}/serviceGraphConnector`); // eslint-disable-line import/no-dynamic-require
 
 const router = express.Router();
 
-router.get('/flow', (req, res, next) => {
-    handleResponsePromise(res, next, 'flow_SVC')(
-        () => flowConnector.getServiceGraph()
+router.get('/serviceGraph', (req, res, next) => {
+    handleResponsePromise(res, next, 'svc_graph_SVC')(
+        () => serviceGraphConnector.getServiceGraph()
     );
 });
 

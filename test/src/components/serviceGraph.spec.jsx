@@ -18,11 +18,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { expect } from 'chai';
-import Flow from '../../../src/components/flow/flow';
+import ServiceGraph from '../../../src/components/serviceGraph/serviceGraph';
 
-describe('<Flow />', () => {
-    it('should render the flow panel`', () => {
-        const wrapper = shallow(<Flow />);
-        expect(wrapper.find('.flow-panel')).to.have.length(1);
+describe('<ServiceGraph />', () => {
+    it('should render the serviceGraph panel`', () => {
+        const wrapper = shallow(<ServiceGraph />);
+        expect(wrapper.find('.service-graph-panel')).to.have.length(1);
     });
 });
