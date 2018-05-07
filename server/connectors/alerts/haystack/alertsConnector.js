@@ -131,11 +131,11 @@ connector.getServiceAlerts = (serviceName, query) => {
         );
 };
 
-connector.getAlertHistory = (serviceName, operationName, alertType) => {
+connector.getAlertHistory = (serviceName, operationName, alertType, from) => {
     const target = `haystack.serviceName.${serviceName}.operationName.${metricpointNameEncoder.encodeMetricpointName(operationName)}.alertType.${alertType}.anomaly`;
 
     return alertHistoryFetcher
-        .fetch(`${metricTankUrl}/render?target=${target}`)
+        .fetch(`${metricTankUrl}/render?target=${target}&from=${Math.trunc(from / 1000)}&to=${Math.trunc(Date.now() / 1000)}`)
         .then(result => parseAlertDetailResponse(result));
 };
 

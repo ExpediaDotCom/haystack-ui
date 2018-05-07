@@ -121,12 +121,8 @@ export default class AlertsToolbar extends React.Component {
     render() {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
         return (
-            <header className="alerts-toolbar clearfix">
-                <div className="pull-left">
-                    <div className="alerts-title__header">{this.getUnhealthyAlerts()} Unhealthy</div>
-                    <div>out of {this.props.alertsStore.alerts.length} alerts for {this.props.serviceName}</div>
-                </div>
-                <div className="pull-right">
+            <header className="alerts-toolbar">
+                <div className="pull-right text-right">
                     <div className="alerts-toolbar__time-range-selector">
                         <span>Show trend for </span>
                         <select
@@ -139,13 +135,18 @@ export default class AlertsToolbar extends React.Component {
                         </select>
                     </div>
                     <div>
-                        <div className="pull-right">
-                            <span>Auto Refresh {this.state.autoRefresh ? `in ${Math.round(countDownMiliSec / 1000)} s` : ''} </span>
-                            <a
-                                role="button"
-                                tabIndex={-1}
-                                onClick={this.toggleAutoRefresh}
-                            >{this.state.autoRefresh === true ? 'Stop' : 'Start'}</a>
+                        <div>
+                            <span>Auto Refresh {this.state.autoRefresh ? `in ${Math.round(countDownMiliSec / 1000)}s` : ''} </span>
+                            <span className="btn-group btn-group-sm">
+                                <button
+                                    className={`btn btn-sm btn-${this.state.autoRefresh ? 'primary' : 'default'}`}
+                                    onClick={this.state.autoRefresh ? null : this.toggleAutoRefresh}
+                                >On</button>
+                                <button
+                                    className={`btn btn-sm btn-${this.state.autoRefresh ? 'default' : 'primary'}`}
+                                    onClick={this.state.autoRefresh ? this.toggleAutoRefresh : null}
+                                >Off</button>
+                            </span>
                         </div>
                     </div>
                 </div>
