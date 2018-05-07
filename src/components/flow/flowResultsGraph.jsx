@@ -41,10 +41,11 @@ export default class FlowResultsGraph extends React.Component {
             return {
                 ...node,
                 id: index,
-                label: `<b>${name}</b>`,
+                label: `${name}`,
+                title: `${name}`,
                 color: {
-                    background: '#F7B0C9',
-                    border: '#EC3F7C'
+                    background: '#D8ECFA',
+                    border: '#36A2EB'
                 }
             };
         });
@@ -81,7 +82,7 @@ export default class FlowResultsGraph extends React.Component {
                     blockShifting: true,
                     edgeMinimization: true,
                     sortMethod: 'directed',
-                    levelSeparation: 80
+                    levelSeparation: 130
                 }
             },
             interaction: {
@@ -100,10 +101,7 @@ export default class FlowResultsGraph extends React.Component {
                 font: {
                     multi: true,
                     face: 'Titillium Web',
-                    size: 12,
-                    bold: {
-                        size: 14
-                    }
+                    size: 12
                 }
             },
             edges: {
@@ -115,11 +113,6 @@ export default class FlowResultsGraph extends React.Component {
                     }
                 },
                 hoverWidth: 0.5,
-                font: {
-                    background: '#ffffff',
-                    face: 'Titillium Web',
-                    size: 15
-                },
                 color: {
                     color: '#333333'
                 }
@@ -146,7 +139,7 @@ export default class FlowResultsGraph extends React.Component {
 
     render() {
         return (
-            <article>
+            <article className="serviceGraph__panel">
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
             </article>
         );

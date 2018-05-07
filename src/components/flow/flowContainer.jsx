@@ -38,7 +38,9 @@ export default class FlowContainer extends React.Component {
 
     render() {
         return (
-            <section>
+            <section className="container">
+                <div className="serviceGraph__header-title">Service Graph <span className="h6">(zoom in to see details)</span></div>
+                <div>
                 { this.props.store.promiseState && this.props.store.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
@@ -47,6 +49,7 @@ export default class FlowContainer extends React.Component {
                         : <Error />)
                 })
                 }
+                </div>
             </section>
         );
     }
