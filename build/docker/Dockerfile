@@ -1,4 +1,4 @@
-FROM node:latest AS base
+FROM node:8.6.0 AS base
 
 ENV APP_HOME /app
 ENV PUBLIC_PATH /${APP_HOME}/public
