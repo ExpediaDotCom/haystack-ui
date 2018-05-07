@@ -110,8 +110,12 @@ export default class TrendsHeader extends React.Component {
                 preset: selectedWindow.shortName
             };
         } else {
-            query = { preset: selectedWindow.shortName };
+            query = {
+                preset: selectedWindow.shortName
+            };
         }
+        const operationName = document.getElementsByClassName('text-filter')[0].value;
+        if (operationName) query.operationName = operationName;
 
         const queryUrl = `?${toQueryUrlString(query)}`;
         // push to history only if it is not the same search as the current one
