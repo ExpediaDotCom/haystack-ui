@@ -14,7 +14,7 @@
     "watch": "webpack -w -d --progress"
   },
   "engines": {
-    "node": ">=8.1.2",
+    "node": ">=8.6.0",
     "npm": ">=5.0.3"
   },
   "dependencies": {
