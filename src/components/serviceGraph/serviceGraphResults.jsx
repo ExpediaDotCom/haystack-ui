@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-export default class FlowResultsGraph extends React.Component {
+export default class ServiceGraphResults extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
@@ -70,8 +70,8 @@ export default class FlowResultsGraph extends React.Component {
 
     componentDidMount() {
         const serviceGraph = this.props.store.serviceGraph;
-        const nodes = FlowResultsGraph.createNodes(serviceGraph);
-        const edges = FlowResultsGraph.createEdges(serviceGraph, nodes);
+        const nodes = ServiceGraphResults.createNodes(serviceGraph);
+        const edges = ServiceGraphResults.createEdges(serviceGraph, nodes);
         const data = {nodes, edges};
         const container = this.graphContainer;
         const options = {

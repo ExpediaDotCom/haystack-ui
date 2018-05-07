@@ -18,18 +18,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import flowStore from './stores/flowStore';
-import FlowContainer from './flowContainer';
-import './flow.less';
+import serviceGraphStore from './stores/serviceGraphStore';
+import ServiceGraphContainer from './serviceGraphContainer';
+import './serviceGraph.less';
 
-const Flow = props => (
-    <section className="flow-panel">
-        <FlowContainer store={flowStore} history={props.history}/>
+const ServiceGraph = props => (
+    <section className="service-graph-panel">
+        <ServiceGraphContainer store={serviceGraphStore} history={props.history}/>
     </section>
 );
 
-Flow.propTypes = {
+ServiceGraph.propTypes = {
     history: PropTypes.object.isRequired
 };
 
-export default Flow;
+export default ServiceGraph;

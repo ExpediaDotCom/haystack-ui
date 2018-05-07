@@ -64,7 +64,7 @@ module.exports = {
                 enabled: true
             }
         },
-        flow: {
+        serviceGraph: {
             // name of config connector module to use for fetching dependency graph data from downstream
             // options :
             // - stub - a stub used during development, will be removed in future

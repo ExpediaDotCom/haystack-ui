@@ -30,7 +30,6 @@ import ServiceToolsContainer from './serviceToolsContainer';
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
 const isAlertsEnabled = subsystems.includes('alerts');
-const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');
 
 @observer
@@ -91,17 +90,6 @@ export default class ServiceTools extends Component {
         const serviceChangeToggleOpen = this.state.serviceChangeToggleOpen;
 
         const Tabs = () => (<nav className="serviceToolsTab__tabs col-md-6">
-            {isFlowEnabled &&
-                <NavLink
-                    className={navLinkClass}
-                    activeClassName={navLinkClassActive}
-                    exact
-                    to={`/service/${serviceName}/flow`}
-                >
-                    <span className="serviceToolsTab__tab-option-icon ti-vector"/>
-                    Flow
-                </NavLink>
-            }
             {isTrendsEnabled &&
                 <NavLink
                     className={navLinkClass}
