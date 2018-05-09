@@ -14,20 +14,10 @@
  *         limitations under the License.
  */
 
-import authenticationStore from './authenticationStore';
+import axios from 'axios';
 
-function HaystackApiException(data) {
-    this.message = 'Unable to resolve promise';
-    this.data = data;
-}
+const renewer = {};
 
-export class ErrorHandlingStore {
-    static handleError(result) {
-        if (result.response.status === 401) {
-            authenticationStore.timedOut = true;
-        }
-        throw new HaystackApiException(result);
-    }
-}
+renewer.init = () => setInterval(() => axios.get('/api/renewlogin'), 5 * 60 * 1000);
 
-export default new ErrorHandlingStore();
+export default renewer;
