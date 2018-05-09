@@ -16,6 +16,7 @@
 
 const express = require('express');
 const authenticatorWithRedirect = require('../sso/samlSsoAuthenticator').authenticatorWithRedirect;
+const authChecker = require('../sso/authChecker');
 
 const router = express.Router();
 
@@ -25,7 +26,8 @@ const authenticate = req => authenticatorWithRedirect(req.query.redirectUrl);
 
 router.get('/login', (req, res, next) => authenticate(req)(req, res, next));
 
-router.get('/renewlogin', (req, res, next) => {
+// check for active login session and then renew user
+router.get('/renewlogin', authChecker.forApi, (req, res, next) => {
     req.login({...req.user, timestamp: Date.now()}, (err) => {
         if (err) {
             next(err);
