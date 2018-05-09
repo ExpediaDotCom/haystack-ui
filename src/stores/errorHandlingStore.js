@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import authenticationStore from './authenticationStore';
+import axios from 'axios';
 
 function HaystackApiException(data) {
     this.message = 'Unable to resolve promise';
@@ -24,7 +24,7 @@ function HaystackApiException(data) {
 export class ErrorHandlingStore {
     static handleError(result) {
         if (result.response.status === 401) {
-            authenticationStore.timedOut = true;
+            axios.get('/api/renewlogin');
         }
         throw new HaystackApiException(result);
     }
