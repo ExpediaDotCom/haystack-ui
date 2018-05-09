@@ -46,7 +46,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @action fetchSearchResults(query) {
         const queryUrlString = toQueryUrlString({...query,
             serviceName: decodeURIComponent(query.serviceName),
-            operationName: query.operationName === 'all' ? null : query.operationName,
+            operationName: (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName),
             startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
             endTime: query.endTime ? query.endTime * 1000 : (Date.now() - (30 * 1000)) * 1000,
             timePreset: null
