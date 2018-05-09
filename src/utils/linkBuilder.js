@@ -50,7 +50,7 @@ linkBuilder.createTrendsLink = ({serviceName, operationName, from, until}) => {
     const encodedOperationName = operationName && encodeURIComponent(operationName);
 
     if (from && until) {
-        return `/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$&startTime=${from}&endTime=${until}`;
+        return `/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$&from=${from}&until=${until}`;
     }
 
     return `/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$`;

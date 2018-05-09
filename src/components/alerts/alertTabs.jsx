@@ -67,13 +67,13 @@ export default class AlertTabs extends React.Component {
                 <div className="alert-tabs pull-left">
                     <ul className="nav nav-tabs">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a className="h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >
+                            <a className="alert-tabs_tab h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >
                                 <span>Failure Count </span>
                                 <span className="badge">{unhealthyFailureCountAlerts}</span>
                             </a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a className="h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >
+                            <a className="alert-tabs_tab h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >
                                 <span>Duration TP99 </span>
                                 <span className="badge">{unhealthyDurationTP99Alerts}</span>
                             </a>

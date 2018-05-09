@@ -140,7 +140,7 @@ export default class ServiceGraphResults extends React.Component {
     render() {
         return (
             <article className="serviceGraph__panel">
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
+                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
             </article>
         );
     }
