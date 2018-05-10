@@ -15,26 +15,9 @@
  */
 
 import axios from 'axios';
-import {observable, action} from 'mobx';
-import { fromPromise } from 'mobx-utils';
-import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export class ServiceGraphStore extends ErrorHandlingStore {
-    @observable graphs = [];
-    @observable promiseState = null ;
+const renewer = {};
 
-    @action fetchServiceGraph() {
-        this.promiseState = fromPromise(
-            axios
-                .get('/api/serviceGraph')
-                .then((result) => {
-                    this.graphs = result.data;
-                })
-                .catch((result) => {
-                    ServiceGraphStore.handleError(result);
-                })
-        );
-    }
-}
+renewer.init = () => setInterval(() => axios.get('/api/renewlogin'), 5 * 60 * 1000);
 
-export default new ServiceGraphStore();
+export default renewer;
