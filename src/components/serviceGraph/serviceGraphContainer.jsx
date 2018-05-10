@@ -44,8 +44,9 @@ export default class ServiceGraphContainer extends React.Component {
                 { this.props.store.promiseState && this.props.store.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((this.props.store.serviceGraph && this.props.store.serviceGraph.length)
-                        ? <ServiceGraphResults history={this.props.history} store={this.props.store} />
+                    fulfilled: () => ((this.props.store.graphs && this.props.store.graphs.length)
+                        ? (this.props.store.graphs.map(
+                            graph => <ServiceGraphResults serviceGraph={graph} history={this.props.history} />))
                         : <Error />)
                 })
                 }

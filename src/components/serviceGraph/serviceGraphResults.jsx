@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired,
+        serviceGraph: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
     };
 
@@ -69,7 +69,7 @@ export default class ServiceGraphResults extends React.Component {
     }
 
     componentDidMount() {
-        const serviceGraph = this.props.store.serviceGraph;
+        const serviceGraph = this.props.serviceGraph;
         const nodes = ServiceGraphResults.createNodes(serviceGraph);
         const edges = ServiceGraphResults.createEdges(serviceGraph, nodes);
         const data = {nodes, edges};
@@ -79,10 +79,11 @@ export default class ServiceGraphResults extends React.Component {
             layout: {
                 hierarchical: {
                     enabled: true,
+                    direction: 'LR',
                     blockShifting: true,
                     edgeMinimization: true,
                     sortMethod: 'directed',
-                    levelSeparation: 130
+                    levelSeparation: 250
                 }
             },
             interaction: {
@@ -121,7 +122,7 @@ export default class ServiceGraphResults extends React.Component {
                 hierarchicalRepulsion: {
                     centralGravity: 0.0,
                     springLength: 50,
-                    nodeDistance: 100
+                    nodeDistance: 50
                 }
             }
         };

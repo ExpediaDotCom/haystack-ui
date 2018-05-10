@@ -20,7 +20,7 @@ import { fromPromise } from 'mobx-utils';
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export class ServiceGraphStore extends ErrorHandlingStore {
-    @observable serviceGraph = [];
+    @observable graphs = [];
     @observable promiseState = null ;
 
     @action fetchServiceGraph() {
@@ -28,7 +28,7 @@ export class ServiceGraphStore extends ErrorHandlingStore {
             axios
                 .get('/api/serviceGraph')
                 .then((result) => {
-                    this.serviceGraph = result.data.edges;
+                    this.graphs = result.data;
                 })
                 .catch((result) => {
                     ServiceGraphStore.handleError(result);
