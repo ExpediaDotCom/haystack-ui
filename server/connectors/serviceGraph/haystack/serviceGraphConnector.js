@@ -67,10 +67,13 @@ function fetchServiceGraph() {
             // get list of connected components in the full graph
             const connectedComponents = extractor.extractConnectedComponents(serviceToServiceEdges);
 
+            // order components by service count
+            const sortedConnectedComponents = connectedComponents.sort((a, b) => b.length - a.length);
+
             // split edges list by connected components
             // thus form multiple sub-graphs
             const graphs = [];
-            connectedComponents.forEach(component => graphs.push(filterEdgesInComponent(component, serviceToServiceEdges)));
+            sortedConnectedComponents.forEach(component => graphs.push(filterEdgesInComponent(component, serviceToServiceEdges)));
 
             // return graphs, one for each connected component
             return graphs;

@@ -33,20 +33,42 @@ export default class ServiceGraphContainer extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            tabSelected: 1
+        };
+        this.toggleTab = this.toggleTab.bind(this);
         this.props.store.fetchServiceGraph();
+    }
+
+    toggleTab(tabIndex) {
+        this.setState({tabSelected: tabIndex});
     }
 
     render() {
         return (
             <section className="container">
-                <div className="serviceGraph__header-title">Service Graph <span className="h6">(zoom in to see details)</span></div>
+                <div className="clearfix">
+                    <div className="serviceGraph__header-title pull-left">Service Graph</div>
+                    <div className="serviceGraph__tabs pull-right">
+                        <ul className="nav nav-tabs">
+                            {
+                                this.props.store.graphs.map(
+                                    (graph, index) => (
+                                        <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''}>
+                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{graph[0].source}</a>
+                                        </li>
+                                    )
+                                )
+                            }
+                        </ul>
+                    </div>
+                </div>
                 <div>
                 { this.props.store.promiseState && this.props.store.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.store.graphs && this.props.store.graphs.length)
-                        ? (this.props.store.graphs.map(
-                            graph => <ServiceGraphResults serviceGraph={graph} history={this.props.history} />))
+                        ? <ServiceGraphResults serviceGraph={this.props.store.graphs[this.state.tabSelected - 1]} history={this.props.history} />
                         : <Error />)
                 })
                 }

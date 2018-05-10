@@ -69,6 +69,14 @@ export default class ServiceGraphResults extends React.Component {
     }
 
     componentDidMount() {
+        this.mountServiceGraph();
+    }
+
+    componentDidUpdate() {
+        this.mountServiceGraph();
+    }
+
+    mountServiceGraph() {
         const serviceGraph = this.props.serviceGraph;
         const nodes = ServiceGraphResults.createNodes(serviceGraph);
         const edges = ServiceGraphResults.createEdges(serviceGraph, nodes);
@@ -87,9 +95,9 @@ export default class ServiceGraphResults extends React.Component {
                 }
             },
             interaction: {
-                selectable: true,
-                zoomView: true,
-                dragView: true,
+                selectable: false,
+                zoomView: false,
+                dragView: false,
                 hover: true
             },
             nodes: {
