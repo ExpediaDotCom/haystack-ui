@@ -19,6 +19,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
+import TraceTimeline from './traceTimeline';
 import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
 import Error from '../../common/error';
@@ -34,7 +35,15 @@ export default class TraceResults extends React.Component {
     render() {
         return (
             <section>
-                { this.props.tracesSearchStore.promiseState && this.props.tracesSearchStore.promiseState.case({
+                { this.props.tracesSearchStore.timelinePromiseState && this.props.tracesSearchStore.timelinePromiseState.case({
+                    pending: () => <Loading />,
+                    rejected: () => <Error />,
+                    fulfilled: () => ((this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length)
+                        ? <TraceTimeline query={this.props.tracesSearchStore.searchQuery} data={this.props.tracesSearchStore.timelineResults}/>
+                        : <Error />)
+                })
+                }
+                { this.props.tracesSearchStore.traceResultsPromiseState && this.props.tracesSearchStore.traceResultsPromiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         empty: () => <NoSearch />,

@@ -39,29 +39,57 @@ export function formatResults(results) {
 }
 
 export class TracesSearchStore extends ErrorHandlingStore {
-    @observable promiseState = { case: ({empty}) => empty() };
+    @observable traceResultsPromiseState = { case: ({empty}) => empty() };
+    @observable timelinePromiseState = null;
     @observable searchQuery = null;
     @observable searchResults = [];
+    @observable timelineResults = {};
 
     @action fetchSearchResults(query) {
-        const queryUrlString = toQueryUrlString({...query,
-            serviceName: decodeURIComponent(query.serviceName),
-            operationName: query.operationName === 'all' ? null : query.operationName,
-            startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
-            endTime: query.endTime ? query.endTime * 1000 : (Date.now() - (30 * 1000)) * 1000,
-            timePreset: null
+        const formattedQuery = query;
+        if (!query.startTime) formattedQuery.startTime = ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
+        if (!query.endTime) formattedQuery.endTime = (Date.now() - (30 * 1000)) * 1000;
+        if (query.operationName === 'all') formattedQuery.operationName = null;
+        if (!query.granularity) formattedQuery.granularity = 60 * 1000;
+
+        const queryUrlString = toQueryUrlString({...formattedQuery,
+            serviceName: decodeURIComponent(formattedQuery.serviceName),
+            operationName: formattedQuery.operationName === 'all',
+            startTime: formattedQuery.startTime,
+            endTime: formattedQuery.endTime,
+            timePreset: null,
+            granularity: formattedQuery.granularity
         });
 
-        this.promiseState = fromPromise(
+        this.fetchTraceResults(queryUrlString);
+        this.fetchTimeline(queryUrlString);
+
+        this.searchQuery = formattedQuery;
+    }
+
+    @action fetchTraceResults(queryUrlString) {
+        this.traceResultsPromiseState = fromPromise(
             axios
                 .get(`/api/traces?${queryUrlString}`)
                 .then((result) => {
-                    this.searchQuery = query;
                     this.searchResults = formatResults(result.data);
                 })
                 .catch((result) => {
-                    this.searchQuery = query;
                     this.searchResults = [];
+                    TracesSearchStore.handleError(result);
+                })
+        );
+    }
+
+    @action fetchTimeline(queryUrlString) {
+        this.timelinePromiseState = fromPromise(
+            axios
+                .get(`/api/traces/timeline?${queryUrlString}`)
+                .then((result) => {
+                    this.timelineResults = result.data;
+                })
+                .catch((result) => {
+                    this.timelineResults = [];
                     TracesSearchStore.handleError(result);
                 })
         );

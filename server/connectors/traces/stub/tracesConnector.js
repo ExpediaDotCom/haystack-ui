@@ -15,6 +15,7 @@
  */
 
 const Q = require('q');
+const _ = require('lodash');
 const objectUtils = require('../../utils/objectUtils');
 
 const trace = [
@@ -183,6 +184,28 @@ connector.getOperations = () => Q.fcall(() => ['mormont-1',
     'drogo-1',
     'tarley-1'
 ]);
+
+function getValue(min, max) {
+    return _.round((Math.random() * (max - min)) + min, 0);
+}
+
+function getTimeStamp(addMin) {
+    const currentTime = ((new Date()).getTime());
+    return (currentTime - (addMin * 60 * 1000));
+}
+
+function getRandomValues(timeWindow, dataPoints) {
+    const valuesArr = [];
+    _.range(dataPoints).forEach(i => valuesArr.push({x: getTimeStamp(i * timeWindow), y: getValue(0, 3000)}));
+    return valuesArr;
+}
+
+connector.getTimeline = (serviceName, granularity, from, until) => Q.fcall(() => {
+    const range = (until - from) / 1000;
+    const points = range / granularity;
+    const mins = granularity / (60 * 1000);
+    return getRandomValues(mins, points);
+});
 
 connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error', 'minDuration', 'guid', 'testid']);
 

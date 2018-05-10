@@ -30,6 +30,20 @@ router.get('/traces', (req, res, next) => {
     );
 });
 
+
+router.get('/traces/timeline', (req, res, next) => {
+    const {
+        serviceName,
+        granularity,
+        startTime,
+        endTime
+    } = req.query;
+
+    handleResponsePromise(res, next, 'trace_timeline')(
+        () => tracesConnector.getTimeline(serviceName, granularity, startTime, endTime)
+    );
+});
+
 router.get('/traces/searchableKeys', (req, res, next) => {
     handleResponsePromise(res, next, 'trace_searchableKeys')(
         () => tracesConnector.getSearchableKeys()
