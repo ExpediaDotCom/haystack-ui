@@ -18,6 +18,6 @@ import axios from 'axios';
 
 const renewer = {};
 
-renewer.init = () => setInterval(() => axios.get('/api/renewlogin'), 5 * 60 * 1000);
+renewer.init = () => setInterval(() => axios.get('/auth/renewlogin'), 5 * 60 * 1000);
 
 export default renewer;
