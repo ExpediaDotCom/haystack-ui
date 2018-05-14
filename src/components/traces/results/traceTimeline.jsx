@@ -81,7 +81,7 @@ export default class TraceTimeline extends React.Component {
             },
             scales: {
                 xAxes: [{
-                    barPercentage: 1.25,
+                    barPercentage: 1.17,
                     type: 'time',
                     time: {
                         min: this.props.store.searchQuery.startTime / 1000,
