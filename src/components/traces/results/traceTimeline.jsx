@@ -18,46 +18,85 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import {Bar} from 'react-chartjs-2';
 
 import './traceTimeline.less';
 
 @observer
 export default class TraceTimeline extends React.Component {
     static propTypes = {
-        data: PropTypes.object.isRequired,
-        query: PropTypes.object.isRequired
+        store: PropTypes.object.isRequired
     };
 
-    componentDidMount() {
-        console.log(this.props.query);
-        const items = [];
-        this.props.data.map(x => items.push(x));
-        // const items = this.props.data;
-        const options = {
-            style: 'bar',
-            barChart: {align: 'center', width: 180, minWidth: 1},
-            drawPoints: false,
-            start: this.props.query.startTime / 1000,
-            end: this.props.query.endTime / 1000,
-            height: '200px'
-        };
+    constructor(props) {
+        super(props);
 
-        const container = this.graphContainer;
-        // eslint-disable-next-line no-undef
-        const data = new vis.DataSet(items);
-        // eslint-disable-next-line no-undef
-        const graph = new vis.Graph2d(container, data, options);
-        graph.on('click', (prop) => {
-            console.log(prop);
-        });
+        this.updateTimeFrame = this.updateTimeFrame.bind(this);
+    }
 
-        return graph;
+    updateTimeFrame(event) {
+        if (event.length) {
+            // eslint-disable-next-line no-underscore-dangle
+            const startTime = this.props.store.timelineResults[event[0]._index].x * 1000;
+            const endTime = (startTime + (this.props.store.searchQuery.granularity * 1000));
+
+            const newQuery = {
+                serviceName: this.props.store.searchQuery.serviceName,
+                startTime,
+                endTime
+            };
+
+            this.props.store.fetchSearchResults(newQuery);
+        }
     }
 
     render() {
+        const labels = [];
+        const data = [];
+        this.props.store.timelineResults.forEach((item) => {
+            labels.push(new Date(item.x));
+            data.push(item.y);
+        });
+
+        const chartData = {
+            labels,
+            datasets: [
+                {
+                    label: `${this.props.store.searchQuery.serviceName} trace call count  `,
+                    backgroundColor: '#D8ECFA',
+                    borderColor: '#36A2EB',
+                    borderWidth: 1,
+                    hoverBackgroundColor: '#73bdef',
+                    hoverBorderColor: '#36A2EB',
+                    data
+                }
+            ]
+        };
+        const options = {
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            scales: {
+                xAxes: [{
+                    barPercentage: 1.25,
+                    type: 'time',
+                    time: {
+                        min: this.props.store.searchQuery.startTime / 1000,
+                        max: this.props.store.searchQuery.endTime / 1000
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        };
+
         return (
             <div className="trace-timeline-container">
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '200px' }}/>
+                <Bar data={chartData} height={150} options={options} getElementAtEvent={this.updateTimeFrame}/>
             </div>
         );
     }

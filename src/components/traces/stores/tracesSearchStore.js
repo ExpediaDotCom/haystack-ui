@@ -48,9 +48,10 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @action fetchSearchResults(query) {
         const formattedQuery = query;
         if (!query.startTime) formattedQuery.startTime = ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
-        if (!query.endTime) formattedQuery.endTime = (Date.now() - (30 * 1000)) * 1000;
+        if (!query.endTime) formattedQuery.endTime = Date.now() * 1000;
         if (query.operationName === 'all') formattedQuery.operationName = null;
-        if (!query.granularity) formattedQuery.granularity = 60 * 1000;
+
+        formattedQuery.granularity = ((formattedQuery.endTime - formattedQuery.startTime) / 1000) / 15;
 
         const queryUrlString = toQueryUrlString({...formattedQuery,
             serviceName: decodeURIComponent(formattedQuery.serviceName),
