@@ -51,17 +51,14 @@ export class TracesSearchStore extends ErrorHandlingStore {
         if (!query.endTime) formattedQuery.endTime = Date.now() * 1000;
         if (query.operationName === 'all') formattedQuery.operationName = null;
 
-        formattedQuery.granularity = ((formattedQuery.endTime - formattedQuery.startTime) / 1000) / 15;
-
         const queryUrlString = toQueryUrlString({...formattedQuery,
             serviceName: decodeURIComponent(formattedQuery.serviceName),
             operationName: formattedQuery.operationName === 'all',
             startTime: formattedQuery.startTime,
             endTime: formattedQuery.endTime,
-            timePreset: null,
-            granularity: formattedQuery.granularity
+            timePreset: null
         });
-
+        console.log(queryUrlString)
         this.fetchTraceResults(queryUrlString);
         this.fetchTimeline(queryUrlString);
 

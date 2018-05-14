@@ -36,9 +36,11 @@ export default class TraceTimeline extends React.Component {
 
     updateTimeFrame(event) {
         if (event.length) {
+            const results = this.props.store.timelineResults;
             // eslint-disable-next-line no-underscore-dangle
-            const startTime = this.props.store.timelineResults[event[0]._index].x * 1000;
-            const endTime = (startTime + (this.props.store.searchQuery.granularity * 1000));
+            const startTime = results[event[0]._index].x * 1000;
+            const granularity = (results[results.length - 1].x - results[0].x) / 15;
+            const endTime = (startTime + (granularity * 1000));
 
             const newQuery = {
                 serviceName: this.props.store.searchQuery.serviceName,

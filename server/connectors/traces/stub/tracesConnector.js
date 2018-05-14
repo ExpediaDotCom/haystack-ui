@@ -195,7 +195,8 @@ function getRandomValues(granularity, dataPoints, from) {
     return valuesArr;
 }
 
-connector.getTimeline = (serviceName, granularity, from, until) => Q.fcall(() => {
+connector.getTimeline = (serviceName, from, until) => Q.fcall(() => {
+    const granularity = ((until - from) / 1000) / 15;
     const range = (until - from) / 1000;
     const points = range / granularity;
     return getRandomValues(granularity, points, from);
