@@ -24,6 +24,9 @@ const protobufConverter = require('./protobufConverters/traceConverter');
 const searchRequestBuilder = require('./search/searchRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/grpcFetcher');
+const config = require('../../../config/config');
+
+const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
 
 const fieldValueFetcher = fetcher('getFieldValues');
 const fieldNameFetcher = fetcher('getFieldNames');
@@ -32,7 +35,6 @@ const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 const tracesSearchFetcher = fetcher('searchTraces');
 const traceCallGraphFetcher = fetcher('getTraceCallGraph');
-
 const connector = {};
 
 connector.getServices = () => {
@@ -134,7 +136,20 @@ connector.getLatencyCost = (traceId) => {
 
     return traceCallGraphFetcher
     .fetch(request)
-    .then(result => callGraphResultTransformer.transform(messages.TraceCallGraph.toObject(false, result)));
+    .then((result) => {
+        const latencyCost = callGraphResultTransformer.transform(messages.TraceCallGraph.toObject(false, result));
+        const edges = latencyCost.map(e => ({
+            serviceName: e.from.serviceName,
+            operationName: e.from.operationName
+        }));
+
+        return trendsConnector
+        .getEdgeLatency(edges)
+        .then((trends) => {
+            const latencyCostTrends = callGraphResultTransformer.mergeTrendsWithLatencyCost(latencyCost, trends);
+            return {latencyCost, latencyCostTrends};
+        });
+    });
 };
 
 module.exports = connector;
