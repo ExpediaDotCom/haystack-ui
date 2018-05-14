@@ -27,10 +27,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
     @observable subscriptionsPromiseState = null;
 
 
-    @action fetchAlertHistory(serviceName, operationName, type) {
+    @action fetchAlertHistory(serviceName, operationName, type, from) {
         this.historyPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}/history`)
+                .get(`/api/alert/${serviceName}/${operationName}/${type}/history?from=${from}`)
                 .then((result) => {
                     this.alertHistory = result.data;
                 })

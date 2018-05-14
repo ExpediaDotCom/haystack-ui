@@ -16,12 +16,20 @@
  */
 
 import React from 'react';
-import './flow.less';
-import WorkInProgress from '../common/workInProgress';
+import PropTypes from 'prop-types';
 
-export default () => (
-    <section className="flow-panel">
-        <WorkInProgress />
+import serviceGraphStore from './stores/serviceGraphStore';
+import ServiceGraphContainer from './serviceGraphContainer';
+import './serviceGraph.less';
+
+const ServiceGraph = props => (
+    <section className="service-graph-panel">
+        <ServiceGraphContainer store={serviceGraphStore} history={props.history}/>
     </section>
 );
 
+ServiceGraph.propTypes = {
+    history: PropTypes.object.isRequired
+};
+
+export default ServiceGraph;

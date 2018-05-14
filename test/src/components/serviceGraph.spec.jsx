@@ -15,3 +15,14 @@
  *
  */
 
+import React from 'react';
+import { shallow } from 'enzyme';
+import { expect } from 'chai';
+import ServiceGraph from '../../../src/components/serviceGraph/serviceGraph';
+
+describe('<ServiceGraph />', () => {
+    it('should render the serviceGraph panel`', () => {
+        const wrapper = shallow(<ServiceGraph />);
+        expect(wrapper.find('.service-graph-panel')).to.have.length(1);
+    });
+});

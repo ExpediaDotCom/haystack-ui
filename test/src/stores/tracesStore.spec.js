@@ -94,5 +94,30 @@ describe('TracesSearchStore', () => {
                 done();
             });
     });
-});
 
+    it('fetches traces from the api with an query consisting of an operationName of all', (done) => {
+        server.onGet('/api/traces?serviceName=test-query&startTime=1000&endTime=1000').reply(200, stubTrace);
+
+        store.fetchSearchResults({serviceName: 'test-query', operationName: 'all', startTime: 1, endTime: 1});
+
+        when(
+            () => store.searchResults.length > 0,
+            () => {
+                expect(store.searchResults).to.have.length(1);
+                done();
+            });
+    });
+
+    it('fetches traces from the api and decodes the components before submitting them', (done) => {
+        server.onGet('/api/traces?serviceName=service%20name&operationName=operation%20name&startTime=1000&endTime=1000').reply(200, stubTrace);
+
+        store.fetchSearchResults({serviceName: 'service%20name', operationName: 'operation%20name', startTime: 1, endTime: 1});
+
+        when(
+            () => store.searchResults.length > 0,
+            () => {
+                expect(store.searchResults).to.have.length(1);
+                done();
+            });
+    });
+});

@@ -26,11 +26,11 @@ import './serviceTools.less';
 import AlertCounter from '../alerts/alertCounter';
 import serviceStore from '../../stores/serviceStore';
 import ServiceToolsContainer from './serviceToolsContainer';
+import loginRenewer from '../../utils/loginRenewer';
 
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
 const isAlertsEnabled = subsystems.includes('alerts');
-const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');
 
 @observer
@@ -59,6 +59,7 @@ export default class ServiceTools extends Component {
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         serviceStore.fetchServices();
+        if (window.haystackUiConfig.enableSSO) loginRenewer.init();
     }
 
     setWrapperRef(node) {
@@ -91,17 +92,6 @@ export default class ServiceTools extends Component {
         const serviceChangeToggleOpen = this.state.serviceChangeToggleOpen;
 
         const Tabs = () => (<nav className="serviceToolsTab__tabs col-md-6">
-            {isFlowEnabled &&
-                <NavLink
-                    className={navLinkClass}
-                    activeClassName={navLinkClassActive}
-                    exact
-                    to={`/service/${serviceName}/flow`}
-                >
-                    <span className="serviceToolsTab__tab-option-icon ti-vector"/>
-                    Flow
-                </NavLink>
-            }
             {isTrendsEnabled &&
                 <NavLink
                     className={navLinkClass}

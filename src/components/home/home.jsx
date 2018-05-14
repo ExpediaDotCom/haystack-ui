@@ -22,9 +22,11 @@ import HomeSearchBox from './homeSearchBox';
 import serviceStore from '../../stores/serviceStore';
 import servicePerfStore from './stores/servicePerfStore';
 import ServicePerformance from './servicePerformance';
+import ServiceGraph from '../serviceGraph/serviceGraph';
 import './home.less';
 
 const enableServicePerformance = (window.haystackUiConfig.enableServicePerformance);
+const enableServiceGraph = (window.haystackUiConfig.subsystems.includes('serviceGraph'));
 
 @observer
 export default class Home extends Component {
@@ -40,6 +42,7 @@ export default class Home extends Component {
         return (
             <article className="home-panel">
                 <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
+                {enableServiceGraph && <ServiceGraph history={this.props.history}/>}
                 {enableServicePerformance && <ServicePerformance servicePerfStore={servicePerfStore} servicePerfStats={servicePerfStore.servicePerfStats} history={this.props.history} />}
             </article>
         );

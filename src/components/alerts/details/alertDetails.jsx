@@ -34,9 +34,11 @@ export default class AlertDetails extends React.Component {
         alertDetailsStore: PropTypes.object.isRequired
     };
 
+    static historyWindow = 86400000;
+
     componentDidMount() {
         this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type);
-        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type);
+        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type, Date.now() - AlertDetails.historyWindow);
     }
 
     render() {
@@ -57,6 +59,7 @@ export default class AlertDetails extends React.Component {
                                     operationName={this.props.operationName}
                                     serviceName={this.props.serviceName}
                                     alertDetailsStore={this.props.alertDetailsStore}
+                                    historyWindow={AlertDetails.historyWindow}
                                 />)
                             })
                         }

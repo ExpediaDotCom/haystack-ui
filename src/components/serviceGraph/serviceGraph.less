@@ -14,15 +14,22 @@
  *       limitations under the License.
  *
  */
+@import (reference) '../../app';
 
-import React from 'react';
-import { shallow } from 'enzyme';
-import { expect } from 'chai';
-import Flow from '../../../src/components/flow/flow';
+.serviceGraph__header-title {
+  font-size: @font-size-h3;
+  font-weight: @headings-font-weight;
+}
 
-describe('<Flow />', () => {
-    it('should render the flow panel`', () => {
-        const wrapper = shallow(<Flow />);
-        expect(wrapper.find('.flow-panel')).to.have.length(1);
-    });
-});
+.serviceGraph__tabs {
+  margin-top: @spacing-m;
+
+  .serviceGraph__tab-link:focus {
+    outline: none;
+  }
+}
+
+.serviceGraph__panel {
+  margin-bottom: @spacing-l;
+  background-color: white;
+}

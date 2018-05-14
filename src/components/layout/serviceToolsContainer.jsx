@@ -19,14 +19,12 @@ import PropTypes from 'prop-types';
 import {Route, Switch} from 'react-router-dom';
 import './serviceTools.less';
 
-import Flow from '../flow/flow';
 import Traces from '../traces/traces';
 import Trends from '../trends/trends';
 import Alerts from '../alerts/alerts';
 
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 
-const isFlowEnabled = subsystems.includes('flow');
 const isTrendsEnabled = subsystems.includes('trends');
 const isAlertsEnabled = subsystems.includes('alerts');
 
@@ -47,7 +45,6 @@ export default class ServiceToolsContainer extends Component {
             <article className="serviceToolsContainer container">
                 <Switch>
                     <Route exact path="/service/:serviceName" component={Trends}/>
-                    {isFlowEnabled && <Route exact path="/service/:serviceName/flow" component={Flow}/>}
                     <Route exact path="/service/:serviceName/traces" component={Traces}/>
                     {isTrendsEnabled && <Route exact path="/service/:serviceName/trends" component={Trends}/>}
                     {isAlertsEnabled && <Route exact path="/service/:serviceName/alerts" component={Alerts}/>}

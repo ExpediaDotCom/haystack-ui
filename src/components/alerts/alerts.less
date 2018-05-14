@@ -87,12 +87,20 @@
   }
 }
 
-.alerts-toolbar {
-  margin-bottom: @spacing-m;
-}
-
 .alerts-toolbar__time-range-selector {
   margin-bottom: @spacing-xs;
+}
+.alert-tabs {
+  margin-bottom: @spacing-s;
+  .nav-tabs > li > a {
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: @spacing-l;
+  }
+}
+
+.alert-tabs_tab:focus {
+  outline: none;
 }
 
 .alerts-slack-icon {

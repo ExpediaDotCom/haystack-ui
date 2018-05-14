@@ -233,7 +233,7 @@ describe('<AlertsView />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(3);
+        expect(wrapper.find('.tr-no-border')).to.have.length(1);
     });
 });
 
@@ -273,7 +273,7 @@ describe('<AlertDetails />', () => {
         expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
 
         wrapper.find('.btn-success').first().simulate('click');
-        wrapper.find('.alert-details__input').value = '#updated-subscription-1';
+        wrapper.find('.alert-details__input').getNode().value = '#updated-subscription-1';
         wrapper.find('.ti-plus').first().simulate('click');
 
         expect(wrapper.find('.alert-subscription-handle')).to.have.length(3);
@@ -319,7 +319,7 @@ describe('<AlertDetails />', () => {
 
         // Find, update, and submit new subscription value
         const target = wrapper.find('.alert-subscription-handle').first();
-        target.value = '#updated-subscription-1';
+        target.getNode().value = '#updated-subscription-1';
         wrapper.find('.alert-modify-submit').simulate('click');
 
         // Get new value (placeholder) of subscription name
