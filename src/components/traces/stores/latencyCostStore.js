@@ -20,7 +20,7 @@ import { fromPromise } from 'mobx-utils';
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
 export class LatencyCostStore extends ErrorHandlingStore {
-    @observable latencyCost = [];
+    @observable latencyCost = {};
     @observable promiseState = null;
     traceId = null;
 

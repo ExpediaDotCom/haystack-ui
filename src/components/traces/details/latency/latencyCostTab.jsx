@@ -43,7 +43,8 @@ const backgroundColors = [
 @observer
 export default class LatencyCost extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired
+        latencyCost: PropTypes.object.isRequired,
+        latencyCostTrends: PropTypes.object.isRequired
     };
 
     static toEnvironmentString(infrastructureProvider, infrastructureLocation) {
@@ -192,8 +193,8 @@ export default class LatencyCost extends React.Component {
     constructor(props) {
         super(props);
         
-        this.latencyCost = this.props.store.latencyCost.latencyCost;
-        this.latencyCostTrends = this.props.store.latencyCost.latencyCostTrends;
+        this.latencyCost = this.props.latencyCost;
+        this.latencyCostTrends = this.props.latencyCostTrends;
 
         const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
         const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
@@ -411,21 +412,26 @@ export default class LatencyCost extends React.Component {
 
         return (
             <article>
-                <LatencySummary />
                 <div className="text-center">
-                <div className="btn-group">
-                    <button
-                        onClick={this.viewSingleTraceLatency}
-                        className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
-                        disabled={!showTrends}
-                    >Show Single Trace Latency</button>
-                    <button
-                        onClick={this.viewAggregatedAverageLatency}
-                        className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
-                        disabled={showTrends}
-                    >Show Aggregated Average Latency</button>
+                    <div className="btn-group">
+                        <button
+                            onClick={this.viewSingleTraceLatency}
+                            className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
+                            disabled={!showTrends}
+                        >Single Trace Latency</button>
+                        {
+                            this.props.latencyCostTrends && !!this.props.latencyCostTrends.length &&
+                            (
+                                <button
+                                    onClick={this.viewAggregatedAverageLatency}
+                                    className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
+                                    disabled={showTrends}
+                                >Aggregated Latency</button>
+                            )
+                        }
+                    </div>
                 </div>
-                </div>
+                <LatencySummary />
                 <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
                 <ul>
                     <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>
