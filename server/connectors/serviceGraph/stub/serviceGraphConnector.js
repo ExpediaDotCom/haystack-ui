@@ -18,8 +18,7 @@ const Q = require('q');
 
 const connector = {};
 
-const serviceGraph = {
-    edges: [
+const serviceGraph = [[
         {
             source: 'stark-service',
             destination: 'baratheon-service',
@@ -70,8 +69,7 @@ const serviceGraph = {
             destination: 'mormont-service',
             operation: 'mormont-1'
         }
-    ]
-};
+    ]];
 
 connector.getServiceGraph = () => Q.fcall(() => serviceGraph);
 
