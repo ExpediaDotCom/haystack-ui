@@ -337,7 +337,6 @@ describe('<Traces />', () => {
 
         // Custom time picker
         wrapper.find('.time-range-picker-toggle').simulate('click');
-        wrapper.find('.datetimerange-picker').first().simulate('click');
         wrapper.find('.rdtOld').first().simulate('click');
         wrapper.find('.timerange-picker__presets__listblock').simulate('click');
         wrapper.find('.custom-timerange-apply').simulate('click');
