@@ -26,6 +26,10 @@ const connector = {};
 const metricTankUrl = config.connectors.trends.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 
+function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames) {
+    return `haystack.serviceName.{${services}}.operationName.{${operations}}.interval.${timeWindow}.stat.{${metricStats}}.${metricNames}`;
+}
+
 function createOperationTarget(service, operationName, timeWindow, metricStats, metricNames) {
     return `haystack.serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.{${metricStats}}.{${metricNames}}`;
 }
@@ -257,6 +261,16 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
         }));
 }
 
+function getEdgeLatencyTrendResults(edges, from, until) {
+    const serviceNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.serviceName)).join(',');
+    const operationNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.operationName)).join(',');
+
+    const target = createServicesOperationsTarget(serviceNameRegex, operationNameRegex, 'OneHour', 'mean,*_99', 'latency');
+
+    return fetchTrendValues(target, from, until)
+        .then(trends => trends);
+}
+
 // api
 connector.getServicePerfStats = (granularity, from, until) =>
     getServicePerfStatsResults(convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
@@ -272,5 +286,7 @@ connector.getOperationStats = (serviceName, granularity, from, until) =>
 
 connector.getOperationTrends = (serviceName, operationName, granularity, from, until) =>
     getOperationTrendResults(metricpointNameEncoder.encodeMetricpointName(serviceName), metricpointNameEncoder.encodeMetricpointName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
+
+connector.getEdgeLatency = edges => getEdgeLatencyTrendResults(edges, Math.ceil(Date.now() / 1000) - (60 * 60), Math.ceil(Date.now() / 1000));
 
 module.exports = connector;
