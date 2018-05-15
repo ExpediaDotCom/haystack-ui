@@ -108,6 +108,7 @@
     "timeago.js": "^3.0.2",
     "url-loader": "^0.5.8",
     "vis": "^4.21.0",
+    "vizceral-react": "^4.5.5",
     "webpack": "^2.5.1",
     "webpack-bundle-analyzer": "^2.8.2",
     "webpack-bundle-size-analyzer": "^2.6.0",

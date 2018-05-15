@@ -23,52 +23,62 @@ const serviceGraph = [
         {
             source: 'stark-service',
             destination: 'baratheon-service',
-            operation: 'baratheon-1'
+            operation: 'baratheon-1',
+            count: 42100
         },
         {
             source: 'stark-service',
             destination: 'grayjoy-service',
-            operation: 'grayjoy-1'
+            operation: 'grayjoy-1',
+            count: 2100
         },
         {
             source: 'baratheon-service',
             destination: 'lannister-service',
-            operation: 'lannister-1'
+            operation: 'lannister-1',
+            count: 10200
         },
         {
             source: 'baratheon-service',
             destination: 'clegane-service',
-            operation: 'clegane-1'
+            operation: 'clegane-1',
+            count: 40100
         },
         {
             source: 'lannister-service',
             destination: 'tyrell-service',
-            operation: 'tyrell-1'
+            operation: 'tyrell-1',
+            count: 3000
         },
         {
             source: 'tyrell-service',
             destination: 'targaryen-service',
-            operation: 'targaryen-1'
+            operation: 'targaryen-1',
+            count: 5000
         },
         {
             source: 'tyrell-service',
             destination: 'tully-service',
-            operation: 'tully-1'
+            operation: 'tully-1',
+            count: 12100
         },
         {
             source: 'targaryen-service',
             destination: 'dragon-service',
-            operation: 'dragon-1'
+            operation: 'dragon-1',
+            count: 19000
         },
         {
             source: 'targaryen-service',
             destination: 'drogo-service',
-            operation: 'drogo-1'
+            operation: 'drogo-1',
+            count: 9800
         },
         {
             source: 'targaryen-service',
             destination: 'mormont-service',
-            operation: 'mormont-1'
+            operation: 'mormont-1',
+            count: 500
         }
     ]
 ];
