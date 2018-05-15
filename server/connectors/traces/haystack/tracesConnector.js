@@ -146,8 +146,11 @@ connector.getLatencyCost = (traceId) => {
         return trendsConnector
         .getEdgeLatency(edges)
         .then((trends) => {
-            const latencyCostTrends = callGraphResultTransformer.mergeTrendsWithLatencyCost(latencyCost, trends);
-            return {latencyCost, latencyCostTrends};
+            if (trends && trends.length) {
+                const latencyCostTrends = callGraphResultTransformer.mergeTrendsWithLatencyCost(latencyCost, trends);
+                return {latencyCost, latencyCostTrends};
+            }
+            return {latencyCost};
         });
     });
 };
