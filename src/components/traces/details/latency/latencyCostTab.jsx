@@ -256,7 +256,11 @@ export default class LatencyCost extends React.Component {
         return edges.map((edge) => {
             let label = '';
             if (this.state.showTrends) {
-                label = `Mean: ${edge.meanNetworkDelta}ms\nTP99: ${edge.tp99NetworkDelta}ms`;
+                if (edge.meanNetworkDelta && edge.tp99NetworkDelta) {
+                    label = `Mean: ${edge.meanNetworkDelta}ms\nTP99: ${edge.tp99NetworkDelta}ms`;
+                } else {
+                    label = 'NA';
+                }
             } else if (edge.overlappingEdges > 1) {
                 label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
             } else {
@@ -417,7 +421,6 @@ export default class LatencyCost extends React.Component {
                         <button
                             onClick={this.viewSingleTraceLatency}
                             className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
-                            disabled={!showTrends}
                         >Single Trace Latency</button>
                         {
                             this.props.latencyCostTrends && !!this.props.latencyCostTrends.length &&
