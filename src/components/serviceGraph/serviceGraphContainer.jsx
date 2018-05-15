@@ -41,6 +41,7 @@ export default class ServiceGraphContainer extends React.Component {
     }
 
     toggleTab(tabIndex) {
+        this.props.store.fetchServiceGraph();
         this.setState({tabSelected: tabIndex});
     }
 
