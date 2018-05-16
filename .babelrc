@@ -1,16 +1,4 @@
 {
-  "plugins": [
-    "lodash",
-    "react-hot-loader/babel",
-    "transform-decorators-legacy"
-  ],
-  "presets": [
-    ["env", {
-      "targets": {
-        "browsers": ["last 2 versions"]
-      }
-    }],
-    "react",
-    "stage-1"
-  ]
+  "plugins": ["lodash", "transform-decorators-legacy"],
+  "presets": ["env", "react", "stage-1"]
 }

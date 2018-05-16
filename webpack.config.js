@@ -85,6 +85,5 @@ module.exports = {
     resolve: {
         extensions: ['.json', '.js', '.jsx']
     },
-    externals: 'vizceral-react',
     devtool: 'source-map'
 };
