@@ -35,7 +35,7 @@ function removeStaleEdges(edges) {
 }
 
 function convertToServiceToServiceEdges(edges) {
-    const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination}));
+    const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination, count: edge.stats.count}));
 
     return _.uniqWith(serviceEdges, _.isEqual);
 }

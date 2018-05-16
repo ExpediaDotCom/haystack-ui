@@ -40,8 +40,8 @@ export default class LatencyTabContainer extends React.Component {
                 { store.promiseState && store.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
-                        fulfilled: () => ((store.latencyCost && store.latencyCost.length)
-                                ? <LatencyCostTab latencyCost={store.latencyCost}/>
+                        fulfilled: () => ((store.latencyCost.latencyCost && store.latencyCost.latencyCost.length)
+                                ? <LatencyCostTab latencyCost={store.latencyCost.latencyCost} latencyCostTrends={store.latencyCost.latencyCostTrends} />
                                 : (<div className="well well-sm">
                                         <h6>No span with parent-child relationship found</h6>
                                     </div>))
