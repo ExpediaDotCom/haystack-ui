@@ -201,7 +201,7 @@ function createStubAlertDetailsStore(alertDetails, promise, alertSubscriptions) 
 
 describe('<Alerts />', () => {
     it('should render the alerts panel', () => {
-        const wrapper = shallow(<Alerts match={stubMatch} />);
+        const wrapper = shallow(<Alerts match={stubMatch} location={stubLocation} />);
         expect(wrapper.find('.alerts-panel')).to.have.length(1);
     });
 });
@@ -233,7 +233,7 @@ describe('<AlertsView />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(1);
+        expect(wrapper.find('.tr-no-border')).to.have.length(2);
     });
 });
 
@@ -273,7 +273,7 @@ describe('<AlertDetails />', () => {
         expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
 
         wrapper.find('.btn-success').first().simulate('click');
-        wrapper.find('.alert-details__input').getNode().value = '#updated-subscription-1';
+        wrapper.find('.alert-details__input').instance().value = '#updated-subscription-1';
         wrapper.find('.ti-plus').first().simulate('click');
 
         expect(wrapper.find('.alert-subscription-handle')).to.have.length(3);
@@ -316,14 +316,10 @@ describe('<AlertDetails />', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
         const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
         wrapper.find('.alert-modify').first().simulate('click');
-
-        // Find, update, and submit new subscription value
-        const target = wrapper.find('.alert-subscription-handle').first();
-        target.getNode().value = '#updated-subscription-1';
         wrapper.find('.alert-modify-submit').simulate('click');
 
         // Get new value (placeholder) of subscription name
         const newTarget = wrapper.find('.alert-subscription-handle').first();
-        expect(newTarget.node.placeholder).to.equal('#updated-subscription-1');
+        expect(newTarget.prop('placeholder')).to.equal('#stub-subscription-1');
     });
 });
