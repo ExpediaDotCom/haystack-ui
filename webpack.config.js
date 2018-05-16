@@ -1,6 +1,6 @@
 const path = require('path');
 
-const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -19,13 +19,6 @@ const appPaths = {
 };
 
 // plugins ------------------------------------------------------------------------------------------------------
-
-// Less
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const extractLess = new ExtractTextPlugin({
-    filename: 'bundles/style/[name].css'
-});
 
 // progress plugin
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
@@ -47,40 +40,34 @@ module.exports = {
         app: appPaths.sourceAppJsx
     },
     module: {
-        rules: [{
+        rules: [
+            {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader'
+                loader: 'babel-loader',
+                options: {
+                    plugins: ['lodash', 'transform-decorators-legacy'],
+                    presets: ['env', 'react', 'stage-1']
                 }
             },
             {
                 test: /\.less$/,
                 exclude: /node_modules/,
-                use: extractLess.extract({
-                    use: [{
-                        loader: 'css-loader', // translates CSS into CommonJS
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
                         options: {
-                            sourceMap: true
+                            url: false
                         }
-                    }, {
-                        loader: 'less-loader', // compiles Less to CSS
-                        options: {
-                            sourceMap: true
-                        }
-                    }],
-                    // use style-loader in development
-                    fallback: 'style-loader'
-                })
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loaders: ['file-loader?&emitFile=false&publicPath=/fonts/&name=[name].[ext]']
+                    },
+                    'less-loader'
+                ]
             }
         ]
     },
     plugins: [
-        extractLess,
+        new MiniCssExtractPlugin({ filename: 'bundles/style/[name].css'}),
         new LodashModuleReplacementPlugin(),
         new ProgressBarPlugin(Object.assign({}, progressBarOptions)),
         new BundleAnalyzerPlugin({
@@ -88,17 +75,16 @@ module.exports = {
             generateStatsFile: false,
             reportFilename: 'bundles/report.html',
             openAnalyzer: false
-        }),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        })
     ],
     output: {
         filename: 'bundles/js/[name].js',
+        sourceMapFilename: 'bundles/js/[name].js.map',
         path: appPaths.public
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx']
+        extensions: ['.json', '.js', '.jsx']
     },
-    devServer: {
-        hot: true
-    }
+    externals: 'vizceral-react',
+    devtool: 'source-map'
 };
