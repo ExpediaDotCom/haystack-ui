@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -75,7 +76,8 @@ module.exports = {
             generateStatsFile: false,
             reportFilename: 'bundles/report.html',
             openAnalyzer: false
-        })
+        }),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     ],
     output: {
         filename: 'bundles/js/[name].js',
