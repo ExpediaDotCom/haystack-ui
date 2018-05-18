@@ -42,14 +42,19 @@ export default class OperationResultsTable extends React.Component {
         };
         this.handleExpand = this.handleExpand.bind(this);
         this.expandComponent = this.expandComponent.bind(this);
+        this.afterColumnFilter = this.afterColumnFilter.bind(this);
     }
 
     componentDidMount() {
-        const opName = this.props.operationStore.statsQuery.filters && this.props.operationStore.statsQuery.filters.operationName;
-
+        const opName = this.props.operationStore.statsQuery.filters && this.props.operationStore.statsQuery.filters.operationName && this.props.operationStore.statsQuery.filters.operationName.value;
         if (opName) {
-            this.handleExpand(opName, true);
+            const matchingFilters = this.props.operationStore.statsResults.filter(stat => stat.operationName.includes(opName));
+            if (matchingFilters.length === 1) this.handleExpand(matchingFilters[0].operationName, true);
         }
+    }
+
+    afterColumnFilter(filters) {
+        this.props.operationStore.statsQuery.filters = filters;
     }
 
     handleExpand(rowKey, isExpand) {
@@ -98,7 +103,8 @@ export default class OperationResultsTable extends React.Component {
             expanding: this.state.expanding,
             onExpand: this.handleExpand,
             expandBodyClass: 'expand-row-body',
-            noDataText: 'No such operation found, try clearing filters'
+            noDataText: 'No such operation found, try clearing filters',
+            afterColumnFilter: this.afterColumnFilter
         };
 
         const selectRowProp = {
@@ -113,7 +119,11 @@ export default class OperationResultsTable extends React.Component {
         const {
             operationName,
             gtCount,
-            ltSuccessPercent
+            ltCount,
+            gtSuccessPercent,
+            ltSuccessPercent,
+            gtTP99Count,
+            ltTP99Count
         } = this.props.operationStore.statsQuery.filters || {};
 
         const operationNameFilter = operationName
@@ -127,15 +137,9 @@ export default class OperationResultsTable extends React.Component {
             defaultValue: { comparator: '>' }
         };
 
-        const countDefaultFilter = { comparator: '>' };
-        if (gtCount) {
-            countDefaultFilter.number = gtCount;
-        }
-
-        const percentDefaultFilter = { comparator: '<' };
-        if (ltSuccessPercent) {
-            percentDefaultFilter.number = ltSuccessPercent;
-        }
+        const countDefaultFilter = trendTableFormatters.getCountDefaultFilter(gtCount, ltCount);
+        const percentDefaultFilter = trendTableFormatters.getPercentDefaultFilter(gtSuccessPercent, ltSuccessPercent);
+        const tp99DefaultFilter = trendTableFormatters.getTp99DefaultFilter(gtTP99Count, ltTP99Count);
 
         return (
             <BootstrapTable
@@ -184,6 +188,7 @@ export default class OperationResultsTable extends React.Component {
                     dataSort
                     filter={{
                         ...numberFilterFormatter,
+                        defaultValue: tp99DefaultFilter,
                         placeholder: 'Last TP99 in ms...'
                     }}
                     caretRender={trendTableFormatters.getCaret}
