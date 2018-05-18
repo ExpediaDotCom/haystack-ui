@@ -1,4 +1,4 @@
 {
-  "plugins": ["lodash", "transform-decorators-legacy"],
+  "plugins": ["lodash", "transform-decorators-legacy", "dynamic-import-node"],
   "presets": ["env", "react", "stage-1"]
 }

@@ -23,7 +23,7 @@ const onFinished = require('finished');
 const config = require('../config/config');
 const servicesConnector = require('../connectors/services/servicesConnector');
 const metrics = require('../utils/metrics');
-const assets = require('../../public/bundles/assets.json');
+const assets = require('../../public/assets.json');
 
 const router = express.Router();
 

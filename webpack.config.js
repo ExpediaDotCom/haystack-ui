@@ -45,6 +45,7 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 options: {
+                    babelrc: false,
                     plugins: ['lodash', 'transform-decorators-legacy'],
                     presets: ['env', 'react', 'stage-1']
                 }
@@ -76,7 +77,7 @@ module.exports = {
             openAnalyzer: false
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-        new Assets({filename: 'public/bundles/assets.json'})
+        new Assets({filename: 'public/assets.json'})
     ],
     output: {
         path: appPaths.public,
