@@ -353,8 +353,8 @@ export default class LatencyCost extends React.Component {
             }
         };
 
-        // eslint-disable-next-line no-undef
-        return new vis.Network(container, data, options);
+        import(/* webpackChunkName: "vis", webpackPreload: true */ 'vis')
+        .then(mod => new mod.default.Network(container, data, options));
     }
 
     render() {

@@ -21,8 +21,6 @@ import PropTypes from 'prop-types';
 import HomeSearchBox from './homeSearchBox';
 import serviceStore from '../../stores/serviceStore';
 import servicePerfStore from './stores/servicePerfStore';
-import ServicePerformance from './servicePerformance';
-import ServiceGraph from '../serviceGraph/serviceGraph';
 import './home.less';
 
 const enableServicePerformance = (window.haystackUiConfig.enableServicePerformance);
@@ -36,14 +34,32 @@ export default class Home extends Component {
         const until = Date.now();
         const from = until - (15 * 60 * 1000);
         servicePerfStore.fetchServicePerf('5-min', from, until);
+        this.state = {};
+    }
+
+    componentDidMount() {
+        import(/* webpackChunkName: "serviceGraph", webpackPreload: true */ '../serviceGraph/serviceGraph')
+        .then((mod) => {
+            this.setState({ServiceGraph: mod.default});
+        });
+
+        import(/* webpackChunkName: "servicePerformance", webpackPreload: true */  './servicePerformance')
+        .then((mod) => {
+            this.setState({ServicePerformance: mod.default});
+        });
     }
 
     render() {
+        const {
+            ServiceGraph,
+            ServicePerformance
+        } = this.state;
+
         return (
             <article className="home-panel">
                 <HomeSearchBox history={this.props.history} services={serviceStore.services}/>
-                {enableServiceGraph && <ServiceGraph history={this.props.history}/>}
-                {enableServicePerformance && <ServicePerformance servicePerfStore={servicePerfStore} servicePerfStats={servicePerfStore.servicePerfStats} history={this.props.history} />}
+                {enableServiceGraph && ServiceGraph && <ServiceGraph history={this.props.history}/>}
+                {enableServicePerformance && ServicePerformance && <ServicePerformance servicePerfStore={servicePerfStore} servicePerfStats={servicePerfStore.servicePerfStats} history={this.props.history} />}
             </article>
         );
     }

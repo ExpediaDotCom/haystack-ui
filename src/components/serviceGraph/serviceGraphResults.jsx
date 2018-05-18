@@ -49,12 +49,15 @@ export default class ServiceGraphResults extends React.Component {
 
     static createEdges(rawEdges) {
         const edges = [];
+        const maxCountEdge = _.maxBy(rawEdges, e => e.count);
+        const denominator = maxCountEdge.count / 10000;
+
         rawEdges.forEach((rawEdge) => {
             edges.push({
                 source: rawEdge.source,
                 target: rawEdge.destination,
                 metrics: {
-                    normal: (rawEdge.count / 10)
+                    normal: (rawEdge.count / denominator)
                 }
             });
         });
@@ -67,10 +70,35 @@ export default class ServiceGraphResults extends React.Component {
         const edges = ServiceGraphResults.createEdges(serviceGraph);
         config.nodes = nodes;
         config.connections = edges;
-
+        const style = {
+            colorLabelText: 'rgb(255, 255, 255)',
+            colorTextDisabled: 'rgb(45, 55, 80)',
+            colorNormalDimmed: 'rgb(45, 55, 80)',
+            colorBackgroundDark: 'rgb(45, 55, 80)',
+            colorLabelBorder: 'rgba(54, 162, 235, 1)',
+            colorDonutInternalColor: 'rgb(45, 55, 80)',
+            colorDonutInternalColorHighlighted: 'rgb(45, 55, 80)',
+            colorConnectionLine: 'rgb(45, 55, 80)',
+            colorPageBackground: 'rgb(45, 55, 80)',
+            colorPageBackgroundTransparent: 'rgb(45, 55, 80)',
+            colorBorderLines: 'rgba(54, 162, 235, 1)',
+            colorArcBackground: 'rgb(45, 55, 80)',
+            colorNodeStatus: {
+                default: 'rgb(45, 55, 80)',
+                normal: 'rgb(127, 255, 0)',
+                warning: 'rgb(268, 185, 73)',
+                danger: 'rgb(255, 53, 53)'
+            },
+            colorTraffic: {
+                normal: 'rgb(75, 192, 192)',
+                normalDonut: 'rgb(45, 55, 80)',
+                warning: 'rgb(268, 185, 73)',
+                danger: 'rgb(184, 36, 36)'
+            }
+        };
         return (
             <article className="serviceGraph__panel">
-                <Vizceral traffic={config} view={['haystack']} />
+                <Vizceral traffic={config} view={['haystack']} styles={style} />
             </article>
         );
     }

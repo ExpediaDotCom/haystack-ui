@@ -20,7 +20,6 @@ import '../operation/operationResultsTable.less';
 import Sparklines from './trendSparklines';
 
 export default class TrendsTableFormatters {
-
     static Header({name}) {
         return <span className="results-header">{name}</span>;
     }
