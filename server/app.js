@@ -52,6 +52,13 @@ app.set('trust proxy', 1);
 // MIDDLEWARE SETUP
 app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
+if (process.env.NODE_ENV === 'development') {
+    // dont browser cache if in dev mode
+    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
+} else {
+    // browser cache aggresively for no-dev environment
+    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: '60d' }));
+}
 app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
 app.use(logger.REQUEST_LOGGER);
@@ -105,8 +112,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     errorLogger.error(err);
     next(err);
 });
-
-// START METRICS REPORTING
-metricsReporter.start(config.graphite.host, config.graphite.port, `haystack.ui.ui.${os.hostname()}`, 60000);
 
 module.exports = app;

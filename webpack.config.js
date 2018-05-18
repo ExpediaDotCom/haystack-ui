@@ -33,6 +33,17 @@ const progressBarOptions = {
     width: 20
 };
 
+// environment specific configs -------------------------------------------------------------------------------------
+let devtool = 'source-map';
+let jsBundleFilename = 'bundles/js/[name].[chunkhash].js';
+let cssBundleFilename = 'bundles/style/[name].[chunkhash].css';
+
+if (process.env.NODE_ENV === 'development') {
+    devtool = 'eval-cheap-module-source-map';
+    jsBundleFilename = 'bundles/js/[name].js';
+    cssBundleFilename = 'bundles/style/[name].css';
+}
+
 // main config export -----------------------------------------------------------------------------------------------
 module.exports = {
     entry: {
@@ -67,7 +78,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new MiniCssExtractPlugin({ filename: 'bundles/style/[name].css'}),
+        new MiniCssExtractPlugin({ filename: cssBundleFilename}),
         new LodashModuleReplacementPlugin(),
         new ProgressBarPlugin(Object.assign({}, progressBarOptions)),
         new BundleAnalyzerPlugin({
@@ -82,9 +93,9 @@ module.exports = {
     output: {
         path: appPaths.public,
         publicPath: '/',
-        filename: 'bundles/js/[name].js',
-        sourceMapFilename: 'bundles/js/[name].js.map',
-        chunkFilename: 'bundles/js/[name].js'
+        filename: jsBundleFilename,
+        sourceMapFilename: `${jsBundleFilename}.map`,
+        chunkFilename: jsBundleFilename
     },
     resolve: {
         extensions: ['.json', '.js', '.jsx']
@@ -100,5 +111,6 @@ module.exports = {
                 }
             }
         }
-    }
+    },
+    devtool
 };
