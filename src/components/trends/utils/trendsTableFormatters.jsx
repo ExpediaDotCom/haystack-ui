@@ -78,5 +78,34 @@ export default class TrendsTableFormatters {
         return a.avgSuccessPercent - b.avgSuccessPercent;
     }
 
+    static getCountDefaultFilter(gtCount, ltCount) {
+        let countDefaultFilter = { comparator: '>' };
+        if (gtCount) {
+            countDefaultFilter.number = gtCount;
+        } else if (ltCount) {
+            countDefaultFilter = {number: ltCount, comparator: '<'};
+        }
+        return countDefaultFilter;
+    }
+
+    static getPercentDefaultFilter(gtSuccessPercent, ltSuccessPercent) {
+        let percentDefaultFilter = { comparator: '<' };
+        if (ltSuccessPercent) {
+            percentDefaultFilter.number = ltSuccessPercent;
+        } else if (gtSuccessPercent) {
+            percentDefaultFilter = {number: gtSuccessPercent, comparator: '>'};
+        }
+        return percentDefaultFilter;
+    }
+
+    static getTp99DefaultFilter(gtTP99Count, ltTP99Count) {
+        let tp99DefaultFilter = { comparator: '>' };
+        if (gtTP99Count) {
+            tp99DefaultFilter.number = gtTP99Count;
+        } else if (ltTP99Count) {
+            tp99DefaultFilter = {number: ltTP99Count, comparator: '<'};
+        }
+        return tp99DefaultFilter;
+    }
 }
 
