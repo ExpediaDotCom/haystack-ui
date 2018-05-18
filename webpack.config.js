@@ -19,9 +19,7 @@ const appPaths = {
     indexView: path.join(__dirname, 'views/index.pug')
 };
 
-// plugins ------------------------------------------------------------------------------------------------------
-
-// progress plugin
+// progress plugin -------------------------------------------------------------------------------------------------
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const chalk = require('chalk'); // Provided through ProgressBarPlugin
@@ -34,8 +32,8 @@ const progressBarOptions = {
     width: 20
 };
 
-// main config  -----------------------------------------------------------------------------------------------
-// main webpack export
+
+// main config export -----------------------------------------------------------------------------------------------
 module.exports = {
     entry: {
         app: appPaths.sourceAppJsx
@@ -86,6 +84,5 @@ module.exports = {
     },
     resolve: {
         extensions: ['.json', '.js', '.jsx']
-    },
-    devtool: 'source-map'
+    }
 };
