@@ -23,6 +23,7 @@ const onFinished = require('finished');
 const config = require('../config/config');
 const servicesConnector = require('../connectors/services/servicesConnector');
 const metrics = require('../utils/metrics');
+const assets = require('../../public/bundles/assets.json');
 
 const router = express.Router();
 
@@ -30,6 +31,9 @@ router.get('*', (req, res) => {
     const timer = metrics.timer('index').start();
 
     res.render('index', {
+        bundleAppJsPath: assets.app.js,
+        bundleAppCssPath: assets.app.css,
+        bundleCommonsJsPath: assets.commons.js,
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
         enableServicePerformance: config.enableServicePerformance,

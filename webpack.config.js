@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const Assets = require('assets-webpack-plugin');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -8,7 +9,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 // paths --------------------------------------------------------------------------------------------------------
 const appPaths = {
-    public: path.join(__dirname, 'public'),
+    public: path.join(__dirname, 'public/'),
     bundles: path.join(__dirname, 'public/bundles'),
 
     source: path.join(__dirname, 'src'),
@@ -31,7 +32,6 @@ const progressBarOptions = {
     incomplete: '  ',
     width: 20
 };
-
 
 // main config export -----------------------------------------------------------------------------------------------
 module.exports = {
@@ -75,14 +75,29 @@ module.exports = {
             reportFilename: 'bundles/report.html',
             openAnalyzer: false
         }),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new Assets({filename: 'public/bundles/assets.json'})
     ],
     output: {
+        path: appPaths.public,
+        publicPath: '/',
         filename: 'bundles/js/[name].js',
         sourceMapFilename: 'bundles/js/[name].js.map',
-        path: appPaths.public
+        chunkFilename: 'bundles/js/[name].js'
     },
     resolve: {
         extensions: ['.json', '.js', '.jsx']
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    chunks: 'initial',
+                    test: path.resolve(__dirname, 'node_modules'),
+                    name: 'commons',
+                    enforce: true
+                }
+            }
+        }
     }
 };
