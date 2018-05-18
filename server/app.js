@@ -24,12 +24,10 @@ const favicon = require('serve-favicon');
 const compression = require('compression');
 const axios = require('axios');
 const Q = require('q');
-const os = require('os');
 
 const config = require('./config/config');
 const logger = require('./utils/logger');
 const metricsMiddleware = require('./utils/metricsMiddleware');
-const metricsReporter = require('./utils/metricsReporter');
 const authChecker = require('./sso/authChecker');
 
 const errorLogger = logger.withIdentifier('invocation:failure');
