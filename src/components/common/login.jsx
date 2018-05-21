@@ -16,7 +16,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import particlesJS from 'particles.js';
+import 'particles.js';
 
 import './login.less';
 
@@ -26,6 +26,7 @@ export default class Login extends Component {
     };
 
     componentDidMount() {
+        // eslint-disable-next-line no-undef
         particlesJS.load('particles-js', 'scripts/particles.json');
     }
 
