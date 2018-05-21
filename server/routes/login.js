@@ -17,11 +17,15 @@
 
 const express = require('express');
 const config = require('../config/config');
+const assets = require('../../public/assets.json');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
     res.render('index', {
+        bundleAppJsPath: assets.app.js,
+        bundleAppCssPath: assets.app.css,
+        bundleCommonsJsPath: assets.commons.js,
         ssoAdfsDomain: config.saml && config.saml.adfsDomain
     });
 });
