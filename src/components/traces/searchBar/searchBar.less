@@ -34,6 +34,14 @@
   width: 300px;
 }
 
+.Select-menu-outer {
+  border: 1px solid @gray-dark;
+  border-top: 0;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
 // TODO use grid system instead of flex
 .search-bar-pickers {
   display: flex;
@@ -146,12 +154,15 @@
   max-height: 400px;
   overflow-y: scroll;
   background-color: white;
-  font-size: 16px;
+  font-size: @font-size-base;
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   z-index: 2;
   list-style-type: none;
   cursor: pointer;
+  box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+  font-family: @font-family-monospace;
+  line-height: 42px;
 }
 
 .autofill-suggestion {
