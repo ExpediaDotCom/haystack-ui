@@ -46,29 +46,25 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @observable timelineResults = {};
 
     @action fetchSearchResults(query) {
-        const formattedQuery = query;
-        if (!query.startTime) formattedQuery.startTime = ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
-        if (!query.endTime) formattedQuery.endTime = Date.now() * 1000;
-        if (query.operationName === 'all') formattedQuery.operationName = null;
-
-        const queryUrlString = toQueryUrlString({...formattedQuery,
-            serviceName: decodeURIComponent(formattedQuery.serviceName),
-            operationName: (!formattedQuery.operationName || formattedQuery.operationName === 'all') ? null : decodeURIComponent(formattedQuery.operationName),
-            startTime: formattedQuery.startTime,
-            endTime: formattedQuery.endTime,
+        const queryUrlString = toQueryUrlString({...query,
+            serviceName: decodeURIComponent(query.serviceName),
+            operationName: (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName),
+            startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
+            endTime: query.endTime ? query.endTime * 1000 : (Date.now() - (30 * 1000)) * 1000, // artificial delay of 30 sec to get completed traces
             timePreset: null
         });
-        this.fetchTraceResults(queryUrlString);
-        this.fetchTimeline(queryUrlString);
 
-        this.searchQuery = formattedQuery;
+        this.fetchTraceResults(queryUrlString, query);
+        this.fetchTimeline(queryUrlString);
+        this.searchQuery = query;
     }
 
-    @action fetchTraceResults(queryUrlString) {
+    @action fetchTraceResults(queryUrlString, query) {
         this.traceResultsPromiseState = fromPromise(
             axios
             .get(`/api/traces?${queryUrlString}`)
             .then((result) => {
+                this.searchQuery = query;
                 this.searchResults = formatResults(result.data);
             })
             .catch((result) => {

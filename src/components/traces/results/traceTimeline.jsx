@@ -64,7 +64,7 @@ export default class TraceTimeline extends React.Component {
             labels,
             datasets: [
                 {
-                    label: `${this.props.store.searchQuery.serviceName} trace call count  `,
+                    label: 'traces count',
                     backgroundColor: '#D8ECFA',
                     borderColor: '#36A2EB',
                     borderWidth: 1,
