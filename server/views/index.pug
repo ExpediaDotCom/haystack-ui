@@ -2,7 +2,7 @@ doctype html
 html
   head
     title= 'Haystack'
-    link(rel='stylesheet', href='/bundles/style/app.css')
+    link(rel='stylesheet', href=bundleAppCssPath)
     // prefetch fonts
     link(rel='preload', as='font', href='/fonts/titillium-web-v5-latin-300.woff2')
     link(rel='preload', as='font', href='/fonts/titillium-web-v5-latin-regular.woff2')
@@ -24,6 +24,5 @@ html
             refreshInterval: !{JSON.stringify(refreshInterval || 60000)},
             enableAlertSubscriptions: !{JSON.stringify(enableAlertSubscriptions || false)}
         }
-    script(async, defer, src='/bundles/js/app.js')
-    script(async, defer, src='https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/vis.min.js')
-    script(async, defer, src='/scripts/particles.min.js')
+    script(async, defer, src = bundleCommonsJsPath)
+    script(async, defer, src = bundleAppJsPath)

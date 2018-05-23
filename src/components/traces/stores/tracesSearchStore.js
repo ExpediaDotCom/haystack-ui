@@ -53,12 +53,11 @@ export class TracesSearchStore extends ErrorHandlingStore {
 
         const queryUrlString = toQueryUrlString({...formattedQuery,
             serviceName: decodeURIComponent(formattedQuery.serviceName),
-            operationName: formattedQuery.operationName === 'all',
+            operationName: (!formattedQuery.operationName || formattedQuery.operationName === 'all') ? null : decodeURIComponent(formattedQuery.operationName),
             startTime: formattedQuery.startTime,
             endTime: formattedQuery.endTime,
             timePreset: null
         });
-        console.log(queryUrlString)
         this.fetchTraceResults(queryUrlString);
         this.fetchTimeline(queryUrlString);
 
@@ -68,28 +67,28 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @action fetchTraceResults(queryUrlString) {
         this.traceResultsPromiseState = fromPromise(
             axios
-                .get(`/api/traces?${queryUrlString}`)
-                .then((result) => {
-                    this.searchResults = formatResults(result.data);
-                })
-                .catch((result) => {
-                    this.searchResults = [];
-                    TracesSearchStore.handleError(result);
-                })
+            .get(`/api/traces?${queryUrlString}`)
+            .then((result) => {
+                this.searchResults = formatResults(result.data);
+            })
+            .catch((result) => {
+                this.searchResults = [];
+                TracesSearchStore.handleError(result);
+            })
         );
     }
 
     @action fetchTimeline(queryUrlString) {
         this.timelinePromiseState = fromPromise(
             axios
-                .get(`/api/traces/timeline?${queryUrlString}`)
-                .then((result) => {
-                    this.timelineResults = result.data;
-                })
-                .catch((result) => {
-                    this.timelineResults = [];
-                    TracesSearchStore.handleError(result);
-                })
+            .get(`/api/traces/timeline?${queryUrlString}`)
+            .then((result) => {
+                this.timelineResults = result.data;
+            })
+            .catch((result) => {
+                this.timelineResults = [];
+                TracesSearchStore.handleError(result);
+            })
         );
     }
 }

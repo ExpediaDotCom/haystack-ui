@@ -306,7 +306,7 @@ describe('<Trends />', () => {
 
         expect(operationStore.fetchStats.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(2);
-        expect(wrapper.find('.tr-no-border')).to.have.length(5);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(5);
     });
 
     it('should render error if promise is rejected', () => {
@@ -315,7 +315,7 @@ describe('<Trends />', () => {
         const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(2);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should render loading if promise is pending', () => {
@@ -325,7 +325,7 @@ describe('<Trends />', () => {
 
         expect(wrapper.find('.loading')).to.have.length(2);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should render sparklines on each row of search results', () => {
@@ -378,9 +378,9 @@ describe('<Trends />', () => {
 
         // Custom time picker
         wrapper.find('.custom-btn').simulate('click');
-        wrapper.find('.custom-timerange-picker__datetime-from').simulate('click');
+        wrapper.find('div.custom-timerange-picker__datetime-from').simulate('click');
         wrapper.find('.rdtOld').first().simulate('click');
-        wrapper.find('.custom-timerange-picker').simulate('click');
+        wrapper.find('div.custom-timerange-picker').simulate('click');
         wrapper.find('.btn-apply').simulate('click');
         expect(wrapper.find('.timerange-picker')).to.have.length(0);
     });

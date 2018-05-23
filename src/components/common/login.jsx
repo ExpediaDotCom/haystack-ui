@@ -16,12 +16,15 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import 'particles.js';
+
 import './login.less';
 
 export default class Login extends Component {
     static propTypes = {
         location: PropTypes.object.isRequired
     };
+
     componentDidMount() {
         // eslint-disable-next-line no-undef
         particlesJS.load('particles-js', 'scripts/particles.json');

@@ -372,7 +372,7 @@ describe('<Traces />', () => {
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
-        expect(wrapper.find('.tr-no-border')).to.have.length(2);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
     });
 
     it('should render error if promise is rejected', () => {
@@ -380,7 +380,7 @@ describe('<Traces />', () => {
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should render loading while promise is pending', () => {
@@ -388,7 +388,7 @@ describe('<Traces />', () => {
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(wrapper.find('.loading')).to.have.length(1);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should update search results on clicking search', () => {
@@ -396,18 +396,18 @@ describe('<Traces />', () => {
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         wrapper.find('.results-header').at(0).simulate('click');
-        let traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+        let traceIdA = wrapper.find('tr.tr-no-border').at(0).children().first();
             traceIdA = traceIdA.props().children;
         wrapper.find('.results-header').at(0).simulate('click');
-        let traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+        let traceIdB = wrapper.find('tr.tr-no-border').at(0).children().first();
             traceIdB = traceIdB.props().children;
         expect(traceIdA).to.not.equal(traceIdB);
 
         wrapper.find('.results-header').at(6).simulate('click');
-        traceIdA = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdA = wrapper.find('tr.tr-no-border').at(0).children().first();
         traceIdA = traceIdA.props().children;
         wrapper.find('.results-header').at(6).simulate('click');
-        traceIdB = wrapper.find('.tr-no-border').at(0).children().first();
+        traceIdB = wrapper.find('tr.tr-no-border').at(0).children().first();
         traceIdB = traceIdB.props().children;
         expect(traceIdA).to.not.equal(traceIdB);
     });
@@ -420,7 +420,7 @@ describe('<Traces />', () => {
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(2);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
-        expect(wrapper.find('.tr-no-border')).to.have.length(2);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
     });
 
     it('should not show search results list on empty promise', () => {
@@ -428,7 +428,7 @@ describe('<Traces />', () => {
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
         expect(wrapper.find('.no-search_text')).to.have.length(1);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should not show search results list on empty results', () => {
@@ -443,7 +443,7 @@ describe('<Traces />', () => {
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(0);
-        expect(wrapper.find('.tr-no-border')).to.have.length(0);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should not accept invalid query string parameters', () => {
@@ -542,11 +542,10 @@ describe('<Traces />', () => {
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
         expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 13});
-        expect(wrapper.find('.search-bar-text-box').node.value).to.equal('test-3=');
+        expect(wrapper.find('.search-bar-text-box').prop('value')).to.equal('test-3=');
     });
 
-
-        it('renders the all spans in the trace in the detail view', () => {
+    it('renders the all spans in the trace in the detail view', () => {
         const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
         const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
@@ -586,7 +585,7 @@ describe('<Traces />', () => {
         wrapper.find('.results-header').at(5).simulate('click');
 
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
-        expect(wrapper.find('.react-bs-table-container .tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
+        expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
     });
 
     it('has a modal upon clicking a span', () => {

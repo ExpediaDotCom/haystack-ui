@@ -28,7 +28,6 @@ import TrendTimeRangePicker from '../../common/timeRangePicker';
 const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
 
 export default class TrendDetailsToolbar extends React.Component {
-
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         trendsStore: PropTypes.object.isRequired,

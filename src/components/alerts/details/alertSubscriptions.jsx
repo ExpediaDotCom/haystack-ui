@@ -275,5 +275,4 @@ export default class AlertSubscriptions extends React.Component {
             </section>
         );
     }
-
 }

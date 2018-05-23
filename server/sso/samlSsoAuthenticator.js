@@ -46,8 +46,7 @@ function createSamlStrategyWithRedirect(redirectUrl) {
             return done(null, {
                 id: profile.nameID,
                 email: profile[EMAIL_ADDRESS_SCHEMA],
-                timestamp: Date.now(),
-                groups
+                timestamp: Date.now()
             });
         }
     );

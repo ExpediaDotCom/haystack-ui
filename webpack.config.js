@@ -1,13 +1,15 @@
 const path = require('path');
-
 const webpack = require('webpack');
+const Assets = require('assets-webpack-plugin');
+
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // paths --------------------------------------------------------------------------------------------------------
 const appPaths = {
-    public: path.join(__dirname, 'public'),
+    public: path.join(__dirname, 'public/'),
     bundles: path.join(__dirname, 'public/bundles'),
 
     source: path.join(__dirname, 'src'),
@@ -18,16 +20,7 @@ const appPaths = {
     indexView: path.join(__dirname, 'views/index.pug')
 };
 
-// plugins ------------------------------------------------------------------------------------------------------
-
-// Less
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const extractLess = new ExtractTextPlugin({
-    filename: 'bundles/style/[name].css'
-});
-
-// progress plugin
+// progress plugin -------------------------------------------------------------------------------------------------
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const chalk = require('chalk'); // Provided through ProgressBarPlugin
@@ -40,47 +33,52 @@ const progressBarOptions = {
     width: 20
 };
 
-// main config  -----------------------------------------------------------------------------------------------
-// main webpack export
+// environment specific configs -------------------------------------------------------------------------------------
+let devtool = 'source-map';
+let jsBundleFilename = 'bundles/js/[name].[chunkhash].js';
+let cssBundleFilename = 'bundles/style/[name].[chunkhash].css';
+
+if (process.env.NODE_ENV === 'development') {
+    devtool = 'eval-cheap-module-source-map';
+    jsBundleFilename = 'bundles/js/[name].js';
+    cssBundleFilename = 'bundles/style/[name].css';
+}
+
+// main config export -----------------------------------------------------------------------------------------------
 module.exports = {
     entry: {
         app: appPaths.sourceAppJsx
     },
     module: {
-        rules: [{
+        rules: [
+            {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader'
+                loader: 'babel-loader',
+                options: {
+                    babelrc: false,
+                    plugins: ['lodash', 'transform-decorators-legacy'],
+                    presets: ['env', 'react', 'stage-1']
                 }
             },
             {
                 test: /\.less$/,
                 exclude: /node_modules/,
-                use: extractLess.extract({
-                    use: [{
-                        loader: 'css-loader', // translates CSS into CommonJS
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
                         options: {
-                            sourceMap: true
+                            url: false
                         }
-                    }, {
-                        loader: 'less-loader', // compiles Less to CSS
-                        options: {
-                            sourceMap: true
-                        }
-                    }],
-                    // use style-loader in development
-                    fallback: 'style-loader'
-                })
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loaders: ['file-loader?&emitFile=false&publicPath=/fonts/&name=[name].[ext]']
+                    },
+                    'less-loader'
+                ]
             }
         ]
     },
     plugins: [
-        extractLess,
+        new MiniCssExtractPlugin({ filename: cssBundleFilename}),
         new LodashModuleReplacementPlugin(),
         new ProgressBarPlugin(Object.assign({}, progressBarOptions)),
         new BundleAnalyzerPlugin({
@@ -89,16 +87,30 @@ module.exports = {
             reportFilename: 'bundles/report.html',
             openAnalyzer: false
         }),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new Assets({filename: 'public/assets.json'})
     ],
     output: {
-        filename: 'bundles/js/[name].js',
-        path: appPaths.public
+        path: appPaths.public,
+        publicPath: '/',
+        filename: jsBundleFilename,
+        sourceMapFilename: `${jsBundleFilename}.map`,
+        chunkFilename: jsBundleFilename
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx']
+        extensions: ['.json', '.js', '.jsx']
     },
-    devServer: {
-        hot: true
-    }
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    chunks: 'initial',
+                    test: path.resolve(__dirname, 'node_modules'),
+                    name: 'commons',
+                    enforce: true
+                }
+            }
+        }
+    },
+    devtool
 };

@@ -56,9 +56,41 @@ export default class TrendsHeader extends React.Component {
     static createInitFilters(urlQuery) {
         return {
             operationName: urlQuery.operationName && decodeURIComponent(urlQuery.operationName),
+            gtSuccessPercent: urlQuery.gtSuccessPercent && decodeURIComponent(urlQuery.gtSuccessPercent),
             ltSuccessPercent: urlQuery.ltSuccessPercent && decodeURIComponent(urlQuery.ltSuccessPercent),
-            gtCount: urlQuery.gtCount && decodeURIComponent(urlQuery.gtCount)
+            gtCount: urlQuery.gtCount && decodeURIComponent(urlQuery.gtCount),
+            ltCount: urlQuery.ltCount && decodeURIComponent(urlQuery.ltCount),
+            gtTP99Count: urlQuery.gtTP99Count && decodeURIComponent(urlQuery.gtTP99Count),
+            ltTP99Count: urlQuery.ltTP99Count && decodeURIComponent(urlQuery.ltTP99Count)
         };
+    }
+
+    static createFilterQuery(filters) {
+        const urlQuery = {};
+
+        const operationName = filters.operationName && filters.operationName.value;
+        const gtCount = filters.totalCount && filters.totalCount.value.comparator === '>' ?
+            filters.totalCount.value.number : null;
+        const ltCount = filters.totalCount && filters.totalCount.value.comparator === '<' ?
+            filters.totalCount.value.number : null;
+        const gtTP99Count = filters.latestTp99Duration && filters.latestTp99Duration.value.comparator === '>' ?
+            filters.latestTp99Duration.value.number : null;
+        const ltTP99Count = filters.latestTp99Duration && filters.latestTp99Duration.value.comparator === '<' ?
+            filters.latestTp99Duration.value.number : null;
+        const gtSuccessPercent = filters.avgSuccessPercent && filters.avgSuccessPercent.value.comparator === '>' ?
+            filters.avgSuccessPercent.value.number : null;
+        const ltSuccessPercent = filters.avgSuccessPercent && filters.avgSuccessPercent.value.comparator === '<' ?
+            filters.avgSuccessPercent.value.number : null;
+
+        if (operationName) urlQuery.operationName = operationName;
+        if (gtCount) urlQuery.gtCount = gtCount;
+        if (ltCount) urlQuery.ltCount = ltCount;
+        if (gtTP99Count) urlQuery.gtTP99Count = gtTP99Count;
+        if (ltTP99Count) urlQuery.ltTP99Count = ltTP99Count;
+        if (gtSuccessPercent) urlQuery.gtSuccessPercent = gtSuccessPercent;
+        if (ltSuccessPercent) urlQuery.ltSuccessPercent = ltSuccessPercent;
+
+        return urlQuery;
     }
 
     constructor(props) {
@@ -110,10 +142,15 @@ export default class TrendsHeader extends React.Component {
                 preset: selectedWindow.shortName
             };
         } else {
-            query = { preset: selectedWindow.shortName };
+            query = {
+                preset: selectedWindow.shortName
+            };
         }
 
-        const queryUrl = `?${toQueryUrlString(query)}`;
+        const queryUrl = `?${toQueryUrlString({
+            ...query, 
+            ...TrendsHeader.createFilterQuery(this.props.operationStore.statsQuery.filters)
+        })}`;
         // push to history only if it is not the same search as the current one
         if (queryUrl !== this.props.location.search) {
             this.props.history.push({

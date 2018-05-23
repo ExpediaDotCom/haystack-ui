@@ -17,11 +17,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import Vizceral from 'vizceral-react';
+
+import config from './vizceralConfig';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        serviceGraph: PropTypes.object.isRequired
     };
 
     static createNodes(rawEdges) {
@@ -35,112 +37,79 @@ export default class ServiceGraphResults extends React.Component {
 
         const uniqueNodes = _.uniqWith(allNodes, _.isEqual);
 
-        return uniqueNodes.map((node, index) => {
+        return uniqueNodes.map((node) => {
             const name = node.name;
 
             return {
-                ...node,
-                id: index,
-                label: `${name}`,
-                title: `${name}`,
-                color: {
-                    background: '#D8ECFA',
-                    border: '#36A2EB'
-                }
+                name,
+                renderer: 'focusedChild'
             };
         });
     }
 
-    static createEdges(rawEdges, nodes) {
+    static createEdges(rawEdges) {
         const edges = [];
+        const maxCountEdge = _.maxBy(rawEdges, e => e.count);
+        const denominator = maxCountEdge.count / 10000;
+
         rawEdges.forEach((rawEdge) => {
-            const fromIndex = nodes.find(node => node.name === rawEdge.source).id;
-            const toIndex = nodes.find(node => node.name === rawEdge.destination).id;
             edges.push({
-                from: fromIndex,
-                to: toIndex,
-                color: {
-                    color: '#333333',
-                    hover: '#333333'
+                source: rawEdge.source,
+                target: rawEdge.destination,
+                metrics: {
+                    normal: (rawEdge.count / denominator)
                 }
             });
         });
         return edges;
     }
 
-    componentDidMount() {
-        const serviceGraph = this.props.store.serviceGraph;
+    render() {
+        const serviceGraph = this.props.serviceGraph;
         const nodes = ServiceGraphResults.createNodes(serviceGraph);
-        const edges = ServiceGraphResults.createEdges(serviceGraph, nodes);
-        const data = {nodes, edges};
-        const container = this.graphContainer;
-        const options = {
-            autoResize: true,
-            layout: {
-                hierarchical: {
-                    enabled: true,
-                    blockShifting: true,
-                    edgeMinimization: true,
-                    sortMethod: 'directed',
-                    levelSeparation: 130
-                }
-            },
-            interaction: {
-                selectable: true,
-                zoomView: true,
-                dragView: true,
-                hover: true
-            },
-            nodes: {
-                shape: 'box',
-                margin: {
-                    left: 10,
-                    right: 10,
-                    bottom: 10
-                },
-                font: {
-                    multi: true,
-                    face: 'Titillium Web',
-                    size: 12
-                }
-            },
-            edges: {
-                smooth: false,
-                arrows: {
-                    to: {
-                        enabled: true,
-                        scaleFactor: 0.5
+        const edges = ServiceGraphResults.createEdges(serviceGraph);
+        config.nodes = nodes;
+        config.connections = edges;
+
+        const darkGrey = '#2d3750';
+        const white = '#ffffff';
+        const brandPrimary = '#e23474';
+        const grey = '#4f4f4f';
+
+        const definitions = {
+            detailedNode: {
+                volume: {
+                    default: {
+                        bottom: null
                     }
-                },
-                hoverWidth: 0.5,
-                color: {
-                    color: '#333333'
-                }
-            },
-            physics: {
-                hierarchicalRepulsion: {
-                    centralGravity: 0.0,
-                    springLength: 50,
-                    nodeDistance: 100
                 }
             }
         };
 
-        // eslint-disable-next-line no-undef
-        const network = new vis.Network(container, data, options);
+        const style = {
+            colorLabelText: white,
+            colorNormalDimmed: brandPrimary,
+            colorBackgroundDark: darkGrey,
+            colorLabelBorder: darkGrey,
+            colorDonutInternalColor: white,
+            colorDonutInternalColorHighlighted: darkGrey,
+            colorConnectionLine: grey,
+            colorBorderLines: grey,
+            colorNodeStatus: {
+                default: darkGrey
+            },
+            colorTraffic: {
+                normal: darkGrey,
+                normalDonut: darkGrey
+            },
+            colorTrafficHighlighted: {
+                normal: grey
+            }
+        };
 
-        network.on('click', (properties) => {
-            const nodeIndex = properties.nodes[0];
-            const node = nodes[nodeIndex];
-            if (node) this.props.history.push(`/service/${encodeURIComponent(node.name)}/trends`);
-        });
-        return network;
-    }
-
-    render() {
         return (
             <article className="serviceGraph__panel">
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '500px' }}/>
+                <Vizceral traffic={config} view={['haystack']} styles={style} definitions={definitions} allowDraggingOfNodes targetFramerate={60} />
             </article>
         );
     }
