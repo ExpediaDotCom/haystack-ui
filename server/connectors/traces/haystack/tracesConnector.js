@@ -20,8 +20,10 @@
 const messages = require('../../../../static_codegen/traceReader_pb');
 const searchResultsTransformer = require('./search/searchResultsTransformer');
 const callGraphResultTransformer = require('./protobufConverters/callGraphConverter');
-const protobufConverter = require('./protobufConverters/traceConverter');
+const pbTraceConverter = require('./protobufConverters/traceConverter');
+const pbTraceCountsConverter = require('./protobufConverters/traceCountsConverter');
 const searchRequestBuilder = require('./search/searchRequestBuilder');
+const traceCountsRequestBuilder = require('./timeline/traceCountsRequestBuilder');
 const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/grpcFetcher');
 const config = require('../../../config/config');
@@ -35,6 +37,7 @@ const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 const tracesSearchFetcher = fetcher('searchTraces');
 const traceCallGraphFetcher = fetcher('getTraceCallGraph');
+const traceCountsFetcher = fetcher('getTraceCounts');
 const connector = {};
 
 connector.getServices = () => {
@@ -80,7 +83,7 @@ connector.getTrace = (traceId) => {
 
     return traceFetcher
     .fetch(request)
-    .then(result => protobufConverter.toTraceJson(messages.Trace.toObject(false, result)));
+    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };
 
 connector.findTraces = (query) => {
@@ -95,7 +98,7 @@ connector.findTraces = (query) => {
         .fetch(request)
         .then((result) => {
             const pbTrace = messages.Trace.toObject(false, result);
-            const jsonTrace = protobufConverter.toTraceJson(pbTrace);
+            const jsonTrace = pbTraceConverter.toTraceJson(pbTrace);
 
             return searchResultsTransformer.transform([jsonTrace], query);
         });
@@ -105,7 +108,7 @@ connector.findTraces = (query) => {
     .fetch(searchRequestBuilder.buildRequest(query))
     .then((result) => {
         const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
-        const jsonTraceResults = pbTraceResult.tracesList.map(pbTrace => protobufConverter.toTraceJson(pbTrace));
+        const jsonTraceResults = pbTraceResult.tracesList.map(pbTrace => pbTraceConverter.toTraceJson(pbTrace));
 
         return searchResultsTransformer.transform(jsonTraceResults, query);
     });
@@ -117,7 +120,7 @@ connector.getRawTrace = (traceId) => {
 
     return rawTraceFetcher
     .fetch(request)
-    .then(result => protobufConverter.toTraceJson(messages.Trace.toObject(false, result)));
+    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };
 
 connector.getRawSpan = (traceId, spanId) => {
@@ -127,7 +130,7 @@ connector.getRawSpan = (traceId, spanId) => {
 
     return rawSpanFetcher
     .fetch(request)
-    .then(result => protobufConverter.toSpanJson(messages.Span.toObject(false, result)));
+    .then(result => pbTraceConverter.toSpanJson(messages.Span.toObject(false, result)));
 };
 
 connector.getLatencyCost = (traceId) => {
@@ -154,5 +157,13 @@ connector.getLatencyCost = (traceId) => {
         });
     });
 };
+
+connector.getTimeline = query =>
+    traceCountsFetcher
+        .fetch(traceCountsRequestBuilder.buildRequest(query))
+        .then((result) => {
+            const pbTraceCounts = messages.TraceCounts.toObject(false, result);
+            return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts);
+        });
 
 module.exports = connector;
