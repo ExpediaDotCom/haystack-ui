@@ -61,8 +61,9 @@ export default class SearchBar extends React.Component {
     }
 
     componentDidMount() {
-        if (this.state.query.serviceName) {
-            this.fetchSearchResults(this.state.query);
+        const query = this.state.query;
+        if (query.serviceName) {
+            this.fetchSearchResults(query);
             this.props.searchableKeysStore.fetchKeys();
         }
     }

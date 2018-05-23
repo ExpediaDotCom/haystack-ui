@@ -18,7 +18,7 @@
 const whitespaceAroundEqualsRegex = /\s*=\s*/g;
 const keyValuePairRegex = /\w=\w/;
 const whitespaceRegex = /\s+/g;
-const primaryFields = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime'];
+const primaryFields = ['serviceName', 'operationName', 'timePreset', 'startTime', 'endTime', 'granularity'];
 
 export const dateIsValid = (start, end) => {
     // preset timers will always be valid; no need to test validation

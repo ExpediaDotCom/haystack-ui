@@ -298,7 +298,7 @@ function createStubStore(results, promise, searchQuery = {}) {
     const store = new TracesSearchStore();
     sinon.stub(store, 'fetchSearchResults', () => {
         store.searchResults = results;
-        promise ? store.promiseState = promise : null;
+        promise ? store.traceResultsPromiseState = promise : null;
         store.searchQuery = searchQuery;
     });
 
