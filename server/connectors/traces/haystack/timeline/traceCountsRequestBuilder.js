@@ -17,8 +17,8 @@
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'interval'];
-const DEFAULT_INTERVAL_LIMIT = 300 * 1000 * 1000; // 5m in micro seconds
+const reservedField = ['startTime', 'endTime', 'granularity'];
+const DEFAULT_INTERVAL_LIMIT = 60 * 1000 * 1000; // 5m in micro seconds
 
 function createFieldsList(query) {
     return Object.keys(query)
@@ -37,7 +37,7 @@ requestBuilder.buildRequest = (query) => {
     request.setFieldsList(createFieldsList(query));
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
-    request.setInterval(parseInt(query.interval, 10) || DEFAULT_INTERVAL_LIMIT);
+    request.setInterval(parseInt(query.granularity, 10) || DEFAULT_INTERVAL_LIMIT);
 
     return request;
 };

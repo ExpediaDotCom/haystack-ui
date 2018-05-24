@@ -19,12 +19,14 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import {Bar} from 'react-chartjs-2';
+import {toQueryUrlString} from '../../../utils/queryParser';
 
 import './traceTimeline.less';
 
 @observer
 export default class TraceTimeline extends React.Component {
     static propTypes = {
+        history: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired
     };
 
@@ -37,18 +39,23 @@ export default class TraceTimeline extends React.Component {
     updateTimeFrame(event) {
         if (event.length) {
             const results = this.props.store.timelineResults;
+
             // eslint-disable-next-line no-underscore-dangle
-            const startTime = results[event[0]._index].x * 1000;
-            const granularity = (results[results.length - 1].x - results[0].x) / 15;
-            const endTime = (startTime + (granularity * 1000));
+            const selectedIndex = event[0]._index;
+            const startTime = results[selectedIndex].x / 1000;
+            const endTime = results[selectedIndex + 1].x / 1000;
 
             const newQuery = {
-                serviceName: this.props.store.searchQuery.serviceName,
+                ...this.props.store.searchQuery,
+                timePreset: null,
                 startTime,
                 endTime
             };
 
-            this.props.store.fetchSearchResults(newQuery);
+            const queryUrl = `?${toQueryUrlString(newQuery)}`;
+            this.props.history.push({
+                search: queryUrl
+            });
         }
     }
 
@@ -56,7 +63,7 @@ export default class TraceTimeline extends React.Component {
         const labels = [];
         const data = [];
         this.props.store.timelineResults.forEach((item) => {
-            labels.push(new Date(item.x));
+            labels.push(new Date(item.x / 1000));
             data.push(item.y);
         });
 
@@ -65,7 +72,7 @@ export default class TraceTimeline extends React.Component {
             datasets: [
                 {
                     label: 'traces count',
-                    backgroundColor: '#D8ECFA',
+                    backgroundColor: '#78c5f9',
                     borderColor: '#36A2EB',
                     borderWidth: 1,
                     hoverBackgroundColor: '#73bdef',
@@ -84,8 +91,8 @@ export default class TraceTimeline extends React.Component {
                     barPercentage: 1.17,
                     type: 'time',
                     time: {
-                        min: this.props.store.searchQuery.startTime / 1000,
-                        max: this.props.store.searchQuery.endTime / 1000
+                        min: new Date(parseInt(this.props.store.apiQuery.startTime, 10) / 1000),
+                        max: new Date(parseInt(this.props.store.apiQuery.endTime, 10) / 1000)
                     }
                 }],
                 yAxes: [{
