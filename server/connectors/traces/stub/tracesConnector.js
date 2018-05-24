@@ -191,16 +191,16 @@ function getValue(min, max) {
 
 function getRandomValues(granularity, dataPoints, from) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({x: ((from / 1000) + (i * granularity)), y: getValue(0, 3000)}));
+    _.range(dataPoints).forEach(i => valuesArr.push({x: ((from) + (i * granularity)), y: getValue(0, 3000)}));
     return valuesArr;
 }
 
 connector.getTimeline = query => Q.fcall(() => {
-    const granularity = ((query.endTime - query.startTime) / 1000) / 15;
-    const range = (query.endTime - query.startTime) / 1000;
+    const granularity = (query.endTime - query.startTime) / 15;
+    const range = (query.endTime - query.startTime);
     const points = range / granularity;
 
-    return getRandomValues(granularity, points, query.startTime);
+    return getRandomValues(granularity, points, parseInt(query.startTime, 10));
 });
 
 connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error', 'minDuration', 'guid', 'testid']);

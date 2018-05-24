@@ -18,7 +18,7 @@ const converter = {};
 
 converter.toTraceCountsJson = pbTraceCounts => pbTraceCounts.tracecountList.map(
     pbTraceCount => ({
-            x: pbTraceCount.timestamp / 1000,
+            x: pbTraceCount.timestamp,
             y: pbTraceCount.count
         }
     ));
