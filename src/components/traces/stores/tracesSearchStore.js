@@ -21,6 +21,7 @@ import {fromPromise} from 'mobx-utils';
 import {toDurationMicroseconds} from '../utils/presets';
 import {toQueryUrlString} from '../../../utils/queryParser';
 import {ErrorHandlingStore} from '../../../stores/errorHandlingStore';
+import timeWindow from '../../../utils/timeWindow';
 
 export function formatResults(results) {
     return results.map((result) => {
@@ -42,29 +43,39 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @observable traceResultsPromiseState = { case: ({empty}) => empty() };
     @observable timelinePromiseState = null;
     @observable searchQuery = null;
+    @observable apiQuery = null;
     @observable searchResults = [];
     @observable timelineResults = {};
 
     @action fetchSearchResults(query) {
-        const queryUrlString = toQueryUrlString({...query,
-            serviceName: decodeURIComponent(query.serviceName),
-            operationName: (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName),
-            startTime: query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset)),
-            endTime: query.endTime ? query.endTime * 1000 : (Date.now() - (30 * 1000)) * 1000, // artificial delay of 30 sec to get completed traces
-            timePreset: null
-        });
+        const serviceName = decodeURIComponent(query.serviceName);
+        const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
+        const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
+        const ARTIFICIAL_DELAY = 45 * 1000;  // artificial delay of 45 sec to get completed traces
+        const endTime = query.endTime ? query.endTime * 1000 : (Date.now() - ARTIFICIAL_DELAY) * 1000;
+        const granularity = timeWindow.getLowerGranularity((endTime / 1000) - (startTime / 1000)).value * 1000;
 
-        this.fetchTraceResults(queryUrlString, query);
-        this.fetchTimeline(queryUrlString);
+        const apiQuery = {...query,
+            serviceName,
+            operationName,
+            startTime,
+            endTime,
+            timePreset: null
+        };
+
+        const queryUrlString = toQueryUrlString(apiQuery);
+
+        this.fetchTraceResults(queryUrlString);
+        this.fetchTimeline(queryUrlString, granularity);
         this.searchQuery = query;
+        this.apiQuery = apiQuery;
     }
 
-    @action fetchTraceResults(queryUrlString, query) {
+    @action fetchTraceResults(queryUrlString) {
         this.traceResultsPromiseState = fromPromise(
             axios
             .get(`/api/traces?${queryUrlString}`)
             .then((result) => {
-                this.searchQuery = query;
                 this.searchResults = formatResults(result.data);
             })
             .catch((result) => {
@@ -74,10 +85,10 @@ export class TracesSearchStore extends ErrorHandlingStore {
         );
     }
 
-    @action fetchTimeline(queryUrlString) {
+    @action fetchTimeline(queryUrlString, granularity) {
         this.timelinePromiseState = fromPromise(
             axios
-            .get(`/api/traces/timeline?${queryUrlString}`)
+            .get(`/api/traces/timeline?${queryUrlString}&granularity=${granularity}`)
             .then((result) => {
                 this.timelineResults = result.data;
             })

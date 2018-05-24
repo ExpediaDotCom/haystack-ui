@@ -29,6 +29,7 @@ import NoSearch from './noSearch';
 export default class TraceResults extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired
     };
 
@@ -39,7 +40,7 @@ export default class TraceResults extends React.Component {
                     fulfilled: () => (
                         this.props.tracesSearchStore.timelineResults
                         && this.props.tracesSearchStore.timelineResults.length
-                        && <TraceTimeline store={this.props.tracesSearchStore}/>)
+                        && <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history}/>)
                 })
                 }
                 { this.props.tracesSearchStore.traceResultsPromiseState && this.props.tracesSearchStore.traceResultsPromiseState.case({

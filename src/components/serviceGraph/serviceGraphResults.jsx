@@ -71,6 +71,7 @@ export default class ServiceGraphResults extends React.Component {
         config.nodes = nodes;
         config.connections = edges;
 
+        const blue = '#36A2EB';
         const darkGrey = '#2d3750';
         const white = '#ffffff';
         const brandPrimary = '#e23474';
@@ -99,7 +100,7 @@ export default class ServiceGraphResults extends React.Component {
                 default: darkGrey
             },
             colorTraffic: {
-                normal: darkGrey,
+                normal: blue,
                 normalDonut: darkGrey
             },
             colorTrafficHighlighted: {
