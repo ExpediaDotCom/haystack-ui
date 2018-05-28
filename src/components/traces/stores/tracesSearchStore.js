@@ -53,7 +53,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
         const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
         const ARTIFICIAL_DELAY = 45 * 1000;  // artificial delay of 45 sec to get completed traces
         const endTime = query.endTime ? query.endTime * 1000 : (Date.now() - ARTIFICIAL_DELAY) * 1000;
-        const granularity = timeWindow.getLowerGranularity((endTime / 1000) - (startTime / 1000)).value * 1000;
+        const granularity = timeWindow.getHigherGranularity((endTime / 1000) - (startTime / 1000)).value * 1000;
 
         const apiQuery = {...query,
             serviceName,

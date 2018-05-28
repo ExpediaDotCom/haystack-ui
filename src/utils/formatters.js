@@ -51,7 +51,7 @@ formatters.toDurationStringFromMs = (duration) => {
     } else if (duration < 1000) {
         return `${duration}ms`;
     }
-    return `${(duration / 1000).toFixed()}s`;
+    return `${(duration / 1000).toFixed(1)}s`;
 };
 
 formatters.toNumberString = (num) => {
