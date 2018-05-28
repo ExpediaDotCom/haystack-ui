@@ -32,11 +32,24 @@ function createFieldsList(query) {
     });
 }
 
+function roundUpToGranularity(timeString, granularityString) {
+    const granularity = parseInt(granularityString, 10);
+    const time = parseInt(timeString, 10);
+
+    return ((time / granularity) + 1) * granularity;
+}
+
+function roundDownToGranularity(timeString, granularityString) {
+    const granularity = parseInt(granularityString, 10);
+    const time = parseInt(timeString, 10);
+    return parseInt((time / granularity), 10) * granularity;
+}
+
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TraceCountsRequest();
     request.setFieldsList(createFieldsList(query));
-    request.setStarttime(parseInt(query.startTime, 10));
-    request.setEndtime(parseInt(query.endTime, 10));
+    request.setStarttime(roundDownToGranularity(query.startTime, query.granularity));
+    request.setEndtime(roundUpToGranularity(query.endTime, query.granularity));
     request.setInterval(parseInt(query.granularity, 10) || DEFAULT_INTERVAL_LIMIT);
 
     return request;
