@@ -36,7 +36,7 @@ function roundUpToGranularity(timeString, granularityString) {
     const granularity = parseInt(granularityString, 10);
     const time = parseInt(timeString, 10);
 
-    return ((time / granularity) + 1) * granularity;
+    return ((parseInt((time / granularity), 10) + 1) * granularity) - 1;
 }
 
 function roundDownToGranularity(timeString, granularityString) {

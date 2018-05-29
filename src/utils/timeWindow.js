@@ -99,8 +99,8 @@ timeWindow.getLowerGranularity = (timeInMs) => {
 };
 
 timeWindow.getHigherGranularity = (timeInMs) => {
-    const minNumberOfPoints = 15;
-    return metricGranularity.getMinGranularity(timeInMs / minNumberOfPoints);
+    const maxNumberOfPoints = 12;
+    return metricGranularity.getMaxGranularity(timeInMs / maxNumberOfPoints);
 };
 
 export default timeWindow;
