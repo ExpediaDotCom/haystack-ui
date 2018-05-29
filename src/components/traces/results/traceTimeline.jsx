@@ -75,7 +75,7 @@ export default class TraceTimeline extends React.Component {
                     backgroundColor: '#78c5f9',
                     borderColor: '#36A2EB',
                     borderWidth: 1,
-                    hoverBackgroundColor: '#73bdef',
+                    hoverBackgroundColor: '#b5def7',
                     hoverBorderColor: '#36A2EB',
                     data
                 }
@@ -83,16 +83,24 @@ export default class TraceTimeline extends React.Component {
         };
         const options = {
             maintainAspectRatio: false,
+            barThickness: 1,
+            gridLines: {
+                offsetGridLines: true
+            },
             legend: {
                 display: false
             },
             scales: {
                 xAxes: [{
-                    barPercentage: 1.17,
+                    barPercentage: 0.95,
                     type: 'time',
+                    categoryPercentage: 1,
                     time: {
                         min: new Date(parseInt(this.props.store.apiQuery.startTime, 10) / 1000),
                         max: new Date(parseInt(this.props.store.apiQuery.endTime, 10) / 1000)
+                    },
+                    gridLines: {
+                        offsetGridLines: true
                     }
                 }],
                 yAxes: [{

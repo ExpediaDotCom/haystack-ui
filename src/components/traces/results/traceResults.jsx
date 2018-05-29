@@ -38,9 +38,9 @@ export default class TraceResults extends React.Component {
             <section>
                 { this.props.tracesSearchStore.timelinePromiseState && this.props.tracesSearchStore.timelinePromiseState.case({
                     fulfilled: () => (
-                        this.props.tracesSearchStore.timelineResults
-                        && this.props.tracesSearchStore.timelineResults.length
-                        && <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history}/>)
+                        (this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length)
+                        ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history}/>
+                        : null)
                 })
                 }
                 { this.props.tracesSearchStore.traceResultsPromiseState && this.props.tracesSearchStore.traceResultsPromiseState.case({

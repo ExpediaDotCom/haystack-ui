@@ -24,7 +24,7 @@ import './timeRangePicker.less';
 export default class TimeRangePicker extends React.Component {
     static propTypes = {
         timeRangeChangeCallback: PropTypes.func.isRequired
-    }
+    };
 
     static timePresetOptions = [
         '5m',
@@ -33,8 +33,7 @@ export default class TimeRangePicker extends React.Component {
         '4h',
         '12h',
         '24h',
-        '2d',
-        '7d'
+        '3d'
     ];
 
     constructor(props) {
