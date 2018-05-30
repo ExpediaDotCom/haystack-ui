@@ -40,10 +40,14 @@ export default class TraceTimeline extends React.Component {
         if (event.length) {
             const results = this.props.store.timelineResults;
 
+            // this means we reached lowest granularity, couldn't go further down
+            if (results.length === 2) return;
+
             // eslint-disable-next-line no-underscore-dangle
             const selectedIndex = event[0]._index;
             const startTime = results[selectedIndex].x / 1000;
-            const endTime = results[selectedIndex + 1].x / 1000;
+            const granularityMs = (results[1].x - results[0].x) / 1000;
+            const endTime = startTime + granularityMs;
 
             const newQuery = {
                 ...this.props.store.searchQuery,
@@ -94,11 +98,14 @@ export default class TraceTimeline extends React.Component {
                 xAxes: [{
                     barPercentage: 0.95,
                     type: 'time',
-                    categoryPercentage: 1,
+                    ticks: {
+                        source: 'data'
+                    },
                     time: {
                         min: new Date(parseInt(this.props.store.apiQuery.startTime, 10) / 1000),
                         max: new Date(parseInt(this.props.store.apiQuery.endTime, 10) / 1000)
                     },
+                    categoryPercentage: 1,
                     gridLines: {
                         offsetGridLines: true
                     }

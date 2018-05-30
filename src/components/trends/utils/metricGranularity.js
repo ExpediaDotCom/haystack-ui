@@ -38,7 +38,7 @@ granularity.options = [
 
 granularity.getMinGranularity = timeInMs => granularity.options.find(option => option.value >= timeInMs) || granularity.options[granularity.options.length - 1];
 
-const granularityRanges = [60 * 1000, 5 * 60 * 1000, 15 * 60 * 1000, 60 * 60 * 1000, 6 * 60 * 60 * 1000, 12 * 60 * 60 * 1000, 24 * 60 * 60 * 1000];
+const granularityRanges = [60 * 1000, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000, 60 * 60 * 1000, 3 * 60 * 60 * 1000, 6 * 60 * 60 * 1000, 12 * 60 * 60 * 1000, 24 * 60 * 60 * 1000];
 
 granularity.getMaxGranularity = timeInMs => granularityRanges.find(option => option >= timeInMs);
 
