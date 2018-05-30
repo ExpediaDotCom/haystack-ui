@@ -42,10 +42,11 @@ export function formatResults(results) {
 export class TracesSearchStore extends ErrorHandlingStore {
     @observable traceResultsPromiseState = { case: ({empty}) => empty() };
     @observable timelinePromiseState = null;
-    @observable searchQuery = null;
-    @observable apiQuery = null;
+    @observable searchQuery = {};
+    @observable apiQuery = {};
     @observable searchResults = [];
     @observable timelineResults = {};
+    @observable totalCount = 0;
 
     @action fetchSearchResults(query) {
         const serviceName = decodeURIComponent(query.serviceName);
@@ -91,9 +92,11 @@ export class TracesSearchStore extends ErrorHandlingStore {
             .get(`/api/traces/timeline?${queryUrlString}&granularity=${granularity}`)
             .then((result) => {
                 this.timelineResults = result.data;
+                this.totalCount = this.timelineResults.reduce((acc, point) => (acc + point.y), 0);
             })
             .catch((result) => {
                 this.timelineResults = [];
+                this.totalCount = 0;
                 TracesSearchStore.handleError(result);
             })
         );

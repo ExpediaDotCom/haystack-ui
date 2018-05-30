@@ -30,6 +30,7 @@ export default class TraceResultsTable extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
         results: PropTypes.object.isRequired,
+        totalCount: PropTypes.number.isRequired,
         location: PropTypes.object.isRequired
     };
 
@@ -212,7 +213,8 @@ export default class TraceResultsTable extends React.Component {
     render() {
         const {
             query,
-            results
+            results,
+            totalCount
         } = this.props;
 
         const selectRowProp = {
@@ -247,127 +249,133 @@ export default class TraceResultsTable extends React.Component {
         const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
 
         return (
-            <BootstrapTable
-                data={results}
-                tableStyle={{ border: 'none' }}
-                trClassName="tr-no-border"
-                options={options}
-                pagination
-                expandableRow={() => true}
-                expandComponent={this.expandComponent}
-                selectRow={selectRowProp}
-            >
-                <TableHeaderColumn
-                    dataField="traceId"
-                    hidden
-                    isKey
-                >TraceId</TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="startTime"
-                    dataFormat={TraceResultsTable.timeColumnFormatter}
-                    width="15"
-                    dataSort
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderStyle}
-                    headerText={'Start time of the first span in local timezone'}
-                ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="rootOperation"
-                    dataFormat={TraceResultsTable.rootColumnFormatter}
-                    width="25"
-                    dataSort
-                    sortFunc={TraceResultsTable.sortByRootAndTime}
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderStyle}
-                    headerText={'Operation name of the root span'}
-                ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="rootError"
-                    width="10"
-                    dataFormat={TraceResultsTable.errorFormatter}
-                    dataSort
-                    sortFunc={TraceResultsTable.sortByRootSuccessAndTime}
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderStyle}
-                    headerText={'Success of the root service'}
-                ><TraceResultsTable.Header name="Root Success"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="spanCount"
-                    dataFormat={TraceResultsTable.spanColumnFormatter}
-                    width="25"
-                    dataSort
-                    sortFunc={TraceResultsTable.sortBySpansAndTime}
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderStyle}
-                    headerText={'Total number of spans across all services in the trace'}
-                ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
-                {
-                    (query.operationName && query.operationName !== 'all')
-                    && <TableHeaderColumn
-                        dataField="operationError"
-                        dataFormat={TraceResultsTable.errorFormatter}
-                        width="10"
+            <div>
+                <div className="trace-result-summary">
+                    <span>Showing latest <b>{results.length}</b> traces out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                    <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                </div>
+                <BootstrapTable
+                    data={results}
+                    tableStyle={{ border: 'none' }}
+                    trClassName="tr-no-border"
+                    options={options}
+                    pagination
+                    expandableRow={() => true}
+                    expandComponent={this.expandComponent}
+                    selectRow={selectRowProp}
+                >
+                    <TableHeaderColumn
+                        dataField="traceId"
+                        hidden
+                        isKey
+                    >TraceId</TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="startTime"
+                        dataFormat={TraceResultsTable.timeColumnFormatter}
+                        width="15"
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
-                        sortFunc={TraceResultsTable.sortByOperationSuccessAndTime}
-                        thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Success of the searched operation'}
-                    ><TraceResultsTable.Header name="Op Success"/></TableHeaderColumn>
-                }
-                {
-                    (query.operationName && query.operationName !== 'all')
-                    && <TableHeaderColumn
-                        dataField="operationDuration"
+                        thStyle={tableHeaderStyle}
+                        headerText={'Start time of the first span in local timezone'}
+                    ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="rootOperation"
+                        dataFormat={TraceResultsTable.rootColumnFormatter}
+                        width="25"
+                        dataSort
+                        sortFunc={TraceResultsTable.sortByRootAndTime}
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderStyle}
+                        headerText={'Operation name of the root span'}
+                    ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="rootError"
+                        width="10"
+                        dataFormat={TraceResultsTable.errorFormatter}
+                        dataSort
+                        sortFunc={TraceResultsTable.sortByRootSuccessAndTime}
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderStyle}
+                        headerText={'Success of the root service'}
+                    ><TraceResultsTable.Header name="Root Success"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="spanCount"
+                        dataFormat={TraceResultsTable.spanColumnFormatter}
+                        width="25"
+                        dataSort
+                        sortFunc={TraceResultsTable.sortBySpansAndTime}
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderStyle}
+                        headerText={'Total number of spans across all services in the trace'}
+                    ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
+                    {
+                        (query.operationName && query.operationName !== 'all')
+                        && <TableHeaderColumn
+                            dataField="operationError"
+                            dataFormat={TraceResultsTable.errorFormatter}
+                            width="10"
+                            dataSort
+                            caretRender={TraceResultsTable.getCaret}
+                            sortFunc={TraceResultsTable.sortByOperationSuccessAndTime}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Success of the searched operation'}
+                        ><TraceResultsTable.Header name="Op Success"/></TableHeaderColumn>
+                    }
+                    {
+                        (query.operationName && query.operationName !== 'all')
+                        && <TableHeaderColumn
+                            dataField="operationDuration"
+                            dataFormat={TraceResultsTable.durationFormatter}
+                            width="10"
+                            dataSort
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Total busy time in timeline for the queried operation'}
+                        ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
+                    }
+                    {
+                        (query.operationName && query.operationName !== 'all')
+                        && <TableHeaderColumn
+                            dataField="operationDurationPercent"
+                            dataFormat={TraceResultsTable.durationPercentFormatter}
+                            width="10"
+                            dataSort
+                            sortFunc={TraceResultsTable.sortByOperDurPcAndTime}
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
+                        ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
+                    }
+                    <TableHeaderColumn
+                        dataField="serviceDuration"
                         dataFormat={TraceResultsTable.durationFormatter}
                         width="10"
                         dataSort
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Total busy time in timeline for the queried operation'}
-                    ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
-                }
-                {
-                    (query.operationName && query.operationName !== 'all')
-                    && <TableHeaderColumn
-                        dataField="operationDurationPercent"
+                        headerText={'Total busy time in timeline for the queried service'}
+                    ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="serviceDurationPercent"
                         dataFormat={TraceResultsTable.durationPercentFormatter}
                         width="10"
                         dataSort
-                        sortFunc={TraceResultsTable.sortByOperDurPcAndTime}
+                        sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
                         caretRender={TraceResultsTable.getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
-                    ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
-                }
-                <TableHeaderColumn
-                    dataField="serviceDuration"
-                    dataFormat={TraceResultsTable.durationFormatter}
-                    width="10"
-                    dataSort
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Total busy time in timeline for the queried service'}
-                ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="serviceDurationPercent"
-                    dataFormat={TraceResultsTable.durationPercentFormatter}
-                    width="10"
-                    dataSort
-                    sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
-                ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
-                <TableHeaderColumn
-                    dataField="duration"
-                    dataFormat={TraceResultsTable.totalDurationColumnFormatter}
-                    width="10"
-                    dataSort
-                    caretRender={TraceResultsTable.getCaret}
-                    thStyle={tableHeaderRightAlignedStyle}
-                    headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
-                ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
-            </BootstrapTable>
+                        headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
+                    ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="duration"
+                        dataFormat={TraceResultsTable.totalDurationColumnFormatter}
+                        width="10"
+                        dataSort
+                        caretRender={TraceResultsTable.getCaret}
+                        thStyle={tableHeaderRightAlignedStyle}
+                        headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
+                    ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
+                </BootstrapTable>
+            </div>
         );
     }
 }
