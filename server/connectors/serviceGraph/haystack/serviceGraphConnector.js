@@ -34,7 +34,7 @@ function removeStaleEdges(edges) {
     return edges.filter(e => e.stats.lastSeen > threshold);
 }
 
-function convertToServiceToServiceEdges(edges) {
+function flattenStats(edges) {
     const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination, count: edge.stats.count}));
 
     return _.uniqWith(serviceEdges, _.isEqual);
@@ -53,16 +53,18 @@ function filterEdgesInComponent(component, edges) {
 }
 
 function fetchServiceGraph() {
+    const to = Date.now();
+    const from = Date.now() - 3600000; // search for upto one hour old edges
+
     return trendsFetcher
-        .fetch(serviceGraphUrl)
+        .fetch(`${serviceGraphUrl}?from=${from}&to=${to}`)
         .then((data) => {
             // filter stale edges
             // rejecting edges lastSeen before a certain time window
             const filteredEdges = removeStaleEdges(data.edges);
 
-            // convert service -- operation --> service edges to service --> service edges
-            // TODO: remove once api has endpoint for getting service to service edges
-            const serviceToServiceEdges = convertToServiceToServiceEdges(filteredEdges);
+            // convert servicegraph to expected ui data format
+            const serviceToServiceEdges = flattenStats(filteredEdges);
 
             // get list of connected components in the full graph
             const connectedComponents = extractor.extractConnectedComponents(serviceToServiceEdges);
