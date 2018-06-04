@@ -35,28 +35,26 @@ export default class Alerts extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {serviceName: this.props.match.params.serviceName};
+        this.state = {serviceName: this.props.match.params.serviceName, defaultPreset: timeWindow.presets[2]};
     }
 
     componentDidMount() {
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 3;
-        const activeWindowPreset = timeWindow.presets[activeWindow];
+        const activeWindowPreset = query.preset ? timeWindow.presets.find(presets => presets.shortName === query.preset) : this.state.defaultPreset;
         alertsStore.fetchServiceAlerts(this.state.serviceName, 300000, activeWindowPreset);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.match.params.serviceName !== this.state.serviceName) {
             this.setState({serviceName: nextProps.match.params.serviceName});
-            const activeWindowPreset = timeWindow.presets[1];
-            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, 300000, activeWindowPreset);
+            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, 300000, this.state.defaultPreset);
         }
     }
 
     render() {
         return (
             <section className="alerts-panel">
-                <AlertsView serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
+                <AlertsView defaultPreset={this.state.defaultPreset} serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
             </section>
         );
     }
