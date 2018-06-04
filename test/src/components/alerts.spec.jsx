@@ -51,6 +51,13 @@ const stubLocation = {
     search: ''
 };
 
+const stubDefaultPreset =
+    {
+        shortName: '6h',
+        longName: '6 hours',
+        value: 6 * 60 * 60 * 1000
+    };
+
 const stubSubscriptions = [
     {
         subscriptionId: 101,
@@ -210,7 +217,7 @@ describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -219,7 +226,7 @@ describe('<AlertsView />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -229,7 +236,7 @@ describe('<AlertsView />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);

@@ -29,13 +29,14 @@ export default class AlertsPanel extends React.Component {
         location: PropTypes.object.isRequired,
         alertsStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        defaultPreset: PropTypes.object.isRequired
     };
 
     render() {
         return (
             <section className="alert-results">
-                <AlertsToolbar history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
+                <AlertsToolbar defaultPreset={this.props.defaultPreset} history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,

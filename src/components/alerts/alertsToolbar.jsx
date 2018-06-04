@@ -31,14 +31,15 @@ export default class AlertsToolbar extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        defaultPreset: PropTypes.object.isRequired
     };
 
     constructor(props) {
         super(props);
 
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.findIndex(presetItem => presetItem.shortName === query.preset) : 3;
+        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : this.props.defaultPreset;
         this.state = {
             options: timeWindow.presets,
             activeWindow,
@@ -78,7 +79,7 @@ export default class AlertsToolbar extends React.Component {
         this.autoRefreshTimerRef = setInterval(
             () => {
                 this.setState({autoRefreshTimer: new Date()});
-                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.options[this.state.activeWindow]);
+                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
             },
             refreshInterval);
         this.countdownTimerRef = setInterval(
@@ -128,7 +129,7 @@ export default class AlertsToolbar extends React.Component {
                         <select
                             className="time-range-selector"
                             onChange={this.handleTimeChange}
-                            defaultValue={this.state.activeWindow}
+                            defaultValue={timeWindow.presets.findIndex(presets => presets.shortName === this.state.activeWindow.shortName)}
                         >
                             {this.state.options.map((window, index) => (
                                 <option key={window.longName} value={index}>last {window.longName}</option>))}
