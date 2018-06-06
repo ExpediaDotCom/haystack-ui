@@ -75,7 +75,10 @@ function groupResponseByServiceOperation(data) {
         return {
             serviceName,
             operationName,
-            [trendStat]: op.datapoints.map(datapoint => ({value: datapoint[0], timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])}))
+            [trendStat]: op.datapoints.map(datapoint => ({
+                value: datapoint[0],
+                timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])
+            }))
         };
     });
 }
@@ -130,13 +133,31 @@ function toSuccessPercentPoints(successCount, failureCount) {
     }));
 }
 
-function extractServicePerfStats({countValues, successValues, failureValues, tp99Values}) {
+function toCountPoints(successCount, failureCount) {
+    const successTimestamps = successCount.map(point => point.timestamp);
+    const failureTimestamps = failureCount.map(point => point.timestamp);
+    const timestamps = _.uniq([...successTimestamps, ...failureTimestamps]);
+
+    return _.compact(timestamps.map((timestamp) => {
+        const successItem = _.find(successCount, x => (x.timestamp === timestamp));
+        const successVal = (successItem && successItem.value) ? successItem.value : 0;
+
+        const failureItem = _.find(failureCount, x => (x.timestamp === timestamp));
+        const failureVal = (failureItem && failureItem.value) ? failureItem.value : 0;
+
+        return {
+            value: successVal + failureVal,
+            timestamp
+        };
+    }));
+}
+
+function extractServicePerfStats({successValues, failureValues, tp99Values}) {
     const trendResults = [];
 
-    const groupedByServiceName = _.groupBy(countValues.concat(successValues, failureValues, tp99Values), val => val.serviceName);
+    const groupedByServiceName = _.groupBy(successValues.concat(successValues, failureValues, tp99Values), val => val.serviceName);
     Object.keys(groupedByServiceName).forEach((service) => {
         const serviceTrends = groupedByServiceName[service];
-        const count = dataPointsSum(extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.received-span'));
         const successCount = dataPointsSum(extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.success-span'));
         const failureCount = dataPointsSum(extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.failure-span'));
         const successPercent = ((successCount / (successCount + failureCount)) * 100);
@@ -146,7 +167,7 @@ function extractServicePerfStats({countValues, successValues, failureValues, tp9
             successPercent,
             failureCount,
             successCount,
-            totalCount: count
+            totalCount: successCount + failureCount
         };
 
         trendResults.push(opKV);
@@ -155,9 +176,9 @@ function extractServicePerfStats({countValues, successValues, failureValues, tp9
 }
 
 function extractServiceSummary(serviceTrends) {
-    const countPoints = extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.received-span');
     const successCount = extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.success-span');
     const failureCount = extractTrendPointsForSingleServiceOperation(serviceTrends, 'count.failure-span');
+    const countPoints = toCountPoints(successCount, failureCount);
     const tp99DurationPoints = extractTrendPointsForSingleServiceOperation(serviceTrends, '*_99.duration');
     const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
@@ -178,9 +199,9 @@ function extractOperationSummary(values) {
     return Object.keys(groupedByOperationName).map((operationName) => {
         const operationTrends = groupedByOperationName[operationName];
 
-        const countPoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.received-span');
         const successPoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.success-span');
         const failurePoints = extractTrendPointsForSingleServiceOperation(operationTrends, 'count.failure-span');
+        const countPoints = toCountPoints(successPoints, failurePoints);
         const tp99DurationPoints = extractTrendPointsForSingleServiceOperation(operationTrends, '*_99.duration');
         const latestTp99DurationDatapoint = _.findLast(tp99DurationPoints, point => point.value);
 
@@ -198,20 +219,17 @@ function extractOperationSummary(values) {
 }
 
 function getServicePerfStatsResults(timeWindow, from, until) {
-    const CountTarget = getServiceTargetStat('*', timeWindow, 'count', 'received-span');
     const SuccessTarget = getServiceTargetStat('*', timeWindow, 'count', 'success-span');
     const FailureTarget = getServiceTargetStat('*', timeWindow, 'count', 'failure-span');
     const tp99Target = getServiceTargetStat('*', timeWindow, '*_99', 'duration');
 
 
     return Q.all([
-        fetchTrendValues(CountTarget, from, until),
         fetchTrendValues(SuccessTarget, from, until),
         fetchTrendValues(FailureTarget, from, until),
         fetchTrendValues(tp99Target, from, until)
     ])
         .then(values => extractServicePerfStats({
-                countValues: values[0],
                 successValues: values[1],
                 failureValues: values[2],
                 tp99Values: values[3]
@@ -220,24 +238,28 @@ function getServicePerfStatsResults(timeWindow, from, until) {
 }
 
 function getServiceSummaryResults(serviceName, timeWindow, from, until) {
-    const target = getServiceTargetStat(serviceName, timeWindow, 'count,*_99', 'received-span,success-span,failure-span,duration');
+    const target = getServiceTargetStat(serviceName, timeWindow, 'count,*_99', 'success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
         .then(values => extractServiceSummary(values));
 }
 
 function getServiceTrendResults(serviceName, timeWindow, from, until) {
-    const target = getServiceTargetStat(serviceName, timeWindow, 'count,mean,*_95,*_99', 'received-span,success-span,failure-span,duration');
+    const target = getServiceTargetStat(serviceName, timeWindow, 'count,mean,*_95,*_99', 'success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
-        .then(trends => ({
-            count: extractTrendPointsForSingleServiceOperation(trends, 'count.received-span'),
-            successCount: extractTrendPointsForSingleServiceOperation(trends, 'count.success-span'),
-            failureCount: extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span'),
-            meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
-            tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
-            tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
-        }));
+        .then((trends) => {
+            const successCount = extractTrendPointsForSingleServiceOperation(trends, 'count.success-span');
+            const failureCount = extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span');
+            return {
+                count: toCountPoints(successCount, failureCount),
+                successCount,
+                failureCount,
+                meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
+                tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
+                tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
+            };
+        });
 }
 
 function getOperationSummaryResults(service, timeWindow, from, until) {
@@ -251,14 +273,18 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
     const target = createOperationTarget(serviceName, operationName, timeWindow, 'count,mean,*_95,*_99', 'received-span,success-span,failure-span,duration');
 
     return fetchTrendValues(target, from, until)
-        .then(trends => ({
-            count: extractTrendPointsForSingleServiceOperation(trends, 'count.received-span'),
-            successCount: extractTrendPointsForSingleServiceOperation(trends, 'count.success-span'),
-            failureCount: extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span'),
-            meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
-            tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
-            tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
-        }));
+        .then((trends) => {
+            const successCount = extractTrendPointsForSingleServiceOperation(trends, 'count.success-span');
+            const failureCount = extractTrendPointsForSingleServiceOperation(trends, 'count.failure-span');
+            return {
+                count: toCountPoints(successCount, failureCount),
+                successCount,
+                failureCount,
+                meanDuration: extractTrendPointsForSingleServiceOperation(trends, 'mean.duration'),
+                tp95Duration: extractTrendPointsForSingleServiceOperation(trends, '*_95.duration'),
+                tp99Duration: extractTrendPointsForSingleServiceOperation(trends, '*_99.duration')
+            };
+        });
 }
 
 function getEdgeLatencyTrendResults(edges, from, until) {
