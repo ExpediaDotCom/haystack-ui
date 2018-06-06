@@ -14,9 +14,9 @@
  *         limitations under the License.
  */
 import axios from 'axios';
-import timeWindow from '../../../utils/timeWindow';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import timeWindow from '../../../utils/timeWindow';
 
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 

@@ -36,7 +36,6 @@ export class OperationStore extends ErrorHandlingStore {
                     .get(`/api/trends/operation/${service}?${queryUrlString}`)
                     .then((result) => {
                         this.statsQuery = {...query, isCustomTimeRange, filters};
-                        console.log({...query, isCustomTimeRange, filters});
                         this.statsResults = result.data;
                     })
                     .catch((result) => {

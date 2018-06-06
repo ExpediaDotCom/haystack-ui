@@ -18,9 +18,10 @@
 /* eslint-disable react/prop-types, no-unused-expressions */
 
 import { expect } from 'chai';
-import axios from 'axios';
 import { when } from 'mobx';
 import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
+import timeWindow from '../../../src/utils/timeWindow';
 
 import {ServiceAlertsStore} from '../../../src/components/alerts/stores/serviceAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
@@ -30,6 +31,8 @@ const stubService = 'stub-service';
 const stubAlert = [{}];
 
 const stubDetails = [{}];
+
+const stubPreset = {shortName: '6h', longName: '6 hours', value: 21600000};
 
 const stubSubscriptions = [{}];
 
@@ -46,9 +49,10 @@ describe('ServiceAlertsStore', () => {
     });
 
     it('fetches active alerts from API', (done) => {
-        server.onGet('/api/alerts/stub-service?granularity=3600&from=1&until=1').reply(200, stubAlert);
+        const timeRange = timeWindow.toTimeRange(stubPreset.value);
+        server.onGet(`/api/alerts/stub-service?granularity=300000&from=${timeRange.from}&until=${timeRange.until}`).reply(200, stubAlert);
 
-        store.fetchServiceAlerts(stubService, 3600, {from: 1, until: 1});
+        store.fetchServiceAlerts(stubService, 300000, stubPreset);
 
         when(
             () => store.alerts.length > 0,

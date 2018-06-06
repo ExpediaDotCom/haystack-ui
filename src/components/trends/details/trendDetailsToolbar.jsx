@@ -42,12 +42,11 @@ export default class TrendDetailsToolbar extends React.Component {
         statsType: null
     };
 
-    static getActiveTimeWindow( from, until, isCustomTimeRange) {
+    static getActiveTimeWindow(from, until, isCustomTimeRange) {
         let activeTimeWindow;
         if (isCustomTimeRange) {
             activeTimeWindow = timeWindow.toCustomTimeRange(from, until);
-        }
-        else {
+        } else {
             activeTimeWindow = timeWindow.findMatchingPreset(until - from);
             const timeRange = timeWindow.toTimeRange(activeTimeWindow.value);
             activeTimeWindow.from = timeRange.from;
