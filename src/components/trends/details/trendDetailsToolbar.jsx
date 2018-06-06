@@ -42,6 +42,20 @@ export default class TrendDetailsToolbar extends React.Component {
         statsType: null
     };
 
+    static getActiveTimeWindow( from, until, isCustomTimeRange) {
+        let activeTimeWindow;
+        if (isCustomTimeRange) {
+            activeTimeWindow = timeWindow.toCustomTimeRange(from, until);
+        }
+        else {
+            activeTimeWindow = timeWindow.findMatchingPreset(until - from);
+            const timeRange = timeWindow.toTimeRange(activeTimeWindow.value);
+            activeTimeWindow.from = timeRange.from;
+            activeTimeWindow.until = timeRange.until;
+        }
+        return activeTimeWindow;
+    }
+
     constructor(props) {
         super(props);
 
@@ -66,16 +80,11 @@ export default class TrendDetailsToolbar extends React.Component {
             isCustomTimeRange
         } = props.trendsStore.statsQuery;
 
-        const activeWindow = isCustomTimeRange
-            ? timeWindow.toCustomTimeRange(from, until)
-            : timeWindow.findMatchingPreset(until - from);
-
-        console.log(activeWindow);
-        const activeGranularity = timeWindow.getLowerGranularity(activeWindow.value);
+        const activeWindow = TrendDetailsToolbar.getActiveTimeWindow(from, until, isCustomTimeRange);
 
         this.state = {
             activeWindow,
-            activeGranularity,
+            activeGranularity: timeWindow.getLowerGranularity(activeWindow.value),
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
             clipboardText: this.setClipboardText(activeWindow),
@@ -87,6 +96,10 @@ export default class TrendDetailsToolbar extends React.Component {
 
     componentDidMount() {
         this.fetchTrends(this.state.activeWindow, this.state.activeGranularity);
+    }
+
+    componentWillUnmount() {
+        this.disableAutoRefresh();
     }
 
     setWrapperRef(node) {
@@ -140,11 +153,10 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     fetchTrends(window, granularity) {
-        const timeRange = timeWindow.toTimeRange(window.value);
         const query = {
             granularity: granularity.value,
-            from: timeRange.from,
-            until: timeRange.until
+            from: window.from,
+            until: window.until
         };
 
         if (this.props.opName) {
@@ -323,7 +335,6 @@ export default class TrendDetailsToolbar extends React.Component {
                             ><span
                                 className="ti-align-left"
                             /> See Traces</Link>
-
                         )
                     }
                     <a
