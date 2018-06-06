@@ -14,6 +14,7 @@
  *         limitations under the License.
  */
 import axios from 'axios';
+import timeWindow from '../../../utils/timeWindow';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
@@ -36,7 +37,8 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
     }
 
     @action fetchServiceAlerts(serviceName, granularity, preset) {
-        const timeFrameString = `granularity=${granularity}&from=${preset.from}&until=${preset.until}`;
+        const timeRange = timeWindow.toTimeRange(preset.value);
+        const timeFrameString = `granularity=${granularity}&from=${timeRange.from}&until=${timeRange.until}`;
         this.promiseState = fromPromise(
             axios
             .get(`/api/alerts/${serviceName}?${timeFrameString}`)

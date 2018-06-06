@@ -37,6 +37,7 @@ export class ServiceStore extends ErrorHandlingStore {
                     .then((result) => {
                         this.statsQuery = {...query, isCustomTimeRange};
                         this.statsResults = result.data;
+                        console.log({...query, isCustomTimeRange});
                     })
                     .catch((result) => {
                         this.statsQuery = {...query, isCustomTimeRange};

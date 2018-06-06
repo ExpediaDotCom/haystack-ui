@@ -20,7 +20,7 @@ module.exports = {
     },
 
     // Refresh interval for auto refreshing trends and alerts
-    refreshInterval: 60000,
+    refreshInterval: 10000,
 
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',

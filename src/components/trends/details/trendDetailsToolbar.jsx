@@ -69,6 +69,8 @@ export default class TrendDetailsToolbar extends React.Component {
         const activeWindow = isCustomTimeRange
             ? timeWindow.toCustomTimeRange(from, until)
             : timeWindow.findMatchingPreset(until - from);
+
+        console.log(activeWindow);
         const activeGranularity = timeWindow.getLowerGranularity(activeWindow.value);
 
         this.state = {
@@ -138,12 +140,12 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     fetchTrends(window, granularity) {
+        const timeRange = timeWindow.toTimeRange(window.value);
         const query = {
             granularity: granularity.value,
-            from: window.from,
-            until: window.until
+            from: timeRange.from,
+            until: timeRange.until
         };
-
 
         if (this.props.opName) {
             this.props.trendsStore.fetchTrends(this.props.serviceName, this.props.opName, query);
