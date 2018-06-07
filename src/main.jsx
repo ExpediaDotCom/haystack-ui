@@ -27,6 +27,7 @@ import HeaderSearchInterstitial from './components/layout/headerSearchInterstiti
 import traceDetailsStore from './components/traces/stores/traceDetailsStore';
 import Login from './components/common/login';
 import NoMatch from './components/common/noMatch';
+import UniversalSearchView from './components/universal-search/universalSearchView';
 
 const Layout = () => (
     <div className="layout">
@@ -54,6 +55,7 @@ export default () => (
     <Route>
         <Switch>
             <Route exact path="/login" render={props => <Login {...props} />}/>
+            <Route path="/usb" component={UniversalSearchView}/>
             <Route path="*" component={Layout}/>
         </Switch>
     </Route>
