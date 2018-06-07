@@ -55,7 +55,7 @@ export default () => (
     <Route>
         <Switch>
             <Route exact path="/login" render={props => <Login {...props} />}/>
-            <Route path="/usb" component={UniversalSearchView}/>
+            <Route path="/usb" component={UniversalSearchView} />
             <Route path="*" component={Layout}/>
         </Switch>
     </Route>

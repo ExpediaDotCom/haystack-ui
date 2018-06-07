@@ -50,12 +50,11 @@ export default class Tabs extends React.Component {
         }
     ];
 
-    static createTabsList(query) {
-        if (query.serviceName) {
-            if (Object.keys(query).length === 1 || (query.operationName && Object.keys(query).length === 1))
-                return Tabs.tabs.filter(tab => tab.tabId === 'traces' || tab.tabId === 'trends' || tab.tabId === 'alerts');
-            else
-                return Tabs.tabs.filter(tab => tab.tabId === 'traces');
+    static createTabsList(queryString) {
+        const queryKeys = [];
+        queryString.split('&').forEach(kvPair => queryKeys.push(kvPair.substring(0, kvPair.indexOf('='))));
+        if (queryKeys.every(key => key === 'serviceName' || key === 'operationName')) {
+            return Tabs.tabs.filter(tab => tab.tabId === 'traces' || tab.tabId === 'trends' || tab.tabId === 'alerts');
         }
         return Tabs.tabs.filter(tab => tab.tabId === 'traces');
     }

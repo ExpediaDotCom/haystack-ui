@@ -16,6 +16,7 @@
  */
 
 import React from 'react';
+import {observer} from 'mobx-react';
 import Header from './layout/header';
 import Footer from '../layout/footer';
 import Tabs from './tabs/tabs';
@@ -23,20 +24,32 @@ import './universalSearchView.less';
 import serviceGraphStore from '../serviceGraph/stores/serviceGraphStore';
 import tracesSearchStore from '../traces/stores/tracesSearchStore';
 import {toFieldsObject} from '../traces/utils/traceQueryParser';
+import Autosuggest from './autosuggest';
 import Error from '../common/error';
+import SearchableKeysStore from './stores/searchableKeysStore';
+import UiState from './stores/searchBarUiStateStore';
+import OperationStore from '../../stores/operationStore';
+import ServiceStore from '../../stores/serviceStore';
 
+@observer
 export default class UniversalSearch extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {};
         serviceGraphStore.fetchServiceGraph();
         this.handleSubmit = this.handleSubmit.bind(this);
         this.Search = this.Search.bind(this);
     }
 
-    handleSubmit(event) {
-        tracesSearchStore.fetchSearchResults(toFieldsObject(this.input.value), this.input.value);
-        this.setState({query: this.input.value});
+    componentDidMount() {
+        SearchableKeysStore.fetchKeys();
+        ServiceStore.fetchServices();
+    }
+
+    handleSubmit() {
+        const query = UiState.chips.join('&');
+        tracesSearchStore.fetchSearchResults(query);
+        this.setState({query});
         event.preventDefault();
     }
 
@@ -44,27 +57,11 @@ export default class UniversalSearch extends React.Component {
         return (
             <article className="universal-search-search container" style={{marginBottom: '12px'}}>
                 <article className="universal-search-bar search-query-bar">
-                    <section>
-                        <form onSubmit={this.handleSubmit}>
-                            <div className="search-bar-pickers">
-                                <div className="search-bar-pickers_fields">
-                                    <div className="autosuggestion-box">
-                                        <input type="text" className="search-bar-text-box" ref={(input) => { this.input = input; }} />
-                                    </div>
-                                </div>
-                                <div className="search-bar-pickers_time-window">
-                                        <span>
-                                            <button className="btn btn-primary time-range-picker-toggle btn-lg" type="button">last 1 hour</button>
-                                        </span>
-                                </div>
-                                <div className="search-bar-pickers_submit">
-                                    <button className="btn btn-primary btn-lg traces-search-button" type="submit" onClick={this.handleSubmit}>
-                                        <span className="ti-search"/>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </section>
+                    <div className="search-bar-pickers">
+                        <div className="search-bar-pickers_fields">
+                            <Autosuggest search={this.handleSubmit} uiState={UiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
+                        </div>
+                    </div>
                 </article>
             </article>
         );
