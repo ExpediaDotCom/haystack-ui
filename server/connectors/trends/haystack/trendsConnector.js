@@ -247,7 +247,7 @@ function getServiceSummaryResults(serviceName, timeWindow, from, until) {
 function getServiceTrendResults(serviceName, timeWindow, from, until) {
     const target = getServiceTargetStat(serviceName, timeWindow, 'count,mean,*_95,*_99', 'success-span,failure-span,duration');
 
-    // encodeURIComponent to encode special characters like # for compatibility with metrictank
+    // encodeURIComponent to encode special characters like # to avoid creating malformed url
     return fetchTrendValues(encodeURIComponent(target), from, until)
         .then((trends) => {
             const successCount = extractTrendPointsForSingleServiceOperation(trends, 'count.success-span');
@@ -294,7 +294,7 @@ function getEdgeLatencyTrendResults(edges, from, until) {
 
     const target = createServicesOperationsTarget(serviceNameRegex, operationNameRegex, 'OneHour', 'mean,*_99', 'latency');
 
-    // encodeURIComponent to encode special characters like # for compatibility with metrictank
+    // encodeURIComponent to encode special characters like # to avoid creating malformed url
     return fetchTrendValues(encodeURIComponent(target), from, until)
         .then(trends => trends);
 }
