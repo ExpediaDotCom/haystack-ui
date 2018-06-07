@@ -20,66 +20,53 @@ import formatters from './formatters';
 
 const timeWindow = {};
 
-const nowInMilliseconds = new Date().getTime();
-
 timeWindow.presets = [
     {
         shortName: '5m',
         longName: '5 minutes',
-        value: 5 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(5, 'm').valueOf(),
-        until: nowInMilliseconds
+        value: 5 * 60 * 1000
     },
     {
         shortName: '1h',
         longName: '1 hour',
-        value: 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(1, 'h').valueOf(),
-        until: nowInMilliseconds
+        value: 60 * 60 * 1000
     },
     {
         shortName: '6h',
         longName: '6 hours',
-        value: 6 * 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(6, 'h').valueOf(),
-        until: nowInMilliseconds
+        value: 6 * 60 * 60 * 1000
     },
     {
         shortName: '12h',
         longName: '12 hours',
-        value: 12 * 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(12, 'h').valueOf(),
-        until: nowInMilliseconds
+        value: 12 * 60 * 60 * 1000
     },
     {
         shortName: '24h',
         longName: '24 hours',
-        value: 24 * 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(24, 'h').valueOf(),
-        until: nowInMilliseconds
+        value: 24 * 60 * 60 * 1000
     },
     {
         shortName: '7d',
         longName: '7 days',
-        value: 7 * 24 * 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(7, 'd').valueOf(),
-        until: nowInMilliseconds
+        value: 7 * 24 * 60 * 60 * 1000
     },
     {
         shortName: '30d',
         longName: '30 days',
-        value: 30 * 24 * 60 * 60 * 1000,
-        from: moment(nowInMilliseconds).subtract(30, 'd').valueOf(),
-        until: nowInMilliseconds
+        value: 30 * 24 * 60 * 60 * 1000
     }
 ];
 
 timeWindow.defaultPreset = timeWindow.presets[1];
 
-timeWindow.toTimeRange = ms => ({
-    from: moment().subtract(ms, 'milliseconds').valueOf(),
-    until: moment().valueOf()
-});
+timeWindow.toTimeRange = (ms) => {
+    const nowInMilliseconds = new Date().getTime();
+    return {
+        from: moment(nowInMilliseconds).subtract(ms, 'milliseconds').valueOf(),
+        until: nowInMilliseconds
+    };
+};
 
 timeWindow.findMatchingPreset = value => timeWindow.presets.find(preset => preset.value === value);
 

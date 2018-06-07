@@ -44,10 +44,10 @@ export default class trendsTab extends React.Component {
     handleTimeChange(event) {
         const selectedIndex = event.target.value;
         const selectedWindow = timeWindow.presets[selectedIndex];
-
+        const selectedTimeRange = timeWindow.toTimeRange(selectedWindow.value);
         this.setState({
-            from: selectedWindow.from,
-            until: selectedWindow.until,
+            from: selectedTimeRange.from,
+            until: selectedTimeRange.until,
             selectedIndex
         });
     }

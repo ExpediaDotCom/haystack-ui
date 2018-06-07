@@ -16,6 +16,7 @@
 import axios from 'axios';
 import {observable, action} from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import timeWindow from '../../../utils/timeWindow';
 
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
@@ -36,7 +37,8 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
     }
 
     @action fetchServiceAlerts(serviceName, granularity, preset) {
-        const timeFrameString = `granularity=${granularity}&from=${preset.from}&until=${preset.until}`;
+        const timeRange = timeWindow.toTimeRange(preset.value);
+        const timeFrameString = `granularity=${granularity}&from=${timeRange.from}&until=${timeRange.until}`;
         this.promiseState = fromPromise(
             axios
             .get(`/api/alerts/${serviceName}?${timeFrameString}`)

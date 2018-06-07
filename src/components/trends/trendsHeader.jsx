@@ -44,6 +44,9 @@ export default class TrendsHeader extends React.Component {
             options = [...timeWindow.presets, activeWindow];
         } else {
             activeWindow = timeWindow.findMatchingPresetByShortName(urlQuery.preset) || timeWindow.defaultPreset;
+            const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
+            activeWindow.from = activeWindowTimeRange.from;
+            activeWindow.until = activeWindowTimeRange.until;
             options = timeWindow.presets;
         }
 
@@ -118,20 +121,20 @@ export default class TrendsHeader extends React.Component {
 
     fetchTrends(serviceName, window, filters) {
         const granularity = timeWindow.getLowerGranularity(window.value);
+
         const query = {
             granularity: granularity.value,
             from: window.from,
             until: window.until
         };
-        this.props.serviceStore.fetchStats(serviceName, query, window.isCustomTimeRange);
-        this.props.operationStore.fetchStats(serviceName, query, window.isCustomTimeRange, filters);
+        this.props.serviceStore.fetchStats(serviceName, query, !!(window.isCustomTimeRange));
+        this.props.operationStore.fetchStats(serviceName, query, !!(window.isCustomTimeRange), filters);
     }
 
     handleTimeChange(event) {
         const selectedIndex = event.target.value;
         const selectedWindow = this.state.options[selectedIndex];
 
-        this.setState({activeWindow: selectedWindow});
         this.fetchTrends(this.props.serviceName, selectedWindow, null);
 
         let query = {};
