@@ -19,6 +19,8 @@ import {observer} from 'mobx-react';
 import TraceResults from '../../traces/results/traceResults';
 import tracesSearchStore from '../../traces/stores/tracesSearchStore';
 import ServiceGraph from '../../serviceGraph/serviceGraph';
+import OperationResults from '../../trends/operation/operationResults';
+import operationStore from '../../trends/stores/operationStore';
 
 @observer
 export default class Tabs extends React.Component {
@@ -59,12 +61,17 @@ export default class Tabs extends React.Component {
         return Tabs.tabs.filter(tab => tab.tabId === 'traces');
     }
 
-    static TabViewer({tabId}) {
+    static TabViewer({tabId, serviceName}) {
         switch (tabId) {
             case 'traces':
                 return <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={location}/>;
             case 'trends':
-                return <div>{tabId}</div>;
+                operationStore.fetchStats(serviceName, {
+                    granularity: 5 * 60 * 1000,
+                    from: Date.now() - (60 * 60 * 1000),
+                    until: Date.now()
+                }, true, null);
+                return (<OperationResults operationStore={operationStore}/>);
             case 'serviceGraph':
                 return <article className="container"><ServiceGraph /></article>;
             default:
@@ -111,7 +118,7 @@ export default class Tabs extends React.Component {
                 </section>
                 <section className="universal-search-tab__content">
                     <div className="container">
-                        <Tabs.TabViewer tabId={selectedTabId} />
+                        <Tabs.TabViewer tabId={selectedTabId} serviceName={tracesSearchStore.searchQuery.serviceName} />
                     </div>
                 </section>
             </article>

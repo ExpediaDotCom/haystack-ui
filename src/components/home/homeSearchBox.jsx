@@ -45,19 +45,32 @@ export default class HomeSearchBox extends Component {
 
     render() {
         return (
+            <article>
             <section className="container">
-                <div className="jumbotron">
-                    <h2 className="home__header">Select a service to start </h2>
-                    <div className="col-md-4 col-md-offset-4" >
-                        <Select
-                            name="service-list"
-                            options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
-                            onChange={this.handleChange}
-                            placeholder="Select..."
-                        />
+                <div className="jumbotron" style={{padding: '0px'}}>
+                    <div className="clearfix" style={{padding: '15px 30px 15px 30px'}}>
+                        <h3 className="home__header pull-left">Select a service to start </h3>
+                        <h3 className="pull-right" style={{width: '300px'}}>
+                            <Select
+                                name="service-list"
+                                options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
+                                onChange={this.handleChange}
+                                placeholder="Select..."
+                            />
+                        </h3>
+                    </div>
+                    <div className="clearfix" style={{padding: '15px 30px 15px 30px', backgroundColor: '#3f4d71'}}>
+                        <h3 className="home__header pull-left">
+                            <span className="" style={{color: 'white'}}>Unified search for all tools </span>
+                            <span className="" style={{fontSize: '12px', lineHeight: '1'}}>[beta]</span>
+                        </h3>
+                        <h3 className="pull-right" >
+                            <a className="pull-right btn btn-primary btn-lg" style={{width: '300px'}} href="/usb">Use Universal Search</a>
+                        </h3>
                     </div>
                 </div>
             </section>
+            </article>
         );
     }
 }

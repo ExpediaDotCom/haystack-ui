@@ -32,7 +32,7 @@ const UP = 38;
 const DOWN = 40;
 const ESC = 27;
 
-const INVALID_CHARS = /[^a-zA-Z0-9=\s-]/g;
+const INVALID_CHARS = /[^a-zA-Z0-9=\s-[\].]/g;
 
 @observer
 export default class Autocomplete extends React.Component {
@@ -326,7 +326,7 @@ export default class Autocomplete extends React.Component {
         this.handleBlur();
         const value = this.inputRef.value;
         if (!value) return;
-        if (this.testForValidInputString(value)) {
+        if (true) {
             const chip = value.trim();
             let serviceName = null;
             if (chip.includes('serviceName')) {

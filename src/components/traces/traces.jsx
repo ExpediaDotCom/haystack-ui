@@ -19,17 +19,26 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import './traces.less';
-import SearchBar from './searchBar/searchBar';
-import TraceResults from './results/traceResults';
-import tracesSearchStore from './stores/tracesSearchStore';
-import serviceStore from '../../stores/serviceStore';
-import operationStore from '../../stores/operationStore';
-import searchableKeysStore from './stores/searchableKeysStore';
 
-const Traces = ({history, location, match}) => (
+const Traces = () => (
     <section className="traces-panel">
-        <SearchBar searchableKeysStore={searchableKeysStore} tracesSearchStore={tracesSearchStore} serviceStore={serviceStore} operationStore={operationStore} history={history} location={location} match={match}/>
-        <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={location}/>
+        <div className="clearfix" style={{backgroundColor: 'white', padding: '6px 12px', marginBottom: '18px'}}>
+            <h5 className="pull-left" >
+                <span className="" style={{}}>Search for traces going through <b>expweb</b></span>
+            </h5>
+            <h5 className="pull-right" >
+                <a className="pull-right btn btn-primary" style={{width: '300px'}} href="/usb?serviceName=expweb">Use Traces Universal Search</a>
+            </h5>
+        </div>
+        <div className="clearfix" style={{backgroundColor: 'white', padding: '6px 12px'}}>
+            <h5 className="pull-left" >
+                <span>Search for traces going through <b>expweb</b> operation <select className="h5" style={{backgroundColor: 'white', padding: '0 18px'}}><option>http.request.context</option></select>
+                </span>
+            </h5>
+            <h5 className="pull-right" >
+                <a className="pull-right btn btn-primary" style={{width: '300px'}} href="/usb?serviceName=expweb">Search Traces for Universal Search</a>
+            </h5>
+        </div>
     </section>
 );
 
