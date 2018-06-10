@@ -25,17 +25,10 @@ const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
 const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
-
-// constant to define how old edges are allowed in the graph
-const FRESHNESS_WINDOW = 24 * 60 * 60 * 1000;
-
-function removeStaleEdges(edges) {
-    const threshold = Date.now() - FRESHNESS_WINDOW;
-    return edges.filter(e => e.stats.lastSeen > threshold);
-}
+const WINDOW_SIZE_IN_MILLIS = 3600;
 
 function flattenStats(edges) {
-    const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination, count: edge.stats.count}));
+    const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination, count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS)}));
 
     return _.uniqWith(serviceEdges, _.isEqual);
 }
@@ -54,17 +47,13 @@ function filterEdgesInComponent(component, edges) {
 
 function fetchServiceGraph() {
     const to = Date.now();
-    const from = Date.now() - 3600000; // search for upto one hour old edges
+    const from = Date.now() - (WINDOW_SIZE_IN_MILLIS * 1000); // search for upto one hour old edges
 
     return trendsFetcher
         .fetch(`${serviceGraphUrl}?from=${from}&to=${to}`)
         .then((data) => {
-            // filter stale edges
-            // rejecting edges lastSeen before a certain time window
-            const filteredEdges = removeStaleEdges(data.edges);
-
             // convert servicegraph to expected ui data format
-            const serviceToServiceEdges = flattenStats(filteredEdges);
+            const serviceToServiceEdges = flattenStats(data.edges);
 
             // get list of connected components in the full graph
             const connectedComponents = extractor.extractConnectedComponents(serviceToServiceEdges);

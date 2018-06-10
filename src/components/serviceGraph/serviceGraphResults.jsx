@@ -49,15 +49,13 @@ export default class ServiceGraphResults extends React.Component {
 
     static createEdges(rawEdges) {
         const edges = [];
-        const maxCountEdge = _.maxBy(rawEdges, e => e.count);
-        const denominator = maxCountEdge.count / 10000;
 
         rawEdges.forEach((rawEdge) => {
             edges.push({
                 source: rawEdge.source,
                 target: rawEdge.destination,
                 metrics: {
-                    normal: (rawEdge.count / denominator)
+                    normal: rawEdge.count
                 }
             });
         });
@@ -70,6 +68,7 @@ export default class ServiceGraphResults extends React.Component {
         const edges = ServiceGraphResults.createEdges(serviceGraph);
         config.nodes = nodes;
         config.connections = edges;
+        config.maxVolume = 10000;
 
         const blue = '#36A2EB';
         const darkGrey = '#2d3750';
