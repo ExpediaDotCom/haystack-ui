@@ -82,7 +82,7 @@ export default class TimeWindowPicker extends React.Component {
             <div ref={this.setWrapperRef} className="search-bar-pickers_time-window">
                 <span>
                     <button
-                        className="btn btn-primary time-range-picker-toggle btn-lg"
+                        className="btn btn-primary time-range-picker-toggle"
                         type="button"
                         onClick={this.state.showTimeRangePicker ? this.hideTimePicker : this.showTimePicker}
                     >

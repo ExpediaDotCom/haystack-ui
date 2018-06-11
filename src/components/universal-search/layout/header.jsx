@@ -20,7 +20,10 @@ import React from 'react';
 export default () => (
     <header className="universal-search-header">
         <div className="container">
-            <h4 className="universal-search-header__title">Haystack</h4>
+            <a className="navbar-brand" href="/usb">
+                <img src="/images/logo-white.png" className="logo" alt="Logo"/>
+                <span className="usb-logo">Haystack <sub className="sub-smaller"> [beta]</sub></span>
+            </a>
         </div>
     </header>
 );

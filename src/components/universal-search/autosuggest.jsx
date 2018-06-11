@@ -404,7 +404,7 @@ export default class Autocomplete extends React.Component {
                 <TimeWindowPicker uiState={this.props.uiState} />
                 <button
                     type="submit"
-                    className="btn btn-lg btn-primary usb-search-button"
+                    className="btn btn-primary usb-search-button"
                     onClick={this.handleSearch}
                 >
                     <span className="ti-search"/>
