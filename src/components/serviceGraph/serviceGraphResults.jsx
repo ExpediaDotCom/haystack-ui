@@ -64,11 +64,12 @@ export default class ServiceGraphResults extends React.Component {
 
     render() {
         const serviceGraph = this.props.serviceGraph;
+        const maxCountEdge = _.maxBy(serviceGraph, e => e.count);
         const nodes = ServiceGraphResults.createNodes(serviceGraph);
         const edges = ServiceGraphResults.createEdges(serviceGraph);
         config.nodes = nodes;
         config.connections = edges;
-        config.maxVolume = 10000;
+        config.maxVolume = maxCountEdge.count * 20;
 
         const blue = '#36A2EB';
         const darkGrey = '#2d3750';
@@ -80,7 +81,14 @@ export default class ServiceGraphResults extends React.Component {
             detailedNode: {
                 volume: {
                     default: {
-                        bottom: null
+                        bottom: null,
+                        top: null
+                    },
+                    focused: {
+                        top: { header: 'Rq Rate', data: 'data.volume', format: '0.00' }
+                    },
+                    entry: {
+                        top: { header: 'Rq Rate', data: 'data.volume', format: '0.00' }
                     }
                 }
             }
