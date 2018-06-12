@@ -100,6 +100,7 @@ export default class Autocomplete extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.clearInvalidChars = this.clearInvalidChars.bind(this);
         this.updateChips = this.updateChips.bind(this);
+        this.modifyChip = this.modifyChip.bind(this);
         this.deleteChip = this.deleteChip.bind(this);
         this.testForValidInputString = this.testForValidInputString.bind(this);
     }
@@ -221,7 +222,6 @@ export default class Autocomplete extends React.Component {
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
         const keyPressed = e.keyCode || e.which;
-
         if ((keyPressed === ENTER || keyPressed === TAB) && this.state.suggestionStrings.length) {
             e.preventDefault();
             this.handleSelection();
@@ -241,9 +241,15 @@ export default class Autocomplete extends React.Component {
         } else if (keyPressed === BACKSPACE) {
             const chips = this.props.uiState.chips;
             if (!this.inputRef.value && chips.length) {
-                this.deleteChip(chips[chips.length - 1]);
+                e.preventDefault();
+                this.modifyChip(chips.length - 1);
             }
         }
+    }
+
+    modifyChip(index) {
+        this.inputRef.value = this.props.uiState.chips[index];
+        this.deleteChip(index);
     }
 
     // Updates input field and uiState props value
