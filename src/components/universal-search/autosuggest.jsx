@@ -381,42 +381,48 @@ export default class Autocomplete extends React.Component {
         const sIndex = this.state.suggestionIndex;
 
         return (
-            <div className="autosuggestion-box chips" role="form" onClick={Autocomplete.focusInput}>
-                <div className="chips-and-input">
-                    {chips}
-                    <input
-                        type="text"
-                        className="search-bar-text-box autosuggest-input"
-                        onKeyDown={this.handleKeyPress}
-                        onKeyUp={this.clearInvalidChars}
-                        onChange={this.updateFieldKv}
-                        ref={this.setInputRef}
-                        onFocus={this.handleFocus}
-                        placeholder={this.props.uiState.chips.length ? '' : 'Select a whitelisted key'}
-                    />
-                    <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
-                        {this.state.suggestionStrings.map((item, i) => (
-                            <li
-                                key={item}
-                                onMouseEnter={() => this.handleHover(i)}
-                                onClick={() => this.handleSelection()}
-                                className={sIndex === i ? 'autofill-suggestion active-suggestion' : 'autofill-suggestion'}
+            <article className="universal-search-bar search-query-bar">
+                <div className="search-bar-pickers">
+                    <div className="search-bar-pickers_fields">
+                        <div className="autosuggestion-box chips" role="form" onClick={Autocomplete.focusInput}>
+                            <div className="chips-and-input">
+                                {chips}
+                                <input
+                                    type="text"
+                                    className="search-bar-text-box autosuggest-input"
+                                    onKeyDown={this.handleKeyPress}
+                                    onKeyUp={this.clearInvalidChars}
+                                    onChange={this.updateFieldKv}
+                                    ref={this.setInputRef}
+                                    onFocus={this.handleFocus}
+                                    placeholder={this.props.uiState.chips.length ? '' : 'Select a whitelisted key'}
+                                />
+                                <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
+                                    {this.state.suggestionStrings.map((item, i) => (
+                                        <li
+                                            key={item}
+                                            onMouseEnter={() => this.handleHover(i)}
+                                            onClick={() => this.handleSelection()}
+                                            className={sIndex === i ? 'autofill-suggestion active-suggestion' : 'autofill-suggestion'}
+                                        >
+                                            {item}
+                                        </li>)
+                                    )}
+                                </ul>
+                            </div>
+                            <TimeWindowPicker uiState={this.props.uiState} />
+                            <button
+                                type="submit"
+                                className="btn btn-primary usb-search-button"
+                                onClick={this.handleSearch}
                             >
-                                {item}
-                            </li>)
-                        )}
-                    </ul>
+                                <span className="ti-search"/>
+                            </button>
+                            {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
+                        </div>
+                    </div>
                 </div>
-                <TimeWindowPicker uiState={this.props.uiState} />
-                <button
-                    type="submit"
-                    className="btn btn-primary usb-search-button"
-                    onClick={this.handleSearch}
-                >
-                    <span className="ti-search"/>
-                </button>
-                {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
-            </div>
+            </article>
         );
     }
 }

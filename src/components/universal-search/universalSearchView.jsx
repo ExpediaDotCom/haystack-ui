@@ -23,9 +23,7 @@ import Tabs from './tabs/tabs';
 import './universalSearchView.less';
 import serviceGraphStore from '../serviceGraph/stores/serviceGraphStore';
 import tracesSearchStore from '../traces/stores/tracesSearchStore';
-import {toFieldsObject} from '../traces/utils/traceQueryParser';
 import Autosuggest from './autosuggest';
-import Error from '../common/error';
 import SearchableKeysStore from './stores/searchableKeysStore';
 import UiState from './stores/searchBarUiStateStore';
 import OperationStore from '../../stores/operationStore';
@@ -38,7 +36,6 @@ export default class UniversalSearch extends React.Component {
         this.state = {};
         serviceGraphStore.fetchServiceGraph();
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.Search = this.Search.bind(this);
     }
 
     componentDidMount() {
@@ -53,25 +50,13 @@ export default class UniversalSearch extends React.Component {
         event.preventDefault();
     }
 
-    Search() {
-        return (
-            <article className="universal-search-search container" style={{marginBottom: '12px'}}>
-                <article className="universal-search-bar search-query-bar">
-                    <div className="search-bar-pickers">
-                        <div className="search-bar-pickers_fields">
-                            <Autosuggest search={this.handleSubmit} uiState={UiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
-                        </div>
-                    </div>
-                </article>
-            </article>
-        );
-    }
-
     render() {
         return (
             <article>
                 <Header/>
-                <this.Search/>
+                <article className="universal-search-container container">
+                    <Autosuggest search={this.handleSubmit} uiState={UiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
+                </article>
                 {
                     this.state.query ?
                         <Tabs/>
@@ -79,13 +64,19 @@ export default class UniversalSearch extends React.Component {
                             <div className="container">
                                 <section className="text-center">
                                     <div className="no-search_text">
-                                        <h5>Start with query for serviceName, traceId, or any other tag</h5>
+                                        <h5>Start with query for serviceName, traceId, or any other <a
+                                            href="https://github.com/ExpediaDotCom/haystack-ui/blob/master/server/connectors/traces/haystack/tracesConnector.js#L52"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                                whitelisted key
+                                            </a>
+                                        </h5>
                                     </div>
                                 </section>
                             </div>
                         </section>)
                 }
-
                 <Footer/>
             </article>
         );
