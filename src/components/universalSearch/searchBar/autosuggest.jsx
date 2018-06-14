@@ -382,7 +382,6 @@ export default class Autocomplete extends React.Component {
 
         return (
             <article className="universal-search-bar search-query-bar">
-                <div className="search-bar-pickers">
                     <div className="search-bar-pickers_fields">
                         <div className="autosuggestion-box chips" role="form" onClick={Autocomplete.focusInput}>
                             <div className="chips-and-input">
@@ -420,7 +419,6 @@ export default class Autocomplete extends React.Component {
                             </button>
                             {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
                         </div>
-                    </div>
                 </div>
             </article>
         );

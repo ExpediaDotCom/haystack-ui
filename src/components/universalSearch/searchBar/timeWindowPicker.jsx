@@ -18,8 +18,8 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import TimeRangePicker from './timeRangePicker';
-import { toPresetDisplayText } from '../traces/utils/presets';
-import formatters from '../../utils/formatters';
+import { toPresetDisplayText } from '../../traces/utils/presets';
+import formatters from '../../../utils/formatters';
 
 @observer
 export default class TimeWindowPicker extends React.Component {

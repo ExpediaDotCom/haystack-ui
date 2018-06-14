@@ -27,7 +27,7 @@ import HeaderSearchInterstitial from './components/layout/headerSearchInterstiti
 import traceDetailsStore from './components/traces/stores/traceDetailsStore';
 import Login from './components/common/login';
 import NoMatch from './components/common/noMatch';
-import UniversalSearchView from './components/universal-search/universalSearchView';
+import UniversalSearchView from './components/universalSearch/universalSearchView';
 
 const Layout = () => (
     <div className="layout">

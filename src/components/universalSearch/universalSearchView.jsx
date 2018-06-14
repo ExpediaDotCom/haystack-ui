@@ -23,7 +23,7 @@ import Tabs from './tabs/tabs';
 import './universalSearchView.less';
 import serviceGraphStore from '../serviceGraph/stores/serviceGraphStore';
 import tracesSearchStore from '../traces/stores/tracesSearchStore';
-import Autosuggest from './autosuggest';
+import Autosuggest from './searchBar/autosuggest';
 import SearchableKeysStore from './stores/searchableKeysStore';
 import UiState from './stores/searchBarUiStateStore';
 import OperationStore from '../../stores/operationStore';
@@ -64,14 +64,18 @@ export default class UniversalSearch extends React.Component {
                             <div className="container">
                                 <section className="text-center">
                                     <div className="no-search_text">
-                                        <h5>Start with query for serviceName, traceId, or any other <a
+                                        <h5>Start with a query for serviceName, traceId, or any other <a
                                             href="https://github.com/ExpediaDotCom/haystack-ui/blob/master/server/connectors/traces/haystack/tracesConnector.js#L52"
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            className="underlined-anchor"
                                         >
                                                 whitelisted key
                                             </a>
                                         </h5>
+                                        <p>
+                                            e.g.: <span className="traces-error-message__code">serviceName=test-service</span>
+                                        </p>
                                     </div>
                                 </section>
                             </div>
