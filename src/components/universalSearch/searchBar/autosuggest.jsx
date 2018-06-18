@@ -336,16 +336,15 @@ export default class Autocomplete extends React.Component {
         const inputValue = this.inputRef.value;
         if (!inputValue) return;
         if (this.testForValidInputString(inputValue)) {
-            const chip = inputValue.trim();
-            const key = chip.substring(0, chip.indexOf('='));
-            const value = chip.substring(chip.indexOf('=') + 1, chip.length);
+            const key = inputValue.substring(0, inputValue.indexOf('='));
+            const value = inputValue.substring(inputValue.indexOf('=') + 1, inputValue.length);
             let serviceName = null;
             if (key === 'serviceName') {
                 serviceName = value;
                 this.props.operationStore.fetchOperations(key);
             }
 
-            if (chip && this.props.uiState.chips[key] === undefined) {
+            if (inputValue && this.props.uiState.chips[key] === undefined) {
                 this.setState({inputError: false, serviceName});
                 this.props.uiState.chips[key] = value;
                 this.inputRef.value = '';
