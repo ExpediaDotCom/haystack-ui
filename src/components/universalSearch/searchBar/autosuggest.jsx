@@ -294,6 +294,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
+    // Prevents the input of invalid characters in the search bar
     clearInvalidChars() {
         const value = this.inputRef.value;
 
@@ -304,6 +305,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
+    // Test for correct formatting on K/V pairs
     testForValidInputString(value) {
         if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9\s-]+)$/g.test(value)) {
             const valueKey = value.substring(0, value.indexOf('='));
@@ -328,11 +330,12 @@ export default class Autocomplete extends React.Component {
         return false;
     }
 
+    // Adds inputted text chip to client side store
     updateChips() {
         this.handleBlur();
         const value = this.inputRef.value;
         if (!value) return;
-        if (true) {
+        if (true) { // Todo: Client side filtering for correctly formatted KV pair
             const chip = value.trim();
             let serviceName = null;
             if (chip.includes('serviceName')) {
