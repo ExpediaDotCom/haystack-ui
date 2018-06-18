@@ -239,17 +239,17 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleBlur();
         } else if (keyPressed === BACKSPACE) {
-            const chips = this.props.uiState.chips;
+            const chips = Object.keys(this.props.uiState.chips);
             if (!this.inputRef.value && chips.length) {
                 e.preventDefault();
-                this.modifyChip(chips.length - 1);
+                this.modifyChip(chips[chips.length - 1]);
             }
         }
     }
 
-    modifyChip(index) {
-        this.inputRef.value = this.props.uiState.chips[index];
-        this.deleteChip(index);
+    modifyChip(chipKey) {
+        this.inputRef.value = `${chipKey}=${this.props.uiState.chips[chipKey]}`;
+        this.deleteChip(chipKey);
     }
 
     // Updates input field and uiState props value
@@ -333,40 +333,40 @@ export default class Autocomplete extends React.Component {
     // Adds inputted text chip to client side store
     updateChips() {
         this.handleBlur();
-        const value = this.inputRef.value;
-        if (!value) return;
-        if (true) { // Todo: Client side filtering for correctly formatted KV pair
-            const chip = value.trim();
+        const inputValue = this.inputRef.value;
+        if (!inputValue) return;
+        if (this.testForValidInputString(inputValue)) {
+            const chip = inputValue.trim();
+            const key = chip.substring(0, chip.indexOf('='));
+            const value = chip.substring(chip.indexOf('=') + 1, chip.length);
             let serviceName = null;
-            if (chip.includes('serviceName')) {
-                const equalSplitter = this.inputRef.value.indexOf('=');
-                serviceName = chip.substring(equalSplitter + 1, this.inputRef.value.length);
-                this.props.operationStore.fetchOperations(serviceName);
+            if (key === 'serviceName') {
+                serviceName = value;
+                this.props.operationStore.fetchOperations(key);
             }
 
-            if (chip && this.props.uiState.chips.indexOf(chip) < 0) {
+            if (chip && this.props.uiState.chips[key] === undefined) {
                 this.setState({inputError: false, serviceName});
-                this.props.uiState.chips.push(chip);
+                this.props.uiState.chips[key] = value;
                 this.inputRef.value = '';
                 this.props.search();
             }
         }
     }
 
-    deleteChip(chipIndex) {
-        if (chipIndex >= 0) {
-            const updatedChips = this.props.uiState.chips;
-            const item = updatedChips[chipIndex];
-            if (item.includes('serviceName')) {
+    deleteChip(chipKey) {
+        const chipValue = this.props.uiState.chips[chipKey];
+        if (chipValue !== undefined) {
+            if (chipKey === 'serviceName') {
                 this.setState({
                     serviceName: null
                 });
             }
             const updatedExistingKeys = this.state.existingKeys;
-            const itemIndex = updatedExistingKeys.indexOf(item);
+            const itemIndex = updatedExistingKeys.indexOf(chipKey);
 
             updatedExistingKeys.splice(itemIndex, 1);
-            updatedChips.splice(chipIndex, 1);
+            delete this.props.uiState.chips[chipKey];
 
             this.setState({existingKeys: updatedExistingKeys});
             this.props.search();
@@ -374,10 +374,10 @@ export default class Autocomplete extends React.Component {
     }
 
     render() {
-        const chips = this.props.uiState.chips.map((chip, index) => (
+        const chips = Object.keys(this.props.uiState.chips).map(chip => (
             <span className="chip" key={Math.random()}>
-                <span className="chip-value">{chip}</span>
-                <button type="button" className="chip-delete-button" onClick={() => this.deleteChip(index)}>x</button>
+                <span className="chip-value">{chip}={this.props.uiState.chips[chip]}</span>
+                <button type="button" className="chip-delete-button" onClick={() => this.deleteChip(chip)}>x</button>
             </span>
         ));
 

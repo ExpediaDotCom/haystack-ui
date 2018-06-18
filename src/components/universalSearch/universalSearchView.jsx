@@ -44,7 +44,7 @@ export default class UniversalSearch extends React.Component {
     }
 
     handleSubmit() {
-        const query = UiState.chips.join('&');
+        const query = Object.keys(UiState.chips).map(key => `${key}=${UiState.chips[key]}`).join('&');
         tracesSearchStore.fetchSearchResults(query);
         this.setState({query});
         event.preventDefault();
