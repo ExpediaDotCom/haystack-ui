@@ -19,7 +19,15 @@ Haystack-ui's navigation is pivoted around services. On selecting a service, you
 It is a expressjs based single page client side app written in ES6 + React and using Mobx for data flow. 
 
 ### Pre-requisites
-Ensure you have `node >= 8.6` and `npm >= 5.3` installed.
+Ensure you have `node >= 8.6` and `npm >= 5.3` installed. 
+
+Clone the repository including recursive submodules: 
+```
+$ git clone --recurse-submodules https://github.com/ExpediaDotCom/haystack-ui.git
+$ cd haystack-ui
+```
+
+If the repository was already cloned, you can initialize and update submodules with `git submodule update --init --recursive`
 
 ### Build and Run
 This application uses [webpack](https://webpack.github.io/) as the UI module bundler. To build + bundle all the required UI assets (CSS/JS) and run expressjs server, use:
