@@ -251,8 +251,8 @@ export default class TraceResultsTable extends React.Component {
         return (
             <div>
                 <div className="trace-result-summary">
-                    <span>Showing latest <b>{results.length}</b> traces out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
-                    <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                    <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                    {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
                 </div>
                 <BootstrapTable
                     data={results}

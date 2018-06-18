@@ -55,6 +55,13 @@ export default class AlertsToolbar extends React.Component {
         this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        const query = toQuery(nextProps.location.search);
+        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : nextProps.defaultPreset;
+        this.setState({activeWindow, autoRefresh: false});
+        this.stopRefresh();
+    }
+
     componentWillUnmount() {
         this.stopRefresh();
     }
@@ -117,6 +124,7 @@ export default class AlertsToolbar extends React.Component {
         };
         const queryUrl = `?${toQueryUrlString(query)}`;
         this.props.history.push(queryUrl);
+        this.setState({activeWindow: selectedWindow});
     }
 
     render() {
@@ -129,7 +137,7 @@ export default class AlertsToolbar extends React.Component {
                         <select
                             className="time-range-selector"
                             onChange={this.handleTimeChange}
-                            defaultValue={timeWindow.presets.findIndex(presets => presets.shortName === this.state.activeWindow.shortName)}
+                            value={timeWindow.presets.findIndex(presets => presets.shortName === this.state.activeWindow.shortName)}
                         >
                             {this.state.options.map((window, index) => (
                                 <option key={window.longName} value={index}>last {window.longName}</option>))}
