@@ -16,78 +16,89 @@
 
 import React from 'react';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types';
+
+import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import tracesSearchStore from '../../traces/stores/tracesSearchStore';
 import ServiceGraph from '../../serviceGraph/serviceGraph';
 import OperationResults from '../../trends/operation/operationResults';
 import operationStore from '../../trends/stores/operationStore';
+import tracesTabState from './tabStores/tracesTabStateStore';
+import trendsTabState from './tabStores/trendsTabStateStore';
+import alertsTabState from './tabStores/alertsTabStateStore';
 
 @observer
 export default class Tabs extends React.Component {
+    static propTypes = {
+        search: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
+    };
+
     static tabs = [
         {
             tabId: 'traces',
             displayName: 'Traces',
-            icon: 'ti-align-left'
+            icon: 'ti-align-left',
+            store: tracesTabState
         },
         {
             tabId: 'trends',
             displayName: 'Trends',
-            icon: 'ti-stats-up'
+            icon: 'ti-stats-up',
+            store: trendsTabState
         },
         {
             tabId: 'alerts',
             displayName: 'Alerts',
-            icon: 'ti-bell'
-        },
-        {
-            tabId: 'serviceGraph',
-            displayName: 'Service Graph',
-            icon: 'ti-vector'
-        },
-        {
-            tabId: 'servicePerformance',
-            displayName: 'Service Performance',
-            icon: 'ti-pie-chart'
+            icon: 'ti-bell',
+            store: alertsTabState
         }
+        // {
+        //     tabId: 'serviceGraph',
+        //     displayName: 'Service Graph',
+        //     icon: 'ti-vector',
+        //     store: null
+        // },
+        // {
+        //     tabId: 'servicePerformance',
+        //     displayName: 'Service Performance',
+        //     icon: 'ti-pie-chart',
+        //     store: null
+        // }
     ];
 
-    static createTabsList(queryString) {
-        const queryKeys = [];
-        queryString.split('&').forEach(kvPair => queryKeys.push(kvPair.substring(0, kvPair.indexOf('='))));
-        if (queryKeys.every(key => key === 'serviceName' || key === 'operationName')) {
-            return Tabs.tabs.filter(tab => tab.tabId === 'traces' || tab.tabId === 'trends' || tab.tabId === 'alerts');
-        }
-        return Tabs.tabs.filter(tab => tab.tabId === 'traces');
-    }
+    static TabViewer({tabId}) {
+        // trigger fetch request on store for the tab
+        // TODO getting a nested store used by original non-usb components, cleanup it up
+        Tabs.tabs.find(tab => tab.tabId === tabId).store.fetch();
 
-    static TabViewer({tabId, serviceName}) {
         switch (tabId) {
             case 'traces':
                 return <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={location}/>;
             case 'trends':
-                operationStore.fetchStats(serviceName, {
-                    granularity: 5 * 60 * 1000,
-                    from: Date.now() - (60 * 60 * 1000),
-                    until: Date.now()
-                }, true, null);
-                return (<OperationResults operationStore={operationStore}/>);
-            case 'serviceGraph':
-                return <article className="container"><ServiceGraph /></article>;
+                return <OperationResults operationStore={operationStore} history={history} location={location}/>;
             default:
-                return <div>{tabId}</div>;
+                return <h5>Coming soon - {tabId}</h5>;
         }
     }
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
+        // state initialization
         this.state = {};
+
+        // bindings
         this.selectTab = this.selectTab.bind(this);
+
+        // init state stores for tabs
+        Tabs.tabs.forEach(tab => tab.store && tab.store.init(props.search));
     }
 
-    componentWillReceiveProps() {
+    componentWillReceiveProps(nextProps) {
         this.setState({selectedTabId: null});
+        Tabs.tabs.forEach(tab => tab.store.init(nextProps.search));
     }
 
     selectTab(tabId) {
@@ -95,33 +106,36 @@ export default class Tabs extends React.Component {
     }
 
     render() {
-        const tabsList = Tabs.createTabsList(tracesSearchStore.searchQuery, tracesSearchStore.queryString);
-        const selectedTabId = this.state.selectedTabId || tabsList[0].tabId;
+        const selectedTabId = this.state.selectedTabId || Tabs.tabs[0].tabId; // pick traces as default
+        const noTabAvailable = !Tabs.tabs.some(t => t.store.isAvailable);
 
-        return (
+        // tab selectors for navigation between tabs
+        const TabSelector = tab => (tab.store.isAvailable ?
+            (
+                <li className={tab.tabId === selectedTabId ? 'active' : ''}>
+                    <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => this.selectTab(tab.tabId)}>
+                            <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
+                        <span>{tab.displayName}</span>
+                    </a>
+                </li>
+            )
+            : null);
+
+        const TabsContainer = () => (
             <article>
                 <section className="container">
                     <nav>
-                        <ul className="nav nav-tabs">
-                            {
-                                tabsList.map(tab =>
-                                    (<li className={tab.tabId === selectedTabId ? 'active' : ''}>
-                                        <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => this.selectTab(tab.tabId)}>
-                                            <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
-                                            <span>{tab.displayName}</span>
-                                        </a>
-                                    </li>)
-                                )
-                            }
-                        </ul>
+                        <ul className="nav nav-tabs">{ Tabs.tabs.map(tab => TabSelector(tab)) }</ul>
                     </nav>
                 </section>
                 <section className="universal-search-tab__content">
                     <div className="container">
-                        <Tabs.TabViewer tabId={selectedTabId} serviceName={tracesSearchStore.searchQuery.serviceName} />
+                        <Tabs.TabViewer tabId={selectedTabId} />
                     </div>
                 </section>
             </article>
         );
+
+        return noTabAvailable ? <EmptyTab/> : <TabsContainer/>;
     }
 }
