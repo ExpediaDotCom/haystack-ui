@@ -41,13 +41,11 @@ export default class AlertsTableSparkline extends React.Component {
         const trends = this.state && this.state.trends;
 
         const alertsTableSparklineOptions = {
+            tooltips: {enabled: false},
+            hover: {mode: null},
             maintainAspectRatio: false,
             scales: {
-                yAxes: [
-                    {
-                        display: false
-                    }
-                ],
+                yAxes: [{display: false}],
                 xAxes: [
                     {
                         type: 'time',
@@ -72,7 +70,7 @@ export default class AlertsTableSparkline extends React.Component {
                     data: metricTrend,
                     backgroundColor: [['rgba(54, 162, 235, 0.2']],
                     borderColor: [['rgba(54, 162, 235, 1)']],
-                    borderWidth: 0.5,
+                    borderWidth: 1,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 }]
@@ -84,7 +82,7 @@ export default class AlertsTableSparkline extends React.Component {
                 data={chartData}
                 options={alertsTableSparklineOptions}
                 type="line"
-                height={35}
+                height={38}
                 legend={false}
             />}
         </div>);
