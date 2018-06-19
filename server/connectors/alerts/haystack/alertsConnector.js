@@ -21,8 +21,6 @@ const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
-const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-
 const fetcher = require('../../operations/restFetcher');
 
 const alertHistoryFetcher = fetcher('alertHistory');
@@ -70,12 +68,6 @@ function fetchOperationAlerts(serviceName, from, until) {
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
-    const alertTypeToTrendMap = {
-        count: 'countPoints',
-        durationTP99: 'tp99DurationPoints',
-        failureCount: 'failurePoints'
-    };
-
     return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
         const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
 
@@ -112,10 +104,7 @@ function getActiveAlertCount(operationAlerts) {
 }
 
 connector.getServiceAlerts = (serviceName, query) => {
-    const { granularity, from} = query;
-
-    return Q
-        .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(from / 1000), Math.trunc(until / 1000))])
+    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(query.from / 1000), Math.trunc(query.until / 1000))])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
