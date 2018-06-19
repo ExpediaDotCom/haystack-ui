@@ -42,7 +42,7 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
         this.promiseState = fromPromise(
             axios
             .get(`/api/alerts/${serviceName}?${timeFrameString}`)
-            .then((result) => {
+            .then((result) => { 
                 this.alerts = result.data;
             })
             .catch((result) => {
