@@ -21,7 +21,6 @@ import PropTypes from 'prop-types';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import tracesSearchStore from '../../traces/stores/tracesSearchStore';
-import ServiceGraph from '../../serviceGraph/serviceGraph';
 import OperationResults from '../../trends/operation/operationResults';
 import operationStore from '../../trends/stores/operationStore';
 import tracesTabState from './tabStores/tracesTabStateStore';
@@ -68,16 +67,16 @@ export default class Tabs extends React.Component {
         // }
     ];
 
-    static TabViewer({tabId}) {
+    static TabViewer({tabId, history}) {
         // trigger fetch request on store for the tab
         // TODO getting a nested store used by original non-usb components, cleanup it up
         Tabs.tabs.find(tab => tab.tabId === tabId).store.fetch();
 
         switch (tabId) {
             case 'traces':
-                return <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={location}/>;
+                return <TraceResults tracesSearchStore={tracesSearchStore} history={history} />;
             case 'trends':
-                return <OperationResults operationStore={operationStore} history={history} location={location}/>;
+                return <OperationResults operationStore={operationStore} history={history} />;
             default:
                 return <h5>Coming soon - {tabId}</h5>;
         }
@@ -106,6 +105,7 @@ export default class Tabs extends React.Component {
     }
 
     render() {
+        const { history } = this.props;
         const selectedTabId = this.state.selectedTabId || Tabs.tabs[0].tabId; // pick traces as default
         const noTabAvailable = !Tabs.tabs.some(t => t.store.isAvailable);
 
@@ -130,7 +130,7 @@ export default class Tabs extends React.Component {
                 </section>
                 <section className="universal-search-tab__content">
                     <div className="container">
-                        <Tabs.TabViewer tabId={selectedTabId} />
+                        <Tabs.TabViewer tabId={selectedTabId} history={history} />
                     </div>
                 </section>
             </article>

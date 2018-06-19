@@ -54,6 +54,7 @@ class UniversalSearch extends React.Component {
             search.time = { preset: UniversalSearch.DEFAULT_TIME_WINDOW };
         }
 
+        console.log(search);
         return search;
     }
 

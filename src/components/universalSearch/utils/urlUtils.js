@@ -13,12 +13,26 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+import _ from 'lodash';
 
-export const convertSearchToUrlQuery = search => Object
-    .keys(search)
-    .filter(key => search[key])
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(search[key])}`)
-    .join('&');
+function nestedObjectToQuery(parentKey, key, value) {
+    return `${encodeURIComponent(parentKey)}.${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+}
+
+export const convertSearchToUrlQuery = (search) => {
+    const uriComponents = Object.keys(search)
+        .filter(key => search[key])
+        .map((key) => {
+            const value = search[key];
+            if (_.isObject(value)) {
+                return Object.keys(value).map(valueKey => nestedObjectToQuery(key, valueKey, value[valueKey]));
+            }
+
+            return [`${encodeURIComponent(key)}=${encodeURIComponent(search[key])}`];
+        });
+
+    return _.flatten(uriComponents).join('&');
+};
 
 export const convertUrlQueryToSearch = (query) => {
     const search = {};
@@ -28,7 +42,17 @@ export const convertUrlQueryToSearch = (query) => {
     query.substr(1)
         .split('&')
         .forEach((item) => {
-            search[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1]);
+            const key = decodeURIComponent(item.split('=')[0]);
+            const value = decodeURIComponent(item.split('=')[1]);
+            const nestedKey = key.split('.');
+
+            if (nestedKey.length === 1) {
+                search[key] = value;
+            } else {
+                const nested = {};
+                nested[nestedKey[1]] = value;
+                search[nestedKey[0]] = nested;
+            }
         });
 
     return search;

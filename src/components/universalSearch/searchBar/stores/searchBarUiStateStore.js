@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2017 Expedia, Inc.
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 
 import {observable, action} from 'mobx';
-import {toFieldsKvString, extractSecondaryFields} from '../../traces/utils/traceQueryParser';
+import {toFieldsKvString, extractSecondaryFields} from '../../../traces/utils/traceQueryParser';
 
 export class SearchBarUiStateStore {
     @observable serviceName = null;
@@ -25,6 +25,17 @@ export class SearchBarUiStateStore {
     @observable timeWindow = null;
     @observable chips = [];
     @observable displayErrors = {};
+
+    @action init(search) {
+        // initialize observables using search object
+        this.serviceName = search.serviceName;
+        this.operationName = search.operationName;
+    }
+
+    getCurrentSearch() {
+        // construct current search object using observables
+        return this.chips;
+    }
 
     @action setServiceName(serviceName) {
         this.serviceName = serviceName;

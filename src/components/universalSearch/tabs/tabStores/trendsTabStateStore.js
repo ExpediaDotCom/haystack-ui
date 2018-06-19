@@ -13,8 +13,6 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import axios from 'axios';
-import { fromPromise } from 'mobx-utils';
 import {observable, action} from 'mobx';
 import { ErrorHandlingStore } from '../../../../stores/errorHandlingStore';
 import operationStore from '../../../trends/stores/operationStore';

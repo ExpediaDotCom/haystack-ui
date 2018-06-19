@@ -22,14 +22,12 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Autosuggest from './autosuggest';
-import SearchableKeysStore from '../stores/searchableKeysStore';
-import UiState from '../stores/searchBarUiStateStore';
+import SearchableKeysStore from './stores/searchableKeysStore';
+import uiState from './stores/searchBarUiStateStore';
 import OperationStore from '../../../stores/operationStore';
 import ServiceStore from '../../../stores/serviceStore';
 
 @observer
-// TODO create a new UI state store for searchBar
-// TODO initialize it, and bubble search object up
 export default class SearchBar extends React.Component {
     static propTypes = {
         search: PropTypes.object.isRequired,
@@ -40,28 +38,26 @@ export default class SearchBar extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        // TODO init ui state
-        // uiState.init(props.search);
+        // initialize UI state for searchBar
+        // TODO implement this
+        uiState.init(props.search);
     }
 
     componentDidMount() {
-        // TODO do this in UI state store
+        // TODO move this inside state store's init maybe?
         SearchableKeysStore.fetchKeys();
         ServiceStore.fetchServices();
     }
 
     handleSubmit() {
-        this.props.handleSearch(UiState.chips);
-        event.preventDefault();
-
-        // TODO extract search object from ui state store
-        // uiState.getCurrentSearch();
+        // TODO pass on nested objects for span level queries
+        this.props.handleSearch(uiState.getCurrentSearch());
     }
 
     render() {
         return (
             <article className="universal-search-container container">
-                <Autosuggest search={this.handleSubmit} uiState={UiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
+                <Autosuggest search={this.handleSubmit} uiState={uiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
             </article>
         );
     }
