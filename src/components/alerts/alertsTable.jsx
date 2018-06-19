@@ -265,7 +265,7 @@ export default class AlertsTable extends React.Component {
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
                         dataField="trend"
-                        width="40"
+                        width="50"
                         dataFormat={(cell, row) => AlertsTable.trendColumnFormatter(row, this.props.location, this.props.defaultPreset, this.props.alertType, this.props.serviceName)}
                         dataSort
                         thStyle={tableHeaderStyle}

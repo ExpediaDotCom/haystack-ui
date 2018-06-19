@@ -85,10 +85,10 @@ export default class ServiceGraphResults extends React.Component {
                         top: null
                     },
                     focused: {
-                        top: { header: 'Rq Rate', data: 'data.volume', format: '0.00' }
+                        top: { header: 'Rq / Sec', data: 'data.volume', format: '0.00' }
                     },
                     entry: {
-                        top: { header: 'Rq Rate', data: 'data.volume', format: '0.00' }
+                        top: { header: 'Rq / Sec', data: 'data.volume', format: '0.00' }
                     }
                 }
             }
