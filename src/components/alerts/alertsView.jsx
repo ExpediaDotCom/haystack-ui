@@ -41,7 +41,7 @@ export default class AlertsPanel extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertTabs history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
+                        ? <AlertTabs defaultPreset={this.props.defaultPreset} history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })}
             </section>

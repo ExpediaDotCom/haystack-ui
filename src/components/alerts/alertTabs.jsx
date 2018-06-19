@@ -24,15 +24,16 @@ export default class AlertTabs extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        alertsStore: PropTypes.object.isRequired
+        alertsStore: PropTypes.object.isRequired,
+        defaultPreset: PropTypes.object.isRequired
     };
 
-    static tabViewer(tabSelected, groupedAlerts, serviceName, location) {
+    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset) {
         switch (tabSelected) {
             case 2:
-                return <AlertsTable alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName}/>;
             default:
-                return <AlertsTable alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName}/>;
         }
     }
 
@@ -80,7 +81,7 @@ export default class AlertTabs extends React.Component {
                         </li>
                     </ul>
                 </div>
-                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location)}</section>
+                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, this.props.defaultPreset)}</section>
             </section>
         );
     }

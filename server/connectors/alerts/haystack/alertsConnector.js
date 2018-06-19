@@ -21,8 +21,6 @@ const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
-const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-
 const fetcher = require('../../operations/restFetcher');
 
 const alertHistoryFetcher = fetcher('alertHistory');
@@ -37,10 +35,6 @@ const alertTypes = ['durationTP99', 'failureCount'];
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
-}
-
-function fetchOperationTrends(serviceName, granularity, from, until) {
-    return trendsConnector.getOperationStats(serviceName, granularity, from, until);
 }
 
 function parseOperationAlertsResponse(data, until) {
@@ -73,21 +67,13 @@ function fetchOperationAlerts(serviceName, from, until) {
         .then(result => parseOperationAlertsResponse(result, until));
 }
 
-function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTrends}) {
-    const alertTypeToTrendMap = {
-        count: 'countPoints',
-        durationTP99: 'tp99DurationPoints',
-        failureCount: 'failurePoints'
-    };
-
+function mergeOperationsWithAlerts({operationAlerts, operations}) {
     return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
         const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
-        const operationTrend = operationTrends.find(trend => (trend.operationName.toLowerCase() === operation.toLowerCase()));
 
         if (operationAlert !== undefined) {
             return {
-                ...operationAlert,
-                trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
+                ...operationAlert
             };
         }
 
@@ -95,8 +81,7 @@ function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTr
             operationName: operation,
             type: alertType,
             isUnhealthy: false,
-            timestamp: null,
-            trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
+            timestamp: null
         };
     })));
 }
@@ -119,14 +104,10 @@ function getActiveAlertCount(operationAlerts) {
 }
 
 connector.getServiceAlerts = (serviceName, query) => {
-    const { granularity, from, until} = query;
-
-    return Q
-        .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(from / 1000), Math.trunc(until / 1000)), fetchOperationTrends(serviceName, granularity, from, until)])
-        .then(stats => mergeOperationAlertsAndTrends({
+    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(query.from / 1000), Math.trunc(query.until / 1000))])
+        .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
-                operationAlerts: stats[1],
-                operationTrends: stats[2]
+                operationAlerts: stats[1]
             })
         );
 };
