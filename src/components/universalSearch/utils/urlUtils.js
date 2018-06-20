@@ -49,7 +49,7 @@ export const convertUrlQueryToSearch = (query) => {
             if (nestedKey.length === 1) {
                 search[key] = value;
             } else {
-                const nested = {};
+                const nested = search[nestedKey[0]] || {};
                 nested[nestedKey[1]] = value;
                 search[nestedKey[0]] = nested;
             }

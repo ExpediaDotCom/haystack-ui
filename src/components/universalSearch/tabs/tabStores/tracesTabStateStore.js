@@ -33,12 +33,22 @@ export class TracesTabStateStore {
     fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
-        tracesSearchStore.fetchSearchResults({
-            serviceName: this.search.serviceName,
+        const traceSearch = {
+            traceId: this.search.traceId,
             timePreset: this.search.time.preset,
             startTime: this.search.time.from,
             endTime: this.search.time.to
-        });
+        };
+
+        if (this.search.serviceName) {
+            traceSearch.serviceName = this.search.serviceName;
+        }
+
+        if (this.search.serviceName) {
+            traceSearch.traceId = this.search.traceId;
+        }
+
+        tracesSearchStore.fetchSearchResults(traceSearch);
 
         return tracesSearchStore;
     }
