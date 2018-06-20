@@ -83,7 +83,7 @@ export default class Tabs extends React.Component {
             case 'trends':
                 return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName}/>;
             case 'alerts':
-                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={store.defaultPreset}/>;
+                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset="6h"/>;
             default:
                 return null;
         }

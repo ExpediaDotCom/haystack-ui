@@ -33,20 +33,12 @@ export class TracesTabStateStore {
     fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
-        const traceSearch = {
-            traceId: this.search.traceId,
-            timePreset: this.search.time.preset,
-            startTime: this.search.time.from,
-            endTime: this.search.time.to
-        };
+        // eslint-disable-next-line no-unused-vars
+        const { time, tabId, ...traceSearch } = this.search;
 
-        if (this.search.serviceName) {
-            traceSearch.serviceName = this.search.serviceName;
-        }
-
-        if (this.search.serviceName) {
-            traceSearch.traceId = this.search.traceId;
-        }
+        traceSearch.timePreset = this.search.time.preset;
+        traceSearch.startTime = this.search.time.from;
+        traceSearch.endTime = this.search.time.to;
 
         tracesSearchStore.fetchSearchResults(traceSearch);
 

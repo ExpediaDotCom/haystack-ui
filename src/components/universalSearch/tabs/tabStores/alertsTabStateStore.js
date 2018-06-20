@@ -18,7 +18,7 @@ import alertsStore from '../../../alerts/stores/serviceAlertsStore';
 export class AlertsTabStateStore {
     search = null;
     isAvailable = false;
-    defaultPreset = '12h';
+
     init(search) {
         // initialize observables using search object
         // check if for the given search context tab should be available

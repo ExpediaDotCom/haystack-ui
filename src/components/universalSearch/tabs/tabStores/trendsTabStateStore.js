@@ -14,6 +14,26 @@
  *         limitations under the License.
  */
 import operationStore from '../../../trends/stores/operationStore';
+import timeWindow from '../../../../utils/timeWindow';
+
+// TODO remove once we are out of older states
+function createWindow(search) {
+    const from = search.time.from;
+    const until = search.time.to;
+    const isCustomTimeRange = !!(from && until);
+
+    let activeWindow;
+    if (isCustomTimeRange) {
+        activeWindow = timeWindow.toCustomTimeRange(from, until);
+    } else {
+        activeWindow = timeWindow.findMatchingPresetByShortName(search.preset) || timeWindow.defaultPreset;
+        const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
+        activeWindow.from = activeWindowTimeRange.from;
+        activeWindow.until = activeWindowTimeRange.until;
+    }
+
+    return activeWindow;
+}
 
 export class TrendsTabStateStore {
     search = null;
@@ -34,11 +54,17 @@ export class TrendsTabStateStore {
     fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
-        operationStore.fetchStats(this.search.serviceName, {
-            granularity: 5 * 60 * 1000,
-            from: Date.now() - (60 * 60 * 1000),
-            until: Date.now()
-        }, false, null);
+        const window = createWindow(this.search);
+
+        const granularity = timeWindow.getLowerGranularity(window.value);
+
+        const query = {
+            granularity: granularity.value,
+            from: window.from,
+            until: window.until
+        };
+
+        operationStore.fetchStats(this.search.serviceName, query, !!(window.isCustomTimeRange), { operationName: this.search.operationName});
 
         return operationStore;
     }
