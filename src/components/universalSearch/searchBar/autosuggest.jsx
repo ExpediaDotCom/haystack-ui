@@ -25,7 +25,7 @@ import TimeWindowPicker from './timeWindowPicker';
 import './autosuggest.less';
 
 const BACKSPACE = 8;
-const SPACE = 32;
+// const SPACE = 32; todo: re-implement space handling outside of ()
 const TAB = 9;
 const ENTER = 13;
 const UP = 38;
@@ -226,7 +226,7 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleSelection();
             this.handleBlur();
-        } else if (keyPressed === ENTER || ((keyPressed === TAB || keyPressed === SPACE) && e.target.value)) {
+        } else if (keyPressed === ENTER || ((keyPressed === TAB) && e.target.value)) {
             e.preventDefault();
             this.updateChips();
         } else if (keyPressed === UP) {
@@ -248,7 +248,17 @@ export default class Autocomplete extends React.Component {
     }
 
     modifyChip(chipKey) {
-        this.inputRef.value = `${chipKey}=${this.props.uiState.chips[chipKey]}`;
+        const chipValue = this.props.uiState.chips[chipKey];
+        if (typeof chipValue === 'object') { // Check for nested KV pairs
+            let fullString = '';
+            const nestedKeys = Object.keys(chipValue);
+            nestedKeys.forEach((key) => {
+                fullString += `${key}=${chipValue[key]} `;
+            });
+            this.inputRef.value = `(${fullString.trim()})`;
+        } else {
+            this.inputRef.value = `${chipKey}=${chipValue}`;
+        }
         this.deleteChip(chipKey);
     }
 
@@ -306,18 +316,12 @@ export default class Autocomplete extends React.Component {
     }
 
     // Test for correct formatting on K/V pairs
-    testForValidInputString(value) {
-        if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9\s-]+)$/g.test(value)) {
-            const valueKey = value.substring(0, value.indexOf('='));
-            if (Object.keys(this.props.options).includes(valueKey)) {
-                if (!this.state.existingKeys.includes(valueKey)) {
-                    this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
-                    return true;
-                }
-                this.setState({
-                    inputError: 'Key already exists'
-                });
-                return false;
+    testForValidInputString(kvPair) {
+        if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9\s-]+)$/g.test(kvPair)) { // Ensure format is a=b
+            const valueKey = kvPair.substring(0, kvPair.indexOf('='));
+            if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
+                this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
+                return true;
             }
             this.setState({
                 inputError: 'Indicated key is not whitelisted. Please submit a valid key'
@@ -325,7 +329,7 @@ export default class Autocomplete extends React.Component {
             return false;
         }
         this.setState({
-            inputError: 'Invalid K/V Pair, please use format "abc=xyz"'
+            inputError: 'Invalid K/V Pair, please use format "abc=xyz" or "(abc=def ghi=jkl)"'
         });
         return false;
     }
@@ -335,21 +339,37 @@ export default class Autocomplete extends React.Component {
         this.handleBlur();
         const inputValue = this.inputRef.value;
         if (!inputValue) return;
-        if (this.testForValidInputString(inputValue)) {
-            const key = inputValue.substring(0, inputValue.indexOf('='));
-            const value = inputValue.substring(inputValue.indexOf('=') + 1, inputValue.length);
-            let serviceName = null;
-            if (key === 'serviceName') {
-                serviceName = value;
-                this.props.operationStore.fetchOperations(key);
-            }
+        const formattedValue = inputValue.indexOf('(') > -1 ? inputValue.substring(1, inputValue.length - 1) : inputValue;
+        const splitInput = formattedValue.split(' ');
+        if (splitInput.every(this.testForValidInputString)) { // Valid input tests
+            const serviceName = null;
+            let chipKey = null;
+            let chipValue = null;
 
-            if (inputValue && this.props.uiState.chips[key] === undefined) {
-                this.setState({inputError: false, serviceName});
-                this.props.uiState.chips[key] = value;
-                this.inputRef.value = '';
-                this.props.search();
+            if (splitInput.length > 1) {
+                if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
+                    this.setState({
+                        inputError: 'Invalid K/V grouping, make sure parenthesis are closed'
+                    });
+                    return;
+                }
+                const chipIndex = Object.keys(this.props.uiState.chips).length; // Create nested object of KV pairs
+                chipKey = `nested_${chipIndex}`;
+                chipValue = {};
+                splitInput.forEach((kvPair) => {
+                    const key = kvPair.substring(0, kvPair.indexOf('='));
+                    chipValue[key] = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length);
+                });
+            } else {
+                const kvPair = splitInput[0];
+                chipKey = kvPair.substring(0, kvPair.indexOf('='));
+                chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length);
             }
+            this.props.uiState.chips[chipKey] = chipValue;
+
+            this.setState({inputError: false, serviceName});
+            this.inputRef.value = '';
+            this.props.search();
         }
     }
 
@@ -373,15 +393,26 @@ export default class Autocomplete extends React.Component {
     }
 
     render() {
-        const chips = Object.keys(this.props.uiState.chips).map(chip => (
-            <span className="chip" key={Math.random()}>
-                <span className="chip-value">{chip}={this.props.uiState.chips[chip]}</span>
+        const chips = Object.keys(this.props.uiState.chips).map((chip) => {
+            let chipName = '';
+            if (chip.includes('nested_')) {
+                const baseObject = this.props.uiState.chips[chip];
+                Object.keys(baseObject).forEach((key) => {
+                    chipName += `${key}=${baseObject[key]} `;
+                });
+                chipName = `(${chipName.trim()})`;
+            } else {
+                chipName = `${chip}=${this.props.uiState.chips[chip]}`;
+            }
+            return (
+                <span className="chip" key={Math.random()}>
+                <span className="chip-value">{chipName}</span>
                 <button type="button" className="chip-delete-button" onClick={() => this.deleteChip(chip)}>x</button>
             </span>
-        ));
+            );
+        });
 
         const sIndex = this.state.suggestionIndex;
-
         return (
             <article className="universal-search-bar search-query-bar">
                     <div className="search-bar-pickers_fields">

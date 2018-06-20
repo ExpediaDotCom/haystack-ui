@@ -28,6 +28,9 @@ export class SearchBarUiStateStore {
 
     @action init(search) {
         // initialize observables using search object
+        Object.keys(search).forEach((key) => {
+            if (key !== 'time' && key !== 'tabId') this.chips[key] = search[key];
+        });
         this.serviceName = search.serviceName;
         this.operationName = search.operationName;
     }
