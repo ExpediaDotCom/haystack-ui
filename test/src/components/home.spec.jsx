@@ -16,8 +16,8 @@
  */
 
 import React from 'react';
-import { shallow } from 'enzyme';
-import { expect } from 'chai';
+import {shallow} from 'enzyme';
+import {expect} from 'chai';
 import sinon from 'sinon';
 import Home from '../../../src/components/home/home';
 import HomeSearchBox from '../../../src/components/home/homeSearchBox';
@@ -64,7 +64,7 @@ const servicePerfStubResults = {
     ]
 };
 
-const stubLocation = {
+let stubLocation = {
     search: '/'
 };
 
@@ -73,7 +73,7 @@ const stubHistory = {
         search: '/'
     },
     push: (location) => {
-        stubLocation.search = location.search;
+        stubLocation = location;
     }
 };
 
@@ -111,6 +111,17 @@ describe('<Home />', () => {
         const serviceStore = createServiceStubStore(serviceStubResults);
         const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
         expect(wrapper.find('.container')).to.have.length(1);
+    });
+
+    it('should URL encode service names', () => {
+        const serviceStore = createServiceStubStore(serviceStubResults);
+        const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
+
+        wrapper.instance().handleChange({value: 'some-app'});
+        expect(stubLocation).to.equal('/service/some-app/trends');
+
+        wrapper.instance().handleChange({value: '#/something/.app/ui/test'});
+        expect(stubLocation).to.equal('/service/%23%2Fsomething%2F.app%2Fui%2Ftest/trends');
     });
 
     it('should render the servicePerformance', () => {
