@@ -13,10 +13,17 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+import { convertSearchToUrlQuery } from '../components/universalSearch/utils/urlUtils';
 
 const linkBuilder = {};
 
 linkBuilder.withAbsoluteUrl = relativeUrl => `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+
+linkBuilder.universalSearchLink = search => `/usb?${convertSearchToUrlQuery(search)}`;
+
+linkBuilder.universalSearchTracesLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=traces`;
+
+linkBuilder.universalSearchTrendsLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=trends`;
 
 linkBuilder.createTracesLink = ({serviceName, operationName, from, until, timePreset, traceId}) => {
     const encodedServiceName = serviceName && encodeURIComponent(serviceName);

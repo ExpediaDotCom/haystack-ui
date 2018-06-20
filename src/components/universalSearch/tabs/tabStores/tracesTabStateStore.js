@@ -13,29 +13,34 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import { action } from 'mobx';
-import { ErrorHandlingStore } from '../../../../stores/errorHandlingStore';
 import tracesSearchStore from '../../../traces/stores/tracesSearchStore';
 
-export class TracesTabStateStore extends ErrorHandlingStore {
+export class TracesTabStateStore {
     search = null;
     isAvailable = false;
 
-    @action init(search) {
+    init(search) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
-        this.isAvailable = !(Object.keys(search).length === 1); // the only key in search is time
+
+        // check all keys except time
+        // eslint-disable-next-line no-unused-vars
+        const {time, tabId, ...kv} =  search;
+        this.isAvailable = !!Object.keys(kv).length;
     }
 
-    @action fetch() {
+    fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
-        tracesSearchStore.fetchSearchResults(
-            {
-                serviceName: this.search.serviceName,
-                timePreset: this.search.time.preset
-            });
+        tracesSearchStore.fetchSearchResults({
+            serviceName: this.search.serviceName,
+            timePreset: this.search.time.preset,
+            startTime: this.search.time.from,
+            endTime: this.search.time.to
+        });
+
+        return tracesSearchStore;
     }
 }
 

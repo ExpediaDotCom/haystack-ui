@@ -13,33 +13,34 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import {observable, action} from 'mobx';
-import { ErrorHandlingStore } from '../../../../stores/errorHandlingStore';
 import operationStore from '../../../trends/stores/operationStore';
 
-export class TrendsTabStateStore extends ErrorHandlingStore {
+export class TrendsTabStateStore {
     search = null;
-    @observable isAvailable = false;
-    @observable resultState = null;
-    @observable result = [];
+    isAvailable = false;
 
-    @action init(search) {
+    init(search) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
 
-        const keys =  Object.keys(search);
-        this.isAvailable = (keys.length !== 1) && Object.keys(search).every(key => key === 'serviceName' || key === 'operationName' ||  key === 'time');
+        // check all keys except time
+        // eslint-disable-next-line no-unused-vars
+        const {time, tabId, ...kv} =  search;
+        const keys = Object.keys(kv);
+        this.isAvailable = keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
-    @action fetch() {
+    fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
         operationStore.fetchStats(this.search.serviceName, {
             granularity: 5 * 60 * 1000,
             from: Date.now() - (60 * 60 * 1000),
             until: Date.now()
-        }, true, null);
+        }, false, null);
+
+        return operationStore;
     }
 }
 

@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import TraceTimeline from './traceTimeline';
@@ -30,7 +30,11 @@ export default class TraceResults extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        isUniversalSearch: PropTypes.bool.optional
+    };
+
+    static defaultProps = {
+        isUniversalSearch: false
     };
 
     render() {
@@ -41,7 +45,7 @@ export default class TraceResults extends React.Component {
                     rejected: () => <Error />,
                     fulfilled: () => (
                         (this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length)
-                        ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history}/>
+                        ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history} isUniversalSearch={this.props.isUniversalSearch}/>
                         : null)
                 })
                 }
@@ -50,8 +54,13 @@ export default class TraceResults extends React.Component {
                         rejected: () => <Error />,
                         empty: () => <NoSearch />,
                         fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                                ? <TraceResultsTable query={this.props.tracesSearchStore.searchQuery} results={this.props.tracesSearchStore.searchResults} totalCount={this.props.tracesSearchStore.totalCount}  location={this.props.location} />
-                                : <Error />)
+                            ? <TraceResultsTable
+                                query={this.props.tracesSearchStore.searchQuery}
+                                results={this.props.tracesSearchStore.searchResults}
+                                totalCount={this.props.tracesSearchStore.totalCount}
+                                isUniversalSearch={this.props.isUniversalSearch}
+                            />
+                            : <Error />)
                     })
                 }
             </section>

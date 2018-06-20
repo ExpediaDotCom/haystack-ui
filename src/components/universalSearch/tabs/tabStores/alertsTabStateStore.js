@@ -13,39 +13,27 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import axios from 'axios';
-import { fromPromise } from 'mobx-utils';
-import {observable, action} from 'mobx';
-import { ErrorHandlingStore } from '../../../../stores/errorHandlingStore';
+import alertsStore from '../../../alerts/stores/serviceAlertsStore';
 
-export class AlertsTabStateStore extends ErrorHandlingStore {
+export class AlertsTabStateStore {
     search = null;
-    @observable isAvailable = false;
-    @observable resultState = null;
-    @observable result = [];
-
-    @action init(search) {
+    isAvailable = false;
+    defaultPreset = '12h';
+    init(search) {
         // initialize observables using search object
         // check if for the given search context tab should be available
         this.search = search;
 
-        const keys =  Object.keys(search);
-        this.isAvailable = (keys.length !== 1) && keys.every(key => key === 'serviceName' || key === 'operationName' ||  key === 'time');
+        // check all keys except time
+        // eslint-disable-next-line no-unused-vars
+        const {time, tabId, ...kv} =  search;
+        const keys = Object.keys(kv);
+        this.isAvailable = keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
-    @action fetch() {
-        // trigger request using local search object
-        // fetch should be called only after init on the state object
-        this.resultState = fromPromise(
-            axios
-            .get(`${this.search.abcd}`)
-            .then((result) => {
-                this.result = result.data;
-            })
-            .catch((result) => {
-                AlertsTabStateStore.handleError(result);
-            })
-        );
+    fetch() {
+        alertsStore.fetchServiceAlerts(this.search.serviceName, 300000, '12h');
+        return alertsStore;
     }
 }
 

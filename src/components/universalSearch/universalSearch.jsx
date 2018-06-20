@@ -26,7 +26,8 @@ import Footer from '../layout/footer';
 // universal search view
 import Tabs from './tabs/tabs';
 import SearchBar from './searchBar/searchBar';
-import { convertSearchToUrlQuery, convertUrlQueryToSearch } from './utils/urlUtils';
+import { convertUrlQueryToSearch } from './utils/urlUtils';
+import linkBuilder from '../../utils/linkBuilder';
 
 // styling
 import './universalSearch.less';
@@ -54,7 +55,6 @@ class UniversalSearch extends React.Component {
             search.time = { preset: UniversalSearch.DEFAULT_TIME_WINDOW };
         }
 
-        console.log(search);
         return search;
     }
 
@@ -62,6 +62,7 @@ class UniversalSearch extends React.Component {
         super(props);
         this.state = {search: UniversalSearch.createSearch(props.location.search)};
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleTabSelection = this.handleTabSelection.bind(this);
     }
 
     // on update of url query, update the search object
@@ -72,7 +73,13 @@ class UniversalSearch extends React.Component {
     // on update of search in search-bar,
     // convert search to url query string and push to browser history
     handleSearch(search) {
-        this.props.history.push(`/usb?${convertSearchToUrlQuery(search)}`);
+        this.props.history.push(linkBuilder.universalSearchLink(search));
+    }
+
+    // on update of search in search-bar,
+    // convert search to url query string and push to browser history
+    handleTabSelection(tabId) {
+        this.props.history.push(linkBuilder.universalSearchLink({...this.state.search, tabId}));
     }
 
     // on load, render search bar and tabs
@@ -85,7 +92,7 @@ class UniversalSearch extends React.Component {
             <article>
                 <Header/>
                 <SearchBar search={search} handleSearch={this.handleSearch} />
-                <Tabs search={search} history={history} />
+                <Tabs search={search} handleTabSelection={this.handleTabSelection} history={history} location={location} />
                 <Footer/>
             </article>
         );

@@ -21,17 +21,12 @@ export default () => (
         <div className="container">
             <section className="text-center">
                 <div className="no-search_text">
-                    <h5>Start with a query for serviceName, traceId, or any other <a
-                        href="https://github.com/ExpediaDotCom/haystack-ui/blob/master/server/connectors/traces/haystack/tracesConnector.js#L52"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underlined-anchor"
-                    >
-                        whitelisted key
-                    </a>
+                    <h5>
+                        <span>Start with a query for serviceName, traceId, or any other </span>
+                        <a href="/api/traces/searchableKeys" target="_blank" className="underlined-anchor">whitelisted key</a>
                     </h5>
                     <p>
-                        e.g.: <span className="traces-error-message__code">serviceName=test-service</span>
+                        e.g. <span className="traces-error-message__code">serviceName=test-service</span>
                     </p>
                 </div>
             </section>
