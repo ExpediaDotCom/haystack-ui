@@ -32,7 +32,8 @@ export default class TrendDetails extends React.Component {
         serviceName: PropTypes.string.isRequired,
         serviceSummary: PropTypes.bool,
         opName: PropTypes.string,
-        statsType: PropTypes.string
+        statsType: PropTypes.string,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     static defaultProps = {
@@ -51,6 +52,7 @@ export default class TrendDetails extends React.Component {
                     serviceName={encodeURIComponent(this.props.serviceName)}
                     opName={encodeURIComponent(this.props.opName)}
                     statsType={this.props.statsType}
+                    isUniversalSearch={this.props.isUniversalSearch}
                 />
                 { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,

@@ -31,7 +31,7 @@ export default class TraceResultsTable extends React.Component {
         query: PropTypes.object.isRequired,
         results: PropTypes.object.isRequired,
         totalCount: PropTypes.number.isRequired,
-        location: PropTypes.object.isRequired
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     static sortByStartTime(a, b, order) {
@@ -205,7 +205,7 @@ export default class TraceResultsTable extends React.Component {
     }
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} location={this.props.location} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} />;
+            return <TraceDetails traceId={row.traceId} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} isUniversalSearch={this.props.isUniversalSearch}/>;
         }
         return null;
     }

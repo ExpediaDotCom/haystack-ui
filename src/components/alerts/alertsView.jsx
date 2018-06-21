@@ -30,18 +30,33 @@ export default class AlertsPanel extends React.Component {
         alertsStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         history: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired
+        defaultPreset: PropTypes.object.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     render() {
         return (
             <section className="alert-results">
-                <AlertsToolbar defaultPreset={this.props.defaultPreset} history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName} />
+                <AlertsToolbar
+                    defaultPreset={this.props.defaultPreset}
+                    history={this.props.history}
+                    alertsStore={this.props.alertsStore}
+                    location={this.props.location}
+                    serviceName={this.props.serviceName}
+                    isUniversalSearch={this.props.isUniversalSearch}
+                />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertTabs defaultPreset={this.props.defaultPreset} history={this.props.history} alertsStore={this.props.alertsStore} location={this.props.location} serviceName={this.props.serviceName}/>
+                        ? <AlertTabs
+                            defaultPreset={this.props.defaultPreset}
+                            history={this.props.history}
+                            alertsStore={this.props.alertsStore}
+                            location={this.props.location}
+                            serviceName={this.props.serviceName}
+                            isUniversalSearch={this.props.isUniversalSearch}
+                        />
                         : <Error />)
                 })}
             </section>

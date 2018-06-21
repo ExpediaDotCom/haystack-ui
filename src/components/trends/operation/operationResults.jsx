@@ -29,7 +29,12 @@ export default class operationResults extends React.Component {
     static propTypes = {
         operationStore: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
+    };
+
+    static defaultProps = {
+        isUniversalSearch: false
     };
 
     render() {
@@ -45,6 +50,7 @@ export default class operationResults extends React.Component {
                             operationStore={this.props.operationStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
+                            isUniversalSearch={this.props.isUniversalSearch}
                         />
                         : <Error />)
                 })
