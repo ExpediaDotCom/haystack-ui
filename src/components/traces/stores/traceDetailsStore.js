@@ -21,12 +21,18 @@ import { fromPromise } from 'mobx-utils';
 
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 
-export function setChildExpandState(timelineSpans, parent) {
+export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall) {
     parent.children.forEach((childId) => {
+        let showExpanded = parent.expanded;
+        let displaySpans = parent.expanded;
+        if (shouldCollapseWaterfall && parent.expanded) {
+            showExpanded = false;
+            displaySpans = true;
+        }
         const childSpan = timelineSpans.find(s => s.spanId === childId);
-        childSpan.display = parent.expanded;
-        childSpan.expanded = parent.expanded;
-        setChildExpandState(timelineSpans, childSpan);
+        childSpan.display = displaySpans;
+        childSpan.expanded = showExpanded;
+        setChildExpandState(timelineSpans, childSpan, shouldCollapseWaterfall);
     });
 }
 
@@ -36,21 +42,32 @@ function createSpanTree(span, trace, groupByParentId = null) {
     return {
         span,
         children: (grouped[span.spanId] || [])
-        .map(s => createSpanTree(s, trace, grouped))
+            .map(s => createSpanTree(s, trace, grouped))
     };
 }
 
-function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration) {
+function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration, shouldCollapseWaterfall) {
+    let showExpanded = true;
+    let displaySpans = true;
+    if (shouldCollapseWaterfall) {
+        if (depth === 1) {
+            showExpanded = false;
+            displaySpans = true;
+        } else if (depth > 1) {
+            displaySpans = false;
+        }
+    }
+
     return [observable({
         ...spanTree.span,
         children: spanTree.children.map(child => child.span.spanId),
         startTimePercent: (((spanTree.span.startTime - traceStartTime) / totalDuration) * 100),
         depth,
         expandable: !!spanTree.children.length,
-        display: true,
-        expanded: true
+        display: displaySpans,
+        expanded: showExpanded
     })]
-    .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1, traceStartTime, totalDuration)));
+        .concat(_.flatMap(spanTree.children, child => createFlattenedSpanTree(child, depth + 1, traceStartTime, totalDuration, shouldCollapseWaterfall)));
 }
 
 export class TraceDetailsStore extends ErrorHandlingStore {
@@ -58,7 +75,8 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     @observable spans = [];
     traceId = null;
 
-    @action fetchTraceDetails(traceId) {
+    @action
+    fetchTraceDetails(traceId) {
         if (traceId === this.traceId) return;
         this.traceId = traceId;
 
@@ -100,7 +118,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         if (this.spans.length === 0) return [];
 
         const tree = createSpanTree(this.rootSpan, this.spans);
-        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration);
+        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration, this.spans.length > 100);
     }
 
     @computed
@@ -108,10 +126,11 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         return this.timelineSpans.reduce((max, span) => Math.max(max, span.depth), 0);
     }
 
-    @action toggleExpand(selectedParentId) {
+    @action
+    toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
         parent.expanded = !parent.expanded;
-        setChildExpandState(this.timelineSpans, parent);
+        setChildExpandState(this.timelineSpans, parent, this.timelineSpans.length > 100);
     }
 }
 
