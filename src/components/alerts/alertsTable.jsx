@@ -18,13 +18,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import {Sparklines, SparklinesCurve} from 'react-sparklines';
+
 import { observer } from 'mobx-react';
+import AlertsTableSparkline from './alertsTableSparkline';
 
 import {toQuery} from '../../utils/queryParser';
 import AlertDetails from './details/alertDetails';
 import alertDetailsStore from './stores/alertDetailsStore';
 import formatters from '../../utils/formatters';
+import timeWindow from '../../utils/timeWindow';
 import './alerts';
 
 @observer
@@ -33,6 +35,8 @@ export default class AlertsTable extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         alerts: PropTypes.array.isRequired,
+        defaultPreset: PropTypes.object.isRequired,
+        alertType: PropTypes.string.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -69,20 +73,21 @@ export default class AlertsTable extends React.Component {
         return '<div/>';
     }
 
-    static trendColumnFormatter(cell) {
-        if (cell) {
-            const trends = cell.map(d => d.value);
-            return (
-                <div className="sparkline-container">
-                    <div className="sparkline-graph">
-                        <Sparklines className="sparkline" data={trends} min={0} height={25}>
-                            <SparklinesCurve style={{ strokeWidth: 0.5 }} color={'#36a2eb'} />
-                        </Sparklines>
-                    </div>
-                </div>
-            );
-        }
-        return '<div />';
+    static trendColumnFormatter(row, location, defaultPreset, alertType, serviceName) {
+        const query = toQuery(location.search);
+        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : defaultPreset;
+        const timeRange = timeWindow.toTimeRange(activeWindow.value);
+        return (
+            <AlertsTableSparkline
+                serviceName={serviceName}
+                operationName={row.operationName}
+                trendType={AlertsTable.toTrendTypeString(alertType)}
+                location={location}
+                granularity={300000}
+                from={timeRange.from}
+                until={timeRange.until}
+            />
+        );
     }
 
     static Header({name}) {
@@ -118,6 +123,17 @@ export default class AlertsTable extends React.Component {
             return 'Failure Count';
         }
 
+        return null;
+    };
+
+    static toTrendTypeString = (alertType) => {
+        if (alertType === 'count') {
+            return 'count';
+        } else if (alertType === 'durationTP99') {
+            return 'tp99Duration';
+        } else if (alertType === 'failureCount') {
+            return 'failureCount';
+        }
         return null;
     };
 
@@ -250,8 +266,8 @@ export default class AlertsTable extends React.Component {
                     <TableHeaderColumn
                         caretRender={AlertsTable.getCaret}
                         dataField="trend"
-                        width="40"
-                        dataFormat={AlertsTable.trendColumnFormatter}
+                        width="50"
+                        dataFormat={(cell, row) => AlertsTable.trendColumnFormatter(row, this.props.location, this.props.defaultPreset, this.props.alertType, this.props.serviceName)}
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'trend'}

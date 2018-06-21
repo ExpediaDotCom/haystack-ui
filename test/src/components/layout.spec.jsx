@@ -16,9 +16,9 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-import { expect } from 'chai';
-import { MemoryRouter } from 'react-router-dom';
+import {mount, shallow} from 'enzyme';
+import {expect} from 'chai';
+import {MemoryRouter} from 'react-router-dom';
 import sinon from 'sinon';
 
 import Header from '../../../src/components/layout/header';
@@ -40,16 +40,17 @@ const pendingPromise = {
     case: ({pending}) => pending()
 };
 
-const stubLocation = {
+let stubLocation = {
     search: '/'
 };
 
 const stubHistory = {
     location: {
-        search: '/'
+        search: '/',
+        pathname: '/service/some-service/traces'
     },
     push: (location) => {
-        stubLocation.search = location.search;
+        stubLocation = location;
     }
 };
 
@@ -228,5 +229,15 @@ describe('<ServiceTools />', () => {
     it('should render the NoMatch panel`', () => {
         const wrapper = mount(<MemoryRouter><ServiceTools history={stubHistory} match={stubMatch} location={stubHistory.location} /></MemoryRouter>);
         expect(wrapper.find('.serviceToolsTab__tabs')).to.have.length(1);
+    });
+
+    it('should URL encode service names', () => {
+        const wrapper = shallow(<ServiceTools history={stubHistory} match={stubMatch} location={stubHistory.location}/>);
+
+        wrapper.instance().handleServiceChange({value: 'some-app'});
+        expect(stubLocation).to.equal('/service/some-app/traces');
+
+        wrapper.instance().handleServiceChange({value: '#/something/.app/ui/test'});
+        expect(stubLocation).to.equal('/service/%23%2Fsomething%2F.app%2Fui%2Ftest/traces');
     });
 });

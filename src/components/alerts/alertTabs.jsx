@@ -25,15 +25,16 @@ export default class AlertTabs extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
+        defaultPreset: PropTypes.object.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
-    static tabViewer(tabSelected, groupedAlerts, serviceName, location, isUniversalSearch) {
+    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, isUniversalSearch) {
         switch (tabSelected) {
             case 2:
-                return <AlertsTable alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
             default:
-                return <AlertsTable alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
         }
     }
 
@@ -57,7 +58,8 @@ export default class AlertTabs extends React.Component {
         const {
             serviceName,
             location,
-            isUniversalSearch
+            isUniversalSearch,
+            defaultPreset
         } = this.props;
 
         const groupedAlerts = _.groupBy(this.props.alertsStore.alerts, _.property('type'));
@@ -82,7 +84,7 @@ export default class AlertTabs extends React.Component {
                         </li>
                     </ul>
                 </div>
-                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, isUniversalSearch)}</section>
+                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset, isUniversalSearch)}</section>
             </section>
         );
     }
