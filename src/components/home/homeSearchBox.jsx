@@ -45,7 +45,6 @@ export default class HomeSearchBox extends Component {
 
     render() {
         return (
-            <article>
             <section className="container">
                 <div className="jumbotron" style={{padding: '0px'}}>
                     <div className="clearfix" style={{padding: '15px 30px 15px 30px'}}>
@@ -59,18 +58,8 @@ export default class HomeSearchBox extends Component {
                             />
                         </h3>
                     </div>
-                    <div className="clearfix" style={{padding: '15px 30px 15px 30px', backgroundColor: '#3f4d71'}}>
-                        <h3 className="home__header pull-left">
-                            <span className="" style={{color: 'white'}}>Unified search for all tools </span>
-                            <span className="" style={{fontSize: '12px', lineHeight: '1'}}>[beta]</span>
-                        </h3>
-                        <h3 className="pull-right" >
-                            <a className="pull-right btn btn-primary btn-lg" style={{width: '300px'}} href="/usb">Use Universal Search</a>
-                        </h3>
-                    </div>
                 </div>
             </section>
-            </article>
         );
     }
 }

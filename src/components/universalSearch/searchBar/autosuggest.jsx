@@ -25,14 +25,14 @@ import TimeWindowPicker from './timeWindowPicker';
 import './autosuggest.less';
 
 const BACKSPACE = 8;
-// const SPACE = 32; todo: re-implement space handling outside of ()
+const SPACE = 32;
 const TAB = 9;
 const ENTER = 13;
 const UP = 38;
 const DOWN = 40;
 const ESC = 27;
 
-const INVALID_CHARS = /[^a-zA-Z0-9=\s-()[\].]/g;
+const INVALID_CHARS = /[^a-zA-Z0-9=\s-(),[\].]/g;
 
 @observer
 export default class Autocomplete extends React.Component {
@@ -226,7 +226,7 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleSelection();
             this.handleBlur();
-        } else if (keyPressed === ENTER || ((keyPressed === TAB) && e.target.value)) {
+        } else if (keyPressed === ENTER || ((keyPressed === TAB || keyPressed === SPACE) && e.target.value)) {
             e.preventDefault();
             this.updateChips();
         } else if (keyPressed === UP) {
@@ -317,7 +317,7 @@ export default class Autocomplete extends React.Component {
 
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
-        if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9\s-]+)$/g.test(kvPair)) { // Ensure format is a=b
+        if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-]+)$/g.test(kvPair)) { // Ensure format is a=b
             const valueKey = kvPair.substring(0, kvPair.indexOf('='));
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
@@ -329,7 +329,7 @@ export default class Autocomplete extends React.Component {
             return false;
         }
         this.setState({
-            inputError: 'Invalid K/V Pair, please use format "abc=xyz" or "(abc=def ghi=jkl)"'
+            inputError: 'Invalid K/V Pair, please use format "abc=xyz" or "(abc=def,ghi=jkl)"'
         });
         return false;
     }
@@ -340,7 +340,7 @@ export default class Autocomplete extends React.Component {
         const inputValue = this.inputRef.value;
         if (!inputValue) return;
         const formattedValue = inputValue.indexOf('(') > -1 ? inputValue.substring(1, inputValue.length - 1) : inputValue;
-        const splitInput = formattedValue.split(' ');
+        const splitInput = formattedValue.split(',');
         if (splitInput.every(this.testForValidInputString)) { // Valid input tests
             const serviceName = null;
             let chipKey = null;
@@ -421,13 +421,13 @@ export default class Autocomplete extends React.Component {
                                 {chips}
                                 <input
                                     type="text"
-                                    className="search-bar-text-box autosuggest-input"
+                                    className="usb-search-button-text-box search-bar-text-box autosuggest-input"
                                     onKeyDown={this.handleKeyPress}
                                     onKeyUp={this.clearInvalidChars}
                                     onChange={this.updateFieldKv}
                                     ref={this.setInputRef}
                                     onFocus={this.handleFocus}
-                                    placeholder={this.props.uiState.chips.length ? '' : 'Select a whitelisted key'}
+                                    placeholder={this.props.uiState.chips.length ? '' : 'Search tags and services...'}
                                 />
                                 <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
                                     {this.state.suggestionStrings.map((item, i) => (
