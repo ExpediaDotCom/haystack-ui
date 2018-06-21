@@ -81,9 +81,9 @@ export default class Tabs extends React.Component {
             case 'traces':
                 return <TraceResults tracesSearchStore={store} history={history} isUniversalSearch />;
             case 'trends':
-                return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName}/>;
+                return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName} isUniversalSearch/>;
             case 'alerts':
-                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset="6h"/>;
+                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset="6h" isUniversalSearch/>;
             default:
                 return null;
         }
