@@ -346,25 +346,33 @@ export default class TraceResultsTable extends React.Component {
                             headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
                         ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
                     }
-                    <TableHeaderColumn
-                        dataField="serviceDuration"
-                        dataFormat={TraceResultsTable.durationFormatter}
-                        width="10"
-                        dataSort
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Total busy time in timeline for the queried service'}
-                    ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="serviceDurationPercent"
-                        dataFormat={TraceResultsTable.durationPercentFormatter}
-                        width="10"
-                        dataSort
-                        sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
-                    ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                    {
+                        query.serviceName
+                        ? <TableHeaderColumn
+                            dataField="serviceDuration"
+                            dataFormat={TraceResultsTable.durationFormatter}
+                            width="10"
+                            dataSort
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Total busy time in timeline for the queried service'}
+                        ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
+                        : null
+                    }
+                    {
+                        query.serviceName
+                        ? <TableHeaderColumn
+                            dataField="serviceDurationPercent"
+                            dataFormat={TraceResultsTable.durationPercentFormatter}
+                            width="10"
+                            dataSort
+                            sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
+                        ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                        : null
+                    }
                     <TableHeaderColumn
                         dataField="duration"
                         dataFormat={TraceResultsTable.totalDurationColumnFormatter}
