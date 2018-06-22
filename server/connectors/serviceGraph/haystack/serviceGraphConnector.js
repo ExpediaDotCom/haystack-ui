@@ -27,9 +27,16 @@ const connector = {};
 const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
 const WINDOW_SIZE_IN_MILLIS = 3600;
 
+function getEdgeName(vertex) {
+    if (vertex.name) {
+        return vertex.name;
+    }
+    return vertex;
+}
 function flattenStats(edges) {
-    const serviceEdges = edges.map(edge => ({ source: edge.source, destination: edge.destination, count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS)}));
-
+    const serviceEdges = edges.map(edge => ({
+        source: getEdgeName(edge.source), destination: getEdgeName(edge.destination), count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS)
+    }));
     return _.uniqWith(serviceEdges, _.isEqual);
 }
 
