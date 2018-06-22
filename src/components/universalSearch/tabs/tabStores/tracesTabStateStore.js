@@ -34,8 +34,9 @@ export class TracesTabStateStore {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
         // eslint-disable-next-line no-unused-vars
-        const { time, tabId, ...traceSearch } = this.search;
+        const { time, tabId, serviceName, ...traceSearch } = this.search;
 
+        traceSearch.serviceName = serviceName || '';
         traceSearch.timePreset = this.search.time.preset;
         traceSearch.startTime = this.search.time.from;
         traceSearch.endTime = this.search.time.to;

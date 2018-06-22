@@ -32,8 +32,8 @@ export function formatResults(results) {
         flattenedResult.operationDuration = result.queriedOperation && result.queriedOperation.duration;
         flattenedResult.operationError = result.queriedOperation && result.queriedOperation.error;
         flattenedResult.operationDurationPercent = result.queriedOperation && result.queriedOperation.durationPercent;
-        flattenedResult.serviceDuration = result.queriedService.duration;
-        flattenedResult.serviceDurationPercent = result.queriedService.durationPercent;
+        flattenedResult.serviceDuration = result.queriedService && result.queriedService.duration;
+        flattenedResult.serviceDurationPercent = result.queriedService && result.queriedService.durationPercent;
 
         return flattenedResult;
     });
