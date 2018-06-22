@@ -403,10 +403,10 @@ describe('<Traces />', () => {
             traceIdB = traceIdB.props().children;
         expect(traceIdA).to.not.equal(traceIdB);
 
-        wrapper.find('.results-header').at(6).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
         traceIdA = wrapper.find('tr.tr-no-border').at(0).children().first();
         traceIdA = traceIdA.props().children;
-        wrapper.find('.results-header').at(6).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
         traceIdB = wrapper.find('tr.tr-no-border').at(0).children().first();
         traceIdB = traceIdB.props().children;
         expect(traceIdA).to.not.equal(traceIdB);
@@ -582,7 +582,6 @@ describe('<Traces />', () => {
         wrapper.find('.results-header').at(3).simulate('click');
         wrapper.find('.results-header').at(4).simulate('click');
         wrapper.find('.results-header').at(4).simulate('click');
-        wrapper.find('.results-header').at(5).simulate('click');
 
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
