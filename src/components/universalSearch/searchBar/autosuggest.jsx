@@ -125,28 +125,31 @@ export default class Autocomplete extends React.Component {
     }
 
     // Takes current active word and searches suggestion options for keys that are valid.
-    setSuggestions(inputValue) {
-        const arr = [];
-        const equalSplitter = inputValue.indexOf('=');
+    setSuggestions(input) {
+        const suggestionArray = [];
+        const splitInput = input.replace('(', '').split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+
+        const equalSplitter = targetInput.indexOf('=');
         if (equalSplitter > 0) {
-            const key = inputValue.substring(0, equalSplitter);
-            const value = inputValue.substring(equalSplitter + 1, inputValue.length);
+            const key = targetInput.substring(0, equalSplitter);
+            const value = targetInput.substring(equalSplitter + 1, targetInput.length);
             if (this.props.options[key]) {
                 this.props.options[key].forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
-                        arr.push(option);
+                        suggestionArray.push(option);
                     }
                 });
             }
         } else {
             Object.keys(this.props.options).forEach((option) => {
-                if (option.toLowerCase().includes(inputValue.toLowerCase()) && !this.state.existingKeys.includes(option)) {
-                    arr.push(option);
+                if (option.toLowerCase().includes(targetInput.toLowerCase()) && !this.state.existingKeys.includes(option)) {
+                    suggestionArray.push(option);
                 }
             });
         }
         this.setState({
-            suggestionStrings: arr.sort(),
+            suggestionStrings: suggestionArray.sort(),
             suggestionIndex: null
         });
         document.addEventListener('mousedown', this.handleOutsideClick);
@@ -194,14 +197,17 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     handleSelectionFill() {
+        const isNested = this.inputRef.value.includes('(');
         const equalSplitter = this.inputRef.value.indexOf('=');
+        let fillValue = '';
         if (equalSplitter > -1) {
-            const key = this.inputRef.value.substring(0, equalSplitter);
+            const key = this.inputRef.value.substring((isNested ? 1 : 0), equalSplitter);
             const value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
-            this.inputRef.value = `${key}=${value}`;
+            fillValue = `${key}=${value}`;
         } else {
-            this.inputRef.value = `${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
+            fillValue = `${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
         }
+        this.inputRef.value = isNested ? `(${fillValue}` : fillValue;
     }
 
     // Selection chose when clicking or pressing space/tab/enter
@@ -253,7 +259,11 @@ export default class Autocomplete extends React.Component {
             let fullString = '';
             const nestedKeys = Object.keys(chipValue);
             nestedKeys.forEach((key) => {
-                fullString += `${key}=${chipValue[key]} `;
+                if (key === nestedKeys[nestedKeys.length - 1]) {
+                    fullString += `${key}=${chipValue[key]}`;
+                } else {
+                    fullString += `${key}=${chipValue[key]},`;
+                }
             });
             this.inputRef.value = `(${fullString.trim()})`;
         } else {
@@ -339,7 +349,18 @@ export default class Autocomplete extends React.Component {
         this.handleBlur();
         const inputValue = this.inputRef.value;
         if (!inputValue) return;
-        const formattedValue = inputValue.indexOf('(') > -1 ? inputValue.substring(1, inputValue.length - 1) : inputValue;
+        let formattedValue = null;
+        if (inputValue.indexOf('(') > -1) {
+            if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
+                this.setState({
+                    inputError: 'Invalid K/V grouping, make sure parenthesis are closed'
+                });
+                return;
+            }
+            formattedValue = inputValue.substring(1, inputValue.length - 1);
+        } else {
+            formattedValue = inputValue;
+        }
         const splitInput = formattedValue.split(',');
         if (splitInput.every(this.testForValidInputString)) { // Valid input tests
             const serviceName = null;
@@ -347,12 +368,6 @@ export default class Autocomplete extends React.Component {
             let chipValue = null;
 
             if (splitInput.length > 1) {
-                if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
-                    this.setState({
-                        inputError: 'Invalid K/V grouping, make sure parenthesis are closed'
-                    });
-                    return;
-                }
                 const chipIndex = Object.keys(this.props.uiState.chips).length; // Create nested object of KV pairs
                 chipKey = `nested_${chipIndex}`;
                 chipValue = {};
@@ -376,18 +391,21 @@ export default class Autocomplete extends React.Component {
     deleteChip(chipKey) {
         const chipValue = this.props.uiState.chips[chipKey];
         if (chipValue !== undefined) {
-            if (chipKey === 'serviceName') {
-                this.setState({
-                    serviceName: null
-                });
-            }
+            const keysToSplice = chipKey.includes('nested_') ? Object.keys(chipKey) : [chipKey];
             const updatedExistingKeys = this.state.existingKeys;
-            const itemIndex = updatedExistingKeys.indexOf(chipKey);
 
-            updatedExistingKeys.splice(itemIndex, 1);
-            delete this.props.uiState.chips[chipKey];
+            keysToSplice.forEach((key) => {
+                if (key === 'serviceName') {
+                    this.setState({
+                        serviceName: null
+                    });
+                }
+                const itemIndex = updatedExistingKeys.indexOf(key);
+                updatedExistingKeys.splice(itemIndex, 1);
+            });
 
             this.setState({existingKeys: updatedExistingKeys});
+            delete this.props.uiState.chips[chipKey];
             this.props.search();
         }
     }
