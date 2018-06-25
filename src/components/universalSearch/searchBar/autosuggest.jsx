@@ -55,7 +55,7 @@ export default class Autocomplete extends React.Component {
         options: [],
         max: 100,
         placeholder: 'Add a chip...',
-        maxlength: 50
+        maxlength: 100
     };
 
     static focusInput(event) {
@@ -197,17 +197,20 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     handleSelectionFill() {
-        const isNested = this.inputRef.value.includes('(');
-        const equalSplitter = this.inputRef.value.indexOf('=');
+        const splitInput = this.inputRef.value.split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+        const isNested = targetInput[0] === '(' ? '(' : '';
+        const equalSplitter = targetInput.indexOf('=');
         let fillValue = '';
-        if (equalSplitter > -1) {
-            const key = this.inputRef.value.substring((isNested ? 1 : 0), equalSplitter);
+        if (equalSplitter > 0) {
+            const key = targetInput.substring(0, equalSplitter);
             const value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
             fillValue = `${key}=${value}`;
         } else {
-            fillValue = `${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
+            fillValue = `${isNested}${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
         }
-        this.inputRef.value = isNested ? `(${fillValue}` : fillValue;
+        splitInput[splitInput.length - 1] = fillValue;
+        this.inputRef.value = splitInput.join(',');
     }
 
     // Selection chose when clicking or pressing space/tab/enter
@@ -215,7 +218,9 @@ export default class Autocomplete extends React.Component {
         this.handleSelectionFill();
         this.handleBlur();
         this.inputRef.focus();
-        if (this.inputRef.value.indexOf('=') < 0) {
+        const splitInput = this.inputRef.value.split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+        if (targetInput.indexOf('=') < 0) {
             this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
