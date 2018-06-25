@@ -31,7 +31,7 @@ const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
 const alertTypes = ['durationTP99', 'failureCount'];
 const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
-const alertMergeBufferTimeInSec = config.connectors.alerts.alert.alertMergeBufferTimeInSec;
+const alertMergeBufferTimeInSec = config.connectors.alerts.alertMergeBufferTimeInSec;
 
 
 function fetchOperations(serviceName) {
