@@ -30,7 +30,7 @@ export default class TraceResults extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.optional
+        isUniversalSearch: PropTypes.bool
     };
 
     static defaultProps = {

@@ -31,6 +31,15 @@
     font-size: 1em;
 }
 
+
+.chips-and-input {
+    width: 80%;
+    background-color: #fff;
+    display: inline-flex;
+    white-space: nowrap;
+    //border-bottom: 3px solid @brand-primary
+}
+
 .autosuggest-input {
     display: inline-block;
     max-width: 100%;
@@ -46,7 +55,7 @@
     display: block;
     float: left;
     margin-top: @chip-x-spacing;
-    margin-bottom: @chip-x-spacing;
+    margin-bottom: 10px;
     margin-left: @chip-x-spacing;
     margin-right: @chip-button-width;
     position: relative;
@@ -60,6 +69,8 @@
         color: @chip-color;
         font-weight: bold;
         border-radius: @chip-border-radius 0 0 @chip-border-radius;
+        height: 100%;
+        padding-top: 8px;
     }
 
     .chip-delete-button {
