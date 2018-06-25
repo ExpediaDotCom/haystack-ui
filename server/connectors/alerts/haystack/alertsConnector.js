@@ -29,9 +29,8 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
-const coolOffPeriod = 5 * 60; // TODO make this based on alert type
 const alertTypes = ['durationTP99', 'failureCount'];
-const alertFreqInSec = config.connectors.alerts.alertFreqInSec;
+const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
 const alertMergeBufferTimeInSec = config.connectors.alerts.alert.alertMergeBufferTimeInSec;
 
 
@@ -49,7 +48,7 @@ function parseOperationAlertsResponse(data, until) {
         const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - alertFreqInSec));
         const timestamp = latestUnhealthy && latestUnhealthy[1] * 1000 * 1000;
 
         return {
