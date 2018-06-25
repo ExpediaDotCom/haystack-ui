@@ -29,9 +29,10 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
-const coolOffPeriod = 5 * 60; // TODO make this based on alert type
-
 const alertTypes = ['durationTP99', 'failureCount'];
+const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
+const alertMergeBufferTimeInSec = config.connectors.alerts.alert.alertMergeBufferTimeInSec;
+
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
@@ -47,7 +48,7 @@ function parseOperationAlertsResponse(data, until) {
         const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - alertFreqInSec));
         const timestamp = latestUnhealthy && latestUnhealthy[1] * 1000 * 1000;
 
         return {
@@ -86,17 +87,34 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
     })));
 }
 
+function mergeSuccessiveAlertPoints(unhealthyPoints) {
+    const sortedUnhealthyPoints = _.sortBy(unhealthyPoints, alertPoint => alertPoint.startTimestamp);
+    const mergedAlertHistory = [sortedUnhealthyPoints.shift()];  // pop first element
+    return _.forEach(sortedUnhealthyPoints, (nextAlertPoint) => {
+        const lastObjectOfResult = mergedAlertHistory[mergedAlertHistory.length - 1];
+        if (nextAlertPoint.startTimestamp - lastObjectOfResult.endTimestamp <= alertMergeBufferTimeInSec * 1000 * 1000) {
+            mergedAlertHistory[mergedAlertHistory.length - 1].endTimestamp = nextAlertPoint.endTimestamp;
+        } else {
+            mergedAlertHistory.push(nextAlertPoint);
+        }
+    });
+}
+
 function parseAlertDetailResponse(data) {
     if (!data || !data.length) {
         return [];
     }
 
-    const sortedUnhealthyPoints = data[0].datapoints.filter(p => p[0]).sort((a, b) => a[1] - b[1]);
+    const unhealthyTimestamps = data[0].datapoints.filter(p => p[0]);
 
-    return sortedUnhealthyPoints.map(point => ({
+    const unhealthyPoints = unhealthyTimestamps.map(point => ({
         startTimestamp: point[1] * 1000 * 1000,
         endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
     }));
+
+    const mergedPonts = mergeSuccessiveAlertPoints(unhealthyPoints);
+
+    return mergedPonts;
 }
 
 function getActiveAlertCount(operationAlerts) {

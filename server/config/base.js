@@ -56,6 +56,14 @@ module.exports = {
             // Options :
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
+
+            // frequency of alerts coming in the system
+            alertFreqInSec: 300,
+
+            // While merging the successive alerts, need a buffer time. We will accept the point if successive alert is
+            // within this buffer
+            alertMergeBufferTimeInSec: 60,
+
             subscriptions: {
                 // name of config connector module to use for managing subscriptions
                 // Options :
