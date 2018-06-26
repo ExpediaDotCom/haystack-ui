@@ -90,14 +90,15 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
 function mergeSuccessiveAlertPoints(unhealthyPoints) {
     const sortedUnhealthyPoints = _.sortBy(unhealthyPoints, alertPoint => alertPoint.startTimestamp);
     const mergedAlertHistory = [sortedUnhealthyPoints.shift()];  // pop first element
-    return _.forEach(sortedUnhealthyPoints, (nextAlertPoint) => {
-        const lastObjectOfResult = mergedAlertHistory[mergedAlertHistory.length - 1];
-        if (nextAlertPoint.startTimestamp - lastObjectOfResult.endTimestamp <= alertMergeBufferTimeInSec * 1000 * 1000) {
+    _.forEach(sortedUnhealthyPoints, (nextAlertPoint) => {
+        const lastPointOfResult = mergedAlertHistory[mergedAlertHistory.length - 1];
+        if (nextAlertPoint.startTimestamp - lastPointOfResult.endTimestamp <= alertMergeBufferTimeInSec * 1000 * 1000) {
             mergedAlertHistory[mergedAlertHistory.length - 1].endTimestamp = nextAlertPoint.endTimestamp;
         } else {
             mergedAlertHistory.push(nextAlertPoint);
         }
     });
+    return mergedAlertHistory;
 }
 
 function parseAlertDetailResponse(data) {
