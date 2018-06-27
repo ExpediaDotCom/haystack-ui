@@ -35,26 +35,28 @@ function createFieldsList(query) {
 function createSpanLevelExpression(spanLevelFilters) {
     return spanLevelFilters.map((filterJson) => {
        const filter = JSON.parse(filterJson);
-
+        const operand = new messages.Operand();
         const expressionTree = new messages.ExpressionTree();
         expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
         expressionTree.setIsspanlevelexpression(false);
 
         const operands = Object.keys(filter)
         .map((key) => {
-            const operand = new messages.Operand();
+            const op = new messages.Operand();
 
             const field = new messages.Field();
             field.setName(key);
             field.setValue(filter[key]);
 
-            operand.setField(field);
+            op.setField(field);
 
-            return operand;
+            return op;
         });
 
         expressionTree.setOperandsList(operands);
-        return expressionTree;
+        operand.setExpression(expressionTree);
+
+        return operand;
     });
 }
 
@@ -95,7 +97,7 @@ requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
 
     if (query.useExpressionTree) {
-        request.getFilterexpression(createFilterExpression(query));
+        request.setFilterexpression(createFilterExpression(query));
     } else {
         request.setFieldsList(createFieldsList(query));
     }
@@ -103,6 +105,7 @@ requestBuilder.buildRequest = (query) => {
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
     request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);
+    console.log(JSON.stringify(request.toObject()));
 
     return request;
 };
