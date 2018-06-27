@@ -21,64 +21,134 @@ const connector = {};
 const serviceGraph = [
     [
         {
-            source: 'stark-service',
-            destination: 'baratheon-service',
+            source: {
+                name: 'stark-service'
+            },
+            destination: {
+                name: 'baratheon-service'
+            },
             operation: 'baratheon-1',
-            count: 421
+            stats: {
+                count: 421,
+                errorCount: 80
+            }
         },
         {
-            source: 'stark-service',
-            destination: 'grayjoy-service',
+            source: {
+                name: 'stark-service'
+            },
+            destination: {
+                name: 'grayjoy-service'
+            },
             operation: 'grayjoy-1',
-            count: 210
+            stats: {
+                count: 210,
+                errorCount: 0
+            }
         },
         {
-            source: 'baratheon-service',
-            destination: 'lannister-service',
+            source: {
+                name: 'baratheon-service'
+            },
+            destination: {
+                name: 'lannister-service'
+            },
             operation: 'lannister-1',
-            count: 102
+            stats: {
+                count: 102,
+                errorCount: 6
+            }
         },
         {
-            source: 'baratheon-service',
-            destination: 'clegane-service',
+            source: {
+                name: 'baratheon-service'
+            },
+            destination: {
+                name: 'clegane-service'
+            },
             operation: 'clegane-1',
-            count: 401
+            stats: {
+                count: 401,
+                errorCount: 13
+            }
         },
         {
-            source: 'lannister-service',
-            destination: 'tyrell-service',
+            source: {
+                name: 'lannister-service'
+            },
+            destination: {
+                name: 'tyrell-service'
+            },
             operation: 'tyrell-1',
-            count: 30
+            stats: {
+                count: 30,
+                errorCount: 2
+            }
         },
         {
-            source: 'tyrell-service',
-            destination: 'targaryen-service',
+            source: {
+                name: 'tyrell-service'
+            },
+            destination: {
+                name: 'targaryen-service'
+            },
             operation: 'targaryen-1',
-            count: 50
+            stats: {
+                count: 50,
+                errorCount: 3
+            }
         },
         {
-            source: 'tyrell-service',
-            destination: 'tully-service',
+            source: {
+                name: 'tyrell-service'
+            },
+            destination: {
+                name: 'tully-service'
+            },
             operation: 'tully-1',
-            count: 121
+            stats: {
+                count: 121,
+                errorCount: 1
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'dragon-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'dragon-service'
+            },
             operation: 'dragon-1',
-            count: 190
+            stats: {
+                count: 190,
+                errorCount: 80
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'drogo-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'drogo-service'
+            },
             operation: 'drogo-1',
-            count: 98
+            stats: {
+                count: 98,
+                errorCount: 2
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'mormont-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'mormont-service'
+            },
             operation: 'mormont-1',
-            count: 5
+            stats: {
+                count: 5,
+                errorCount: 0
+            }
         }
     ]
 ];

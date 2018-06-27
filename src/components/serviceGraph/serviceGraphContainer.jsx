@@ -59,7 +59,7 @@ export default class ServiceGraphContainer extends React.Component {
                                 this.props.store.graphs.map(
                                     (graph, index) => (
                                         <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''}>
-                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{graph[0].source}</a>
+                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{graph[0].source.name}</a>
                                         </li>
                                     )
                                 )
