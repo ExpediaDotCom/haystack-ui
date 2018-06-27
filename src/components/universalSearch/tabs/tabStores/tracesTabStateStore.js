@@ -15,8 +15,7 @@
  */
 import tracesSearchStore from '../../../traces/stores/tracesSearchStore';
 
-function spanLevelFiltersToList(traceSearch) {
-    const filteredNames = Object.keys(traceSearch).filter(name => /nested_[0-9]/.test(name));
+function spanLevelFiltersToList(filteredNames, traceSearch) {
     return JSON.stringify(filteredNames.map(name => JSON.stringify(traceSearch[name])));
 }
 
@@ -41,12 +40,19 @@ export class TracesTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const { time, tabId, serviceName, ...traceSearch } = this.search;
 
+        const filteredNames = Object.keys(traceSearch).filter(name => /nested_[0-9]/.test(name));
+
         traceSearch.useExpressionTree = true;
-        traceSearch.spanLevelFilters = spanLevelFiltersToList(traceSearch);
+        traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);
         traceSearch.serviceName = serviceName || '';
         traceSearch.timePreset = this.search.time.preset;
         traceSearch.startTime = this.search.time.from;
         traceSearch.endTime = this.search.time.to;
+
+        // remove nested keys
+        filteredNames.forEach((key) => {
+            traceSearch[key] = null;
+        });
 
         tracesSearchStore.fetchSearchResults(traceSearch);
 
