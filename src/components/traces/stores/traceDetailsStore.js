@@ -73,6 +73,7 @@ function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration,
 export class TraceDetailsStore extends ErrorHandlingStore {
     @observable promiseState = null;
     @observable spans = [];
+    static maxSpansBeforeCollapse = 100;
     traceId = null;
 
     @action
@@ -118,7 +119,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         if (this.spans.length === 0) return [];
 
         const tree = createSpanTree(this.rootSpan, this.spans);
-        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration, this.spans.length > 100);
+        return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration, this.spans.length > TraceDetailsStore.maxSpansBeforeCollapse);
     }
 
     @computed
@@ -130,7 +131,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
         parent.expanded = !parent.expanded;
-        setChildExpandState(this.timelineSpans, parent, this.timelineSpans.length > 100);
+        setChildExpandState(this.timelineSpans, parent, this.timelineSpans.length > TraceDetailsStore.maxSpansBeforeCollapse);
     }
 }
 
