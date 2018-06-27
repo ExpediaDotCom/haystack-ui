@@ -17,7 +17,7 @@
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit'];
+const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters'];
 const DEFAULT_RESULTS_LIMIT = 50;
 
 function createFieldsList(query) {
@@ -32,12 +32,80 @@ function createFieldsList(query) {
     });
 }
 
+function createSpanLevelExpression(spanLevelFilters) {
+    return spanLevelFilters.map((filterJson) => {
+       const filter = JSON.parse(filterJson);
+        const operand = new messages.Operand();
+        const expressionTree = new messages.ExpressionTree();
+        expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
+        expressionTree.setIsspanlevelexpression(false);
+
+        const operands = Object.keys(filter)
+        .map((key) => {
+            const op = new messages.Operand();
+
+            const field = new messages.Field();
+            field.setName(key);
+            field.setValue(filter[key]);
+
+            op.setField(field);
+
+            return op;
+        });
+
+        expressionTree.setOperandsList(operands);
+        operand.setExpression(expressionTree);
+
+        return operand;
+    });
+}
+
+function createTraceLevelOperands(query) {
+    return Object.keys(query)
+    .filter(key => query[key] && !reservedField.includes(key))
+    .map((key) => {
+        const operand = new messages.Operand();
+
+        const field = new messages.Field();
+        field.setName(key);
+        field.setValue(query[key]);
+
+        operand.setField(field);
+
+        return operand;
+    });
+}
+
+function createFilterExpression(query) {
+    const expressionTree = new messages.ExpressionTree();
+
+    expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
+    expressionTree.setIsspanlevelexpression(false);
+
+    const traceLevelOperands = createTraceLevelOperands(query);
+    let spanLevelExpressions = [];
+    if (query.spanLevelFilters) {
+        spanLevelExpressions = createSpanLevelExpression(JSON.parse(query.spanLevelFilters));
+    }
+
+    expressionTree.setOperandsList([...traceLevelOperands, ...spanLevelExpressions]);
+
+    return expressionTree;
+}
+
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
-    request.setFieldsList(createFieldsList(query));
+
+    if (query.useExpressionTree) {
+        request.setFilterexpression(createFilterExpression(query));
+    } else {
+        request.setFieldsList(createFieldsList(query));
+    }
+
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
     request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);
+    console.log(JSON.stringify(request.toObject()));
 
     return request;
 };

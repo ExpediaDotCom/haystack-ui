@@ -15,12 +15,6 @@
  */
 
 const Q = require('q');
-const _ = require('lodash');
-
-
-function getValue(min, max) {
-    return _.round((Math.random() * (max - min)) + min, 0);
-}
 
 function getRandomTimeStamp() {
     const currentTime = ((new Date()).getTime()) * 1000;
@@ -37,78 +31,61 @@ function getAlertHistoryTimestamps() {
     };
 }
 
-function getRandomValues(query) {
-    const range = (query.until - query.from) / 60 / 1000;
-    const points = range < 150 ? range : 150;
-    const valuesArr = [];
-    _.range(points).forEach(() => valuesArr.push({value: getValue(1000, 10000000), timestamp: getRandomTimeStamp()}));
-    return valuesArr;
-}
-
-function getAlerts(query) {
+function getAlerts() {
     return [
         {
             operationName: 'tarley-1',
             type: 'count',
             isUnhealthy: true,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tarley-1',
             type: 'durationTP99',
             isUnhealthy: true,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tarley-1',
             type: 'failureCount',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tully-1',
             type: 'count',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tully-1',
             type: 'durationTP99',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tully-1',
             type: 'failureCount',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'dondarrion-1',
             type: 'count',
             isUnhealthy: true,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'dondarrion-1',
             type: 'durationTP99',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'dondarrion-1',
             type: 'failureCount',
             isUnhealthy: false,
-            timestamp: getRandomTimeStamp(),
-            trend: getRandomValues(query)
+            timestamp: getRandomTimeStamp()
         }
     ];
 }

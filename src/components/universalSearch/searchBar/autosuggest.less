@@ -1,0 +1,79 @@
+/*
+ * Copyright 2018 Expedia, Inc.
+ *
+ *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       you may not use this file except in compliance with the License.
+ *       You may obtain a copy of the License at
+ *
+ *           http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *       Unless required by applicable law or agreed to in writing, software
+ *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *       See the License for the specific language governing permissions and
+ *       limitations under the License.
+ *
+ */
+
+@import (reference) '../../../app';
+
+@chip-y-spacing: 15px;
+@chip-x-spacing: 5px;
+@chip-button-width: @chip-y-spacing + @chip-x-spacing * 2;
+@chip-border-radius: 5px;
+@chip-background: @brand-primary;
+@chip-color: #fff;
+@chip-min-height: 36px;
+
+.chips {
+    min-height: @chip-min-height;
+    line-height: 1;
+    font-size: 1em;
+}
+
+.autosuggest-input {
+    display: inline-block;
+    max-width: 100%;
+    width: 60%;
+    min-height: @chip-min-height;
+    margin-left: @chip-x-spacing * 2;
+    border: 0;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.chip {
+    display: block;
+    float: left;
+    margin-top: @chip-x-spacing;
+    margin-bottom: @chip-x-spacing;
+    margin-left: @chip-x-spacing;
+    margin-right: @chip-button-width;
+    position: relative;
+
+    .chip-value {
+        display: inline-block;
+        padding: @chip-x-spacing;
+        padding-left: @chip-y-spacing;
+        padding-right: @chip-y-spacing / 2;
+        background: @chip-background;
+        color: @chip-color;
+        font-weight: bold;
+        border-radius: @chip-border-radius 0 0 @chip-border-radius;
+    }
+
+    .chip-delete-button {
+        background: @chip-background;
+        color: @chip-color;
+        border: 0;
+        border-radius: 0 @chip-border-radius @chip-border-radius 0;
+        padding: @chip-x-spacing @chip-x-spacing * 2;
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -@chip-button-width;
+        line-height: 0.5;
+        font-weight: bold;
+    }
+}

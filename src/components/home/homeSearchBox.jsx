@@ -40,7 +40,7 @@ export default class HomeSearchBox extends Component {
     }
 
     handleChange(event) {
-        this.props.history.push(`/service/${event.value}/trends`);
+        this.props.history.push(`/service/${encodeURIComponent(event.value)}/trends`);
     }
 
     render() {

@@ -21,8 +21,6 @@ const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
-const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
-
 const fetcher = require('../../operations/restFetcher');
 
 const alertHistoryFetcher = fetcher('alertHistory');
@@ -31,16 +29,13 @@ const serviceAlertsFetcher = fetcher('serviceAlerts');
 const connector = {};
 const metricTankUrl = config.connectors.alerts.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
-const coolOffPeriod = 5 * 60; // TODO make this based on alert type
-
 const alertTypes = ['durationTP99', 'failureCount'];
+const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
+const alertMergeBufferTimeInSec = config.connectors.alerts.alertMergeBufferTimeInSec;
+
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
-}
-
-function fetchOperationTrends(serviceName, granularity, from, until) {
-    return trendsConnector.getOperationStats(serviceName, granularity, from, until);
 }
 
 function parseOperationAlertsResponse(data, until) {
@@ -53,7 +48,7 @@ function parseOperationAlertsResponse(data, until) {
         const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - coolOffPeriod));
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - alertFreqInSec));
         const timestamp = latestUnhealthy && latestUnhealthy[1] * 1000 * 1000;
 
         return {
@@ -73,21 +68,13 @@ function fetchOperationAlerts(serviceName, from, until) {
         .then(result => parseOperationAlertsResponse(result, until));
 }
 
-function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTrends}) {
-    const alertTypeToTrendMap = {
-        count: 'countPoints',
-        durationTP99: 'tp99DurationPoints',
-        failureCount: 'failurePoints'
-    };
-
+function mergeOperationsWithAlerts({operationAlerts, operations}) {
     return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
         const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
-        const operationTrend = operationTrends.find(trend => (trend.operationName.toLowerCase() === operation.toLowerCase()));
 
         if (operationAlert !== undefined) {
             return {
-                ...operationAlert,
-                trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
+                ...operationAlert
             };
         }
 
@@ -95,10 +82,23 @@ function mergeOperationAlertsAndTrends({operationAlerts, operations, operationTr
             operationName: operation,
             type: alertType,
             isUnhealthy: false,
-            timestamp: null,
-            trend: operationTrend ? operationTrend[alertTypeToTrendMap[alertType]] : []
+            timestamp: null
         };
     })));
+}
+
+function mergeSuccessiveAlertPoints(unhealthyPoints) {
+    const sortedUnhealthyPoints = _.sortBy(unhealthyPoints, alertPoint => alertPoint.startTimestamp);
+    const mergedAlertHistory = [sortedUnhealthyPoints.shift()];  // pop first element
+    _.forEach(sortedUnhealthyPoints, (nextAlertPoint) => {
+        const lastPointOfResult = mergedAlertHistory[mergedAlertHistory.length - 1];
+        if (nextAlertPoint.startTimestamp - lastPointOfResult.endTimestamp <= alertMergeBufferTimeInSec * 1000 * 1000) {
+            mergedAlertHistory[mergedAlertHistory.length - 1].endTimestamp = nextAlertPoint.endTimestamp;
+        } else {
+            mergedAlertHistory.push(nextAlertPoint);
+        }
+    });
+    return mergedAlertHistory;
 }
 
 function parseAlertDetailResponse(data) {
@@ -106,12 +106,16 @@ function parseAlertDetailResponse(data) {
         return [];
     }
 
-    const sortedUnhealthyPoints = data[0].datapoints.filter(p => p[0]).sort((a, b) => a[1] - b[1]);
+    const unhealthyTimestamps = data[0].datapoints.filter(p => p[0]);
 
-    return sortedUnhealthyPoints.map(point => ({
+    const unhealthyPoints = unhealthyTimestamps.map(point => ({
         startTimestamp: point[1] * 1000 * 1000,
         endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
     }));
+
+    const mergedPonts = mergeSuccessiveAlertPoints(unhealthyPoints);
+
+    return mergedPonts;
 }
 
 function getActiveAlertCount(operationAlerts) {
@@ -119,14 +123,10 @@ function getActiveAlertCount(operationAlerts) {
 }
 
 connector.getServiceAlerts = (serviceName, query) => {
-    const { granularity, from, until} = query;
-
-    return Q
-        .all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(from / 1000), Math.trunc(until / 1000)), fetchOperationTrends(serviceName, granularity, from, until)])
-        .then(stats => mergeOperationAlertsAndTrends({
+    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(query.from / 1000), Math.trunc(query.until / 1000))])
+        .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
-                operationAlerts: stats[1],
-                operationTrends: stats[2]
+                operationAlerts: stats[1]
             })
         );
 };

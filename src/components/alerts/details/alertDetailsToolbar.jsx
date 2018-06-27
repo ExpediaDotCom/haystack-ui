@@ -28,7 +28,8 @@ export default class AlertDetailsToolbar extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired
+        type: PropTypes.string.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     constructor(props) {
@@ -46,16 +47,34 @@ export default class AlertDetailsToolbar extends React.Component {
     }
 
     render() {
+        const isUniversalSearch = this.props.isUniversalSearch;
+
+        const serviceOperation = {
+            serviceName: this.props.serviceName,
+            operationName: this.props.operationName
+        };
+
+        const trendsLink = isUniversalSearch
+            ? linkBuilder.universalSearchTrendsLink(serviceOperation)
+            : linkBuilder.createTrendsLink(serviceOperation);
+
+        const tracesLink = isUniversalSearch
+            ? linkBuilder.universalSearchTracesLink(serviceOperation)
+            : linkBuilder.createTracesLink(serviceOperation);
+
+        const alertsLink = isUniversalSearch
+            ? linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchAlertsLink(serviceOperation))
+            : linkBuilder.withAbsoluteUrl(
+                linkBuilder.createAlertsLink({
+                    ...serviceOperation,
+                    type: this.props.type
+                }));
+
         return (
             <div>
                 <div className="pull-left">
                     <Link
-                        to={
-                            linkBuilder.createTrendsLink({
-                                serviceName: this.props.serviceName,
-                                operationName: this.props.operationName
-                            })
-                        }
+                        to={trendsLink}
                         className="btn btn-primary"
                         target="_blank"
                     >
@@ -64,24 +83,14 @@ export default class AlertDetailsToolbar extends React.Component {
                 </div>
                 <div className="btn-group btn-group-sm pull-right">
                     <Link
-                        to={linkBuilder.createTracesLink({
-                            serviceName: this.props.serviceName,
-                            operationName: this.props.operationName
-                        })}
+                        to={tracesLink}
                         className="btn btn-default"
                         target="_blank"
                     >
                         <span className="ti-align-left"/> See Traces
                     </Link>
                     <Clipboard
-                        text={
-                            linkBuilder.withAbsoluteUrl(
-                                linkBuilder.createAlertsLink({
-                                    serviceName: this.props.serviceName,
-                                    operationName: this.props.operationName,
-                                    type: this.props.type
-                                })
-                            )}
+                        text={alertsLink}
                         onCopy={this.handleCopy}
                     >
                         <a role="button" className="btn btn-primary"><span className="ti-link"/> Share Alert</a>

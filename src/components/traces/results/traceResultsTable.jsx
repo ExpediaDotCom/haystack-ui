@@ -31,7 +31,7 @@ export default class TraceResultsTable extends React.Component {
         query: PropTypes.object.isRequired,
         results: PropTypes.object.isRequired,
         totalCount: PropTypes.number.isRequired,
-        location: PropTypes.object.isRequired
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     static sortByStartTime(a, b, order) {
@@ -205,7 +205,7 @@ export default class TraceResultsTable extends React.Component {
     }
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} location={this.props.location} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} />;
+            return <TraceDetails traceId={row.traceId} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} isUniversalSearch={this.props.isUniversalSearch}/>;
         }
         return null;
     }
@@ -346,25 +346,33 @@ export default class TraceResultsTable extends React.Component {
                             headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
                         ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
                     }
-                    <TableHeaderColumn
-                        dataField="serviceDuration"
-                        dataFormat={TraceResultsTable.durationFormatter}
-                        width="10"
-                        dataSort
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Total busy time in timeline for the queried service'}
-                    ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="serviceDurationPercent"
-                        dataFormat={TraceResultsTable.durationPercentFormatter}
-                        width="10"
-                        dataSort
-                        sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
-                    ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                    {
+                        query.serviceName
+                        ? <TableHeaderColumn
+                            dataField="serviceDuration"
+                            dataFormat={TraceResultsTable.durationFormatter}
+                            width="10"
+                            dataSort
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Total busy time in timeline for the queried service'}
+                        ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
+                        : null
+                    }
+                    {
+                        query.serviceName
+                        ? <TableHeaderColumn
+                            dataField="serviceDurationPercent"
+                            dataFormat={TraceResultsTable.durationPercentFormatter}
+                            width="10"
+                            dataSort
+                            sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
+                            caretRender={TraceResultsTable.getCaret}
+                            thStyle={tableHeaderRightAlignedStyle}
+                            headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
+                        ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
+                        : null
+                    }
                     <TableHeaderColumn
                         dataField="duration"
                         dataFormat={TraceResultsTable.totalDurationColumnFormatter}

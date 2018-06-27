@@ -27,7 +27,8 @@ export default class OperationResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         location: PropTypes.object.isRequired,
-        operationStore: PropTypes.object.isRequired
+        operationStore: PropTypes.object.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     static Header({name}) {
@@ -77,7 +78,7 @@ export default class OperationResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails serviceSummary={false} store={this.props.operationStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} />;
+            return <TrendDetails serviceSummary={false} store={this.props.operationStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} isUniversalSearch={this.props.isUniversalSearch}/>;
         }
         return null;
     }

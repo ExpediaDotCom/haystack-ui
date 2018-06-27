@@ -35,17 +35,18 @@ import uiState from '../searchBar/searchBarUiStateStore';
 export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
-        traceDetailsStore: PropTypes.object.isRequired
+        traceDetailsStore: PropTypes.object.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
-    static tabViewer(traceId, tabSelected, traceDetailsStore) {
+    static tabViewer(traceId, tabSelected, traceDetailsStore, isUniversalSearch) {
         switch (tabSelected) {
             case 2:
                 return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
             case 3:
-                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore}/>;
+                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
             default:
-                return (<TimelineTabContainer traceId={traceId} store={traceDetailsStore} />);
+                return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
         }
     }
 
@@ -79,13 +80,19 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
-        const {traceId, traceDetailsStore} = this.props;
+        const {traceId, traceDetailsStore, isUniversalSearch} = this.props;
 
-        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
-            serviceName: uiState.serviceName,
-            operationName: uiState.operationName,
-            traceId
-        }));
+        let traceUrl = '';
+        if (isUniversalSearch) {
+            const search = {traceId}; // TODO add specific time for trace
+            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
+        } else {
+            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
+                serviceName: uiState.serviceName,
+                operationName: uiState.operationName,
+                traceId
+            }));
+        }
 
         return (
             <section className="table-row-details">
@@ -121,7 +128,7 @@ export default class TraceDetails extends React.Component {
                     </div>
                 </div>
 
-                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore)}</section>
+                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore, isUniversalSearch)}</section>
 
                 <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
             </section>
