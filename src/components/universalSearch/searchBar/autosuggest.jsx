@@ -21,6 +21,7 @@ import {observer} from 'mobx-react';
 import {autorun} from 'mobx';
 
 import TimeWindowPicker from './timeWindowPicker';
+import Chips from './chips';
 
 import './autosuggest.less';
 
@@ -42,20 +43,13 @@ export default class Autocomplete extends React.Component {
             PropTypes.array,
             PropTypes.object
         ]),
-        maxlength: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string
-        ]),
         search: PropTypes.func.isRequired,
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        options: [],
-        max: 100,
-        placeholder: 'Add a chip...',
-        maxlength: 100
+        options: []
     };
 
     static focusInput(event) {
@@ -288,7 +282,6 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-
     // Moves highlighted suggestion down one option (toward bottom of screen)
     lowerSuggestion() {
         if (this.state.suggestionStrings.length) {
@@ -325,8 +318,6 @@ export default class Autocomplete extends React.Component {
 
         if (INVALID_CHARS.test(value)) {
             this.inputRef.value = value.replace(INVALID_CHARS, '');
-        } else if (value.length > this.props.maxlength) {
-            this.inputRef.value = value.substr(0, this.props.maxlength);
         }
     }
 
@@ -358,7 +349,7 @@ export default class Autocomplete extends React.Component {
         if (inputValue.indexOf('(') > -1) {
             if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
                 this.setState({
-                    inputError: 'Invalid K/V grouping, make sure parenthesis are closed'
+                    inputError: 'Invalid K/V grouping, make sure parentheses are closed'
                 });
                 return;
             }
@@ -416,65 +407,46 @@ export default class Autocomplete extends React.Component {
     }
 
     render() {
-        const chips = Object.keys(this.props.uiState.chips).map((chip) => {
-            let chipName = '';
-            if (chip.includes('nested_')) {
-                const baseObject = this.props.uiState.chips[chip];
-                Object.keys(baseObject).forEach((key) => {
-                    chipName += `${key}=${baseObject[key]} `;
-                });
-                chipName = `(${chipName.trim()})`;
-            } else {
-                chipName = `${chip}=${this.props.uiState.chips[chip]}`;
-            }
-            return (
-                <span className="chip" key={Math.random()}>
-                <span className="chip-value">{chipName}</span>
-                <button type="button" className="chip-delete-button" onClick={() => this.deleteChip(chip)}>x</button>
-            </span>
-            );
-        });
-
-        const sIndex = this.state.suggestionIndex;
+        const uiState = this.props.uiState;
         return (
             <article className="universal-search-bar search-query-bar">
-                    <div className="search-bar-pickers_fields">
-                        <div className="autosuggestion-box chips" role="form" onClick={Autocomplete.focusInput}>
-                            <div className="chips-and-input">
-                                {chips}
-                                <input
-                                    type="text"
-                                    className="usb-search-button-text-box search-bar-text-box autosuggest-input"
-                                    onKeyDown={this.handleKeyPress}
-                                    onKeyUp={this.clearInvalidChars}
-                                    onChange={this.updateFieldKv}
-                                    ref={this.setInputRef}
-                                    onFocus={this.handleFocus}
-                                    placeholder={this.props.uiState.chips.length ? '' : 'Search tags and services...'}
-                                />
-                                <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
-                                    {this.state.suggestionStrings.map((item, i) => (
-                                        <li
-                                            key={item}
-                                            onMouseEnter={() => this.handleHover(i)}
-                                            onClick={() => this.handleSelection()}
-                                            className={sIndex === i ? 'autofill-suggestion active-suggestion' : 'autofill-suggestion'}
-                                        >
-                                            {item}
-                                        </li>)
-                                    )}
-                                </ul>
-                            </div>
-                            <TimeWindowPicker uiState={this.props.uiState} />
-                            <button
-                                type="submit"
-                                className="btn btn-primary usb-search-button"
-                                onClick={this.handleSearch}
-                            >
-                                <span className="ti-search"/>
-                            </button>
-                            {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
+                <div className="search-bar-pickers_fields">
+                    <div className="autosuggestion-box" role="form" onClick={Autocomplete.focusInput}>
+                        <div className="chips-and-input">
+                            <Chips deleteChip={this.deleteChip} uiState={uiState} />
+                            <input
+                                type="text"
+                                className="usb-search-button-text-box search-bar-text-box autosuggest-input"
+                                onKeyDown={this.handleKeyPress}
+                                onKeyUp={this.clearInvalidChars}
+                                onChange={this.updateFieldKv}
+                                ref={this.setInputRef}
+                                onFocus={this.handleFocus}
+                                placeholder={uiState.chips.length ? '' : 'Search tags and services...'}
+                            />
+                            <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
+                                {this.state.suggestionStrings.map((item, i) => (
+                                    <li
+                                        key={item}
+                                        onMouseEnter={() => this.handleHover(i)}
+                                        onClick={() => this.handleSelection()}
+                                        className={this.state.suggestionIndex === i ? 'autofill-suggestion active-suggestion' : 'autofill-suggestion'}
+                                    >
+                                        {item}
+                                    </li>)
+                                )}
+                            </ul>
                         </div>
+                        <TimeWindowPicker uiState={uiState} />
+                        <button
+                            type="submit"
+                            className="btn btn-primary usb-search-button"
+                            onClick={this.handleSearch}
+                        >
+                            <span className="ti-search"/>
+                        </button>
+                        {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
+                    </div>
                 </div>
             </article>
         );
