@@ -86,8 +86,8 @@ module.exports = {
     },
 
     // use if you need SAML back SSO auth
-
-    // enableSSO: false, // flag for enabling sso
+    //
+    // enableSSO: true, // flag for enabling sso
     // saml: {
     //     entry_point: '', // SAML entrypoint
     //     issuer: '' // SAML issuer
