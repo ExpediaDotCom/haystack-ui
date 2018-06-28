@@ -71,9 +71,9 @@ function createFlattenedSpanTree(spanTree, depth, traceStartTime, totalDuration,
 }
 
 export class TraceDetailsStore extends ErrorHandlingStore {
+    static maxSpansBeforeCollapse = 100;
     @observable promiseState = null;
     @observable spans = [];
-    static maxSpansBeforeCollapse = 100;
     traceId = null;
 
     @action
