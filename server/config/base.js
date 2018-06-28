@@ -28,9 +28,7 @@ module.exports = {
     // Feature switches
     enableServicePerformance: true,
     enableServiceLevelTrends: true,
-    tunneling: {
-        '/getBlob': 'haystack-blobs-web-service/getBlob'
-    },
+
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config
     connectors: {
@@ -75,9 +73,6 @@ module.exports = {
                 enabled: true
             }
         },
-        blobsExplorer: {
-            connectorName: 'stub'
-        },
         serviceGraph: {
             // name of config connector module to use for fetching dependency graph data from downstream
             // options :
@@ -92,11 +87,11 @@ module.exports = {
 
     // use if you need SAML back SSO auth
 
-    enableSSO: false, // flag for enabling sso
-    saml: {
-        entry_point: '', // SAML entrypoint
-        issuer: '' // SAML issuer
-    },
-    sessionTimeout: 60 * 60 * 1000, // timeout for session
-    sessionSecret: 'XXXXXXXXXXXXX' // secret key for session
+    // enableSSO: false, // flag for enabling sso
+    // saml: {
+    //     entry_point: '', // SAML entrypoint
+    //     issuer: '' // SAML issuer
+    // },
+    // sessionTimeout: 60 * 60 * 1000, // timeout for session
+    // sessionSecret: 'XXXXXXXXXXXXX' // secret key for session
 };
