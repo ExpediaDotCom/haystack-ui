@@ -24,17 +24,15 @@ const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
 const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
-const WINDOW_SIZE_IN_MILLIS = config.connectors.serviceGraph.windowSizeInMillis;
+const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
 
 function fetchServiceGraph() {
     const to = Date.now();
-    const from = Date.now() - (WINDOW_SIZE_IN_MILLIS * 1000); // search for upto one hour old edges
+    const from = Date.now() - (WINDOW_SIZE_IN_SECS * 1000); // search for upto one hour old edges
 
     return trendsFetcher
         .fetch(`${serviceGraphUrl}?from=${from}&to=${to}`)
-        .then((data) => {
-            extractor.extractGraphs(data);
-    });
+        .then(data => extractor.extractGraphs(data));
 }
 
 connector.getServiceGraph = () => Q.fcall(() => fetchServiceGraph());
