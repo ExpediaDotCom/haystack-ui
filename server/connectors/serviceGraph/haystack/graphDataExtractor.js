@@ -21,7 +21,7 @@ const extractor = {};
 
 const config = require('../../../config/config');
 
-const WINDOW_SIZE_IN_MILLIS = config.connectors.serviceGraph.windowSizeInMillis;
+const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
 
 function getEdgeName(vertex) {
     if (vertex.name) {
@@ -39,8 +39,8 @@ function flattenStats(edges) {
             name: getEdgeName(edge.destination)
         },
         stats: {
-            count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS),
-            errorCount: (edge.stats.errorCount / WINDOW_SIZE_IN_MILLIS)
+            count: (edge.stats.count / WINDOW_SIZE_IN_SECS),
+            errorCount: (edge.stats.errorCount / WINDOW_SIZE_IN_SECS)
         }
     }));
     return _.uniqWith(serviceEdges, _.isEqual);

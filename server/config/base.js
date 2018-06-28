@@ -80,7 +80,7 @@ module.exports = {
             //              you must specify serviceGraphUrl
             //              e.g. serviceGraphUrl: 'https://<haystack>/serviceGraph'
             connectorName: 'stub',
-            windowSizeInMillis: 3600
+            windowSizeInSecs: 3600
         }
     }
 
