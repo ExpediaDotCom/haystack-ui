@@ -15,7 +15,48 @@
  *         limitations under the License.
  */
 
+const _ = require('lodash');
+
 const extractor = {};
+
+const config = require('../../../config/config');
+
+const WINDOW_SIZE_IN_MILLIS = config.connectors.serviceGraph.windowSizeInMillis;
+
+function getEdgeName(vertex) {
+    if (vertex.name) {
+        return vertex.name;
+    }
+    return vertex;
+}
+
+function flattenStats(edges) {
+    const serviceEdges = edges.map(edge => ({
+        source: {
+            name: getEdgeName(edge.source)
+        },
+        destination: {
+            name: getEdgeName(edge.destination)
+        },
+        stats: {
+            count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS),
+            errorCount: (edge.stats.errorCount / WINDOW_SIZE_IN_MILLIS)
+        }
+    }));
+    return _.uniqWith(serviceEdges, _.isEqual);
+}
+
+function filterEdgesInComponent(component, edges) {
+    const componentEdges = [];
+
+    edges.forEach((edge) => {
+        if (component.includes(edge.source.name) || component.includes(edge.destination.name)) {
+            componentEdges.push(edge);
+        }
+    });
+
+    return componentEdges;
+}
 
 function updatedDestination(graph, destination, source) {
     if (graph[destination]) {
@@ -27,22 +68,21 @@ function updatedDestination(graph, destination, source) {
 
 function toUndirectedGraph(edges) {
     const graph = {};
-
     edges.forEach((edge) => {
-        if (graph[edge.source]) {
+        if (graph[edge.source.name]) {
             // add or update source
-            graph[edge.source].to = [...graph[edge.source].to, edge.destination];
+            graph[edge.source.name].to = [...graph[edge.source.name].to, edge.destination.name];
 
             // add or update destination
             // graph[edge.destination] = updatedDestination(graph[edge.destination], edge.source);
-            updatedDestination(graph, edge.destination, edge.source);
+            updatedDestination(graph, edge.destination.name, edge.source.name);
         } else {
             // create edge at the source
-            graph[edge.source] = { to: [edge.destination] };
+            graph[edge.source.name] = { to: [edge.destination.name] };
 
             // add or update destination
             // graph[edge.destination] = updatedDestination(graph[edge.destination], edge.source);
-            updatedDestination(graph, edge.destination, edge.source);
+            updatedDestination(graph, edge.destination.name, edge.source.name);
         }
     });
 
@@ -76,10 +116,9 @@ function filterUntraversed(graph) {
     return Object.keys(graph).filter(node => !graph[node].isTraversed);
 }
 
-extractor.extractConnectedComponents = (edges) => {
+function extractConnectedComponents(edges) {
     // converting to adjacency list undirected graph
     const graph = toUndirectedGraph(edges);
-
     // perform depth first graph traversals to get connected components list
     // until all the disjoint graps are traversed
     const connectedComponents = [];
@@ -91,6 +130,26 @@ extractor.extractConnectedComponents = (edges) => {
 
     // return list of connected components
     return connectedComponents;
+}
+
+
+extractor.extractGraphs = (data) => {
+    // convert servicegraph to expected ui data format
+    const serviceToServiceEdges = flattenStats(data.edges);
+
+    // get list of connected components in the full graph
+    const connectedComponents = extractConnectedComponents(serviceToServiceEdges);
+
+    // order components by service count
+    const sortedConnectedComponents = connectedComponents.sort((a, b) => b.length - a.length);
+
+    // split edges list by connected components
+    // thus form multiple sub-graphs
+    const graphs = [];
+    sortedConnectedComponents.forEach(component => graphs.push(filterEdgesInComponent(component, serviceToServiceEdges)));
+
+    // return graphs, one for each connected component
+    return graphs;
 };
 
 module.exports = extractor;
