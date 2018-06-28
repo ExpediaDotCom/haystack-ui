@@ -18,8 +18,10 @@ const Q = require('q');
 
 const connector = {};
 
-const serviceGraph = [
-    [
+const extractor = require('../haystack/graphDataExtractor');
+
+const serviceGraph = {
+    edges: [
         {
             source: {
                 name: 'stark-service'
@@ -29,8 +31,8 @@ const serviceGraph = [
             },
             operation: 'baratheon-1',
             stats: {
-                count: 421,
-                errorCount: 80
+                count: 55500,
+                errorCount: 9000
             }
         },
         {
@@ -42,8 +44,8 @@ const serviceGraph = [
             },
             operation: 'grayjoy-1',
             stats: {
-                count: 210,
-                errorCount: 0
+                count: 21005,
+                errorCount: 1009
             }
         },
         {
@@ -55,8 +57,8 @@ const serviceGraph = [
             },
             operation: 'lannister-1',
             stats: {
-                count: 102,
-                errorCount: 6
+                count: 23456,
+                errorCount: 678
             }
         },
         {
@@ -81,7 +83,7 @@ const serviceGraph = [
             },
             operation: 'tyrell-1',
             stats: {
-                count: 30,
+                count: 30000,
                 errorCount: 2
             }
         },
@@ -94,8 +96,8 @@ const serviceGraph = [
             },
             operation: 'targaryen-1',
             stats: {
-                count: 50,
-                errorCount: 3
+                count: 50004,
+                errorCount: 20000
             }
         },
         {
@@ -120,8 +122,8 @@ const serviceGraph = [
             },
             operation: 'dragon-1',
             stats: {
-                count: 190,
-                errorCount: 80
+                count: 19000,
+                errorCount: 800
             }
         },
         {
@@ -134,7 +136,7 @@ const serviceGraph = [
             operation: 'drogo-1',
             stats: {
                 count: 98,
-                errorCount: 2
+                errorCount: 0
             }
         },
         {
@@ -146,13 +148,13 @@ const serviceGraph = [
             },
             operation: 'mormont-1',
             stats: {
-                count: 5,
-                errorCount: 0
+                count: 5000,
+                errorCount: 100
             }
         }
     ]
-];
+};
 
-connector.getServiceGraph = () => Q.fcall(() => serviceGraph);
+connector.getServiceGraph = () => Q.fcall(() => extractor.extractGraphs(serviceGraph));
 
 module.exports = connector;

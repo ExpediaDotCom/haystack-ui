@@ -28,7 +28,9 @@ module.exports = {
     // Feature switches
     enableServicePerformance: true,
     enableServiceLevelTrends: true,
-
+    tunneling: {
+        '/getBlob': 'haystack-blobs-web-service/getBlob'
+    },
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config
     connectors: {
@@ -68,9 +70,13 @@ module.exports = {
                 // name of config connector module to use for managing subscriptions
                 // Options :
                 //  - stub - a stub used during development, will be removed in future
+                //  - meghduta - gets data from Meghduta, this will also need `meghdutaApiUrl`
                 connectorName: 'stub',
                 enabled: true
             }
+        },
+        blobsExplorer: {
+            connectorName: 'stub'
         },
         serviceGraph: {
             // name of config connector module to use for fetching dependency graph data from downstream
@@ -79,17 +85,18 @@ module.exports = {
             // - haystack - gets data from haystack-service-graph
             //              you must specify serviceGraphUrl
             //              e.g. serviceGraphUrl: 'https://<haystack>/serviceGraph'
-            connectorName: 'stub'
+            connectorName: 'stub',
+            windowSizeInMillis: 3600
         }
-    }
+    },
 
     // use if you need SAML back SSO auth
-    //
-    // enableSSO: true, // flag for enabling sso
-    // saml: {
-    //     entry_point: '', // SAML entrypoint
-    //     issuer: '' // SAML issuer
-    // },
-    // sessionTimeout: 60 * 60 * 1000, // timeout for session
-    // sessionSecret: 'XXXXXXXXXXXXX' // secret key for session
+
+    enableSSO: false, // flag for enabling sso
+    saml: {
+        entry_point: '', // SAML entrypoint
+        issuer: '' // SAML issuer
+    },
+    sessionTimeout: 60 * 60 * 1000, // timeout for session
+    sessionSecret: 'XXXXXXXXXXXXX' // secret key for session
 };
