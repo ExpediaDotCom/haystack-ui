@@ -35,7 +35,12 @@ function getEdgeName(vertex) {
 }
 function flattenStats(edges) {
     const serviceEdges = edges.map(edge => ({
-        source: getEdgeName(edge.source), destination: getEdgeName(edge.destination), count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS)
+        source: getEdgeName(edge.source),
+        destination: getEdgeName(edge.destination),
+        stats: {
+            count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS),
+            errorCount: (edge.stats.errorCount / WINDOW_SIZE_IN_MILLIS)
+        }
     }));
     return _.uniqWith(serviceEdges, _.isEqual);
 }
