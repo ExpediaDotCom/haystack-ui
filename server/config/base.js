@@ -68,7 +68,6 @@ module.exports = {
                 // name of config connector module to use for managing subscriptions
                 // Options :
                 //  - stub - a stub used during development, will be removed in future
-                //  - meghduta - gets data from Meghduta, this will also need `meghdutaApiUrl`
                 connectorName: 'stub',
                 enabled: true
             }
@@ -83,7 +82,7 @@ module.exports = {
             connectorName: 'stub',
             windowSizeInMillis: 3600
         }
-    },
+    }
 
     // use if you need SAML back SSO auth
     //
