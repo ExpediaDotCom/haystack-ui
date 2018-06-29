@@ -145,6 +145,13 @@ const stubAlerts = [
         isHealthy: true,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
+    },
+    {
+        operationName: 'test',
+        type: 'AADuration',
+        isHealthy: true,
+        timestamp: getRandomTimeStamp(),
+        trend: getRandomValues()
     }
 ];
 

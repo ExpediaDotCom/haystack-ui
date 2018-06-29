@@ -86,6 +86,12 @@ function getAlerts() {
             type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
+        },
+        {
+            operationName: 'dondarrion-1',
+            type: 'AADuration',
+            isUnhealthy: false,
+            timestamp: getRandomTimeStamp()
         }
     ];
 }
