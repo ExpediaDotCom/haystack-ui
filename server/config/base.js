@@ -79,8 +79,7 @@ module.exports = {
             // - haystack - gets data from haystack-service-graph
             //              you must specify serviceGraphUrl
             //              e.g. serviceGraphUrl: 'https://<haystack>/serviceGraph'
-            connectorName: 'haystack',
-            serviceGraphUrl: 'https://haystack.exp-prod.net/servicegraph',
+            connectorName: 'stub',
             windowSizeInSecs: 3600
         }
     }
