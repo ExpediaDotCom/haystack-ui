@@ -73,6 +73,7 @@ export default class ServiceGraphResults extends React.Component {
             class: this.getNodeDisplayDetails(node, errorCountsByVertex).level,
             notices: [
                 {
+                    title: '',
                     severity: this.getNodeDisplayDetails(node, errorCountsByVertex).severity
                 }
             ],
