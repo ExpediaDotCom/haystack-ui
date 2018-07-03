@@ -79,16 +79,14 @@ export default class TimeWindowPicker extends React.Component {
         const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
 
         return (
-            <div ref={this.setWrapperRef} className="search-bar-pickers_time-window">
-                <span>
+            <div ref={this.setWrapperRef} className="usb-timepicker">
                     <button
-                        className="btn btn-primary time-range-picker-toggle"
+                        className="usb-timepicker__button"
                         type="button"
                         onClick={this.state.showTimeRangePicker ? this.hideTimePicker : this.showTimePicker}
                     >
                         {timeRangePickerToggleText}
                     </button>
-                </span>
                 { this.state.showTimeRangePicker
                     ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
                     : null }

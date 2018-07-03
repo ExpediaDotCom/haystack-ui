@@ -52,15 +52,15 @@ export default class Chips extends React.Component {
                 chipName = `${chip}=${this.props.uiState.chips[chip]}`;
             }
             return (
-                <span className="chip" key={Math.random()}>
-                    <span className="chip-value">{chipName}</span>
-                    <button type="button" className="chip-delete-button" onClick={() => this.props.deleteChip(chip)}>x</button>
-                </span>
+                <div className="usb-chip" key={Math.random()}>
+                    <span className="usb-chip__value">{chipName}</span>
+                    <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
+                </div>
             );
         });
 
         return (
-            <div className="chips">
+            <div className="usb-chips">
                  {chips}
             </div>
         );
