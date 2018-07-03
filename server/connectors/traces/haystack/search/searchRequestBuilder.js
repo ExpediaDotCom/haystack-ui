@@ -105,7 +105,6 @@ requestBuilder.buildRequest = (query) => {
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
     request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);
-    console.log(JSON.stringify(request.toObject()));
 
     return request;
 };
