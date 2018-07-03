@@ -20,6 +20,7 @@ import _ from 'lodash';
 import Vizceral from 'vizceral-react';
 
 import config from './vizceralConfig';
+import linkBuilder from '../../utils/linkBuilder';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
@@ -48,36 +49,58 @@ export default class ServiceGraphResults extends React.Component {
     static getNodeDisplayDetails(node, errorCountMap) {
         const errorRate = (errorCountMap.get(node).errorCount * 100) / (errorCountMap.get(node).count);
         const ERROR_LEVEL = 10;
-        const WARN_LEVEL = 5;
+        const WARN_LEVEL = 1;
         if (errorRate > ERROR_LEVEL) {
-            return {level: 'danger', severity: 2};
+            return {level: 'danger', severity: 2, errorRate};
         } else if (errorRate > WARN_LEVEL) {
-            return {level: 'warning', severity: 1};
+            return {level: 'warning', severity: 1, errorRate};
         }
-        return {level: 'normal', severity: 0};
+        return {level: 'normal', severity: 0, errorRate};
+    }
+
+    static createNoticeContent(node, requestRate, errorPercent, level) {
+        return `<table>
+                    <tr>
+                        <td class="vizceral-notice__title">Incoming rq :</td>
+                        <td><b>${Number(requestRate).toFixed(2)}/sec</b></td>
+                        <td class="vizceral-notice__traces-link">
+                            <a href="${linkBuilder.createTracesLink({serviceName: node})}"><span class="ti-new-window"></span> all traces</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vizceral-notice__title">Error :</td>
+                        <td class="vizceral-${level}"><b>${Number(errorPercent).toFixed(2)}%</b></td>
+                        <td class="vizceral-notice__traces-link">
+                            <a href="${linkBuilder.createTracesLink({serviceName: node})}&error=true"><span class="ti-new-window"></span> error traces</a>
+                        </td>
+                    </tr>
+                </table>`;
     }
 
     static createNodes(rawEdges) {
         const allNodes = _.flatten(rawEdges.map((edge) => {
             const fromServiceName = edge.source.name;
-
             const toServiceName = edge.destination.name;
-
             return [fromServiceName, toServiceName];
         }));
 
         const uniqueNodes = _.uniqWith(allNodes, _.isEqual);
         const errorCountsByVertex = this.getErrorRateMap(rawEdges);
-        return uniqueNodes.map(node => ({
-            name: node,
-            class: this.getNodeDisplayDetails(node, errorCountsByVertex).level,
-            notices: [
+        return uniqueNodes.map((node) => {
+            const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(node, errorCountsByVertex);
+            const nodeCount = errorCountsByVertex.get(node).count;
+            return {
+                name: node,
+                class: nodeDisplayDetails.level,
+                notices: [
                 {
-                    severity: this.getNodeDisplayDetails(node, errorCountsByVertex).severity
+                    title: ServiceGraphResults.createNoticeContent(node, nodeCount, nodeDisplayDetails.errorRate || 0, nodeDisplayDetails.level),
+                    severity: nodeDisplayDetails.severity
                 }
             ],
-            renderer: 'focusedChild'
-        }));
+                renderer: 'focusedChild'
+            };
+        });
     }
 
     static createEdges(rawEdges) {
@@ -105,12 +128,12 @@ export default class ServiceGraphResults extends React.Component {
         config.connections = edges;
         config.maxVolume = maxCountEdge * 20;
 
-        const blue = '#36A2EB';
+        const blue = '#479fd6';
         const darkGrey = '#2d3750';
         const white = '#ffffff';
         const brandPrimary = '#e23474';
-        const grey = '#4f4f4f';
-
+        const warning = '#e98c15';
+        const grey = '#777';
 
         const definitions = {
             detailedNode: {
@@ -137,7 +160,8 @@ export default class ServiceGraphResults extends React.Component {
             },
             colorTraffic: {
                 normal: blue,
-                normalDonut: darkGrey
+                normalDonut: darkGrey,
+                warning
             },
             colorTrafficHighlighted: {
                 normal: grey
