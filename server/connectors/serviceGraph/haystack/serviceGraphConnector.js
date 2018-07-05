@@ -18,64 +18,21 @@ const Q = require('q');
 
 const fetcher = require('../../operations/restFetcher');
 const config = require('../../../config/config');
-const extractor = require('./graphConnectedComponentExtractor');
-const _ = require('lodash');
+const extractor = require('./graphDataExtractor');
 
 const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
 const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
-const WINDOW_SIZE_IN_MILLIS = 3600;
-
-function getEdgeName(vertex) {
-    if (vertex.name) {
-        return vertex.name;
-    }
-    return vertex;
-}
-function flattenStats(edges) {
-    const serviceEdges = edges.map(edge => ({
-        source: getEdgeName(edge.source), destination: getEdgeName(edge.destination), count: (edge.stats.count / WINDOW_SIZE_IN_MILLIS)
-    }));
-    return _.uniqWith(serviceEdges, _.isEqual);
-}
-
-function filterEdgesInComponent(component, edges) {
-    const componentEdges = [];
-
-    edges.forEach((edge) => {
-        if (component.includes(edge.source) || component.includes(edge.destination)) {
-            componentEdges.push(edge);
-        }
-    });
-
-    return componentEdges;
-}
+const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
 
 function fetchServiceGraph() {
     const to = Date.now();
-    const from = Date.now() - (WINDOW_SIZE_IN_MILLIS * 1000); // search for upto one hour old edges
+    const from = Date.now() - (WINDOW_SIZE_IN_SECS * 1000); // search for upto one hour old edges
 
     return trendsFetcher
         .fetch(`${serviceGraphUrl}?from=${from}&to=${to}`)
-        .then((data) => {
-            // convert servicegraph to expected ui data format
-            const serviceToServiceEdges = flattenStats(data.edges);
-
-            // get list of connected components in the full graph
-            const connectedComponents = extractor.extractConnectedComponents(serviceToServiceEdges);
-
-            // order components by service count
-            const sortedConnectedComponents = connectedComponents.sort((a, b) => b.length - a.length);
-
-            // split edges list by connected components
-            // thus form multiple sub-graphs
-            const graphs = [];
-            sortedConnectedComponents.forEach(component => graphs.push(filterEdgesInComponent(component, serviceToServiceEdges)));
-
-            // return graphs, one for each connected component
-            return graphs;
-    });
+        .then(data => extractor.extractGraphs(data));
 }
 
 connector.getServiceGraph = () => Q.fcall(() => fetchServiceGraph());

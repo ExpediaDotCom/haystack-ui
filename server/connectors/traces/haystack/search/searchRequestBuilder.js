@@ -14,10 +14,12 @@
  *         limitations under the License.
  */
 
+import {createFilterExpression} from '../expressionTreeBuilder';
+
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit'];
+const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters'];
 const DEFAULT_RESULTS_LIMIT = 50;
 
 function createFieldsList(query) {
@@ -34,7 +36,13 @@ function createFieldsList(query) {
 
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
-    request.setFieldsList(createFieldsList(query));
+
+    if (query.useExpressionTree) {
+        request.setFilterexpression(createFilterExpression(query));
+    } else {
+        request.setFieldsList(createFieldsList(query));
+    }
+
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
     request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);

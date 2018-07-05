@@ -20,28 +20,88 @@ import _ from 'lodash';
 import Vizceral from 'vizceral-react';
 
 import config from './vizceralConfig';
+import linkBuilder from '../../utils/linkBuilder';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
         serviceGraph: PropTypes.object.isRequired
     };
+    static getErrorRateMap(rawEdges) {
+        const errorCountsByVertex = new Map();
+        _.forEach(rawEdges, (edge) => {
+            if (errorCountsByVertex.get(edge.destination.name)) {
+                const totalCnt = errorCountsByVertex.get(edge.destination.name).count + edge.stats.count;
+                const errorCnt = errorCountsByVertex.get(edge.destination.name).errorCount + edge.stats.errorCount;
+                errorCountsByVertex.set(edge.destination.name, { count: totalCnt, errorCount: errorCnt});
+            } else {
+                errorCountsByVertex.set(edge.destination.name, { count: edge.stats.count, errorCount: edge.stats.errorCount });
+            }
+        });
+        // Fill in zero for vertex that are only in source but not in destination of a edge
+        _.forEach(rawEdges, (edge) => {
+           if (!errorCountsByVertex.get(edge.source.name)) {
+               errorCountsByVertex.set(edge.source.name, {count: 0, errorCount: 0});
+           }
+        });
+        return errorCountsByVertex;
+    }
+
+    static getNodeDisplayDetails(node, errorCountMap) {
+        const errorRate = (errorCountMap.get(node).errorCount * 100) / (errorCountMap.get(node).count);
+        const ERROR_LEVEL = 10;
+        const WARN_LEVEL = 1;
+        if (errorRate > ERROR_LEVEL) {
+            return {level: 'danger', severity: 2, errorRate};
+        } else if (errorRate > WARN_LEVEL) {
+            return {level: 'warning', severity: 1, errorRate};
+        }
+        return {level: 'normal', severity: 0, errorRate};
+    }
+
+    static createNoticeContent(node, requestRate, errorPercent, level) {
+        return `<table>
+                    <tr>
+                        <td class="vizceral-notice__title">Incoming rq :</td>
+                        <td><b>${Number(requestRate).toFixed(2)}/sec</b></td>
+                        <td class="vizceral-notice__traces-link">
+                            <a href="${linkBuilder.createTracesLink({serviceName: node})}" target="_blank">
+                                <span class="ti-new-window"></span> all traces
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vizceral-notice__title">Error :</td>
+                        <td class="vizceral-${level}"><b>${Number(errorPercent).toFixed(2)}%</b></td>
+                        <td class="vizceral-notice__traces-link">
+                            <a href="${linkBuilder.createTracesLink({serviceName: node})}?error=true" target="_blank">
+                                <span class="ti-new-window"></span> error traces
+                            </a>
+                        </td>
+                    </tr>
+                </table>`;
+    }
 
     static createNodes(rawEdges) {
         const allNodes = _.flatten(rawEdges.map((edge) => {
-            const fromServiceName = edge.source;
-
-            const toServiceName = edge.destination;
-
-            return [{name: fromServiceName}, {name: toServiceName}];
+            const fromServiceName = edge.source.name;
+            const toServiceName = edge.destination.name;
+            return [fromServiceName, toServiceName];
         }));
 
         const uniqueNodes = _.uniqWith(allNodes, _.isEqual);
-
+        const errorCountsByVertex = this.getErrorRateMap(rawEdges);
         return uniqueNodes.map((node) => {
-            const name = node.name;
-
+            const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(node, errorCountsByVertex);
+            const nodeCount = errorCountsByVertex.get(node).count;
             return {
-                name,
+                name: node,
+                class: nodeDisplayDetails.level,
+                notices: [
+                {
+                    title: ServiceGraphResults.createNoticeContent(node, nodeCount, nodeDisplayDetails.errorRate || 0, nodeDisplayDetails.level),
+                    severity: nodeDisplayDetails.severity
+                }
+            ],
                 renderer: 'focusedChild'
             };
         });
@@ -50,12 +110,13 @@ export default class ServiceGraphResults extends React.Component {
     static createEdges(rawEdges) {
         const edges = [];
 
-        rawEdges.forEach((rawEdge) => {
+        _.forEach(rawEdges, (rawEdge) => {
             edges.push({
-                source: rawEdge.source,
-                target: rawEdge.destination,
+                source: rawEdge.source.name,
+                target: rawEdge.destination.name,
                 metrics: {
-                    normal: rawEdge.count
+                    normal: rawEdge.stats.count - rawEdge.stats.errorCount,
+                    danger: rawEdge.stats.errorCount
                 }
             });
         });
@@ -64,31 +125,26 @@ export default class ServiceGraphResults extends React.Component {
 
     render() {
         const serviceGraph = this.props.serviceGraph;
-        const maxCountEdge = _.maxBy(serviceGraph, e => e.count);
+        const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
         const nodes = ServiceGraphResults.createNodes(serviceGraph);
         const edges = ServiceGraphResults.createEdges(serviceGraph);
         config.nodes = nodes;
         config.connections = edges;
-        config.maxVolume = maxCountEdge.count * 20;
+        config.maxVolume = maxCountEdge * 20;
 
-        const blue = '#36A2EB';
+        const blue = '#479fd6';
         const darkGrey = '#2d3750';
         const white = '#ffffff';
         const brandPrimary = '#e23474';
-        const grey = '#4f4f4f';
+        const warning = '#e98c15';
+        const grey = '#777';
 
         const definitions = {
             detailedNode: {
                 volume: {
-                    default: {
-                        bottom: null,
-                        top: null
-                    },
                     focused: {
-                        top: { header: 'Rq / Sec', data: 'data.volume', format: '0.00' }
-                    },
-                    entry: {
-                        top: { header: 'Rq / Sec', data: 'data.volume', format: '0.00' }
+                        top: {header: 'Rq/Sec'},
+                        bottom: {header: 'Error Rate'}
                     }
                 }
             }
@@ -108,7 +164,8 @@ export default class ServiceGraphResults extends React.Component {
             },
             colorTraffic: {
                 normal: blue,
-                normalDonut: darkGrey
+                normalDonut: darkGrey,
+                warning
             },
             colorTrafficHighlighted: {
                 normal: grey

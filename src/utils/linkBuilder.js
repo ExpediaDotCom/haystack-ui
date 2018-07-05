@@ -51,7 +51,11 @@ linkBuilder.createTracesLink = ({serviceName, operationName, from, until, timePr
         return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}&timePreset=${timePreset}`;
     }
 
-    return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}`;
+    if (operationName) {
+        return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}`;
+    }
+
+    return `/service/${encodedServiceName}/traces`;
 };
 
 linkBuilder.createTrendsLink = ({serviceName, operationName, from, until}) => {

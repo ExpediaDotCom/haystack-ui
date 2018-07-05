@@ -18,71 +18,143 @@ const Q = require('q');
 
 const connector = {};
 
-const serviceGraph = [
-    [
+const extractor = require('../haystack/graphDataExtractor');
+
+const serviceGraph = {
+    edges: [
         {
-            source: 'stark-service',
-            destination: 'baratheon-service',
+            source: {
+                name: 'stark-service'
+            },
+            destination: {
+                name: 'baratheon-service'
+            },
             operation: 'baratheon-1',
-            count: 421
+            stats: {
+                count: 55500,
+                errorCount: 9000
+            }
         },
         {
-            source: 'stark-service',
-            destination: 'grayjoy-service',
+            source: {
+                name: 'stark-service'
+            },
+            destination: {
+                name: 'grayjoy-service'
+            },
             operation: 'grayjoy-1',
-            count: 210
+            stats: {
+                count: 21005,
+                errorCount: 1009
+            }
         },
         {
-            source: 'baratheon-service',
-            destination: 'lannister-service',
+            source: {
+                name: 'baratheon-service'
+            },
+            destination: {
+                name: 'lannister-service'
+            },
             operation: 'lannister-1',
-            count: 102
+            stats: {
+                count: 23456,
+                errorCount: 678
+            }
         },
         {
-            source: 'baratheon-service',
-            destination: 'clegane-service',
+            source: {
+                name: 'baratheon-service'
+            },
+            destination: {
+                name: 'clegane-service'
+            },
             operation: 'clegane-1',
-            count: 401
+            stats: {
+                count: 401,
+                errorCount: 13
+            }
         },
         {
-            source: 'lannister-service',
-            destination: 'tyrell-service',
+            source: {
+                name: 'lannister-service'
+            },
+            destination: {
+                name: 'tyrell-service'
+            },
             operation: 'tyrell-1',
-            count: 30
+            stats: {
+                count: 30000,
+                errorCount: 2
+            }
         },
         {
-            source: 'tyrell-service',
-            destination: 'targaryen-service',
+            source: {
+                name: 'tyrell-service'
+            },
+            destination: {
+                name: 'targaryen-service'
+            },
             operation: 'targaryen-1',
-            count: 50
+            stats: {
+                count: 50004,
+                errorCount: 20000
+            }
         },
         {
-            source: 'tyrell-service',
-            destination: 'tully-service',
+            source: {
+                name: 'tyrell-service'
+            },
+            destination: {
+                name: 'tully-service'
+            },
             operation: 'tully-1',
-            count: 121
+            stats: {
+                count: 121,
+                errorCount: 1
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'dragon-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'dragon-service'
+            },
             operation: 'dragon-1',
-            count: 190
+            stats: {
+                count: 19000,
+                errorCount: 800
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'drogo-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'drogo-service'
+            },
             operation: 'drogo-1',
-            count: 98
+            stats: {
+                count: 98,
+                errorCount: 0
+            }
         },
         {
-            source: 'targaryen-service',
-            destination: 'mormont-service',
+            source: {
+                name: 'targaryen-service'
+            },
+            destination: {
+                name: 'mormont-service'
+            },
             operation: 'mormont-1',
-            count: 5
+            stats: {
+                count: 5000,
+                errorCount: 100
+            }
         }
     ]
-];
+};
 
-connector.getServiceGraph = () => Q.fcall(() => serviceGraph);
+connector.getServiceGraph = () => Q.fcall(() => extractor.extractGraphs(serviceGraph));
 
 module.exports = connector;

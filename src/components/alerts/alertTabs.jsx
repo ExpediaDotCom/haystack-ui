@@ -31,6 +31,8 @@ export default class AlertTabs extends React.Component {
 
     static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, isUniversalSearch) {
         switch (tabSelected) {
+            case 3:
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.AADuration} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
             case 2:
                 return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
             default:
@@ -65,6 +67,7 @@ export default class AlertTabs extends React.Component {
         const groupedAlerts = _.groupBy(this.props.alertsStore.alerts, _.property('type'));
         const unhealthyFailureCountAlerts = groupedAlerts.failureCount.filter(alert => alert.isUnhealthy).length;
         const unhealthyDurationTP99Alerts = groupedAlerts.durationTP99.filter(alert => alert.isUnhealthy).length;
+        const unhealthyAADurationAlerts = groupedAlerts.AADuration.filter(alert => alert.isUnhealthy).length;
 
         return (
             <section>
@@ -80,6 +83,12 @@ export default class AlertTabs extends React.Component {
                             <a className="alert-tabs_tab h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >
                                 <span>Duration TP99 </span>
                                 <span className="badge">{unhealthyDurationTP99Alerts}</span>
+                            </a>
+                        </li>
+                        <li className={this.state.tabSelected === 3 ? 'active' : ''}>
+                            <a className="alert-tabs_tab h4" role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >
+                                <span>AA Duration</span>
+                                <span className="badge">{unhealthyAADurationAlerts}</span>
                             </a>
                         </li>
                     </ul>
