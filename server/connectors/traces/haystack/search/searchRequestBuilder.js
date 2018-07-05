@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import {createFilterExpression} from '../expressionTreeBuilder';
+const createFilterExpression = require('../expressionTreeBuilder').createFilterExpression;
 
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');

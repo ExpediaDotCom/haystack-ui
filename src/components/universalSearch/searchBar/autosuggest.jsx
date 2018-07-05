@@ -21,6 +21,9 @@ import {observer} from 'mobx-react';
 import {autorun} from 'mobx';
 
 import TimeWindowPicker from './timeWindowPicker';
+import Chips from './chips';
+import Guide from './guide';
+import SearchSubmit from './searchSubmit';
 
 import './autosuggest.less';
 
@@ -42,26 +45,30 @@ export default class Autocomplete extends React.Component {
             PropTypes.array,
             PropTypes.object
         ]),
-        maxlength: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string
-        ]),
         search: PropTypes.func.isRequired,
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        options: [],
-        max: 100,
-        placeholder: 'Add a chip...',
-        maxlength: 50
+        options: []
     };
 
     static focusInput(event) {
         const children = event.target.children;
 
         if (children.length) children[children.length - 1].focus();
+    }
+
+    static FormattedSuggestion({item, suggestedOnValue}) {
+        const startIndex = item.toLowerCase().indexOf(suggestedOnValue.toLowerCase());
+
+        return (
+            <span>
+                <span>{item.substring(0, startIndex)}</span>
+                <span className="usb-suggestions__field-highlight ">{item.substring(startIndex, startIndex + suggestedOnValue.length)}</span>
+                <span>{item.substring(startIndex + suggestedOnValue.length, item.length)}</span>
+            </span>);
     }
 
     constructor(props) {
@@ -125,28 +132,38 @@ export default class Autocomplete extends React.Component {
     }
 
     // Takes current active word and searches suggestion options for keys that are valid.
-    setSuggestions(inputValue) {
-        const arr = [];
-        const equalSplitter = inputValue.indexOf('=');
+    setSuggestions(input) {
+        const suggestionArray = [];
+        const splitInput = input.replace('(', '').split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+
+        const equalSplitter = targetInput.indexOf('=');
+        let value;
+        let type;
         if (equalSplitter > 0) {
-            const key = inputValue.substring(0, equalSplitter);
-            const value = inputValue.substring(equalSplitter + 1, inputValue.length);
+            type = 'Values';
+            const key = targetInput.substring(0, equalSplitter);
+            value = targetInput.substring(equalSplitter + 1, targetInput.length);
             if (this.props.options[key]) {
                 this.props.options[key].forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
-                        arr.push(option);
+                        suggestionArray.push(option);
                     }
                 });
             }
         } else {
+            type = 'Keys';
+            value = targetInput.toLowerCase();
             Object.keys(this.props.options).forEach((option) => {
-                if (option.toLowerCase().includes(inputValue.toLowerCase()) && !this.state.existingKeys.includes(option)) {
-                    arr.push(option);
+                if (option.toLowerCase().includes(value) && !this.state.existingKeys.includes(option)) {
+                    suggestionArray.push(option);
                 }
             });
         }
         this.setState({
-            suggestionStrings: arr.sort(),
+            suggestionStrings: suggestionArray,
+            suggestedOnValue: value,
+            suggestedOnType: type,
             suggestionIndex: null
         });
         document.addEventListener('mousedown', this.handleOutsideClick);
@@ -194,14 +211,20 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     handleSelectionFill() {
-        const equalSplitter = this.inputRef.value.indexOf('=');
-        if (equalSplitter > -1) {
-            const key = this.inputRef.value.substring(0, equalSplitter);
+        const splitInput = this.inputRef.value.split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+        const isNested = targetInput[0] === '(' ? '(' : '';
+        const equalSplitter = targetInput.indexOf('=');
+        let fillValue = '';
+        if (equalSplitter > 0) {
+            const key = targetInput.substring(0, equalSplitter);
             const value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
-            this.inputRef.value = `${key}=${value}`;
+            fillValue = `${key}=${value}`;
         } else {
-            this.inputRef.value = `${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
+            fillValue = `${isNested}${this.state.suggestionStrings[this.state.suggestionIndex || 0]}`;
         }
+        splitInput[splitInput.length - 1] = fillValue;
+        this.inputRef.value = splitInput.join(',');
     }
 
     // Selection chose when clicking or pressing space/tab/enter
@@ -209,7 +232,9 @@ export default class Autocomplete extends React.Component {
         this.handleSelectionFill();
         this.handleBlur();
         this.inputRef.focus();
-        if (this.inputRef.value.indexOf('=') < 0) {
+        const splitInput = this.inputRef.value.split(',');
+        const targetInput = splitInput[splitInput.length - 1];
+        if (targetInput.indexOf('=') < 0) {
             this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
@@ -253,7 +278,11 @@ export default class Autocomplete extends React.Component {
             let fullString = '';
             const nestedKeys = Object.keys(chipValue);
             nestedKeys.forEach((key) => {
-                fullString += `${key}=${chipValue[key]} `;
+                if (key === nestedKeys[nestedKeys.length - 1]) {
+                    fullString += `${key}=${chipValue[key]}`;
+                } else {
+                    fullString += `${key}=${chipValue[key]},`;
+                }
             });
             this.inputRef.value = `(${fullString.trim()})`;
         } else {
@@ -272,7 +301,6 @@ export default class Autocomplete extends React.Component {
             });
         }
     }
-
 
     // Moves highlighted suggestion down one option (toward bottom of screen)
     lowerSuggestion() {
@@ -310,8 +338,6 @@ export default class Autocomplete extends React.Component {
 
         if (INVALID_CHARS.test(value)) {
             this.inputRef.value = value.replace(INVALID_CHARS, '');
-        } else if (value.length > this.props.maxlength) {
-            this.inputRef.value = value.substr(0, this.props.maxlength);
         }
     }
 
@@ -339,7 +365,18 @@ export default class Autocomplete extends React.Component {
         this.handleBlur();
         const inputValue = this.inputRef.value;
         if (!inputValue) return;
-        const formattedValue = inputValue.indexOf('(') > -1 ? inputValue.substring(1, inputValue.length - 1) : inputValue;
+        let formattedValue = null;
+        if (inputValue.indexOf('(') > -1) {
+            if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
+                this.setState({
+                    inputError: 'Invalid K/V grouping, make sure parentheses are closed'
+                });
+                return;
+            }
+            formattedValue = inputValue.substring(1, inputValue.length - 1);
+        } else {
+            formattedValue = inputValue;
+        }
         const splitInput = formattedValue.split(',');
         if (splitInput.every(this.testForValidInputString)) { // Valid input tests
             const serviceName = null;
@@ -347,12 +384,6 @@ export default class Autocomplete extends React.Component {
             let chipValue = null;
 
             if (splitInput.length > 1) {
-                if (!/^\(.*\)$/g.test(inputValue)) { // If multiple items, test that they are enclosed in parenthesis
-                    this.setState({
-                        inputError: 'Invalid K/V grouping, make sure parenthesis are closed'
-                    });
-                    return;
-                }
                 const chipIndex = Object.keys(this.props.uiState.chips).length; // Create nested object of KV pairs
                 chipKey = `nested_${chipIndex}`;
                 chipValue = {};
@@ -376,83 +407,74 @@ export default class Autocomplete extends React.Component {
     deleteChip(chipKey) {
         const chipValue = this.props.uiState.chips[chipKey];
         if (chipValue !== undefined) {
-            if (chipKey === 'serviceName') {
-                this.setState({
-                    serviceName: null
-                });
-            }
+            const keysToSplice = chipKey.includes('nested_') ? Object.keys(chipKey) : [chipKey];
             const updatedExistingKeys = this.state.existingKeys;
-            const itemIndex = updatedExistingKeys.indexOf(chipKey);
 
-            updatedExistingKeys.splice(itemIndex, 1);
-            delete this.props.uiState.chips[chipKey];
+            keysToSplice.forEach((key) => {
+                if (key === 'serviceName') {
+                    this.setState({
+                        serviceName: null
+                    });
+                }
+                const itemIndex = updatedExistingKeys.indexOf(key);
+                updatedExistingKeys.splice(itemIndex, 1);
+            });
 
             this.setState({existingKeys: updatedExistingKeys});
+            delete this.props.uiState.chips[chipKey];
             this.props.search();
         }
     }
 
     render() {
-        const chips = Object.keys(this.props.uiState.chips).map((chip) => {
-            let chipName = '';
-            if (chip.includes('nested_')) {
-                const baseObject = this.props.uiState.chips[chip];
-                Object.keys(baseObject).forEach((key) => {
-                    chipName += `${key}=${baseObject[key]} `;
-                });
-                chipName = `(${chipName.trim()})`;
-            } else {
-                chipName = `${chip}=${this.props.uiState.chips[chip]}`;
-            }
-            return (
-                <span className="chip" key={Math.random()}>
-                <span className="chip-value">{chipName}</span>
-                <button type="button" className="chip-delete-button" onClick={() => this.deleteChip(chip)}>x</button>
-            </span>
-            );
-        });
+        const uiState = this.props.uiState;
 
-        const sIndex = this.state.suggestionIndex;
+        const Suggestions = ({handleHover, handleSelection}) => (
+            <div className="usb-suggestions__fields-wrapper pull-left">
+                <div className="usb-suggestions__field-category ">Tag {this.state.suggestedOnType}</div>
+                <ul className="usb-suggestions__fields">
+                    {this.state.suggestionStrings.map((item, i) => (
+                        <li
+                            key={item}
+                            onMouseEnter={() => handleHover(i)}
+                            onClick={() => handleSelection()}
+                            className={this.state.suggestionIndex === i ? 'usb-suggestions__field usb-suggestions__field--active' : 'usb-suggestions__field'}
+                        >
+
+                            <Autocomplete.FormattedSuggestion item={item} suggestedOnValue={this.state.suggestedOnValue}/>
+                        </li>)
+                    )}
+                </ul>
+            </div>);
+
+        const ErrorMessaging = ({inputError}) => (inputError ? <div className="usb-search__error-message">{this.state.inputError}</div> : null);
+
         return (
-            <article className="universal-search-bar search-query-bar">
-                    <div className="search-bar-pickers_fields">
-                        <div className="autosuggestion-box chips" role="form" onClick={Autocomplete.focusInput}>
-                            <div className="chips-and-input">
-                                {chips}
-                                <input
-                                    type="text"
-                                    className="usb-search-button-text-box search-bar-text-box autosuggest-input"
-                                    onKeyDown={this.handleKeyPress}
-                                    onKeyUp={this.clearInvalidChars}
-                                    onChange={this.updateFieldKv}
-                                    ref={this.setInputRef}
-                                    onFocus={this.handleFocus}
-                                    placeholder={this.props.uiState.chips.length ? '' : 'Search tags and services...'}
-                                />
-                                <ul ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'autofill-suggestions' : 'hidden'}>
-                                    {this.state.suggestionStrings.map((item, i) => (
-                                        <li
-                                            key={item}
-                                            onMouseEnter={() => this.handleHover(i)}
-                                            onClick={() => this.handleSelection()}
-                                            className={sIndex === i ? 'autofill-suggestion active-suggestion' : 'autofill-suggestion'}
-                                        >
-                                            {item}
-                                        </li>)
-                                    )}
-                                </ul>
-                            </div>
-                            <TimeWindowPicker uiState={this.props.uiState} />
-                            <button
-                                type="submit"
-                                className="btn btn-primary usb-search-button"
-                                onClick={this.handleSearch}
-                            >
-                                <span className="ti-search"/>
-                            </button>
-                            {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
-                        </div>
+            <article className="usb-wrapper">
+                <div className="usb-search" role="form" onClick={Autocomplete.focusInput}>
+                    <Chips deleteChip={this.deleteChip} uiState={uiState} />
+                    <div className="usb-searchbar">
+                        <input
+                            type="text"
+                            className="usb-searchbar__input"
+                            onKeyDown={this.handleKeyPress}
+                            onKeyUp={this.clearInvalidChars}
+                            onChange={this.updateFieldKv}
+                            ref={this.setInputRef}
+                            onFocus={this.handleFocus}
+                            placeholder={uiState.chips.length ? '' : 'Search tags and services...'}
+                        />
+                    </div>
+                    <TimeWindowPicker uiState={uiState} />
+                    <SearchSubmit handleSearch={this.handleSearch} />
                 </div>
+                <div className="usb-suggestions">
+                    <div ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'usb-suggestions__tray clearfix' : 'hidden'}>
+                        <Suggestions handleHover={this.handleHover} handleSelection={this.handleSelection}/>
+                        <Guide/>
+                    </div>
+                </div>
+                <ErrorMessaging inputError={this.state.inputError}/>
             </article>
         );
     }

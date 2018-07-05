@@ -17,63 +17,154 @@
 
 @import (reference) '../../../app';
 
-@chip-y-spacing: 15px;
-@chip-x-spacing: 5px;
-@chip-button-width: @chip-y-spacing + @chip-x-spacing * 2;
-@chip-border-radius: 5px;
-@chip-background: @brand-primary;
-@chip-color: #fff;
-@chip-min-height: 36px;
-
-.chips {
-    min-height: @chip-min-height;
-    line-height: 1;
-    font-size: 1em;
-}
-
-.autosuggest-input {
-    display: inline-block;
-    max-width: 100%;
-    width: 60%;
-    min-height: @chip-min-height;
-    margin-left: @chip-x-spacing * 2;
-    border: 0;
-    outline: none;
-    font-size: 0.9rem;
-}
-
-.chip {
-    display: block;
-    float: left;
-    margin-top: @chip-x-spacing;
-    margin-bottom: @chip-x-spacing;
-    margin-left: @chip-x-spacing;
-    margin-right: @chip-button-width;
+// search bar
+.usb-wrapper {
     position: relative;
+    margin-top: @spacing-s;
+}
 
-    .chip-value {
-        display: inline-block;
-        padding: @chip-x-spacing;
-        padding-left: @chip-y-spacing;
-        padding-right: @chip-y-spacing / 2;
-        background: @chip-background;
-        color: @chip-color;
-        font-weight: bold;
-        border-radius: @chip-border-radius 0 0 @chip-border-radius;
-    }
+.usb-search {
+    display: flex;
+    align-items: baseline;
+    background: @gray-lighter;
+    border: 1px solid @gray-mid-lighter;
+    border-radius: 4px !important;
+}
 
-    .chip-delete-button {
-        background: @chip-background;
-        color: @chip-color;
-        border: 0;
-        border-radius: 0 @chip-border-radius @chip-border-radius 0;
-        padding: @chip-x-spacing @chip-x-spacing * 2;
-        cursor: pointer;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: -@chip-button-width;
-        line-height: 0.5;
-        font-weight: bold;
+// chips
+.usb-chips {
+    padding-left: @spacing-xs;
+}
+
+.usb-chip {
+    display: inline-block;
+    margin-right: @spacing-xs;
+    font-family: @font-family-monospace;
+    font-size: @font-size-base;
+    border-radius: 4px;
+    line-height: 24px;
+    background: @brand-primary;
+    color: white;
+}
+
+.usb-chip__value {
+    padding: 0 @spacing-xs 0 @spacing-s;
+}
+
+.usb-chip__delete {
+    border: none;
+    border-radius: 4px;
+    background: @brand-primary;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+// searchbar
+.usb-searchbar {
+    flex-grow: 1;
+}
+
+.usb-searchbar__input {
+    background: @gray-lighter;
+    width: 100%;
+    padding-left: @spacing-xs !important;
+    line-height: 42px;
+    font-family: @font-family-monospace;
+    font-size: 13px !important;
+    box-shadow: none;
+    &:focus {
+        outline: none;
     }
+}
+
+.usb-timepicker {
+    position: relative;
+}
+
+.usb-timepicker__button {
+    padding: 0 @spacing-s;
+    border: none;
+    line-height: 43px;
+    box-shadow: 3px 0 3px -3px #666;
+    background: @brand-primary;
+    color: white;
+    &:focus {
+        outline: none;
+    }
+}
+
+.usb-submit__button {
+    padding: 0 @spacing-m;
+    border: none;
+    line-height: 43px;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+    background: @brand-primary;
+    color: white;
+    font-weight: bold;
+    &:focus {
+        outline: none;
+    }
+}
+
+.usb-suggestions {
+    position: relative;
+}
+
+.usb-suggestions__tray {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    border: 1px solid @gray-dark;
+    border-top: 0;
+    background-color: @gray-lighter;
+    font-size: @font-size-base;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    z-index: 2;
+
+    box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.usb-suggestions__fields-wrapper {
+    width: 35%;
+    background-color: white;
+    min-height: 250px;
+    max-height: 450px;
+    overflow-y: scroll;
+    line-height: 36px;
+}
+
+.usb-suggestions__fields {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.usb-suggestions__field-category {
+    padding-left: @spacing-s;
+    font-weight: 600;
+}
+
+.usb-suggestions__field {
+    padding-left: @spacing-l;
+    list-style-type: none;
+}
+
+.usb-suggestions__field-highlight {
+    background-color: #f9dada;
+}
+.usb-suggestions__field--active {
+    background-color: @gray-mid-lighter;
+}
+
+.usb-suggestions__helpers-wrapper {
+    width: 65%;
+    padding: @spacing-s
+}
+
+.usb-search__error-message {
+    margin-top: @spacing-s;
+    color: @brand-danger;
+    font-weight: bold;
 }
