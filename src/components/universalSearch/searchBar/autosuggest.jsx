@@ -22,6 +22,8 @@ import {autorun} from 'mobx';
 
 import TimeWindowPicker from './timeWindowPicker';
 import Chips from './chips';
+import Guide from './guide';
+import SearchSubmit from './searchSubmit';
 
 import './autosuggest.less';
 
@@ -56,6 +58,17 @@ export default class Autocomplete extends React.Component {
         const children = event.target.children;
 
         if (children.length) children[children.length - 1].focus();
+    }
+
+    static FormattedSuggestion({item, suggestedOnValue}) {
+        const startIndex = item.toLowerCase().indexOf(suggestedOnValue.toLowerCase());
+
+        return (
+            <span>
+                <span>{item.substring(0, startIndex)}</span>
+                <span className="usb-suggestions__field-highlight ">{item.substring(startIndex, startIndex + suggestedOnValue.length)}</span>
+                <span>{item.substring(startIndex + suggestedOnValue.length, item.length)}</span>
+            </span>);
     }
 
     constructor(props) {
@@ -125,9 +138,12 @@ export default class Autocomplete extends React.Component {
         const targetInput = splitInput[splitInput.length - 1];
 
         const equalSplitter = targetInput.indexOf('=');
+        let value;
+        let type;
         if (equalSplitter > 0) {
+            type = 'Values';
             const key = targetInput.substring(0, equalSplitter);
-            const value = targetInput.substring(equalSplitter + 1, targetInput.length);
+            value = targetInput.substring(equalSplitter + 1, targetInput.length);
             if (this.props.options[key]) {
                 this.props.options[key].forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
@@ -136,14 +152,18 @@ export default class Autocomplete extends React.Component {
                 });
             }
         } else {
+            type = 'Keys';
+            value = targetInput.toLowerCase();
             Object.keys(this.props.options).forEach((option) => {
-                if (option.toLowerCase().includes(targetInput.toLowerCase()) && !this.state.existingKeys.includes(option)) {
+                if (option.toLowerCase().includes(value) && !this.state.existingKeys.includes(option)) {
                     suggestionArray.push(option);
                 }
             });
         }
         this.setState({
-            suggestionStrings: suggestionArray.sort(),
+            suggestionStrings: suggestionArray,
+            suggestedOnValue: value,
+            suggestedOnType: type,
             suggestionIndex: null
         });
         document.addEventListener('mousedown', this.handleOutsideClick);
@@ -408,6 +428,27 @@ export default class Autocomplete extends React.Component {
 
     render() {
         const uiState = this.props.uiState;
+
+        const Suggestions = ({handleHover, handleSelection}) => (
+            <div className="usb-suggestions__fields-wrapper pull-left">
+                <div className="usb-suggestions__field-category ">Tag {this.state.suggestedOnType}</div>
+                <ul className="usb-suggestions__fields">
+                    {this.state.suggestionStrings.map((item, i) => (
+                        <li
+                            key={item}
+                            onMouseEnter={() => handleHover(i)}
+                            onClick={() => handleSelection()}
+                            className={this.state.suggestionIndex === i ? 'usb-suggestions__field usb-suggestions__field--active' : 'usb-suggestions__field'}
+                        >
+
+                            <Autocomplete.FormattedSuggestion item={item} suggestedOnValue={this.state.suggestedOnValue}/>
+                        </li>)
+                    )}
+                </ul>
+            </div>);
+
+        const ErrorMessaging = ({inputError}) => (inputError ? <div className="usb-search__error-message">{this.state.inputError}</div> : null);
+
         return (
             <article className="usb-wrapper">
                 <div className="usb-search" role="form" onClick={Autocomplete.focusInput}>
@@ -425,49 +466,15 @@ export default class Autocomplete extends React.Component {
                         />
                     </div>
                     <TimeWindowPicker uiState={uiState} />
-                    <div className="usb-submit">
-                        <button type="submit" className="usb-submit__button" onClick={this.handleSearch}>
-                            <span className="ti-search"/>
-                        </button>
-                    </div>
+                    <SearchSubmit handleSearch={this.handleSearch} />
                 </div>
                 <div className="usb-suggestions">
                     <div ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'usb-suggestions__tray clearfix' : 'hidden'}>
-                        <div className="usb-suggestions__fields-wrapper pull-left">
-                            <ul className="usb-suggestions__fields">
-                                {this.state.suggestionStrings.map((item, i) => (
-                                    <li
-                                        key={item}
-                                        onMouseEnter={() => this.handleHover(i)}
-                                        onClick={() => this.handleSelection()}
-                                        className={this.state.suggestionIndex === i ? 'usb-suggestions__field usb-suggestions__field--active' : 'usb-suggestions__field'}
-                                    >
-                                        {item}
-                                    </li>)
-                                )}
-                            </ul>
-                        </div>
-                        <div className="usb-suggestions__helpers-wrapper pull-left">
-                            <p>
-                                <b>Guide</b>
-                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit</div>
-                                <div>Examples</div>
-                                <ul>
-                                    <li><code>serviceName=test-service</code></li>
-                                    <li><code>testid=1 (serviceName=test-service error=true)</code></li>
-                                </ul>
-                            </p>
-                            <p>
-                                <b>History</b>
-                                <ul>
-                                    <li><code>serviceName=test-service</code></li>
-                                    <li><code>testid=1 (serviceName=test-service error=true)</code></li>
-                                </ul>
-                            </p>
-                        </div>
+                        <Suggestions handleHover={this.handleHover} handleSelection={this.handleSelection}/>
+                        <Guide/>
                     </div>
                 </div>
-                {this.state.inputError ? <div style={{color: 'red', fontWeight: 'bold'}}>{this.state.inputError}</div> : null}
+                <ErrorMessaging inputError={this.state.inputError}/>
             </article>
         );
     }

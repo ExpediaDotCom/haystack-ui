@@ -27,8 +27,8 @@
     display: flex;
     align-items: baseline;
     background: @gray-lighter;
-    border-top-left-radius: 4px !important;
-    border-bottom-left-radius: 4px !important;
+    border: 1px solid @gray-mid-lighter;
+    border-radius: 4px !important;
 }
 
 // chips
@@ -84,7 +84,7 @@
 .usb-timepicker__button {
     padding: 0 @spacing-s;
     border: none;
-    line-height: 42px;
+    line-height: 43px;
     box-shadow: 3px 0 3px -3px #666;
     background: @brand-primary;
     color: white;
@@ -96,7 +96,7 @@
 .usb-submit__button {
     padding: 0 @spacing-m;
     border: none;
-    line-height: 42px;
+    line-height: 43px;
     border-top-right-radius: 4px !important;
     border-bottom-right-radius: 4px !important;
     background: @brand-primary;
@@ -124,16 +124,15 @@
     z-index: 2;
 
     box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
-    font-family: @font-family-monospace;
 }
 
 .usb-suggestions__fields-wrapper {
-    width: 30%;
+    width: 35%;
     background-color: white;
     min-height: 250px;
-    max-height: 350px;
+    max-height: 450px;
     overflow-y: scroll;
-    line-height: 42px;
+    line-height: 36px;
 }
 
 .usb-suggestions__fields {
@@ -142,16 +141,30 @@
     cursor: pointer;
 }
 
+.usb-suggestions__field-category {
+    padding-left: @spacing-s;
+    font-weight: 600;
+}
+
 .usb-suggestions__field {
-    padding-left: @padding-base-horizontal;
+    padding-left: @spacing-l;
     list-style-type: none;
 }
 
+.usb-suggestions__field-highlight {
+    background-color: #f9dada;
+}
 .usb-suggestions__field--active {
     background-color: @gray-mid-lighter;
 }
 
 .usb-suggestions__helpers-wrapper {
-    width: 70%;
+    width: 65%;
     padding: @spacing-s
+}
+
+.usb-search__error-message {
+    margin-top: @spacing-s;
+    color: @brand-danger;
+    font-weight: bold;
 }
