@@ -21,9 +21,11 @@ import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
 import AlertsView from '../../alerts/alertsView';
+import ServiceGraphContainer from './serviceGraphContainer';
 import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
+import serviceGraphState from './tabStores/serviceGraphStateStore';
 
 export default class Tabs extends React.Component {
     static propTypes = {
@@ -51,6 +53,12 @@ export default class Tabs extends React.Component {
             displayName: 'Alerts',
             icon: 'ti-bell',
             store: alertsTabState
+        },
+        {
+            tabId: 'serviceGraph',
+            displayName: 'Service Graph',
+            icon: 'ti-vector',
+            store: serviceGraphState
         }
     ];
 
@@ -84,6 +92,8 @@ export default class Tabs extends React.Component {
                 return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName} isUniversalSearch/>;
             case 'alerts':
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset="6h" isUniversalSearch/>;
+            case 'serviceGraph':
+                return <ServiceGraphContainer store={store} history={history}/>;
             default:
                 return null;
         }
@@ -91,8 +101,9 @@ export default class Tabs extends React.Component {
 
     render() {
         const { search, history, location, handleTabSelection } = this.props;
-        const tabId = search.tabId || Tabs.tabs[0].tabId; // pick traces as default
-        const noTabAvailable = !Tabs.tabs.some(t => t.store.isAvailable);
+        const availableTabs = Tabs.tabs.filter(t => t.store.isAvailable);
+        const tabId = search.tabId || availableTabs[0].tabId; // pick traces as default
+        const noTabAvailable = !availableTabs.length;
 
         // tab selectors for navigation between tabs
         const TabSelector = tab => (tab.store.isAvailable ?

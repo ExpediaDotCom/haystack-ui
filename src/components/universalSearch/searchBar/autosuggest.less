@@ -129,9 +129,10 @@
 .usb-suggestions__fields-wrapper {
     width: 35%;
     background-color: white;
-    min-height: 250px;
+    min-height: 380px;
     max-height: 450px;
     overflow-y: scroll;
+    font-family: @font-family-monospace;
     line-height: 36px;
 }
 
@@ -154,13 +155,23 @@
 .usb-suggestions__field-highlight {
     background-color: #f9dada;
 }
+
 .usb-suggestions__field--active {
     background-color: @gray-mid-lighter;
 }
 
-.usb-suggestions__helpers-wrapper {
+.usb-suggestions__guide-wrapper {
     width: 65%;
     padding: @spacing-s
+}
+
+.usb-suggestions__guide-highlight {
+    background-color: white;
+    padding: 0 @spacing-xs;
+}
+
+.usb-suggestions__guide-tab {
+    padding: 0 @spacing-xs;
 }
 
 .usb-search__error-message {
