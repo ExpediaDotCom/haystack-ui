@@ -13,6 +13,7 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+import {createFilterExpression} from '../expressionTreeBuilder';
 
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
@@ -47,7 +48,12 @@ function roundDownToGranularity(timeString, granularityString) {
 
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TraceCountsRequest();
-    request.setFieldsList(createFieldsList(query));
+
+    if (query.useExpressionTree) {
+        request.setFilterexpression(createFilterExpression(query));
+    } else {
+        request.setFieldsList(createFieldsList(query));
+    }
     request.setStarttime(roundDownToGranularity(query.startTime, query.granularity));
     request.setEndtime(roundUpToGranularity(query.endTime, query.granularity));
     request.setInterval(parseInt(query.granularity, 10) || DEFAULT_INTERVAL_LIMIT);
