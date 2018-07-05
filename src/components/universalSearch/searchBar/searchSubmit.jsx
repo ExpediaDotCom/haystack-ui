@@ -15,11 +15,18 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default ({handleSearch}) => (
+const Submit = ({handleSearch}) => (
     <div className="usb-submit">
         <button type="submit" className="usb-submit__button" onClick={handleSearch}>
             <span className="ti-search"/>
         </button>
     </div>
 );
+
+Submit.propTypes = {
+    handleSearch: PropTypes.func.isRequired
+};
+
+export default Submit;
