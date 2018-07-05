@@ -17,7 +17,7 @@
 const requestBuilder = {};
 const messages = require('../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters'];
+const reservedField = ['startTime', 'endTime', 'limit', 'useExpressionTree', 'spanLevelFilters', 'granularity'];
 
 function createSpanLevelExpression(spanLevelFilters) {
     return spanLevelFilters.map((filterJson) => {

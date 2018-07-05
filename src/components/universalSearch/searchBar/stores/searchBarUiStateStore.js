@@ -37,7 +37,20 @@ export class SearchBarUiStateStore {
 
     getCurrentSearch() {
         // construct current search object using observables
-        return this.chips;
+        const search = {...this.chips};
+
+        if (this.timeWindow.startTime && this.timeWindow.endTime) {
+            search.time = {
+                from: this.timeWindow.startTime,
+                to: this.timeWindow.endTime
+            };
+        } else if (this.timeWindow.timePreset) {
+            search.time = {
+                preset: this.timeWindow.timePreset
+            };
+        }
+
+        return search;
     }
 
     @action setServiceName(serviceName) {
