@@ -23,6 +23,7 @@ import {autorun} from 'mobx';
 import TimeWindowPicker from './timeWindowPicker';
 import Chips from './chips';
 import Guide from './guide';
+import Suggestions from './suggestions';
 import SearchSubmit from './searchSubmit';
 
 import './autosuggest.less';
@@ -58,17 +59,6 @@ export default class Autocomplete extends React.Component {
         const children = event.target.children;
 
         if (children.length) children[children.length - 1].focus();
-    }
-
-    static FormattedSuggestion({item, suggestedOnValue}) {
-        const startIndex = item.toLowerCase().indexOf(suggestedOnValue.toLowerCase());
-
-        return (
-            <span>
-                <span>{item.substring(0, startIndex)}</span>
-                <span className="usb-suggestions__field-highlight ">{item.substring(startIndex, startIndex + suggestedOnValue.length)}</span>
-                <span>{item.substring(startIndex + suggestedOnValue.length, item.length)}</span>
-            </span>);
     }
 
     constructor(props) {
@@ -429,24 +419,6 @@ export default class Autocomplete extends React.Component {
     render() {
         const uiState = this.props.uiState;
 
-        const Suggestions = ({handleHover, handleSelection}) => (
-            <div className="usb-suggestions__fields-wrapper pull-left">
-                <div className="usb-suggestions__field-category ">Tag {this.state.suggestedOnType}</div>
-                <ul className="usb-suggestions__fields">
-                    {this.state.suggestionStrings.map((item, i) => (
-                        <li
-                            key={item}
-                            onMouseEnter={() => handleHover(i)}
-                            onClick={() => handleSelection()}
-                            className={this.state.suggestionIndex === i ? 'usb-suggestions__field usb-suggestions__field--active' : 'usb-suggestions__field'}
-                        >
-
-                            <Autocomplete.FormattedSuggestion item={item} suggestedOnValue={this.state.suggestedOnValue}/>
-                        </li>)
-                    )}
-                </ul>
-            </div>);
-
         const ErrorMessaging = ({inputError}) => (inputError ? <div className="usb-search__error-message">{this.state.inputError}</div> : null);
 
         return (
@@ -470,7 +442,14 @@ export default class Autocomplete extends React.Component {
                 </div>
                 <div className="usb-suggestions">
                     <div ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'usb-suggestions__tray clearfix' : 'hidden'}>
-                        <Suggestions handleHover={this.handleHover} handleSelection={this.handleSelection}/>
+                        <Suggestions
+                            handleHover={this.handleHover}
+                            handleSelection={this.handleSelection}
+                            suggestionIndex={this.state.suggestionIndex}
+                            suggestionStrings={this.state.suggestionStrings}
+                            suggestedOnType={this.state.suggestedOnType}
+                            suggestedOnValue={this.state.suggestedOnValue}
+                        />
                         <Guide/>
                     </div>
                 </div>
