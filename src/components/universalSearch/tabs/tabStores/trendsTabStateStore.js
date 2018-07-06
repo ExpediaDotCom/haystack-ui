@@ -24,9 +24,9 @@ function createWindow(search) {
 
     let activeWindow;
     if (isCustomTimeRange) {
-        activeWindow = timeWindow.toCustomTimeRange(from, until);
+        activeWindow = timeWindow.toCustomTimeRange(parseInt(from, 10), parseInt(until, 10));
     } else {
-        activeWindow = timeWindow.findMatchingPresetByShortName(search.preset) || timeWindow.defaultPreset;
+        activeWindow = timeWindow.findMatchingPresetByShortName(search.time.preset) || timeWindow.defaultPreset;
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
         activeWindow.from = activeWindowTimeRange.from;
         activeWindow.until = activeWindowTimeRange.until;
