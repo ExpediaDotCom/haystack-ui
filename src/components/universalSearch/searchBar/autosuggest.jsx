@@ -18,7 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import {autorun} from 'mobx';
+import {when} from 'mobx';
 
 import TimeWindowPicker from './timeWindowPicker';
 import Chips from './chips';
@@ -68,8 +68,7 @@ export default class Autocomplete extends React.Component {
             suggestionStrings: [],
             suggestionIndex: null,
             existingKeys: [],
-            inputError: false,
-            serviceName: null
+            inputError: false
         };
 
         if (!this.props.uiState.timeWindow) {
@@ -103,14 +102,18 @@ export default class Autocomplete extends React.Component {
     }
 
     componentDidMount() {
-        autorun(() => {
-            if (this.props.serviceStore.services) {
+        when(() => this.props.serviceStore.services.length,
+            () => {
                 this.props.options.serviceName = this.props.serviceStore.services;
-            }
-            if (this.props.operationStore.operations) {
+                delete this.props.options.operationName;
+            });
+
+        const serviceName = this.props.uiState.chips.serviceName;
+        if (serviceName) {
+            this.props.operationStore.fetchOperations(serviceName, () => {
                 this.props.options.operationName = this.props.operationStore.operations;
-            }
-        });
+            });
+        }
     }
 
     setWrapperRef(node) {
@@ -369,7 +372,6 @@ export default class Autocomplete extends React.Component {
         }
         const splitInput = formattedValue.split(',');
         if (splitInput.every(this.testForValidInputString)) { // Valid input tests
-            const serviceName = null;
             let chipKey = null;
             let chipValue = null;
 
@@ -387,8 +389,12 @@ export default class Autocomplete extends React.Component {
                 chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length);
             }
             this.props.uiState.chips[chipKey] = chipValue;
-
-            this.setState({inputError: false, serviceName});
+            if (chipKey.includes('serviceName')) {
+                this.props.operationStore.fetchOperations(chipValue, () => {
+                    this.props.options.operationName = this.props.operationStore.operations;
+                });
+            }
+            this.setState({inputError: false});
             this.inputRef.value = '';
             this.props.search();
         }
@@ -405,6 +411,7 @@ export default class Autocomplete extends React.Component {
                     this.setState({
                         serviceName: null
                     });
+                    delete this.props.options.operationName;
                 }
                 const itemIndex = updatedExistingKeys.indexOf(key);
                 updatedExistingKeys.splice(itemIndex, 1);
