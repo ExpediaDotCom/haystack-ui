@@ -19,6 +19,9 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import Typist from 'react-typist';
+import {Link} from 'react-router-dom';
+
 import './homeSearchBox.less';
 
 @observer
@@ -47,14 +50,32 @@ export default class HomeSearchBox extends Component {
         return (
             <section className="container">
                 <div className="jumbotron">
-                    <h2 className="home__header">Select a service to start </h2>
-                    <div className="col-md-4 col-md-offset-4" >
-                        <Select
-                            name="service-list"
-                            options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
-                            onChange={this.handleChange}
-                            placeholder="Select..."
-                        />
+                    <div className="clearfix universal-search__try-message">
+                        <div className="pull-left">
+                            <Typist
+                                startDelay={500}
+                                className="pull-right typist-position"
+                                stdTypingDelay={10}
+                                avgTypingDelay={10}
+                                cursor={{hideWhenDone: true, element: '_', blink: true}}
+                            >
+                                <span>Try new way of searching in Haystack!</span>
+                            </Typist>
+                        </div>
+                        <div className="pull-right">
+                            <Link className="pull-right btn btn-primary btn-md" to="/usb">GOTO UNIVERSAL SEARCH</Link>
+                        </div>
+                    </div>
+                    <div className="service-selector">
+                        <h2 className="home__header">Select a service to start </h2>
+                        <div className="col-md-4 col-md-offset-4" >
+                            <Select
+                                name="service-list"
+                                options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
+                                onChange={this.handleChange}
+                                placeholder="Select..."
+                            />
+                        </div>
                     </div>
                 </div>
             </section>
