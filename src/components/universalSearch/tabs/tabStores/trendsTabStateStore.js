@@ -16,6 +16,9 @@
 import operationStore from '../../../trends/stores/operationStore';
 import timeWindow from '../../../../utils/timeWindow';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('trends');
+
 // TODO remove once we are out of older states
 function createWindow(search) {
     const from = search.time.from;
@@ -48,7 +51,7 @@ export class TrendsTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, ...kv} =  search;
         const keys = Object.keys(kv);
-        this.isAvailable = keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
+        this.isAvailable = enabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
     fetch() {

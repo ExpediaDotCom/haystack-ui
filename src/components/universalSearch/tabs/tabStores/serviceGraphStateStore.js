@@ -17,6 +17,9 @@
 
 import store from '../../../serviceGraph/stores/serviceGraphStore';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('serviceGraph');
+
 export class ServiceGraphStateStore {
     search = null;
     isAvailable = false;
@@ -30,7 +33,7 @@ export class ServiceGraphStateStore {
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, ...kv} =  search;
         const keys = Object.keys(kv);
-        this.isAvailable = !keys.length;
+        this.isAvailable = enabled && !keys.length;
     }
 
     fetch() {
