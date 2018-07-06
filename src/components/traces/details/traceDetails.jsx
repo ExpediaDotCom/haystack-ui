@@ -45,6 +45,8 @@ export default class TraceDetails extends React.Component {
                 return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
             case 3:
                 return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
+            case 4:
+                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
             default:
                 return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
         }
@@ -123,6 +125,9 @@ export default class TraceDetails extends React.Component {
                             </li>
                             <li className={this.state.tabSelected === 3 ? 'active' : ''}>
                                 <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
+                            </li>
+                            <li className={this.state.tabSelected === 4 ? 'active' : ''}>
+                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
                             </li>
                         </ul>
                     </div>
