@@ -27,6 +27,11 @@ timeWindow.presets = [
         value: 5 * 60 * 1000
     },
     {
+        shortName: '15m',
+        longName: '15 minutes',
+        value: 15 * 60 * 1000
+    },
+    {
         shortName: '1h',
         longName: '1 hour',
         value: 60 * 60 * 1000
@@ -45,6 +50,11 @@ timeWindow.presets = [
         shortName: '24h',
         longName: '24 hours',
         value: 24 * 60 * 60 * 1000
+    },
+    {
+        shortName: '3d',
+        longName: '3 days',
+        value: 3 * 24 * 60 * 60 * 1000
     },
     {
         shortName: '7d',

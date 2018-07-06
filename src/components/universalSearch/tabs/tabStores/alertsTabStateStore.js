@@ -16,6 +16,9 @@
 
 import alertsStore from '../../../alerts/stores/serviceAlertsStore';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const isAlertsEnabled = subsystems.includes('alerts');
+
 export class AlertsTabStateStore {
     search = null;
     isAvailable = false;
@@ -29,7 +32,7 @@ export class AlertsTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, ...kv} =  search;
         const keys = Object.keys(kv);
-        this.isAvailable = keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
+        this.isAvailable = isAlertsEnabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
     fetch() {

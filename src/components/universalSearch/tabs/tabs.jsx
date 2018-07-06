@@ -102,7 +102,7 @@ export default class Tabs extends React.Component {
     render() {
         const { search, history, location, handleTabSelection } = this.props;
         const availableTabs = Tabs.tabs.filter(t => t.store.isAvailable);
-        const tabId = search.tabId || availableTabs[0].tabId; // pick traces as default
+        const tabId = search.tabId || (availableTabs.length && availableTabs[0].tabId); // pick traces as default
         const noTabAvailable = !availableTabs.length;
 
         // tab selectors for navigation between tabs

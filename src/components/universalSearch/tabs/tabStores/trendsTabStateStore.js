@@ -16,6 +16,9 @@
 import operationStore from '../../../trends/stores/operationStore';
 import timeWindow from '../../../../utils/timeWindow';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('trends');
+
 // TODO remove once we are out of older states
 function createWindow(search) {
     const from = search.time.from;
@@ -24,9 +27,9 @@ function createWindow(search) {
 
     let activeWindow;
     if (isCustomTimeRange) {
-        activeWindow = timeWindow.toCustomTimeRange(from, until);
+        activeWindow = timeWindow.toCustomTimeRange(parseInt(from, 10), parseInt(until, 10));
     } else {
-        activeWindow = timeWindow.findMatchingPresetByShortName(search.preset) || timeWindow.defaultPreset;
+        activeWindow = timeWindow.findMatchingPresetByShortName(search.time.preset) || timeWindow.defaultPreset;
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
         activeWindow.from = activeWindowTimeRange.from;
         activeWindow.until = activeWindowTimeRange.until;
@@ -48,7 +51,7 @@ export class TrendsTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, ...kv} =  search;
         const keys = Object.keys(kv);
-        this.isAvailable = keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
+        this.isAvailable = enabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
     fetch() {
