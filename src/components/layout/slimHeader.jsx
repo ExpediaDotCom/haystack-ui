@@ -20,9 +20,9 @@ import React from 'react';
 export default () => (
     <header className="universal-search-header">
         <div className="container">
-            <a className="navbar-brand" href="/usb">
-                <img src="/images/logo-white.png" className="logo" alt="Logo"/>
-                <span className="usb-logo">Haystack <sub className="sub-smaller"> [beta]</sub></span>
+            <a className="navbar-brand universal-search-header__container" href="/">
+                <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
+                <span className="usb-logo universal-search-header__title">Haystack <sub className="sub-smaller"> [beta]</sub></span>
             </a>
         </div>
     </header>
