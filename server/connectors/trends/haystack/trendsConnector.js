@@ -228,13 +228,12 @@ function getServicePerfStatsResults(timeWindow, from, until) {
         fetchTrendValues(SuccessTarget, from, until),
         fetchTrendValues(FailureTarget, from, until),
         fetchTrendValues(tp99Target, from, until)
-    ])
-        .then(values => extractServicePerfStats({
-                successValues: values[1],
-                failureValues: values[2],
-                tp99Values: values[3]
-            })
-        );
+    ]).then(values => extractServicePerfStats({
+            successValues: values[0],
+            failureValues: values[1],
+            tp99Values: values[2]
+        })
+    );
 }
 
 function getServiceSummaryResults(serviceName, timeWindow, from, until) {
