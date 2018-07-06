@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /*
  * Copyright 2018 Expedia, Inc.
  *
