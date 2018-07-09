@@ -42,16 +42,25 @@
     font-family: @font-family-monospace;
     font-size: @font-size-base;
     border-radius: 4px;
-    line-height: 24px;
+    line-height: 30px;
     background: @brand-primary;
     color: white;
 }
 
+.usb-chip__key {
+    display: inline-block;
+    padding: 0 @spacing-xs 0 @spacing-xs;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
 .usb-chip__value {
-    padding: 0 @spacing-xs 0 @spacing-s;
+    display: inline-block;
+    padding: 0 @spacing-xs 0 @spacing-xs;
 }
 
 .usb-chip__delete {
+    padding-top: 0;
+    padding-bottom: 0;
     border: none;
     border-radius: 4px;
     background: @brand-primary;

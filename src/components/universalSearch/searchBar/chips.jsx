@@ -48,12 +48,26 @@ export default class Chips extends React.Component {
                     chipName += `${key}=${baseObject[key]} `;
                 });
                 chipName = `(${chipName.trim()})`;
-            } else {
-                chipName = `${chip}=${this.props.uiState.chips[chip]}`;
+
+                return (
+                    <div className="usb-chip" key={Math.random()}>
+                        {
+                            Object.keys(baseObject).map(key => (
+                                <span>
+                                    <span className="usb-chip__key">{key}</span>
+                                    <span className="usb-chip__value">{baseObject[key]}</span>
+                                </span>
+                            ))
+                        }
+                        <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
+                    </div>
+                );
             }
+
             return (
                 <div className="usb-chip" key={Math.random()}>
-                    <span className="usb-chip__value">{chipName}</span>
+                    <span className="usb-chip__key">{chip}</span>
+                    <span className="usb-chip__value">{this.props.uiState.chips[chip]}</span>
                     <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
                 </div>
             );
