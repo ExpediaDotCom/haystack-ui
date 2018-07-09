@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 export default class Suggestions extends React.Component {
     static propTypes = {
         suggestionStrings: PropTypes.array.isRequired,
-        suggestedOnType: PropTypes.string.isRequired,
+        suggestedOnType: PropTypes.string,
         suggestedOnValue: PropTypes.string,
         suggestionIndex: PropTypes.number,
         handleHover: PropTypes.func.isRequired,
