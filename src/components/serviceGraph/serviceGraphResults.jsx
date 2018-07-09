@@ -72,11 +72,6 @@ export default class ServiceGraphResults extends React.Component {
                     <tr>
                         <td class="vizceral-notice__title">Error :</td>
                         <td class="vizceral-${level}"><b>${Number(errorPercent).toFixed(2)}%</b></td>
-                        <td class="vizceral-notice__traces-link">
-                            <a href="${linkBuilder.createTracesLink({serviceName: node})}?error=true" target="_blank">
-                                <span class="ti-new-window"></span> error traces
-                            </a>
-                        </td>
                     </tr>
                 </table>`;
     }

@@ -22,7 +22,7 @@ import { ErrorHandlingStore } from './errorHandlingStore';
 export class OperationStore extends ErrorHandlingStore {
     @observable operations = [];
 
-    @action fetchOperations(serviceName) {
+    @action fetchOperations(serviceName, callback) {
         this.operations = [];
         axios({
             method: 'get',
@@ -30,6 +30,7 @@ export class OperationStore extends ErrorHandlingStore {
             })
             .then((response) => {
                 this.operations = ['all', ...response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))];
+                callback();
             })
             .catch((result) => {
                 OperationStore.handleError(result);
