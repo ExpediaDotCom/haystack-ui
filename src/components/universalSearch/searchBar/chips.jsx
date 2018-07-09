@@ -41,13 +41,8 @@ export default class Chips extends React.Component {
 
     render() {
         const chips = Object.keys(this.props.uiState.chips).map((chip) => {
-            let chipName = '';
             if (chip.includes('nested_')) {
                 const baseObject = this.props.uiState.chips[chip];
-                Object.keys(baseObject).forEach((key) => {
-                    chipName += `${key}=${baseObject[key]} `;
-                });
-                chipName = `(${chipName.trim()})`;
 
                 return (
                     <div className="usb-chip" key={Math.random()}>
