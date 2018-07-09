@@ -24,17 +24,23 @@ class Graph {
     }
 
     addEdge(edge) {
-        if (!this.nodes.includes(edge.source.name)) {
-            this.nodes.push(edge.source.name);
+        if (!this.allNodes().includes(edge.source.name)) {
+            this.nodes.push({
+                name: edge.source.name,
+                tags: edge.source.tags
+            });
         }
-        if (!this.nodes.includes(edge.destination)) {
-            this.nodes.push(edge.destination.name);
+        if (!this.allNodes().includes(edge.destination.name)) {
+            this.nodes.push({
+                name: edge.destination.name,
+                tags: edge.destination.tags
+            });
         }
         this.edges.push(edge);
     }
 
     allNodes() {
-        return this.nodes;
+        return _.map(this.nodes, node => node.name);
     }
 
     allEdges() {
@@ -68,13 +74,17 @@ class Graph {
         }
     }
 
+    tagsForNode(name) {
+        return _.first((_.filter(this.nodes, node => node.name === name))).tags;
+    }
+
     errorRateForNode(name) {
         if (!this.errorCountsByVertex.get(name)) {
             this.buildErrorRateMapForNode(name);
         }
         const stats = this.errorCountsByVertex.get(name);
         if (stats.count === 0) {
-            return 0;
+            return '0';
         }
         return ((stats.errorCount * 100) / stats.count).toFixed(2);
     }
@@ -82,7 +92,7 @@ class Graph {
     errorRateForConnection(source, dest) {
         const stats = _.first(_.filter(this.edges, edge => edge.source.name === source && edge.destination.name === dest)).stats;
         if (stats.count === 0) {
-            return 0;
+            return '0';
         }
         return ((stats.errorCount * 100) / stats.count).toFixed(2);
     }

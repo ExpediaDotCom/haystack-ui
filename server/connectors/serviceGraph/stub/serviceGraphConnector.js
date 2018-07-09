@@ -24,7 +24,10 @@ const serviceGraph = {
     edges: [
         {
             source: {
-                name: 'stark-service'
+                name: 'stark-service',
+                tags: {
+                    DEPLOYMENT: 'aws'
+                }
             },
             destination: {
                 name: 'baratheon-service'
