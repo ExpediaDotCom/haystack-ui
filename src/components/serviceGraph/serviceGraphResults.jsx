@@ -20,34 +20,16 @@ import _ from 'lodash';
 import Vizceral from 'vizceral-react';
 
 import config from './vizceralConfig';
-import linkBuilder from '../../utils/linkBuilder';
+import NodeDetails from './nodeDetails';
+import Graph from './util/graph';
+import ConnectionDetails from './connectionDetails';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
         serviceGraph: PropTypes.object.isRequired
     };
-    static getErrorRateMap(rawEdges) {
-        const errorCountsByVertex = new Map();
-        _.forEach(rawEdges, (edge) => {
-            if (errorCountsByVertex.get(edge.destination.name)) {
-                const totalCnt = errorCountsByVertex.get(edge.destination.name).count + edge.stats.count;
-                const errorCnt = errorCountsByVertex.get(edge.destination.name).errorCount + edge.stats.errorCount;
-                errorCountsByVertex.set(edge.destination.name, { count: totalCnt, errorCount: errorCnt});
-            } else {
-                errorCountsByVertex.set(edge.destination.name, { count: edge.stats.count, errorCount: edge.stats.errorCount });
-            }
-        });
-        // Fill in zero for vertex that are only in source but not in destination of a edge
-        _.forEach(rawEdges, (edge) => {
-           if (!errorCountsByVertex.get(edge.source.name)) {
-               errorCountsByVertex.set(edge.source.name, {count: 0, errorCount: 0});
-           }
-        });
-        return errorCountsByVertex;
-    }
 
-    static getNodeDisplayDetails(node, errorCountMap) {
-        const errorRate = (errorCountMap.get(node).errorCount * 100) / (errorCountMap.get(node).count);
+    static getNodeDisplayDetails(errorRate) {
         const ERROR_LEVEL = 10;
         const WARN_LEVEL = 1;
         if (errorRate > ERROR_LEVEL) {
@@ -58,16 +40,11 @@ export default class ServiceGraphResults extends React.Component {
         return {level: 'normal', severity: 0, errorRate};
     }
 
-    static createNoticeContent(node, requestRate, errorPercent, level) {
+    static createNoticeContent(requestRate, errorPercent, level) {
         return `<table>
                     <tr>
                         <td class="vizceral-notice__title">Incoming rq :</td>
                         <td><b>${Number(requestRate).toFixed(2)}/sec</b></td>
-                        <td class="vizceral-notice__traces-link">
-                            <a href="${linkBuilder.createTracesLink({serviceName: node})}" target="_blank">
-                                <span class="ti-new-window"></span> all traces
-                            </a>
-                        </td>
                     </tr>
                     <tr>
                         <td class="vizceral-notice__title">Error :</td>
@@ -76,36 +53,27 @@ export default class ServiceGraphResults extends React.Component {
                 </table>`;
     }
 
-    static createNodes(rawEdges) {
-        const allNodes = _.flatten(rawEdges.map((edge) => {
-            const fromServiceName = edge.source.name;
-            const toServiceName = edge.destination.name;
-            return [fromServiceName, toServiceName];
-        }));
-
-        const uniqueNodes = _.uniqWith(allNodes, _.isEqual);
-        const errorCountsByVertex = this.getErrorRateMap(rawEdges);
-        return uniqueNodes.map((node) => {
-            const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(node, errorCountsByVertex);
-            const nodeCount = errorCountsByVertex.get(node).count;
+    static createNodes(graph) {
+        return graph.allNodes().map((node) => {
+            const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(graph.errorRateForNode(node));
             return {
                 name: node,
                 class: nodeDisplayDetails.level,
                 notices: [
-                {
-                    title: ServiceGraphResults.createNoticeContent(node, nodeCount, nodeDisplayDetails.errorRate || 0, nodeDisplayDetails.level),
-                    severity: nodeDisplayDetails.severity
-                }
-            ],
+                    {
+                        title: ServiceGraphResults.createNoticeContent(graph.requestRateForNode(node), graph.errorRateForNode(node), nodeDisplayDetails.level),
+                        severity: nodeDisplayDetails.severity
+                    }
+                ],
                 renderer: 'focusedChild'
             };
         });
     }
 
-    static createEdges(rawEdges) {
+    static createConnections(graph) {
         const edges = [];
 
-        _.forEach(rawEdges, (rawEdge) => {
+        _.forEach(graph.allEdges(), (rawEdge) => {
             edges.push({
                 source: rawEdge.source.name,
                 target: rawEdge.destination.name,
@@ -118,13 +86,48 @@ export default class ServiceGraphResults extends React.Component {
         return edges;
     }
 
+    static buildGraph = (rawEdges) => {
+        const graph = new Graph();
+        _.forEach(rawEdges, (edge) => {
+            graph.addEdge(edge);
+        });
+        return graph;
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            nodeDetails: undefined,
+            connDetails: undefined
+        };
+    }
+
+    onNodeDetailsClose = () => {
+        this.setState({nodeDetails: undefined});
+    };
+
+    onConnectionDetailsClose = () => {
+        this.setState({connDetails: undefined});
+    };
+    objectHighlighted = (highlightedObject) => {
+        if (typeof highlightedObject === 'undefined') {
+            return;
+        }
+        if (highlightedObject.type === 'node') {
+            this.setState({nodeDetails: highlightedObject.getName()});
+        } else {
+            this.setState({connDetails: highlightedObject.getName()});
+        }
+    };
+
     render() {
         const serviceGraph = this.props.serviceGraph;
         const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
-        const nodes = ServiceGraphResults.createNodes(serviceGraph);
-        const edges = ServiceGraphResults.createEdges(serviceGraph);
-        config.nodes = nodes;
-        config.connections = edges;
+        const graph = ServiceGraphResults.buildGraph(serviceGraph);
+        const nodeDetails = this.state.nodeDetails;
+        const connDetails = this.state.connDetails;
+        config.nodes = ServiceGraphResults.createNodes(graph);
+        config.connections = ServiceGraphResults.createConnections(graph);
         config.maxVolume = maxCountEdge * 20;
 
         const blue = '#479fd6';
@@ -169,7 +172,33 @@ export default class ServiceGraphResults extends React.Component {
 
         return (
             <article className="serviceGraph__panel">
-                <Vizceral traffic={config} view={['haystack']} styles={style} definitions={definitions} allowDraggingOfNodes targetFramerate={60} />
+                <Vizceral
+                    traffic={config}
+                    view={['haystack']}
+                    styles={style}
+                    definitions={definitions}
+                    allowDraggingOfNodes
+                    targetFramerate={60}
+                    objectHighlighted={this.objectHighlighted}
+                />
+                {
+                    !!nodeDetails &&
+                    <NodeDetails
+                        requestRate={graph.requestRateForNode(nodeDetails)}
+                        errorPercent={graph.errorRateForNode(nodeDetails)}
+                        onClose={this.onNodeDetailsClose}
+                        incomingEdges={graph.incomingTrafficForNode(nodeDetails)}
+                        outgoingEdges={graph.outgoingTrafficForNode(nodeDetails)}
+                    />
+                }
+                {
+                    !!connDetails &&
+                    <ConnectionDetails
+                        requestRate={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        errorPercent={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        onClose={this.onConnectionDetailsClose}
+                    />
+                }
             </article>
         );
     }

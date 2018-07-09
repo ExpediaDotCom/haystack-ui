@@ -18,7 +18,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-
+import _ from 'lodash';
 import Loading from '../common/loading';
 import ServiceGraphResults from './serviceGraphResults';
 import Error from '../common/error';
@@ -29,6 +29,29 @@ export default class ServiceGraphContainer extends React.Component {
         store: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
     };
+
+    /**
+     *
+     * @param graph
+     * @returns {*}
+     * Find the root node for the graph tab. For this we need to find all the nodes with no incoming edges. From that
+     * list we will pick the node with the largest outgoing traffic.ser
+     */
+    static findRootNode(graph) {
+        const dest = _.map(graph, edge => edge.destination.name);
+        const rootNodes = [];
+        _.forEach(graph, (edge) => {
+            if (!_.includes(dest, edge.source.name)) {
+                rootNodes.push(edge.source.name);
+            }
+        });
+        const uniqRoots = _.uniq(rootNodes);
+        const sortedRoots = _.sortBy(uniqRoots, (node) => {
+            const outgoingEdges = _.filter(graph, edge => edge.source.name === node);
+            return _.reduce(outgoingEdges, (result, val) => val.stats.count + result, 0);
+        });
+        return _.last(sortedRoots);
+    }
 
     constructor(props) {
         super(props);
@@ -45,10 +68,10 @@ export default class ServiceGraphContainer extends React.Component {
         this.setState({tabSelected: tabIndex});
     }
 
-    render() {
+render() {
         return (
             <section className="container">
-                <div className="clearfix">
+                <div className="clearfix" id="service-graph">
                     <div className="serviceGraph__header-title pull-left">
                         <span>Service Graph </span>
                         <span className="h6">(will show list of partial graphs if missing data from services)</span>
@@ -59,7 +82,7 @@ export default class ServiceGraphContainer extends React.Component {
                                 this.props.store.graphs.map(
                                     (graph, index) => (
                                         <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''}>
-                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{graph[0].source.name}</a>
+                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{ServiceGraphContainer.findRootNode(graph)}</a>
                                         </li>
                                     )
                                 )
