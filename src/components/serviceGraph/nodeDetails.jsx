@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 Modal.setAppElement('#root');
-const NodeDetails = ({requestRate, errorPercent, onClose, incomingEdges, outgoingEdges}) => {
+const NodeDetails = ({requestRate, errorPercent, onClose, incomingEdges, outgoingEdges, tags}) => {
     const modalStyles = {
         overlay: {
             zIndex: 10,
@@ -48,10 +48,15 @@ const NodeDetails = ({requestRate, errorPercent, onClose, incomingEdges, outgoin
                 <h5 className="text-center">Error Rate: {errorPercent}/sec</h5>
                 <h5 className="text-center">Incoming edges: {incomingEdgeStr}</h5>
                 <h5 className="text-center">Outgoing edges: {outgoingEdgeStr}</h5>
+                <h5 className="text-center">Tags: {JSON.stringify(tags)}</h5>
                 <button onClick={onClose}>Close</button>
             </header>
         </Modal>
     );
+};
+
+NodeDetails.defaultProps = {
+    tags: {}
 };
 
 NodeDetails.propTypes =
@@ -60,7 +65,8 @@ NodeDetails.propTypes =
         errorPercent: PropTypes.string.isRequired,
         onClose: PropTypes.func.isRequired,
         incomingEdges: PropTypes.array.isRequired,
-        outgoingEdges: PropTypes.array.isRequired
+        outgoingEdges: PropTypes.array.isRequired,
+        tags: PropTypes.object
 
     };
 export default NodeDetails;

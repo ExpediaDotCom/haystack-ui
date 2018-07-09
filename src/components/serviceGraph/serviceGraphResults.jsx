@@ -189,6 +189,7 @@ export default class ServiceGraphResults extends React.Component {
                         onClose={this.onNodeDetailsClose}
                         incomingEdges={graph.incomingTrafficForNode(nodeDetails)}
                         outgoingEdges={graph.outgoingTrafficForNode(nodeDetails)}
+                        tags={graph.tagsForNode(nodeDetails)}
                     />
                 }
                 {
