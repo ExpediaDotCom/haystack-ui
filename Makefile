@@ -5,13 +5,13 @@ export DOCKER_ORG := expediadotcom
 export DOCKER_IMAGE_NAME := haystack-ui
 
 clean:
-	npm run clean
+	npm -q run clean
 
 install:
-	npm install
+	npm -q install
 
 build: clean install
-	npm run build
+	npm -q run build
 
 docker_build:
 	docker build -t $(DOCKER_IMAGE_NAME) -f build/docker/Dockerfile .
