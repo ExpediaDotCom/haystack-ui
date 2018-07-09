@@ -3,6 +3,7 @@
 # docker namespace
 export DOCKER_ORG := expediadotcom
 export DOCKER_IMAGE_NAME := haystack-ui
+npm config set loglevel warn
 
 clean:
 	npm run clean
