@@ -3,7 +3,6 @@
 # docker namespace
 export DOCKER_ORG := expediadotcom
 export DOCKER_IMAGE_NAME := haystack-ui
-npm config set loglevel warn
 
 clean:
 	npm run clean
@@ -12,7 +11,7 @@ install:
 	npm install
 
 build: clean install
-	npm run build
+	npm -q run build
 
 docker_build:
 	docker build -t $(DOCKER_IMAGE_NAME) -f build/docker/Dockerfile .
