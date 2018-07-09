@@ -22,13 +22,13 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { MemoryRouter } from 'react-router';
 
-import Trends from '../../../src/components/trends/trends';
-import TrendsHeader from '../../../src/components/trends/trendsHeader';
-import OperationResults from '../../../src/components/trends/operation/operationResults';
-import TrendDetails from '../../../src/components/trends/details/trendDetails';
-import {OperationStore} from '../../../src/components/trends/stores/operationStore';
-import {ServiceStore} from '../../../src/components/trends/stores/serviceStore';
-import ServiceResults from '../../../src/components/trends/service/serviceResults';
+import Trends from '../../../../src/components/trends/trends';
+import TrendsHeader from '../../../../src/components/trends/trendsHeader';
+import OperationResults from '../../../../src/components/trends/operation/operationResults';
+import TrendDetails from '../../../../src/components/trends/details/trendDetails';
+import {OperationStore} from '../../../../src/components/trends/stores/operationStore';
+import {ServiceStore} from '../../../../src/components/trends/stores/serviceStore';
+import ServiceResults from '../../../../src/components/trends/service/serviceResults';
 
 const stubLocation = {
     search: '?key1=value&key2=value'

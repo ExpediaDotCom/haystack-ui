@@ -25,8 +25,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { mount } from 'enzyme';
 import sinon from 'sinon';
 
-import {RawSpanStore} from '../../../src/components/traces/stores/rawSpanStore';
-import RawSpan from '../../../src/components/traces/details/timeline/rawSpan';
+import {RawSpanStore} from '../../../../src/components/traces/stores/rawSpanStore';
+import RawSpan from '../../../../src/components/traces/details/timeline/rawSpan';
 
 
 const fulfilledPromise = {

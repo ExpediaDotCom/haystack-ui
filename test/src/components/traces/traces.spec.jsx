@@ -23,17 +23,17 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 import { MemoryRouter } from 'react-router-dom';
 
-import Traces from '../../../src/components/traces/traces';
-import SearchBar from '../../../src/components/traces/searchBar/searchBar';
-import TraceResults from '../../../src/components/traces/results/traceResults';
-import {TracesSearchStore} from '../../../src/components/traces/stores/tracesSearchStore';
-import {SearchableKeysStore} from '../../../src/components/traces/stores/searchableKeysStore';
-import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
-import {SearchBarUiStateStore} from '../../../src/components/traces/searchBar/searchBarUiStateStore';
-import Autocomplete from '../../../src/components/traces/utils/autocomplete';
-import {OperationStore} from '../../../src/stores/operationStore';
-import {ServiceStore} from '../../../src/stores/serviceStore';
-import TraceDetails from '../../../src/components/traces/details/traceDetails';
+import Traces from '../../../../src/components/traces/traces';
+import SearchBar from '../../../../src/components/traces/searchBar/searchBar';
+import TraceResults from '../../../../src/components/traces/results/traceResults';
+import {TracesSearchStore} from '../../../../src/components/traces/stores/tracesSearchStore';
+import {SearchableKeysStore} from '../../../../src/components/traces/stores/searchableKeysStore';
+import {TraceDetailsStore} from '../../../../src/components/traces/stores/traceDetailsStore';
+import {SearchBarUiStateStore} from '../../../../src/components/traces/searchBar/searchBarUiStateStore';
+import Autocomplete from '../../../../src/components/traces/utils/autocomplete';
+import {OperationStore} from '../../../../src/stores/operationStore';
+import {ServiceStore} from '../../../../src/stores/serviceStore';
+import TraceDetails from '../../../../src/components/traces/details/traceDetails';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
