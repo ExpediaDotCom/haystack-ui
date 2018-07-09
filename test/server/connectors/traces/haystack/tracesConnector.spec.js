@@ -44,7 +44,11 @@ describe('tracesConnector.getServices', () => {
     }
 
     it('should not filter out the services if no servicesFilter is configured', () => {
-        const tracesConnector = createTracesConnector();
+        const config = {connectors: {traces: {}, trends: {connectorName: 'stub'}}};
+        const tracesConnector = proxyquire('../../../../../server/connectors/traces/haystack/tracesConnector', {
+            '../../operations/grpcFetcher': MockFetcher,
+            '../../../config/config': config
+        });
         return tracesConnector.getServices().then(result => expect(result.length).to.equal(4));
     });
 
