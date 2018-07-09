@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 
 import Loading from '../../../common/loading';
 import Error from '../../../common/error';
-import TrendsTab from './trendsTab';
+import RelatedTracesTab from './relatedTracesTab';
 
 @observer
 export default class extends React.Component {
@@ -42,7 +42,7 @@ export default class extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <TrendsTab timelineSpans={store.timelineSpans} isUniversalSearch={isUniversalSearch}/>
+                                ? <RelatedTracesTab timelineSpans={store.timelineSpans} isUniversalSearch={isUniversalSearch}/>
                                 : <Error />)
                     })
                 }

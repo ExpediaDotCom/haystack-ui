@@ -24,6 +24,7 @@ import RawTraceModal from './rawTraceModal';
 import TimelineTabContainer from './timeline/timelineTabContainer';
 import LatencyCostTabContainer from './latency/latencyCostTabContainer';
 import TrendsTabContainer from './trends/trendsTabContainer';
+import RelatedTracesTabContainer from './relatedTraces/relatedTracesTabContainer';
 
 import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
@@ -46,7 +47,7 @@ export default class TraceDetails extends React.Component {
             case 3:
                 return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
             case 4:
-                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
+                return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
             default:
                 return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
         }

@@ -56,7 +56,7 @@ function toAvgSuccessPercent(successPoints, failurePoints) {
     return 100 - ((failureCount / (successCount + failureCount)) * 100);
 }
 
-export default class TrendRow extends React.Component {
+export default class RelatedTracesRow extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
@@ -102,7 +102,7 @@ export default class TrendRow extends React.Component {
     render() {
         const {serviceName, operationName, from, until, isUniversalSearch} = this.props;
         const trends = this.state && this.state.trends;
-        
+
         const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
         const totalPoints = trends && trends.count && trends.count.map(p => p.value);
 

@@ -20,9 +20,9 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import timeWindow from '../../../../utils/timeWindow';
-import ServiceOperationTrendRow from './serviceOperationTrendRow';
+import ServiceOperationRelatedTracesRow from './serviceOperationRelatedTracesRow';
 
-export default class trendsTab extends React.Component {
+export default class relatedTracesTab extends React.Component {
     static propTypes = {
         timelineSpans: PropTypes.array.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
@@ -89,7 +89,7 @@ export default class trendsTab extends React.Component {
                     <tbody>
                     {
                         serviceOperationList.map(serviceOp => (
-                            <ServiceOperationTrendRow
+                            <ServiceOperationRelatedTracesRow
                                 serviceName={serviceOp.serviceName}
                                 operationName={serviceOp.operationName}
                                 granularity={granularity}
