@@ -46,7 +46,18 @@ connector.getServices = () => {
 
     return fieldValueFetcher
     .fetch(request)
-    .then(result => result.getValuesList());
+        .then(result => result.getValuesList()).then(result => result.filter((value) => {
+                const servicesFilter = config.connectors.traces.servicesFilter;
+                if (servicesFilter) {
+                    for (let i = 0; i < servicesFilter.length; i += 1) {
+                        if (servicesFilter[i].test(value)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            })
+        );
 };
 
 connector.getSearchableKeys = () => {
