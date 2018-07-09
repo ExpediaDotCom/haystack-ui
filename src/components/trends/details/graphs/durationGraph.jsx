@@ -48,9 +48,9 @@ durationChartOptions.scales.yAxes = [{
 }];
 
 const DurationGraph = ({meanPoints, tp95Points, tp99Points, from, until}) => {
-    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
-    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
-    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value / 1000}));
+    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
 
     if (!meanData.length && !tp95Data.length && !tp99Data.length) {
         return (<MissingTrendGraph title="Duration"/>);
