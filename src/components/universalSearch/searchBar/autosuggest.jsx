@@ -36,8 +36,6 @@ const UP = 38;
 const DOWN = 40;
 const ESC = 27;
 
-const INVALID_CHARS = /[^a-zA-Z0-9=\s-(),[\].]/g;
-
 @observer
 export default class Autocomplete extends React.Component {
     static propTypes = {
@@ -101,7 +99,6 @@ export default class Autocomplete extends React.Component {
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.setInputRef = this.setInputRef.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.clearInvalidChars = this.clearInvalidChars.bind(this);
         this.updateChips = this.updateChips.bind(this);
         this.modifyChip = this.modifyChip.bind(this);
         this.deleteChip = this.deleteChip.bind(this);
@@ -332,18 +329,9 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-    // Prevents the input of invalid characters in the search bar
-    clearInvalidChars() {
-        const value = this.inputRef.value;
-
-        if (INVALID_CHARS.test(value)) {
-            this.inputRef.value = value.replace(INVALID_CHARS, '');
-        }
-    }
-
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
-        if (/^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-]+)$/g.test(kvPair)) { // Ensure format is a=b
+        if (/^(.+)[=](.+)$/g.test(kvPair)) { // Ensure format is a=b
             const valueKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
@@ -445,7 +433,6 @@ export default class Autocomplete extends React.Component {
                             type="text"
                             className="usb-searchbar__input"
                             onKeyDown={this.handleKeyPress}
-                            onKeyUp={this.clearInvalidChars}
                             onChange={this.updateFieldKv}
                             ref={this.setInputRef}
                             onFocus={this.handleFocus}
