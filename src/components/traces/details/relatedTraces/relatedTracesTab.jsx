@@ -17,14 +17,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
 import timeWindow from '../../../../utils/timeWindow';
-import ServiceOperationRelatedTracesRow from './serviceOperationRelatedTracesRow';
+import RelatedTracesRow from './relatedTracesRow';
 
 export default class relatedTracesTab extends React.Component {
     static propTypes = {
-        timelineSpans: PropTypes.array.isRequired,
+        relatedTraces: PropTypes.array.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -54,21 +53,15 @@ export default class relatedTracesTab extends React.Component {
     }
 
     render() {
-        const {timelineSpans, isUniversalSearch} = this.props;
+        const {relatedTraces, isUniversalSearch} = this.props;
         const {selectedIndex, from, until} = this.state;
-        const selectedPreset = timeWindow.presets[selectedIndex];
-        const granularity = timeWindow.getLowerGranularity(selectedPreset.value).value;
-
-        const serviceOperationList = _.uniqWith(timelineSpans.map(span => ({
-                serviceName: span.serviceName,
-                operationName: span.operationName
-            })),
-            _.isEqual);
+        // const selectedPreset = timeWindow.presets[selectedIndex];
+        // const granularity = timeWindow.getLowerGranularity(selectedPreset.value).value;
 
         return (
             <article>
                 <div className="text-right">
-                    <span>Trace trends for </span>
+                    <span>Related Traces for </span>
                     <select className="time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
                         {timeWindow.presets.map((window, index) => (
                             <option
@@ -80,19 +73,20 @@ export default class relatedTracesTab extends React.Component {
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
                     <tr>
-                        <th width="60" className="trace-trend-table_cell">Operation</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Count</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Duration</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Success %</th>
+                        <th width="20" className="trace-trend-table_cell">Start Time</th>
+                        <th width="30" className="trace-trend-table_cell">Root</th>
+                        <th width="20" className="trace-trend-table_cell">Root Success</th>
+                        <th width="60" className="trace-trend-table_cell">Span Count</th>
+                        <th width="20" className="trace-trend-table_cell text-right">Total Duration</th>
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        serviceOperationList.map(serviceOp => (
-                            <ServiceOperationRelatedTracesRow
-                                serviceName={serviceOp.serviceName}
-                                operationName={serviceOp.operationName}
-                                granularity={granularity}
+                        relatedTraces.map(relatedTrace => (
+                            <RelatedTracesRow
+                                key={relatedTrace.traceId}
+                                {...relatedTrace}
+                                // granularity={granularity}
                                 from={from}
                                 until={until}
                                 isUniversalSearch={isUniversalSearch}

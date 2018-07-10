@@ -30,19 +30,53 @@ export default class extends React.Component {
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
+    constructor(props) {
+        super(props);
+        const tags = ['x-ha-ctx-trace-id'];
+        const selectedTag = tags[0];
+        this.state = {
+            tags,
+            selectedTag
+        };
+
+        this.handleTimeChange = this.handleTimeChange.bind(this);
+    }
+
     componentWillMount() {
-        this.props.store.fetchTraceDetails(this.props.traceId);
+        this.props.store.fetchRelatedTraces({
+            serviceName: 'browser-open-tracing',
+            timePreset: '12h',
+            'x-ha-ctx-trace-id': this.props.traceId
+        });
+    }
+    
+    handleTimeChange(event) {
+        const selectedTag = event.target.value;
+        this.setState({
+            selectedTag
+        });
     }
 
     render() {
         const { store, isUniversalSearch } = this.props;
+        const { tags, selectedTag } = this.state;
         return (
             <section>
-                { store.promiseState && store.promiseState.case({
+                <div className="text-left" style={{position: 'absolute'}}>
+                    <span>Relate Traces by: </span>
+                    <select className="time-range-selector" value={selectedTag} onChange={this.handleTimeChange}>
+                            {tags.map((tagName, index) => (
+                                <option
+                                    key={tagName}
+                                    value={index}
+                                >{tagName}</option>))}
+                    </select>
+                </div>
+                { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
-                        fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <RelatedTracesTab timelineSpans={store.timelineSpans} isUniversalSearch={isUniversalSearch}/>
+                        fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
+                                ? <RelatedTracesTab relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
                                 : <Error />)
                     })
                 }

@@ -20,6 +20,8 @@ import {observable, action, computed} from 'mobx';
 import { fromPromise } from 'mobx-utils';
 
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
+import {toDurationMicroseconds} from '../utils/presets';
+import {toQueryUrlString} from '../../../utils/queryParser';
 
 export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall) {
     parent.children.forEach((childId) => {
@@ -33,6 +35,23 @@ export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfa
         childSpan.display = displaySpans;
         childSpan.expanded = showExpanded;
         setChildExpandState(timelineSpans, childSpan, shouldCollapseWaterfall);
+    });
+}
+
+export function formatResults(results) {
+    return results.map((result) => {
+        const flattenedResult = {...result};
+        flattenedResult.rootUrl = result.root.url;
+        flattenedResult.serviceName = result.root.serviceName;
+        flattenedResult.operationName = result.root.operationName;
+        flattenedResult.rootError = result.root.error;
+        flattenedResult.operationDuration = result.queriedOperation && result.queriedOperation.duration;
+        flattenedResult.operationError = result.queriedOperation && result.queriedOperation.error;
+        flattenedResult.operationDurationPercent = result.queriedOperation && result.queriedOperation.durationPercent;
+        flattenedResult.serviceDuration = result.queriedService && result.queriedService.duration;
+        flattenedResult.serviceDurationPercent = result.queriedService && result.queriedService.durationPercent;
+
+        return flattenedResult;
     });
 }
 
@@ -74,6 +93,12 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     static maxSpansBeforeCollapse = 100;
     @observable promiseState = null;
     @observable spans = [];
+
+    @observable relatedTracesPromiseState = { case: ({empty}) => empty() };
+    @observable searchQuery = {};
+    @observable apiQuery = {};
+    @observable relatedTraces = [];
+
     traceId = null;
 
     @action
@@ -90,6 +115,42 @@ export class TraceDetailsStore extends ErrorHandlingStore {
                 .catch((result) => {
                     TraceDetailsStore.handleError(result);
                 })
+        );
+    }
+
+    @action fetchRelatedTraces(query) {
+        const serviceName = decodeURIComponent(query.serviceName);
+        const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
+        const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
+        const ARTIFICIAL_DELAY = 45 * 1000;  // artificial delay of 45 sec to get completed traces
+        const endTime = query.endTime ? query.endTime * 1000 : (Date.now() - ARTIFICIAL_DELAY) * 1000;
+
+        const apiQuery = {...query,
+            serviceName,
+            operationName,
+            startTime,
+            endTime,
+            timePreset: null
+        };
+
+        const queryUrlString = toQueryUrlString(apiQuery);
+
+        this.fetchTraceResults(queryUrlString);
+        this.searchQuery = query;
+        this.apiQuery = apiQuery;
+    }
+
+    @action fetchTraceResults(queryUrlString) {
+        this.relatedTracesPromiseState = fromPromise(
+            axios
+            .get(`/api/traces?${queryUrlString}`)
+            .then((result) => {
+                this.relatedTraces = formatResults(result.data);
+            })
+            .catch((result) => {
+                this.relatedTraces = [];
+                TraceDetailsStore.handleError(result);
+            })
         );
     }
 
