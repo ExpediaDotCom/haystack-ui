@@ -46,6 +46,17 @@ const stubOptions = {
     serviceName: ['test-a', 'test-b', 'test-c']
 };
 
+const stubSearch = {
+    error: 'true',
+    nested_0: {
+        error: 'true',
+        serviceName: 'test'
+    },
+    time: {
+        preset: '1h'
+    }
+};
+
 const stubShortChip = {serviceName: 'test'};
 
 const stubLongChip = {nested_0: {serviceName: 'test', error: 'true'}};
@@ -64,8 +75,9 @@ function createServiceStubStore() {
     return store;
 }
 
-function createStubUiStateStore(chips = {}) {
+function createStubUiStateStore(chips = {}, timeWindow = {}) {
     const store = uiState;
+    store.timeWindow = timeWindow;
     store.chips = chips;
     return store;
 }
@@ -88,6 +100,22 @@ describe('<UniversalSearch />', () => {
         wrapper.setProps({location: updatedStubLocation});
 
         expect(spy.calledOnce).to.equal(true);
+    });
+});
+
+describe('uiState', () => {
+    it('should add a custom time frame to search`', () => {
+        const UiState = createStubUiStateStore({}, {startTime: 10, endTime: 10});
+        const search = UiState.getCurrentSearch();
+
+        expect(search.time.from).to.equal(10);
+    });
+
+    it('should add a preset time frame to search`', () => {
+        const UiState = createStubUiStateStore({}, {timePreset: '1h'});
+        const search = UiState.getCurrentSearch();
+
+        expect(search.time.preset).to.equal('1h');
     });
 });
 
