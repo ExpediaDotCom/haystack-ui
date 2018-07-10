@@ -35,20 +35,21 @@ function MockFetcher() {
 
 
 describe('tracesConnector.getServices', () => {
-    function createTracesConnector(servicesFilter) {
-        const config = {connectors: {traces: {servicesFilter}, trends: {connectorName: 'stub'}}};
+    function createTracesConnectorWithConfig(config) {
         return proxyquire('../../../../../server/connectors/traces/haystack/tracesConnector', {
             '../../operations/grpcFetcher': MockFetcher,
             '../../../config/config': config
         });
     }
 
+    function createTracesConnector(servicesFilter) {
+        const config = {connectors: {traces: {servicesFilter}, trends: {connectorName: 'stub'}}};
+        return createTracesConnectorWithConfig(config);
+    }
+
     it('should not filter out the services if no servicesFilter is configured', () => {
         const config = {connectors: {traces: {}, trends: {connectorName: 'stub'}}};
-        const tracesConnector = proxyquire('../../../../../server/connectors/traces/haystack/tracesConnector', {
-            '../../operations/grpcFetcher': MockFetcher,
-            '../../../config/config': config
-        });
+        const tracesConnector = createTracesConnectorWithConfig(config);
         return tracesConnector.getServices().then(result => expect(result.length).to.equal(4));
     });
 
