@@ -53,7 +53,7 @@ const stubLongChip = {nested_0: {serviceName: 'test', error: 'true'}};
 function createOperationStubStore() {
     const store = new OperationStore();
     store.operations = ['test-operation-a', 'test-operation-b'];
-    sinon.stub(store, 'fetchOperations', () => {});
+    sinon.stub(store, 'fetchOperations', (val, callback) => { callback(); });
     return store;
 }
 
@@ -105,6 +105,16 @@ describe('<Autosuggest />', () => {
         input.prop('onFocus')({target: {value: ''}});
 
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(2);
+    });
+
+    it('update suggestion string index on suggestion mouseover`', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.instance().updateFieldKv({target: {value: 'e'}});
+        wrapper.update();
+        const firstSuggestion = wrapper.find('.usb-suggestions__field').first();
+        firstSuggestion.simulate('mouseEnter');
+
+        expect(wrapper.instance().state.suggestionIndex).to.equal(0);
     });
 
     it('suggestions should disappear when escape is pressed`', () => {
@@ -222,5 +232,25 @@ describe('<Autosuggest />', () => {
 
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
+    });
+
+    it('should fail submission with an invalid KV pair`', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        wrapper.instance().inputRef.value = 'serviceName=';
+        wrapper.instance().updateChips();
+        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        expect(wrapperChips.length).to.equal(0);
+        expect(wrapper.instance().state.inputError).to.be.a('string');
+    });
+
+    it('should fail submission with a non-whitelisted key`', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        wrapper.instance().inputRef.value = 'failure=asdf';
+        wrapper.instance().updateChips();
+        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        expect(wrapperChips.length).to.equal(0);
+        expect(wrapper.instance().state.inputError).to.be.a('string');
     });
 });
