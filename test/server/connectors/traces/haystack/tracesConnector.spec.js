@@ -47,12 +47,6 @@ describe('tracesConnector.getServices', () => {
         return createTracesConnectorWithConfig(config);
     }
 
-    it('should not filter out the services if no servicesFilter is configured', () => {
-        const config = {connectors: {traces: {}, trends: {connectorName: 'stub'}}};
-        const tracesConnector = createTracesConnectorWithConfig(config);
-        return tracesConnector.getServices().then(result => expect(result.length).to.equal(4));
-    });
-
     it('should not filter out the services if an empty servicesFilter is configured', () => {
         const tracesConnector = createTracesConnector([]);
         return tracesConnector.getServices().then(result => expect(result.length).to.equal(4));
