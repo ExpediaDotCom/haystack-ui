@@ -16,13 +16,13 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { expect } from 'chai';
-import Help from '../../../src/components/docs/help';
+import NoMatch from '../../../../src/components/common/noMatch';
 
-describe('<Help />', () => {
-    it('should render the help panel`', () => {
-        const wrapper = mount(<Help />);
-        expect(wrapper.find('.help-panel')).to.have.length(1);
+describe('<NoMatch />', () => {
+    it('should render the NoMatch panel`', () => {
+        const wrapper = shallow(<NoMatch location={{pathname: '/traces/b1e7ef78-8cae-47cb-afaf-9febcf03fd72'}}/>);
+        expect(wrapper.find('.nomatch-panel')).to.have.length(1);
     });
 });

@@ -111,6 +111,7 @@
     "supertest": "^3.0.0",
     "timeago.js": "^3.0.2",
     "vis": "^4.21.0",
+    "vizceral": "^4.6.3",
     "vizceral-react": "^4.5.5",
     "webpack": "^4.8.3",
     "webpack-bundle-analyzer": "^2.11.3",

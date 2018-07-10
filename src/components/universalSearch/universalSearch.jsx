@@ -85,11 +85,11 @@ class UniversalSearch extends React.Component {
     // on load, render search bar and tabs
     // on updation of query, re-render tabs
     render() {
-        const { history } = this.props;
+        const { history, location } = this.props;
         const { search } = this.state;
 
         return (
-            <article>
+            <article className="universal-search-panel">
                 <Header/>
                 <SearchBar search={search} handleSearch={this.handleSearch} />
                 <Tabs search={search} handleTabSelection={this.handleTabSelection} history={history} location={location} />

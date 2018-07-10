@@ -33,10 +33,12 @@ function getEdgeName(vertex) {
 function flattenStats(edges) {
     const serviceEdges = edges.map(edge => ({
         source: {
-            name: getEdgeName(edge.source)
+            name: getEdgeName(edge.source),
+            tags: edge.source.tags
         },
         destination: {
-            name: getEdgeName(edge.destination)
+            name: getEdgeName(edge.destination),
+            tags: edge.destination.tags
         },
         stats: {
             count: (edge.stats.count / WINDOW_SIZE_IN_SECS),
