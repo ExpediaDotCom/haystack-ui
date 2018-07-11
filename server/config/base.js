@@ -83,7 +83,7 @@ module.exports = {
             windowSizeInSecs: 3600
         }
     },
-    timeWindowPresetOptions:[
+    timeWindowPresetOptions: [
         {
             shortName: '5m',
             longName: '5 minutes',
