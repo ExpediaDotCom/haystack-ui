@@ -54,4 +54,12 @@ timeWindow.getHigherGranularity = (timeInMs) => {
     return metricGranularity.getMaxGranularity(timeInMs / maxNumberOfPoints);
 };
 
+timeWindow.isAfterTTL = (current, ttlKey) => {
+    const ttl = window.haystackUiConfig[ttlKey];
+    if (ttl && ttl > 0) {
+        return current.isAfter(moment().subtract(ttl));
+    }
+    return true;
+};
+
 export default timeWindow;

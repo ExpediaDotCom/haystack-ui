@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
 import './timeRangePicker.less';
+import timeWindow from '../../utils/timeWindow';
 
 export default class TrendTimeRangePicker extends React.Component {
     static propTypes = {
@@ -28,7 +29,7 @@ export default class TrendTimeRangePicker extends React.Component {
     };
 
     static isFromValid(current) {
-        return current.isBefore(DateTime.moment()) && current.isAfter(DateTime.moment().subtract(window.haystackUiConfig.trendsTTL));
+        return current.isBefore(DateTime.moment()) && timeWindow.isAfterTTL(current, 'trendsTTL');
     }
 
     constructor(props) {

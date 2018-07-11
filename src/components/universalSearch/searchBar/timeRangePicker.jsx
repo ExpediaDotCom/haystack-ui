@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
 import {toPresetDisplayText} from '../../traces/utils/presets';
+import timeWindow from '../../../utils/timeWindow';
 import './timeRangePicker.less';
 
 export default class TimeRangePicker extends React.Component {
@@ -68,7 +69,7 @@ export default class TimeRangePicker extends React.Component {
         </li>);
 
         function fromValid(current) {
-            return current.isBefore(DateTime.moment()) && current.isAfter(DateTime.moment().subtract(window.haystackUiConfig.tracesTTL));
+            return current.isBefore(DateTime.moment()) && timeWindow.isAfterTTL(current, 'tracesTTL');
         }
 
         return (
