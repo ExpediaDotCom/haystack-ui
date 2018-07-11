@@ -68,7 +68,7 @@ export default class TimeRangePicker extends React.Component {
         </li>);
 
         function fromValid(current) {
-            return current.isBefore(DateTime.moment());
+            return current.isBefore(DateTime.moment()) && current.isAfter(DateTime.moment().subtract(window.haystackUiConfig.tracesTTL));
         }
 
         return (

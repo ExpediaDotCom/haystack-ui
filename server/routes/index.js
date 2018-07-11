@@ -43,7 +43,9 @@ router.get('*', (req, res) => {
         refreshInterval: config.refreshInterval,
         enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions.enabled,
         tracesTimePresetOptions: config.connectors.traces.timePresetOptions,
-        timeWindowPresetOptions: config.timeWindowPresetOptions
+        timeWindowPresetOptions: config.timeWindowPresetOptions,
+        tracesTTL: config.connectors.traces.ttl,
+        trendsTTL: config.connectors.trends.ttl
     });
 
     onFinished(res, () => {

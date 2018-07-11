@@ -28,7 +28,7 @@ export default class TrendTimeRangePicker extends React.Component {
     };
 
     static isFromValid(current) {
-        return current.isBefore(DateTime.moment());
+        return current.isBefore(DateTime.moment()) && current.isAfter(DateTime.moment().subtract(window.haystackUiConfig.trendsTTL));
     }
 
     constructor(props) {
