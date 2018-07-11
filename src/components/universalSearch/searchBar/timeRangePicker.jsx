@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
-import { toPresetDisplayText } from '../../traces/utils/presets';
+import {toPresetDisplayText} from '../../traces/utils/presets';
 import './timeRangePicker.less';
 
 export default class TimeRangePicker extends React.Component {
@@ -26,15 +26,7 @@ export default class TimeRangePicker extends React.Component {
         timeRangeChangeCallback: PropTypes.func.isRequired
     };
 
-    static timePresetOptions = [
-        '5m',
-        '15m',
-        '1h',
-        '4h',
-        '12h',
-        '24h',
-        '3d'
-    ];
+    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
 
     constructor(props) {
         super(props);

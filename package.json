@@ -10,7 +10,7 @@
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" ",
     "build": "npm run clean && npm run codegen && npm run coverage && webpack --mode=production",
     "start": "node server/start.js",
-    "start:dev": "npm run clean && npm run codegen && npm run test && NODE_ENV=development webpack --mode=development && NODE_ENV=development nodemon --ignore 'public/*' server/start.js",
+    "start:dev": "npm run clean && npm run codegen && NODE_ENV=development webpack --mode=development && NODE_ENV=development nodemon --ignore 'public/*' server/start.js",
     "watch": "NODE_ENV=development webpack -w --mode=development"
   },
   "engines": {
