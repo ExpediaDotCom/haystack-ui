@@ -22,6 +22,7 @@ import { fromPromise } from 'mobx-utils';
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 import {toDurationMicroseconds} from '../utils/presets';
 import {toQueryUrlString} from '../../../utils/queryParser';
+import searchableKeysStore from './searchableKeysStore';
 
 export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall) {
     parent.children.forEach((childId) => {
@@ -102,6 +103,11 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     traceId = null;
 
     @action
+    fieldIsNotAProperty() {
+        this.relatedTracesPromiseState = fromPromise.reject('Trace does not have chosen tag to relate with other traces.');
+    }
+
+    @action
     fetchTraceDetails(traceId) {
         if (traceId === this.traceId) return;
         this.traceId = traceId;
@@ -152,6 +158,19 @@ export class TraceDetailsStore extends ErrorHandlingStore {
                 TraceDetailsStore.handleError(result);
             })
         );
+    }
+
+    // Fields, among the searchable keys, that this trace has.
+    @computed
+    get availableFields() {
+        searchableKeysStore.fetchKeys();
+        const keys = searchableKeysStore.keys;
+        const spansString = JSON.stringify(this.spans).toLowerCase();
+
+        return keys.reduce((result, key) => {
+            result[key] = spansString.includes(key); // eslint-disable-line
+            return result;
+        }, {});
     }
 
     @computed

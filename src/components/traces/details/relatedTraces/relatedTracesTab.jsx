@@ -18,58 +18,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import timeWindow from '../../../../utils/timeWindow';
 import RelatedTracesRow from './relatedTracesRow';
 
 export default class relatedTracesTab extends React.Component {
     static propTypes = {
+        uiState: PropTypes.object.isRequired,
         relatedTraces: PropTypes.array.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
-    constructor(props) {
-        super(props);
-        const from = Date.now() - (60 * 60 * 1000);
-        const until = Date.now();
-        const selectedIndex = timeWindow.presets.indexOf(timeWindow.defaultPreset);
-        this.state = {
-            from,
-            until,
-            selectedIndex
-        };
-
-        this.handleTimeChange = this.handleTimeChange.bind(this);
-    }
-
-    handleTimeChange(event) {
-        const selectedIndex = event.target.value;
-        const selectedWindow = timeWindow.presets[selectedIndex];
-        const selectedTimeRange = timeWindow.toTimeRange(selectedWindow.value);
-        this.setState({
-            from: selectedTimeRange.from,
-            until: selectedTimeRange.until,
-            selectedIndex
-        });
-    }
-
     render() {
-        const {relatedTraces, isUniversalSearch} = this.props;
-        const {selectedIndex, from, until} = this.state;
-        // const selectedPreset = timeWindow.presets[selectedIndex];
-        // const granularity = timeWindow.getLowerGranularity(selectedPreset.value).value;
+        const {uiState, relatedTraces, isUniversalSearch} = this.props;
 
         return (
             <article>
-                <div className="text-right">
-                    <span>Related Traces for </span>
-                    <select className="time-range-selector" value={selectedIndex} onChange={this.handleTimeChange}>
-                        {timeWindow.presets.map((window, index) => (
-                            <option
-                                key={window.longName}
-                                value={index}
-                            >{window.isCustomTimeRange ? '' : 'last'} {window.longName}</option>))}
-                    </select>
-                </div>
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
                     <tr>
@@ -84,11 +46,9 @@ export default class relatedTracesTab extends React.Component {
                     {
                         relatedTraces.map(relatedTrace => (
                             <RelatedTracesRow
+                                uiState={uiState}
                                 key={relatedTrace.traceId}
                                 {...relatedTrace}
-                                // granularity={granularity}
-                                from={from}
-                                until={until}
                                 isUniversalSearch={isUniversalSearch}
                             />
                         ))

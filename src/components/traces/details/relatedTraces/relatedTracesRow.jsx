@@ -19,11 +19,11 @@ import PropTypes from 'prop-types';
 
 import colorMapper from '../../../../utils/serviceColorMapper';
 import linkBuilder from '../../../../utils/linkBuilder';
-import uiState from '../../searchBar/searchBarUiStateStore';
 import formatters from '../../../../utils/formatters';
 
 export default class RelatedTracesRow extends React.Component {
     static propTypes = {
+        uiState: PropTypes.object.isRequired,
         traceId: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
@@ -32,8 +32,6 @@ export default class RelatedTracesRow extends React.Component {
         rootError: PropTypes.bool.isRequired,
         services: PropTypes.array.isRequired,
         duration: PropTypes.bool.isRequired,
-        from: PropTypes.number.isRequired,
-        until: PropTypes.number.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -44,8 +42,8 @@ export default class RelatedTracesRow extends React.Component {
             traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
         } else {
             traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
-                serviceName: uiState.serviceName,
-                operationName: uiState.operationName,
+                serviceName,
+                operationName,
                 traceId
             }));
         }
@@ -97,10 +95,10 @@ export default class RelatedTracesRow extends React.Component {
 
 
     render() {
-        const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, from, until, isUniversalSearch} = this.props;
+        const {uiState, traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, isUniversalSearch} = this.props;
 
         return (
-            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId, serviceName, operationName, isUniversalSearch)}>
+            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId, uiState.serviceName, uiState.operationName, isUniversalSearch)}>
                 <td className="trace-trend-table_cell">
                     {RelatedTracesRow.timeColumnFormatter(startTime)}
                 </td>
