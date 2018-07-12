@@ -20,53 +20,7 @@ import formatters from './formatters';
 
 const timeWindow = {};
 
-timeWindow.presets = [
-    {
-        shortName: '5m',
-        longName: '5 minutes',
-        value: 5 * 60 * 1000
-    },
-    {
-        shortName: '15m',
-        longName: '15 minutes',
-        value: 15 * 60 * 1000
-    },
-    {
-        shortName: '1h',
-        longName: '1 hour',
-        value: 60 * 60 * 1000
-    },
-    {
-        shortName: '6h',
-        longName: '6 hours',
-        value: 6 * 60 * 60 * 1000
-    },
-    {
-        shortName: '12h',
-        longName: '12 hours',
-        value: 12 * 60 * 60 * 1000
-    },
-    {
-        shortName: '24h',
-        longName: '24 hours',
-        value: 24 * 60 * 60 * 1000
-    },
-    {
-        shortName: '3d',
-        longName: '3 days',
-        value: 3 * 24 * 60 * 60 * 1000
-    },
-    {
-        shortName: '7d',
-        longName: '7 days',
-        value: 7 * 24 * 60 * 60 * 1000
-    },
-    {
-        shortName: '30d',
-        longName: '30 days',
-        value: 30 * 24 * 60 * 60 * 1000
-    }
-];
+timeWindow.presets = window.haystackUiConfig.timeWindowPresetOptions;
 
 timeWindow.defaultPreset = timeWindow.presets[1];
 
@@ -98,6 +52,14 @@ timeWindow.getLowerGranularity = (timeInMs) => {
 timeWindow.getHigherGranularity = (timeInMs) => {
     const maxNumberOfPoints = 15;
     return metricGranularity.getMaxGranularity(timeInMs / maxNumberOfPoints);
+};
+
+timeWindow.isAfterTTL = (current, ttlKey) => {
+    const ttl = window.haystackUiConfig[ttlKey];
+    if (ttl && ttl > 0) {
+        return current.isAfter(moment().subtract(ttl));
+    }
+    return true;
 };
 
 export default timeWindow;
