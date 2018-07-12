@@ -7,7 +7,7 @@
     "codegen": "mkdir -p static_codegen && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/  ./haystack-idl/proto/span.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/traceReader.proto",
     "coverage": "nyc --extension .jsx npm test && nyc report --reporter=text-lcov | coveralls",
     "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json --ignore-pattern 'public/*' --ignore-pattern 'haystack-idl/*' --ignore-pattern 'static_codegen/*' --ignore-pattern 'coverage/*' . && echo 'Done' ",
-    "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" --timeout 5000",
+    "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" --timeout 10000",
     "build": "npm run clean && npm run codegen && npm run coverage && webpack --mode=production",
     "start": "node server/start.js",
     "start:dev": "npm run clean && npm run codegen && npm run test && NODE_ENV=development webpack --mode=development && NODE_ENV=development nodemon --ignore 'public/*' server/start.js",
