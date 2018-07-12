@@ -29,12 +29,12 @@ import {OperationStore} from '../../../src/stores/operationStore';
 import {ServiceStore} from '../../../src/stores/serviceStore';
 
 const stubLocation = {
-    search: '?key1=value&key2=value'
+    search: ''
 };
 
 const stubHistory = {
     location: {
-        search: '?key1=value&key2=value'
+        search: ''
     },
     push: (location) => {
         stubLocation.search = location.search;
@@ -44,17 +44,6 @@ const stubHistory = {
 const stubOptions = {
     error: ['true', 'false'],
     serviceName: ['test-a', 'test-b', 'test-c']
-};
-
-const stubSearch = {
-    error: 'true',
-    nested_0: {
-        error: 'true',
-        serviceName: 'test'
-    },
-    time: {
-        preset: '1h'
-    }
 };
 
 const stubShortChip = {serviceName: 'test'};
@@ -100,6 +89,20 @@ describe('<UniversalSearch />', () => {
         wrapper.setProps({location: updatedStubLocation});
 
         expect(spy.calledOnce).to.equal(true);
+    });
+
+    it('should render traces trends and alerts with a serviceName query`', () => {
+        const stubServiceNameLocation = {search: '?serviceName=root-service&time.preset=1h'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubServiceNameLocation} history={stubHistory}/></MemoryRouter>);
+
+        expect(wrapper.find('.universal-search-bar-tabs__nav-text').length).to.equal(3);
+    });
+
+    it('should render traces trends and alerts with a serviceName query`', () => {
+        const stubError = {search: '?error=true&time.preset=1h'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubError} history={stubHistory}/></MemoryRouter>);
+
+        expect(wrapper.find('.universal-search-bar-tabs__nav-text').length).to.equal(1);
     });
 });
 
