@@ -90,7 +90,7 @@ export default class RelatedTracesTabContainer extends React.Component {
 
     fetchRelatedTraces() {
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
-        if (!this.state.availableFields[chosenField.propertyToMatch]) {
+        if (!this.state.availableFields[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
             return this.props.store.fieldIsNotAProperty();
         }
         const query = {

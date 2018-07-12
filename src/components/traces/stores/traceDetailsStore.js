@@ -161,6 +161,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     }
 
     // Fields, among the searchable keys, that this trace has.
+    // TODO: Optimize this process
     @computed
     get availableFields() {
         searchableKeysStore.fetchKeys();
