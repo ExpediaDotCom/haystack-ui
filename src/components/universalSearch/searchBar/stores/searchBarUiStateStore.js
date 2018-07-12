@@ -16,7 +16,6 @@
  */
 
 import {observable, action} from 'mobx';
-import {toFieldsKvString, extractSecondaryFields} from '../../../traces/utils/traceQueryParser';
 
 export class SearchBarUiStateStore {
     @observable serviceName = null;
