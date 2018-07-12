@@ -39,7 +39,7 @@ export default () => (
     <Modal isOpen style={modalStyles} contentLabel={'Modal'}>
         <header className="clearfix">
             <h4 className="text-center underlined">Session Expired</h4>
-            <h5 className="text-center">Please <a href={`/auth/login?redirectUrl=${window.location.pathname}`}>login</a> to continue where you left off.</h5>
+            <h5 className="text-center">Please <a href={`/auth/login?redirectUrl=${window.location.pathname}${window.location.search}`}>login</a> to continue where you left off.</h5>
         </header>
     </Modal>
 );

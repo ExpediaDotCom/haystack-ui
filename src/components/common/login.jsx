@@ -31,7 +31,7 @@ export default class Login extends Component {
     }
 
     render() {
-        const redirectUrl = this.props.location.search;
+        const redirectUrl = this.props.location.search || '?redirectUrl=/';
         const ssoAdfsDomain = window.haystackUiConfig.ssoAdfsDomain;
 
         return (<div id="particles-js" className="login-cover text-center">
