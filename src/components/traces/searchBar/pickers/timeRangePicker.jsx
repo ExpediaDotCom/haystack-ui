@@ -18,23 +18,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DateTime from 'react-datetime';
 import moment from 'moment';
-import { toPresetDisplayText } from '../../utils/presets';
+import {toPresetDisplayText} from '../../utils/presets';
 import './timeRangePicker.less';
+import timeWindow from '../../../../utils/timeWindow';
 
 export default class TimeRangePicker extends React.Component {
     static propTypes = {
         timeRangeChangeCallback: PropTypes.func.isRequired
     };
 
-    static timePresetOptions = [
-        '5m',
-        '15m',
-        '1h',
-        '4h',
-        '12h',
-        '24h',
-        '3d'
-    ];
+    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
+
+
+    static fromValid(current) {
+        return current.isBefore(DateTime.moment()) && timeWindow.isAfterTTL(current, 'tracesTTL');
+    }
 
     constructor(props) {
         super(props);
@@ -75,17 +73,13 @@ export default class TimeRangePicker extends React.Component {
             <a className="timerange-picker__preset" key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
         </li>);
 
-        function fromValid(current) {
-            return current.isBefore(DateTime.moment());
-        }
-
         return (
             <div className="timerange-picker">
                 <div className="timerange-picker__custom">
                     <h5>Time Range</h5>
                     <div className="form-group">
                         <h6>From :</h6>
-                        <DateTime className="datetimerange-picker" isValidDate={fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
+                        <DateTime className="datetimerange-picker" isValidDate={TimeRangePicker.fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
                         <h6>To :</h6>
                         <DateTime className="datetimerange-picker" isValidDate={this.toValid} value={this.state.endDateTime} onChange={this.handleChangeEndDate}/>
                     </div>
