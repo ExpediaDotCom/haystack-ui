@@ -123,6 +123,11 @@ module.exports = {
             shortName: '7d',
             longName: '7 days',
             value: 7 * 24 * 60 * 60 * 1000
+        },
+        {
+            shortName: '30d',
+            longName: '30 days',
+            value: 30 * 24 * 60 * 60 * 1000
         }
     ]
 
