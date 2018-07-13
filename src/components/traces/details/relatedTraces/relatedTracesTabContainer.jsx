@@ -95,7 +95,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         }
         // (this.props.isUniversalSearch ? :
         const query =  {
-            serviceName: '',
+            serviceName: uiState.serviceName || '',
             [chosenField.fieldTag]: this.props[chosenField.propertyToMatch],
             timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
         };
