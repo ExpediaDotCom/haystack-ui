@@ -34,7 +34,7 @@ import { toPresetDisplayText } from '../../utils/presets';
 @observer
 export default class RelatedTracesTabContainer extends React.Component {
     static propTypes = {
-        traceId: PropTypes.string.isRequired,
+        traceId: PropTypes.string.isRequired, // eslint-disable-line
         store: PropTypes.object.isRequired, // Trace Details Store
         isUniversalSearch: PropTypes.bool.isRequired
     };
@@ -93,13 +93,14 @@ export default class RelatedTracesTabContainer extends React.Component {
         if (!this.state.availableFields[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
             return this.props.store.fieldIsNotAProperty();
         }
-        const query = {
-            serviceName: uiState.serviceName,
+        // (this.props.isUniversalSearch ? :
+        const query =  {
+            serviceName: '',
             [chosenField.fieldTag]: this.props[chosenField.propertyToMatch],
             timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
         };
         return this.props.store.fetchRelatedTraces(query);
-    }
+    }r
     
     handleFieldChange(event) {
         const selectedFieldIndex = event.target.value;
