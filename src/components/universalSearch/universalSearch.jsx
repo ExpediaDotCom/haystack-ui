@@ -18,6 +18,7 @@
 import React from 'react';
 import { withRouter} from 'react-router';
 import PropTypes from 'prop-types';
+import {observer} from 'mobx-react';
 
 // layout elements
 import Header from '../layout/slimHeader';
@@ -32,6 +33,10 @@ import linkBuilder from '../../utils/linkBuilder';
 // styling
 import './universalSearch.less';
 
+// SSO timeout modal
+import authenticationStore from '../../stores/authenticationStore';
+import AuthenticationTimeoutModal from '../layout/authenticationTimeoutModal';
+
 // Root component for universal search
 // deserialize location to create search object
 // search object contains all the information to trigger any search for any subsystem in tabs
@@ -39,6 +44,7 @@ import './universalSearch.less';
 //
 // SearchBar creates search object and pushes it in URL and that triggers receiveProps for UniversalSearch,
 // which in turn re-triggers all tabs
+@observer
 class UniversalSearch extends React.Component {
     static DEFAULT_TIME_WINDOW = '1h';
 
@@ -90,6 +96,7 @@ class UniversalSearch extends React.Component {
 
         return (
             <article className="universal-search-panel">
+                {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
                 <Header/>
                 <SearchBar search={search} handleSearch={this.handleSearch} />
                 <Tabs search={search} handleTabSelection={this.handleTabSelection} history={history} location={location} />

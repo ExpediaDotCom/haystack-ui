@@ -70,7 +70,7 @@ module.exports = {
     authenticator: passport,
     authenticatorWithRedirect: (redirectUrl) => {
         // no predefined way to do redirects
-        // falling back to using new saml object everytime for new login request
+        // falling back to using new saml object every time for new login request
         passport.use(createSamlStrategyWithRedirect(redirectUrl || '/'));
 
         return passport.authenticate('saml',
