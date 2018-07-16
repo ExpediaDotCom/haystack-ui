@@ -17,18 +17,41 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {PropTypes as MobxPropTypes} from 'mobx-react';
 
 import RelatedTracesRow from './relatedTracesRow';
+import linkBuilder from '../../../../utils/linkBuilder';
 
 export default class relatedTracesTab extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        relatedTraces: PropTypes.array.isRequired,
+        searchQuery: PropTypes.object.isRequired,
+        relatedTraces: MobxPropTypes.observableArray, // eslint-disable-line react/require-default-props
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
+    constructor(props) {
+        super(props);
+        const numDisplayedTraces = 5;
+        this.state = {
+            numDisplayedTraces // compute the fields of the original trace
+        };
+
+        this.showMoreTraces = this.showMoreTraces.bind(this);
+    }
+
+    showMoreTraces() {
+        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(this.props.searchQuery));
+
+        const tab = window.open(traceUrl, '_blank');
+        tab.focus();
+    }
+
     render() {
         const {uiState, relatedTraces, isUniversalSearch} = this.props;
+        const {numDisplayedTraces} = this.state;
+
+        const relatedTracesList = relatedTraces.slice(0, numDisplayedTraces);
 
         return (
             <article>
@@ -44,7 +67,7 @@ export default class relatedTracesTab extends React.Component {
                     </thead>
                     <tbody>
                     {
-                        relatedTraces.map(relatedTrace => (
+                        relatedTracesList.map(relatedTrace => (
                             <RelatedTracesRow
                                 uiState={uiState}
                                 key={relatedTrace.traceId}
@@ -55,6 +78,10 @@ export default class relatedTracesTab extends React.Component {
                     }
                     </tbody>
                 </table>
+                {relatedTraces.length > numDisplayedTraces ? null : <span style={{position: 'absolute'}}>End of Results</span>}
+                <div style={{textAlign: 'center', marginTop: '15px'}}>
+                    <a role="button" className="btn btn-default" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? 'Show All in Universal' : 'View in Universal Search' }</a>
+                </div>
             </article>
         );
     }

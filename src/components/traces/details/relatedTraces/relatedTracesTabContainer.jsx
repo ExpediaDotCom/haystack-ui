@@ -34,8 +34,8 @@ import { toPresetDisplayText } from '../../utils/presets';
 @observer
 export default class RelatedTracesTabContainer extends React.Component {
     static propTypes = {
-        traceId: PropTypes.string.isRequired, // eslint-disable-line
-        store: PropTypes.object.isRequired, // Trace Details Store
+        traceId: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
+        store: PropTypes.object.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -64,12 +64,12 @@ export default class RelatedTracesTabContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        const selectedFieldIndex = 0;
-        const selectedTimeIndex = 2; // Default 1h
+        const selectedFieldIndex = -1;
+        const selectedTimeIndex = 2; // Default Time Preset is 1h
         this.state = {
             selectedFieldIndex,
             selectedTimeIndex,
-            availableFields: this.props.store.availableFields// compute the fields of the original trace
+            fields: this.props.store.fields// compute the fields of the original trace
         };
 
         this.handleTimeChange = this.handleTimeChange.bind(this);
@@ -90,15 +90,19 @@ export default class RelatedTracesTabContainer extends React.Component {
 
     fetchRelatedTraces() {
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
-        if (!this.state.availableFields[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
+
+        // Rejects API promise if the trace does not have the chosen field
+        if (!this.state.fields[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
             return this.props.store.fieldIsNotAProperty();
         }
-        // (this.props.isUniversalSearch ? :
+
+        // Builds Query
         const query =  {
             serviceName: uiState.serviceName || '',
-            [chosenField.fieldTag]: this.props[chosenField.propertyToMatch],
+            [chosenField.fieldTag]: this.props[chosenField.propertyToMatch] || this.state.fields[chosenField.propertyToMatch],
             timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
         };
+
         return this.props.store.fetchRelatedTraces(query);
     }r
     
@@ -144,7 +148,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
-                                ? <RelatedTracesTab uiState={uiState} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
+                                ? <RelatedTracesTab uiState={uiState} searchQuery={store.searchQuery} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
                                 : <Error />)
                     })
                 }

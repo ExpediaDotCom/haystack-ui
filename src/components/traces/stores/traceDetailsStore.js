@@ -160,16 +160,18 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    // Fields, among the searchable keys, that this trace has.
-    // TODO: Optimize this process
+    // Returns an array of tag key pairs of the current trace that are searchable
+    // The keys of the array however are not lowercase
     @computed
-    get availableFields() {
+    get fields() {
         searchableKeysStore.fetchKeys();
         const keys = searchableKeysStore.keys;
-        const spansString = JSON.stringify(this.spans).toLowerCase();
-
-        return keys.reduce((result, key) => {
-            result[key] = spansString.includes(key); // eslint-disable-line
+        let tags = [];
+        this.spans.forEach((span) => { tags = _.union(tags, span.tags); }); // Create a union of tags of all spans
+        const searchableTags = tags.filter(span => keys.includes(span.key.toLowerCase())); // Filters out tags that are not searchable
+        // Changes array of object key pairs into an object with key pairs
+        return searchableTags.reduce((result, keyValuePair) => {
+            result[keyValuePair.key.toLowerCase()] = keyValuePair.value; // eslint-disable-line
             return result;
         }, {});
     }

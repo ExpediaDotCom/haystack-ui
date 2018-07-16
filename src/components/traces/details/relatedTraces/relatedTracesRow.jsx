@@ -16,6 +16,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {PropTypes as MobxPropTypes} from 'mobx-react';
 
 import colorMapper from '../../../../utils/serviceColorMapper';
 import linkBuilder from '../../../../utils/linkBuilder';
@@ -30,8 +31,8 @@ export default class RelatedTracesRow extends React.Component {
         spanCount: PropTypes.number.isRequired,
         startTime: PropTypes.number.isRequired,
         rootError: PropTypes.bool.isRequired,
-        services: PropTypes.array.isRequired,
-        duration: PropTypes.bool.isRequired,
+        services: MobxPropTypes.observableArray, // eslint-disable-line react/require-default-props
+        duration: PropTypes.number.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -78,11 +79,11 @@ export default class RelatedTracesRow extends React.Component {
     // SPAN COUNT
     static handleServiceList(services) {
         const serviceList = services.slice(0, 2).map(svc =>
-            <span className={'service-spans label ' + colorMapper.toBackgroundClass(svc.name)}>{svc.name} x{svc.spanCount}</span> // eslint-disable-line
+            <span key={svc.name} className={'service-spans label ' + colorMapper.toBackgroundClass(svc.name)}>{svc.name +' x' + svc.spanCount}</span> // eslint-disable-line
         );
 
         if (services.length > 2) {
-            serviceList.push(<span>...</span>);
+            serviceList.push(<span key="extra">...</span>);
         }
         return serviceList;
     }
