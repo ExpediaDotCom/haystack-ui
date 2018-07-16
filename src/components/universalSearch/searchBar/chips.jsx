@@ -48,7 +48,7 @@ export default class Chips extends React.Component {
                     <div className="usb-chip" key={Math.random()}>
                         {
                             Object.keys(baseObject).map(key => (
-                                <span>
+                                <span key={Math.random()}>
                                     <span className="usb-chip__key">{key}</span>
                                     <span className="usb-chip__value">{baseObject[key]}</span>
                                 </span>

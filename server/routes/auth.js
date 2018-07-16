@@ -22,9 +22,14 @@ const router = express.Router();
 
 const loggedOutHome = '/login';
 
-const authenticate = req => authenticatorWithRedirect(req.query.redirectUrl);
+const authenticate = req => authenticatorWithRedirect(req);
 
-router.get('/login', (req, res, next) => authenticate(req)(req, res, next));
+const extractFullRedirectUrl = req => req.originalUrl.split('/auth/login?redirectUrl=').pop();
+
+router.get('/login', (req, res, next) => {
+    const redirectUrl = extractFullRedirectUrl(req);
+    return authenticate(redirectUrl)(redirectUrl, res, next);
+});
 
 // check for active login session and then renew user
 router.get('/renewlogin', authChecker.forApi, (req, res, next) => {

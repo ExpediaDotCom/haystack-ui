@@ -20,10 +20,13 @@ const logger = require('../utils/logger').withIdentifier('sso');
 
 const router = express.Router();
 
+const extractFullRedirectUrl = req => req.originalUrl.split('/sso/saml/consume?redirectUrl=').pop();
+
 router.use('/saml/consume', authenticator.authenticate('saml'),
     (req, res) => {
-        logger.info(`action=authentication, status=success, redirectUrl=${req.query.redirectUrl}`);
-        res.redirect(req.query.redirectUrl);
+        const redirectUrl = extractFullRedirectUrl(req);
+        logger.info(`action=authentication, status=success, redirectUrl=${redirectUrl}`);
+        res.redirect(redirectUrl);
     });
 
 module.exports = router;
