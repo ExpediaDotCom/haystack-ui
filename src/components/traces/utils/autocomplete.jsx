@@ -17,14 +17,14 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {observer} from 'mobx-react';
+import {observer, PropTypes as MobxPropTypes} from 'mobx-react';
 
 
 @observer
 export default class Autocomplete extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        options: PropTypes.array
+        options: MobxPropTypes.observableArray
     };
 
     static defaultProps = {
