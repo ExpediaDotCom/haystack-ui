@@ -63,7 +63,7 @@ export default class Autocomplete extends React.Component {
         if (inputString[0] === '(') {
             return inputString[inputString.length - 1] === ')';
         }
-        return /^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-]+)$/g.test(inputString);
+        return /^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-:/_.#$+!%@^&?<>]+)$/g.test(inputString);
     }
 
     constructor(props) {
