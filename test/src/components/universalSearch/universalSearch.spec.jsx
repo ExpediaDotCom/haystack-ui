@@ -21,12 +21,12 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom';
 
-import UniversalSearch from '../../../src/components/universalSearch/universalSearch';
-import Autosuggest from '../../../src/components/universalSearch/searchBar/autosuggest';
+import UniversalSearch from '../../../../src/components/universalSearch/universalSearch';
+import Autosuggest from '../../../../src/components/universalSearch/searchBar/autosuggest';
 
-import uiState from '../../../src/components/universalSearch/searchBar/stores/searchBarUiStateStore';
-import {OperationStore} from '../../../src/stores/operationStore';
-import {ServiceStore} from '../../../src/stores/serviceStore';
+import uiState from '../../../../src/components/universalSearch/searchBar/stores/searchBarUiStateStore';
+import {OperationStore} from '../../../../src/stores/operationStore';
+import {ServiceStore} from '../../../../src/stores/serviceStore';
 
 const stubLocation = {
     search: ''

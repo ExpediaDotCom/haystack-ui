@@ -68,7 +68,7 @@ export default class ServiceGraphContainer extends React.Component {
         this.setState({tabSelected: tabIndex});
     }
 
-render() {
+    render() {
         return (
             <section className="container">
                 <div className="clearfix" id="service-graph">
@@ -92,7 +92,7 @@ render() {
                 </div>
                 <div>
                 { this.props.store.promiseState && this.props.store.promiseState.case({
-                    pending: () => <Loading />,
+                    pending: () => <Loading className="serviceGraph__loading"/>,
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.store.graphs && this.props.store.graphs.length)
                         ? <ServiceGraphResults serviceGraph={this.props.store.graphs[this.state.tabSelected - 1]} history={this.props.history} />
