@@ -103,8 +103,8 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     traceId = null;
 
     @action
-    fieldIsNotAProperty() {
-        this.relatedTracesPromiseState = fromPromise.reject('Trace does not have chosen tag to relate with other traces.');
+    rejectRelatedTracesPromise(message) {
+        this.relatedTracesPromiseState = fromPromise.reject(message);
     }
 
     @action
