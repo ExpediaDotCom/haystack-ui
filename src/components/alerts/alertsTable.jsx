@@ -214,7 +214,7 @@ export default class AlertsTable extends React.Component {
 
         const tableHeaderStyle = { border: 'none' };
 
-        const query = toQuery(location.search);
+        const query = toQuery(this.props.location.search);
         const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : this.props.defaultPreset;
 
         return (
