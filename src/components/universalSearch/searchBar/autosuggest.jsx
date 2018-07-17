@@ -248,7 +248,11 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleSelection();
             this.handleBlur();
-        } else if (keyPressed === ENTER || (keyPressed === TAB && e.target.value) || (keyPressed === SPACE && Autocomplete.completeInputString(this.inputRef.value))) {
+        } else if (keyPressed === ENTER) {
+            e.preventDefault();
+            this.updateChips();
+            this.props.search();
+        } else if ((keyPressed === TAB && e.target.value) || (keyPressed === SPACE && Autocomplete.completeInputString(this.inputRef.value))) {
             e.preventDefault();
             this.updateChips();
         } else if (keyPressed === UP) {
@@ -392,7 +396,6 @@ export default class Autocomplete extends React.Component {
             }
             this.setState({inputError: false});
             this.inputRef.value = '';
-            this.props.search();
         }
     }
 
@@ -415,7 +418,6 @@ export default class Autocomplete extends React.Component {
 
             this.setState({existingKeys: updatedExistingKeys});
             delete this.props.uiState.chips[chipKey];
-            this.props.search();
         }
     }
 
