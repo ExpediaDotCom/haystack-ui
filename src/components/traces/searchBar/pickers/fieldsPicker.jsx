@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import {observer} from 'mobx-react';
+import {observer, PropTypes as MobxPropTypes} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Autocomplete from '../../utils/autocomplete';
@@ -24,7 +24,7 @@ import Autocomplete from '../../utils/autocomplete';
 export default class TimeWindowPicker extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        options: PropTypes.array.isRequired
+        options: MobxPropTypes.observableArray // eslint-disable-line react/require-default-props
     };
 
     render() {

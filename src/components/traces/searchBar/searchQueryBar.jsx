@@ -33,7 +33,7 @@ export default class SearchQueryBar extends React.Component {
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired,
         searchCallback: PropTypes.func.isRequired,
-        searchableKeysStore: PropTypes.array.isRequired
+        searchableKeysStore: PropTypes.object.isRequired
     };
 
     constructor(props) {

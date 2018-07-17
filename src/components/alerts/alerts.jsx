@@ -35,7 +35,7 @@ export default class Alerts extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {serviceName: this.props.match.params.serviceName, defaultPreset: timeWindow.presets[2]};
+        this.state = {serviceName: this.props.match.params.serviceName, defaultPreset: timeWindow.presets[5]};
     }
 
     componentDidMount() {

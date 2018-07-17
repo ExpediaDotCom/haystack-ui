@@ -76,13 +76,13 @@ export default class AlertsTableSparkline extends React.Component {
                 }]
         };
 
-        return (<div>
+        return (<div className="alert-table_sparkline">
             {trends &&
             <Line
                 data={chartData}
                 options={alertsTableSparklineOptions}
                 type="line"
-                height={38}
+                height={40}
                 legend={false}
             />}
         </div>);
