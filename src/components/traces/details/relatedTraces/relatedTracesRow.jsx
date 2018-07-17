@@ -24,7 +24,6 @@ import formatters from '../../../../utils/formatters';
 
 export default class RelatedTracesRow extends React.Component {
     static propTypes = {
-        uiState: PropTypes.object.isRequired,
         traceId: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
@@ -96,10 +95,10 @@ export default class RelatedTracesRow extends React.Component {
 
 
     render() {
-        const {uiState, traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, isUniversalSearch} = this.props;
+        const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, isUniversalSearch} = this.props;
 
         return (
-            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId, uiState.serviceName, uiState.operationName, isUniversalSearch)}>
+            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId, serviceName, operationName, isUniversalSearch)}>
                 <td className="trace-trend-table_cell">
                     {RelatedTracesRow.timeColumnFormatter(startTime)}
                 </td>

@@ -28,7 +28,6 @@ import PropTypes from 'prop-types';
 import Loading from '../../../common/loading';
 import Error from '../../../common/error';
 import RelatedTracesTab from './relatedTracesTab';
-import uiState from '../../searchBar/searchBarUiStateStore';
 import { toPresetDisplayText } from '../../utils/presets';
 
 @observer
@@ -93,6 +92,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         if (this.state.selectedFieldIndex === null) {
             return this.props.store.rejectRelatedTracesPromise('Field is not selected.');
         }
+
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
 
         // Rejects API promise if the trace does not have the chosen field
@@ -102,7 +102,7 @@ export default class RelatedTracesTabContainer extends React.Component {
 
         // Builds Query
         const query =  {
-            serviceName: uiState.serviceName || '',
+            serviceName: '',
             [chosenField.fieldTag]: this.props[chosenField.propertyToMatch] || this.state.fields[chosenField.propertyToMatch],
             timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
         };
@@ -140,7 +140,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                                     value={index}
                                 >{fieldOp.fieldDescription}</option>))}
                     </select>
-                    <span style={{paddingLeft: '5px'}}>Related Traces for </span>
+                    <span style={{paddingLeft: '5px'}}>of the </span>
                     <select className="time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
                         {RelatedTracesTabContainer.timePresetOptions.map((preset, index) => (
                             <option
@@ -153,7 +153,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
-                                ? <RelatedTracesTab uiState={uiState} searchQuery={store.searchQuery} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
+                                ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
                                 : <Error />)
                     })
                 }

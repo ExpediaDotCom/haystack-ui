@@ -22,7 +22,6 @@ import { fromPromise } from 'mobx-utils';
 import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 import {toDurationMicroseconds} from '../utils/presets';
 import {toQueryUrlString} from '../../../utils/queryParser';
-import searchableKeysStore from './searchableKeysStore';
 
 export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall) {
     parent.children.forEach((childId) => {
@@ -160,17 +159,16 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    // Returns an array of tag key pairs of the current trace that are searchable
+    // Returns an array of tag key pairs of the current trace
     // The keys of the array however are not lowercase
+    // Since the keypairs that share key values are simply overwriten by each other by order at which they are called,
+    // some tags that have multiple values across the trace will have 'randomly' selected values.
     @computed
     get fields() {
-        searchableKeysStore.fetchKeys();
-        const keys = searchableKeysStore.keys;
         let tags = [];
         this.spans.forEach((span) => { tags = _.union(tags, span.tags); }); // Create a union of tags of all spans
-        const searchableTags = tags.filter(span => keys.includes(span.key.toLowerCase())); // Filters out tags that are not searchable
-        // Changes array of object key pairs into an object with key pairs
-        return searchableTags.reduce((result, keyValuePair) => {
+
+        return tags.reduce((result, keyValuePair) => {
             result[keyValuePair.key.toLowerCase()] = keyValuePair.value; // eslint-disable-line
             return result;
         }, {});
