@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
@@ -91,7 +92,7 @@ export default class Tabs extends React.Component {
             case 'trends':
                 return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName} isUniversalSearch/>;
             case 'alerts':
-                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset="6h" isUniversalSearch/>;
+                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
                 return <ServiceGraphContainer store={store} history={history}/>;
             default:

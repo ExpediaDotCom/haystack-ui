@@ -73,9 +73,7 @@ export default class AlertsTable extends React.Component {
         return '<div/>';
     }
 
-    static trendColumnFormatter(row, location, defaultPreset, alertType, serviceName) {
-        const query = toQuery(location.search);
-        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : defaultPreset;
+    static trendColumnFormatter(row, location, activeWindow, alertType, serviceName) {
         const timeRange = timeWindow.toTimeRange(activeWindow.value);
         return (
             <AlertsTableSparkline
@@ -216,6 +214,9 @@ export default class AlertsTable extends React.Component {
 
         const tableHeaderStyle = { border: 'none' };
 
+        const query = toQuery(this.props.location.search);
+        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : this.props.defaultPreset;
+
         return (
             <div>
                 <BootstrapTable
@@ -267,11 +268,11 @@ export default class AlertsTable extends React.Component {
                         caretRender={AlertsTable.getCaret}
                         dataField="trend"
                         width="50"
-                        dataFormat={(cell, row) => AlertsTable.trendColumnFormatter(row, this.props.location, this.props.defaultPreset, this.props.alertType, this.props.serviceName)}
+                        dataFormat={(cell, row) => AlertsTable.trendColumnFormatter(row, this.props.location, activeWindow, this.props.alertType, this.props.serviceName)}
                         dataSort
                         thStyle={tableHeaderStyle}
                         headerText={'trend'}
-                    ><AlertsTable.Header name="Trend"/></TableHeaderColumn>
+                    ><AlertsTable.Header name={`Trend (last ${activeWindow.longName})`}/></TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );
