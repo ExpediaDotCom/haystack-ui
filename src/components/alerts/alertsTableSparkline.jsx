@@ -82,7 +82,7 @@ export default class AlertsTableSparkline extends React.Component {
                 data={chartData}
                 options={alertsTableSparklineOptions}
                 type="line"
-                height={40}
+                height={50}
                 legend={false}
             />}
         </div>);
