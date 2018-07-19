@@ -123,7 +123,8 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action fetchRelatedTraces(query) {
+    @action
+    fetchRelatedTraces(query) {
         const serviceName = decodeURIComponent(query.serviceName);
         const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
         const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
@@ -145,7 +146,8 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         this.apiQuery = apiQuery;
     }
 
-    @action fetchTraceResults(queryUrlString) {
+    @action
+    fetchTraceResults(queryUrlString) {
         this.relatedTracesPromiseState = fromPromise(
             axios
             .get(`/api/traces?${queryUrlString}`)
@@ -169,7 +171,7 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         this.spans.forEach((span) => { tags = _.union(tags, span.tags); }); // Create a union of tags of all spans
 
         return tags.reduce((result, keyValuePair) => {
-            result[keyValuePair.key.toLowerCase()] = keyValuePair.value; // eslint-disable-line
+            result[keyValuePair.key.toLowerCase()] = keyValuePair.value; // eslint-disable-line no-param-reassign
             return result;
         }, {});
     }

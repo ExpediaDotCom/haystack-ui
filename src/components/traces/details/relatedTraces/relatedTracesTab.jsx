@@ -56,13 +56,13 @@ export default class relatedTracesTab extends React.Component {
             <article>
                 <table className="trace-trend-table">
                     <thead className="trace-trend-table_header">
-                    <tr>
-                        <th width="20" className="trace-trend-table_cell">Start Time</th>
-                        <th width="30" className="trace-trend-table_cell">Root</th>
-                        <th width="20" className="trace-trend-table_cell">Root Success</th>
-                        <th width="60" className="trace-trend-table_cell">Span Count</th>
-                        <th width="20" className="trace-trend-table_cell text-right">Total Duration</th>
-                    </tr>
+                        <tr>
+                            <th width="20" className="trace-trend-table_cell">Start Time</th>
+                            <th width="30" className="trace-trend-table_cell">Root</th>
+                            <th width="20" className="trace-trend-table_cell">Root Success</th>
+                            <th width="60" className="trace-trend-table_cell">Span Count</th>
+                            <th width="20" className="trace-trend-table_cell text-right">Total Duration</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {

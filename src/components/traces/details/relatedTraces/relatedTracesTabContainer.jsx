@@ -48,18 +48,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         '3d'
     ];
 
-    static fieldOptions = [
-        {
-            fieldTag: 'x-ha-ctx-trace-id',
-            propertyToMatch: 'traceId',
-            fieldDescription: 'page render traceid'
-        },
-        {
-            fieldTag: 'x-ha-visitor-id',
-            propertyToMatch: 'x-ha-visitor-id',
-            fieldDescription: 'HomeAway visitor id'
-        }
-    ];
+    static fieldOptions = (window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions);
 
     constructor(props) {
         super(props);

@@ -45,7 +45,8 @@ router.get('*', (req, res) => {
         tracesTimePresetOptions: config.connectors.traces.timePresetOptions,
         timeWindowPresetOptions: config.timeWindowPresetOptions,
         tracesTTL: config.connectors.traces.ttl,
-        trendsTTL: config.connectors.trends.ttl
+        trendsTTL: config.connectors.trends.ttl,
+        relatedTracesOptions: config.relatedTracesOptions
     });
 
     onFinished(res, () => {

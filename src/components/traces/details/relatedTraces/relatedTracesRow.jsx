@@ -62,13 +62,9 @@ export default class RelatedTracesRow extends React.Component {
     }
     // ROOT SUCCESS
     static errorFormatter(cell) {
-        if (cell) {
-            return (<div className="table__status">
-                <img src="/images/error.svg" alt="Error" height="24" width="24" />
-            </div>);
-        }
+        const status = cell ? 'error' : 'success';
         return (<div className="table__status">
-            <img src="/images/success.svg" alt="Success" height="24" width="24" />
+            <img src={`/images/${status}.svg`} alt={status} height="24" width="24" />
         </div>);
     }
     // TOTAL DURATION
