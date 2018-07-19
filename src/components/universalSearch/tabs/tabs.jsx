@@ -27,6 +27,7 @@ import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
 import serviceGraphState from './tabStores/serviceGraphStateStore';
+import AlertCounter from '../../alerts/alertCounter';
 
 export default class Tabs extends React.Component {
     static propTypes = {
@@ -111,8 +112,13 @@ export default class Tabs extends React.Component {
             (
                 <li key={tab.tabId} className={tab.tabId === tabId ? 'active' : ''}>
                     <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => handleTabSelection(tab.tabId)}>
-                            <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
+                        <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
                         <span>{tab.displayName}</span>
+                        {tab.tabId === 'alerts' ?
+                            <div className="universal-search-bar-tabs__alert-counter">
+                                <AlertCounter serviceName={this.props.search.serviceName} />
+                            </div>
+                            : null}
                     </a>
                 </li>
             )
