@@ -49,7 +49,7 @@ export default class Chips extends React.Component {
                         {
                             Object.keys(baseObject).map(key => (
                                 <span key={Math.random()}>
-                                    <span className="usb-chip__key">{key} :</span>
+                                    <span className="usb-chip__key">{key}</span>
                                     <span className="usb-chip__value">{baseObject[key]}</span>
                                 </span>
                             ))
@@ -61,7 +61,7 @@ export default class Chips extends React.Component {
 
             return (
                 <div className="usb-chip" key={Math.random()}>
-                    <span className="usb-chip__key">{chip} :</span>
+                    <span className="usb-chip__key">{chip}</span>
                     <span className="usb-chip__value">{this.props.uiState.chips[chip]}</span>
                     <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
                 </div>

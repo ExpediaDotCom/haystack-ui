@@ -244,10 +244,10 @@ export default class Autocomplete extends React.Component {
 
     // updating operations inside a nested query
     checkServiceAndUpdateOperation(input) {
-        const inputValue = input.value && input.value.trim().replace(/\s*=\s*/g, '=');
+        const inputValue = input.trim().replace(/\s*=\s*/g, '=');
 
         // if serviceName is there in the same query, trigger request for operations
-        if (inputValue && inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
+        if (inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
             const splitInput = inputValue.replace('(', '').split(' ');
 
             if (splitInput.every(this.testForValidInputString)) { // Valid input tests
