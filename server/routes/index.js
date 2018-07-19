@@ -36,6 +36,7 @@ router.get('*', (req, res) => {
         bundleCommonsJsPath: assets.commons.js,
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
+        usbPrimary: config.usbPrimary,
         enableServicePerformance: config.enableServicePerformance,
         enableServiceLevelTrends: config.enableServiceLevelTrends,
         services: servicesConnector.getServicesSync(),
