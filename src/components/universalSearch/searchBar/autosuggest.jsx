@@ -103,6 +103,7 @@ export default class Autocomplete extends React.Component {
         this.modifyChip = this.modifyChip.bind(this);
         this.deleteChip = this.deleteChip.bind(this);
         this.testForValidInputString = this.testForValidInputString.bind(this);
+        this.checkServiceAndUpdateOperation = this.checkServiceAndUpdateOperation.bind(this);
     }
 
     componentDidMount() {
@@ -152,7 +153,7 @@ export default class Autocomplete extends React.Component {
             type = 'Keys';
             value = targetInput.toLowerCase();
             Object.keys(this.props.options).forEach((option) => {
-                if (option.toLowerCase().includes(value) && !this.state.existingKeys.includes(option)) {
+                if (option.toLowerCase().includes(value)) {
                     suggestionArray.push(option);
                 }
             });
@@ -241,6 +242,27 @@ export default class Autocomplete extends React.Component {
         }
     }
 
+    // updating operations inside a nested query
+    checkServiceAndUpdateOperation(input) {
+        const inputValue = input.value && input.value.trim().replace(/\s*=\s*/g, '=');
+
+        // if serviceName is there in the same query, trigger request for operations
+        if (inputValue && inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
+            const splitInput = inputValue.replace('(', '').split(' ');
+
+            if (splitInput.every(this.testForValidInputString)) { // Valid input tests
+                const kvPair = splitInput[splitInput.length - 1];
+                const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
+                const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
+                if (chipKey.includes('serviceName')) {
+                    this.props.options.operationName = null;
+                    this.props.operationStore.fetchOperations(chipValue, () => {
+                        this.props.options.operationName = this.props.operationStore.operations;
+                    });
+                }
+            }
+        }
+    }
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
         const keyPressed = e.keyCode || e.which;
@@ -252,9 +274,16 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.updateChips();
             this.props.search();
-        } else if ((keyPressed === TAB && e.target.value) || (keyPressed === SPACE && Autocomplete.completeInputString(this.inputRef.value))) {
+        } else if (keyPressed === TAB && e.target.value) {
             e.preventDefault();
             this.updateChips();
+        } else if (keyPressed === SPACE) {
+            if (Autocomplete.completeInputString(this.inputRef.value)) {
+                e.preventDefault();
+                this.updateChips();
+            } else {
+                this.checkServiceAndUpdateOperation(this.inputRef.value);
+            }
         } else if (keyPressed === UP) {
             e.preventDefault();
             this.higherSuggestion();
@@ -390,6 +419,7 @@ export default class Autocomplete extends React.Component {
             }
             this.props.uiState.chips[chipKey] = chipValue;
             if (chipKey.includes('serviceName')) {
+                this.props.options.operationName = null;
                 this.props.operationStore.fetchOperations(chipValue, () => {
                     this.props.options.operationName = this.props.operationStore.operations;
                 });
