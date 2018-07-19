@@ -115,7 +115,7 @@ export default class Tabs extends React.Component {
                         <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ?
-                            <div className="universal-search-bar-tabs__alert_counter">
+                            <div className="universal-search-bar-tabs__alert-counter">
                                 <AlertCounter serviceName={this.props.search.serviceName} />
                             </div>
                             : null}
