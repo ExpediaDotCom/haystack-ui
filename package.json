@@ -116,6 +116,7 @@
     "vizceral-react": "^4.5.5",
     "webpack": "^4.8.3",
     "webpack-bundle-analyzer": "^2.11.3",
+    "webpack-cli": "^3.1.0",
     "webpack-command": "^0.2.0"
   },
   "eslintConfig": {
