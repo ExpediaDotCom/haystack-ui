@@ -18,10 +18,12 @@
 import React from 'react';
 import Modal from 'react-modal';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
+
 import _ from 'lodash';
 
 Modal.setAppElement('#root');
-const NodeDetails = ({requestRate, errorPercent, onClose, incomingEdges, outgoingEdges, tags}) => {
+const NodeDetails = ({serviceName, requestRate, errorPercent, onClose, incomingEdges, outgoingEdges, tags}) => {
     const modalStyles = {
         overlay: {
             zIndex: 10,
@@ -38,18 +40,19 @@ const NodeDetails = ({requestRate, errorPercent, onClose, incomingEdges, outgoin
             marginRight: 'auto'
         }
     };
-
+    const titleLinkStr = `/usb?serviceName=${serviceName}`;
     const incomingEdgeStr = _.reduce(_.slice(incomingEdges, 1), (result, val) => `${result}  ${val}`, incomingEdges[0]);
     const outgoingEdgeStr = _.reduce(_.slice(outgoingEdges, 1), (result, val) => `${result}  ${val}`, outgoingEdges[0]);
     return (
         <Modal style={modalStyles} isOpen contentLabel={'Modal'} onRequestClose={onClose}>
+            <button className="close pull-right" onClick={onClose}>x</button>
             <header className="clearfix">
-                <h4 className="text-center">Request Rate: {requestRate}/sec</h4>
-                <h5 className="text-center">Error Rate: {errorPercent}/sec</h5>
-                <h5 className="text-center">Incoming edges: {incomingEdgeStr}</h5>
-                <h5 className="text-center">Outgoing edges: {outgoingEdgeStr}</h5>
-                <h5 className="text-center">Tags: {JSON.stringify(tags)}</h5>
-                <button onClick={onClose}>Close</button>
+                <h3 className="text-center service-graph__label-large"><strong><Link to={titleLinkStr}>{serviceName}</Link></strong></h3>
+                <h4 className="text-center"><strong>Request Rate:</strong> {requestRate}/sec</h4>
+                <h4 className="text-center"><strong>Error Rate:</strong> {errorPercent}/sec</h4>
+                <p className="text-center service-graph__label-small"><strong>Incoming edges:</strong> {incomingEdgeStr}</p>
+                <p className="text-center service-graph__label-small"><strong>Outgoing edges:</strong> {outgoingEdgeStr}</p>
+                <p className="text-center service-graph__label-small"><strong>Tags:</strong> {JSON.stringify(tags)}</p>
             </header>
         </Modal>
     );
@@ -61,6 +64,7 @@ NodeDetails.defaultProps = {
 
 NodeDetails.propTypes =
     {
+        serviceName: PropTypes.string.isRequired,
         requestRate: PropTypes.string.isRequired,
         errorPercent: PropTypes.string.isRequired,
         onClose: PropTypes.func.isRequired,

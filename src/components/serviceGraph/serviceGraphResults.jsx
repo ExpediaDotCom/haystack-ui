@@ -185,6 +185,7 @@ export default class ServiceGraphResults extends React.Component {
                 {
                     !!nodeDetails &&
                     <NodeDetails
+                        serviceName={nodeDetails}
                         requestRate={graph.requestRateForNode(nodeDetails)}
                         errorPercent={graph.errorRateForNode(nodeDetails)}
                         onClose={this.onNodeDetailsClose}

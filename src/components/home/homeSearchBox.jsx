@@ -58,11 +58,11 @@ export default class HomeSearchBox extends Component {
                             avgTypingDelay={10}
                             cursor={{hideWhenDone: true, element: '_', blink: true}}
                         >
-                            <span>Try new way of searching in Haystack!</span>
+                            <span>Try the new way of searching in Haystack!</span>
                         </Typist>
                     </div>
                     <div className="pull-right">
-                        <Link className="pull-right btn btn-primary btn-md" to="/usb">GOTO UNIVERSAL SEARCH</Link>
+                        <Link className="pull-right btn btn-primary btn-md" to="/usb">GO TO UNIVERSAL SEARCH</Link>
                     </div>
                 </div>
                 <div className="primary-home-container">
