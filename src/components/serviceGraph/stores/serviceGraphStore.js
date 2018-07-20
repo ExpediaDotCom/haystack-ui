@@ -15,13 +15,16 @@
  */
 
 import axios from 'axios';
-import {observable, action} from 'mobx';
-import { fromPromise } from 'mobx-utils';
-import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
+import {action, observable} from 'mobx';
+import {fromPromise} from 'mobx-utils';
+import {ErrorHandlingStore} from '../../../stores/errorHandlingStore';
 
 export class ServiceGraphStore extends ErrorHandlingStore {
     @observable graphs = [];
     @observable promiseState = null ;
+
+    @observable filteredGraphs  = [];
+    @observable filterQuery = {};
 
     @action fetchServiceGraph() {
         this.promiseState = fromPromise(
@@ -35,6 +38,19 @@ export class ServiceGraphStore extends ErrorHandlingStore {
                 })
         );
     }
-}
 
+    @action fetchServiceGraphForTimeline(filterQuery) {
+        this.filteredGraphPromiseState = fromPromise(
+            axios
+                .get(`/api/serviceGraph?from=${filterQuery.from}&to=${filterQuery.to}`)
+                .then((result) => {
+                    this.filterQuery = filterQuery;
+                    this.filteredGraphs = result.data;
+                })
+                .catch((result) => {
+                    ServiceGraphStore.handleError(result);
+                })
+        );
+    }
+}
 export default new ServiceGraphStore();

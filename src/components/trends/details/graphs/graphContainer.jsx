@@ -13,7 +13,6 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
@@ -21,11 +20,12 @@ import {observer} from 'mobx-react';
 import CountGraph from './countGraph';
 import DurationGraph from './durationGraph';
 import SuccessGraph from './successGraph';
-
+import TrendsRowServiceGraphContainer from '../../../serviceGraph/trendsRowServiceGraphContainer';
 @observer
 export default class GraphContainer extends React.Component {
     static propTypes = {
-        trendsStore: PropTypes.object.isRequired
+        trendsStore: PropTypes.object.isRequired,
+        serviceName: PropTypes.string.isRequired
     };
     render() {
         const {
@@ -47,6 +47,7 @@ export default class GraphContainer extends React.Component {
                 <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} from={from} until={until}/>
                 <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} from={from} until={until} />
                 <SuccessGraph successCount={successCount} failureCount={failureCount} from={from} until={until} />
+                <TrendsRowServiceGraphContainer serviceName={this.props.serviceName} from={from} to={until} />
             </div>
         );
     }

@@ -59,7 +59,7 @@ export default class TrendDetails extends React.Component {
                     pending: () => <Loading />,
                     rejected: () => <Error />,
                     fulfilled: () => (this.props.store.trendsResults && Object.keys(this.props.store.trendsResults).length
-                        ? <GraphContainer trendsStore={this.props.store} />
+                        ? <GraphContainer trendsStore={this.props.store} serviceName={this.props.serviceName}/>
                         : <Error />)
                 })
                 }

@@ -24,7 +24,12 @@ const router = express.Router();
 
 router.get('/serviceGraph', (req, res, next) => {
     handleResponsePromise(res, next, 'svc_graph_SVC')(
-        () => serviceGraphConnector.getServiceGraph()
+        () => {
+            if (req.query.from && req.query.to) {
+                return serviceGraphConnector.getServiceGraph(req.query.from, req.query.to);
+            }
+            return serviceGraphConnector.getServiceGraph();
+        }
     );
 });
 
