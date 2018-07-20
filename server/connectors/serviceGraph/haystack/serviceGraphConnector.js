@@ -33,6 +33,6 @@ function fetchServiceGraph(from, to) {
 }
 
 connector.getServiceGraph = () => Q.fcall(() => fetchServiceGraph(Date.now() - (WINDOW_SIZE_IN_SECS * 1000), Date.now()));
-connector.getServiceGraph = (from, to) => Q.fcall(() => fetchServiceGraph(from, to));
+connector.getServiceGraphForTimeLine = (from, to) => Q.fcall(() => fetchServiceGraph(from, to));
 
 module.exports = connector;
