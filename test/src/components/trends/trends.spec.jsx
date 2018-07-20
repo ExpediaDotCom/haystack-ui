@@ -1,14 +1,14 @@
 /*
  * Copyright 2018 Expedia, Inc.
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       Licensed under the Apache License, Version 2.0 (the 'License');
  *       you may not use this file except in compliance with the License.
  *       You may obtain a copy of the License at
  *
  *           http://www.apache.org/licenses/LICENSE-2.0
  *
  *       Unless required by applicable law or agreed to in writing, software
- *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       distributed under the License is distributed on an 'AS IS' BASIS,
  *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *       See the License for the specific language governing permissions and
  *       limitations under the License.
@@ -17,10 +17,11 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { shallow, mount } from 'enzyme';
-import { expect } from 'chai';
+import {mount, shallow} from 'enzyme';
+import {expect} from 'chai';
 import sinon from 'sinon';
-import { MemoryRouter } from 'react-router';
+import {MemoryRouter} from 'react-router';
+import {Provider} from 'mobx-react';
 
 import Trends from '../../../../src/components/trends/trends';
 import TrendsHeader from '../../../../src/components/trends/trendsHeader';
@@ -29,6 +30,7 @@ import TrendDetails from '../../../../src/components/trends/details/trendDetails
 import {OperationStore} from '../../../../src/components/trends/stores/operationStore';
 import {ServiceStore} from '../../../../src/components/trends/stores/serviceStore';
 import ServiceResults from '../../../../src/components/trends/service/serviceResults';
+import ServiceGraphStore from '../../../../src/components/serviceGraph/stores/serviceGraphStore';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -221,26 +223,25 @@ const stubOperation = 'test-operation-1';
 
 
 function TrendsStubComponent({operationStore, serviceStore, location, serviceName}) {
-    return (
-        <section className="trends-panel">
-            <TrendsHeader
-                operationStore={operationStore}
-                serviceStore={serviceStore}
-                serviceName={serviceName}
-                location={location}
-                history={{}}
-            />
-            <ServiceResults
-                serviceStore={serviceStore}
-                serviceName={serviceName}
-                location={location}
-            />
-            <OperationResults
-                operationStore={operationStore}
-                serviceName={serviceName}
-                location={location}
-            />
-        </section>);
+    return (<section className="trends-panel">
+        <TrendsHeader
+            operationStore={operationStore}
+            serviceStore={serviceStore}
+            serviceName={serviceName}
+            location={location}
+            history={{}}
+        />
+        <ServiceResults
+            serviceStore={serviceStore}
+            serviceName={serviceName}
+            location={location}
+        />
+        <OperationResults
+            operationStore={operationStore}
+            serviceName={serviceName}
+            location={location}
+        />
+    </section>);
 }
 
 function TrendsDetailsStubComponent({store, location, serviceName, opName}) {
@@ -260,6 +261,21 @@ function createOperationStubStore(statsResults, trendsResults, promise, statsQue
     sinon.stub(store, 'fetchTrends', () => {
         store.trendsResults = trendsResults;
         store.trendsPromiseState = promise;
+    });
+
+    return store;
+}
+
+function createServiceGraphStubStore() {
+    const store = ServiceGraphStore;
+    const filterQuery = {
+        from: 1508431848839,
+        to: 1508431898839,
+        serviceName: 'dragon-service'
+    };
+    sinon.stub(store, 'fetchServiceGraphForTimeline', () => {
+        store.filterQuery = filterQuery;
+        store.filteredGraphs = [{source: {name: 'stark-service', tags: {DEPLOYMENT: 'aws'}}, destination: {name: 'dragon-service'}, stats: {count: 15.41, errorCount: 2.5}}];
     });
 
     return store;
@@ -338,36 +354,51 @@ describe('<Trends />', () => {
 
     it('should call operation fetchStats upon expanding a trend', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
+        const stores = {
+            graphStore: ServiceGraphStore
+        };
         // eslint-disable-next-line
-        const wrapper = mount(<MemoryRouter>
+        const wrapper = mount(<Provider {...stores}><MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
-        </MemoryRouter>); // MemoryRouter used to keep Link component from reading or writing to address-bar
+        </MemoryRouter></Provider>); // MemoryRouter used to keep Link component from reading or writing to address-bar
         expect(operationStore.fetchStats.calledOnce);
     });
 
-    it('should show the three charts in a trend expanded view', () => {
+    it('should show the charts in a trend expanded view', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<MemoryRouter>
+        const stores = {
+            graphStore: createServiceGraphStubStore()
+        };
+        const wrapper = mount(<Provider {...stores}><MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
-        </MemoryRouter>);
+        </MemoryRouter></Provider>);
         expect(wrapper.find('.chart-container')).to.have.length(3);
+        expect(wrapper.find('#trend-row-container')).to.have.length(1);
     });
 
     it('should reload the graphs upon selecting a separate time', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<MemoryRouter>
+        const stores = {
+            graphStore: ServiceGraphStore
+        };
+        const wrapper = mount(<Provider {...stores}><MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
-        </MemoryRouter>);
+        </MemoryRouter></Provider>);
         wrapper.find('.btn-default').first().simulate('click');
         expect(operationStore.fetchTrends.callCount).to.equal(2);
         expect(wrapper.find('.chart-container')).to.have.length(3);
+        expect(wrapper.find('#trend-row-container')).to.have.length(1);
     });
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<MemoryRouter>
+        const stores = {
+            graphStore: ServiceGraphStore
+        };
+
+        const wrapper = mount(<Provider {...stores}><MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
-        </MemoryRouter>);
+        </MemoryRouter></Provider>);
 
         // Clicking modal
         expect(wrapper.find('.custom-timerange-picker')).to.have.length(0);
@@ -387,9 +418,12 @@ describe('<Trends />', () => {
 
     it('trend custom time picker should be responsive and change the date parameter', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<MemoryRouter>
+        const stores = {
+            graphStore: ServiceGraphStore
+        };
+        const wrapper = mount(<Provider {...stores}><MemoryRouter>
             <TrendsDetailsStubComponent store={operationStore} location={stubLocation} serviceName={stubService} opName={stubOperation} />
-        </MemoryRouter>);
+        </MemoryRouter></Provider>);
 
         // Clicking granularity button
         wrapper.find('.dropdown-toggle').simulate('click');

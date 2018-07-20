@@ -23,6 +23,7 @@ import config from './vizceralConfig';
 import NodeDetails from './nodeDetails';
 import Graph from './util/graph';
 import ConnectionDetails from './connectionDetails';
+import './serviceGraph.less';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
