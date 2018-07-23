@@ -32,11 +32,6 @@ export default class TrendsRowServiceGraphContainer extends React.Component {
         serviceName: PropTypes.string.isRequired
     };
 
-    static extractGraphForService(graphs, serviceName) {
-        const result = _.find(graphs, graph => _.includes(Graph.buildGraph(graph).allNodes(), serviceName));
-        return result;
-    }
-
     constructor(props) {
         super(props);
         this.fetchServiceGraphs = this.fetchServiceGraphs.bind(this);
@@ -61,7 +56,7 @@ export default class TrendsRowServiceGraphContainer extends React.Component {
                     pending: () => <Loading/>,
                     rejected: () => <Error/>,
                     fulfilled: () => ((this.props.graphStore.filteredGraphs && this.props.graphStore.filteredGraphs.length)
-                        ? <ServiceGraphResults serviceGraph={TrendsRowServiceGraphContainer.extractGraphForService(this.props.graphStore.filteredGraphs, this.props.serviceName)}/>
+                        ? <ServiceGraphForService graphs={this.props.graphStore.filteredGraphs} serviceName={this.props.serviceName}/>
                         : <Error/>)
                 })
                 }
@@ -72,4 +67,19 @@ export default class TrendsRowServiceGraphContainer extends React.Component {
 }
 TrendsRowServiceGraphContainer.wrappedComponent.propTypes = {
     graphStore: PropTypes.object.isRequired
+};
+
+function ServiceGraphForService(props) {
+    const result = _.find(props.graphs, g => _.includes(Graph.buildGraph(g).allNodes(), props.serviceName));
+    if (typeof result !== 'undefined') {
+        return (
+            <ServiceGraphResults serviceGraph={result}/>
+        );
+    }
+    return (<Error errorMessage="ServiceGraph data not found for the given time frame."/>);
+}
+
+ServiceGraphForService.propTypes = {
+    graphs: PropTypes.array.isRequired,
+    serviceName: PropTypes.string.isRequired
 };
