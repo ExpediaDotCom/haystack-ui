@@ -23,10 +23,12 @@ import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
 import AlertsView from '../../alerts/alertsView';
 import ServiceGraphContainer from './serviceGraphContainer';
+import ServicePerformanceContainer from './servicePerformanceContainer';
 import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
 import serviceGraphState from './tabStores/serviceGraphStateStore';
+import servicePerformanceState from './tabStores/servicePerformanceStateStore';
 import AlertCounter from '../../alerts/alertCounter';
 
 export default class Tabs extends React.Component {
@@ -61,6 +63,12 @@ export default class Tabs extends React.Component {
             displayName: 'Service Graph',
             icon: 'ti-vector',
             store: serviceGraphState
+        },
+        {
+            tabId: 'servicePerformance',
+            displayName: 'Service Performance',
+            icon: 'ti-pie-chart',
+            store: servicePerformanceState
         }
     ];
 
@@ -96,6 +104,8 @@ export default class Tabs extends React.Component {
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
                 return <ServiceGraphContainer store={store} history={history}/>;
+            case 'servicePerformance':
+                return <ServicePerformanceContainer store={store} history={history}/>;
             default:
                 return null;
         }

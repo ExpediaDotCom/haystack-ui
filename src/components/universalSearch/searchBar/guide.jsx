@@ -38,6 +38,7 @@ export default () => (
                     <li>If no tag searched -
                         <span className="usb-suggestions__guide-highlight">
                             <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
+                            <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
                         </span>
                     </li>
                     <li>If only serviceName (and/or operationName) searched -
