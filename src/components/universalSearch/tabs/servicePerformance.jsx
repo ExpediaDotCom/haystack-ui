@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import servicePerfStore from '../../home/stores/servicePerfStore';
 
 @observer
-export default class ServicePerformanceContainer extends React.Component {
+export default class ServicePerformance extends React.Component {
     static propTypes = {
         history: PropTypes.object.isRequired
     };
