@@ -78,7 +78,14 @@ export default class OperationResultsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.operationName).length > 0) {
-            return <TrendDetails serviceSummary={false} store={this.props.operationStore} location={this.props.location} serviceName={this.props.serviceName} opName={row.operationName} isUniversalSearch={this.props.isUniversalSearch}/>;
+            return (<TrendDetails
+                        serviceSummary={false}
+                        store={this.props.operationStore}
+                        location={this.props.location}
+                        serviceName={this.props.serviceName}
+                        opName={row.operationName}
+                        isUniversalSearch={this.props.isUniversalSearch}
+            />);
         }
         return null;
     }

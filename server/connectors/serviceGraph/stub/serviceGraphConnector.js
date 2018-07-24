@@ -160,4 +160,7 @@ const serviceGraph = {
 
 connector.getServiceGraph = () => Q.fcall(() => extractor.extractGraphs(serviceGraph));
 
+/* eslint-disable-next-line no-unused-vars */
+connector.getServiceGraphForTimeLine = (from, to) => Q.fcall(() => extractor.extractGraphs(serviceGraph));
+
 module.exports = connector;

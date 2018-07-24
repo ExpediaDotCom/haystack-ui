@@ -23,6 +23,14 @@ class Graph {
         this.errorCountsByVertex = new Map();
     }
 
+    static buildGraph = (rawEdges) => {
+        const graph = new Graph();
+        _.forEach(rawEdges, (edge) => {
+            graph.addEdge(edge);
+        });
+        return graph;
+    }
+
     addEdge(edge) {
         if (!this.allNodes().includes(edge.source.name)) {
             this.nodes.push({

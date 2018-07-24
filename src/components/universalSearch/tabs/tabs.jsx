@@ -22,11 +22,14 @@ import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
 import AlertsView from '../../alerts/alertsView';
-import ServiceGraphContainer from './serviceGraphContainer';
+import ServiceGraph from './serviceGraph';
+import ServicePerformance from './servicePerformance';
 import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
 import serviceGraphState from './tabStores/serviceGraphStateStore';
+import servicePerformanceState from './tabStores/servicePerformanceStateStore';
+import AlertCounter from '../../alerts/alertCounter';
 
 export default class Tabs extends React.Component {
     static propTypes = {
@@ -60,6 +63,12 @@ export default class Tabs extends React.Component {
             displayName: 'Service Graph',
             icon: 'ti-vector',
             store: serviceGraphState
+        },
+        {
+            tabId: 'servicePerformance',
+            displayName: 'Service Performance',
+            icon: 'ti-pie-chart',
+            store: servicePerformanceState
         }
     ];
 
@@ -94,7 +103,9 @@ export default class Tabs extends React.Component {
             case 'alerts':
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
-                return <ServiceGraphContainer store={store} history={history}/>;
+                return <ServiceGraph store={store} history={history}/>;
+            case 'servicePerformance':
+                return <ServicePerformance store={store} history={history}/>;
             default:
                 return null;
         }
@@ -111,8 +122,13 @@ export default class Tabs extends React.Component {
             (
                 <li key={tab.tabId} className={tab.tabId === tabId ? 'active' : ''}>
                     <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => handleTabSelection(tab.tabId)}>
-                            <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
+                        <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
                         <span>{tab.displayName}</span>
+                        {tab.tabId === 'alerts' ?
+                            <div className="universal-search-bar-tabs__alert-counter">
+                                <AlertCounter serviceName={this.props.search.serviceName} />
+                            </div>
+                            : null}
                     </a>
                 </li>
             )

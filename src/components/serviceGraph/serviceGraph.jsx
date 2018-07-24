@@ -23,7 +23,7 @@ import ServiceGraphContainer from './serviceGraphContainer';
 import './serviceGraph.less';
 
 const ServiceGraph = props => (
-    <section className="service-graph-panel">
+    <section className="service-graph-panel container">
         <ServiceGraphContainer store={serviceGraphStore} history={props.history}/>
     </section>
 );

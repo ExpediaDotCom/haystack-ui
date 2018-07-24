@@ -47,36 +47,69 @@ export default class HomeSearchBox extends Component {
     }
 
     render() {
+        const ServiceSelectorPrimary = () => (
+            <div>
+                <div className="clearfix secondary-home-container">
+                    <div className="pull-left">
+                        <Typist
+                            startDelay={500}
+                            className="pull-right typist-position"
+                            stdTypingDelay={10}
+                            avgTypingDelay={10}
+                            cursor={{hideWhenDone: true, element: '_', blink: true}}
+                        >
+                            <span>Try the new way of searching in Haystack!</span>
+                        </Typist>
+                    </div>
+                    <div className="pull-right">
+                        <Link className="pull-right btn btn-primary btn-md" to="/usb">GO TO UNIVERSAL SEARCH</Link>
+                    </div>
+                </div>
+                <div className="primary-home-container">
+                    <h2 className="home__header">Select a service to start </h2>
+                    <div className="col-md-4 col-md-offset-4" >
+                        <Select
+                            name="service-list"
+                            options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
+                            onChange={this.handleChange}
+                            placeholder="Select..."
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+
+        const UniversalSearchPrimary = () => (
+            <div>
+                <div className="primary-home-container primary-home-container__usb">
+                    <h3 className="home__header">Try new way of searching in Haystack</h3>
+                    <div className="col-md-4 col-md-offset-4" >
+                        <Link className="btn btn-primary btn-lg primary-home-container__goto-button" to="/usb">GOTO UNIVERSAL SEARCH</Link>
+                    </div>
+                </div>
+                <div className="clearfix secondary-home-container">
+                    <div className="pull-left">
+                        <span>Select a service to start</span>
+                    </div>
+                    <div className="pull-right">
+                        <Select
+                            name="service-list"
+                            className="service-list__secondary"
+                            options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
+                            onChange={this.handleChange}
+                            placeholder="Select..."
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <section className="container">
                 <div className="jumbotron">
-                    <div className="clearfix universal-search__try-message">
-                        <div className="pull-left">
-                            <Typist
-                                startDelay={500}
-                                className="pull-right typist-position"
-                                stdTypingDelay={10}
-                                avgTypingDelay={10}
-                                cursor={{hideWhenDone: true, element: '_', blink: true}}
-                            >
-                                <span>Try new way of searching in Haystack!</span>
-                            </Typist>
-                        </div>
-                        <div className="pull-right">
-                            <Link className="pull-right btn btn-primary btn-md" to="/usb">GOTO UNIVERSAL SEARCH</Link>
-                        </div>
-                    </div>
-                    <div className="service-selector">
-                        <h2 className="home__header">Select a service to start </h2>
-                        <div className="col-md-4 col-md-offset-4" >
-                            <Select
-                                name="service-list"
-                                options={HomeSearchBox.convertToValueLabelMap(this.props.services)}
-                                onChange={this.handleChange}
-                                placeholder="Select..."
-                            />
-                        </div>
-                    </div>
+                    {
+                        window.haystackUiConfig.usbPrimary ? <UniversalSearchPrimary/> : <ServiceSelectorPrimary/>
+                    }
                 </div>
             </section>
         );
