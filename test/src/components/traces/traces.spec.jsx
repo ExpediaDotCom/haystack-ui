@@ -22,6 +22,7 @@ import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
 import { MemoryRouter } from 'react-router-dom';
+import {observable} from 'mobx';
 
 import Traces from '../../../../src/components/traces/traces';
 import SearchBar from '../../../../src/components/traces/searchBar/searchBar';
@@ -34,6 +35,7 @@ import Autocomplete from '../../../../src/components/traces/utils/autocomplete';
 import {OperationStore} from '../../../../src/stores/operationStore';
 import {ServiceStore} from '../../../../src/stores/serviceStore';
 import TraceDetails from '../../../../src/components/traces/details/traceDetails';
+// import RelatedTracesTabContainer from '../../../../src/components/traces/details/relatedTraces/relatedTracesTabContainer';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -260,7 +262,7 @@ function createServiceStubStore() {
 
 function createSearchableKeysStore(results) {
     const store = new SearchableKeysStore();
-    store.keys = results;
+    store.keys = observable.array(results);
     sinon.stub(store, 'fetchKeys', () => []);
     return store;
 }
@@ -305,11 +307,16 @@ function createStubStore(results, promise, searchQuery = {}) {
     return store;
 }
 
-function createStubDetailsStore(spans, promise) {
+function createStubDetailsStore(spans, promise, searchQuery = {}) {
     const store = new TraceDetailsStore();
     sinon.stub(store, 'fetchTraceDetails', () => {
         store.spans = spans;
         store.promiseState = promise;
+    });
+    sinon.stub(store, 'fetchRelatedTraces', () => {
+        store.relatedTraces = [];
+        store.relatedTracesPromiseState = promise;
+        store.searchQuery = searchQuery;
     });
 
     return store;
@@ -421,6 +428,23 @@ describe('<Traces />', () => {
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(2);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
+    });
+
+    it('should be able to sort on columns after getting search results', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+
+        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
+        expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
     });
 
     it('should not show search results list on empty promise', () => {
@@ -535,7 +559,8 @@ describe('<Traces />', () => {
 
     it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
         const store = createUIStateStore();
-        const wrapper = mount(<Autocomplete options={['test-1', 'test-2', 'test-3']} uiState={store}/>);
+        const options = observable.array(['test-1', 'test-2', 'test-3']);
+        const wrapper = mount(<Autocomplete options={options} uiState={store}/>);
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'test'}});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 40});
@@ -545,55 +570,40 @@ describe('<Traces />', () => {
         expect(wrapper.find('.search-bar-text-box').prop('value')).to.equal('test-3=');
     });
 
-    it('renders the all spans in the trace in the detail view', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+    describe('<TraceDetails />', () => {
+        it('renders the all spans in the trace in the detail view', () => {
+            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
-        expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
-    });
+            expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+        });
 
-    it('renders the descendents on Span Click in the timeline view', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-        const parentSpan = wrapper.find('[id="test-span-1"]');
-        expect(wrapper.find('.span-bar')).to.have.length(4);
-        parentSpan.simulate('click');
-        expect(wrapper.find('.span-bar')).to.have.length(1);
-    });
+        it('renders the descendents on Span Click in the timeline view', () => {
+            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+            const parentSpan = wrapper.find('[id="test-span-1"]');
+            expect(wrapper.find('.span-bar')).to.have.length(4);
+            parentSpan.simulate('click');
+            expect(wrapper.find('.span-bar')).to.have.length(1);
+        });
 
-    it('properly renders the time pointers to depict duration', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-        const timePointers = wrapper.find('.time-pointer');
+        it('properly renders the time pointers to depict duration', () => {
+            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+            const timePointers = wrapper.find('.time-pointer');
 
-        expect(timePointers).to.have.length(5);
-        expect((timePointers).last().text()).to.eq('3.500s ');
-    });
+            expect(timePointers).to.have.length(5);
+            expect((timePointers).last().text()).to.eq('3.500s ');
+        });
 
-    it('should be able to sort on columns after getting search results', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
-        wrapper.find('.results-header').at(1).simulate('click');
-        wrapper.find('.results-header').at(1).simulate('click');
-        wrapper.find('.results-header').at(2).simulate('click');
-        wrapper.find('.results-header').at(2).simulate('click');
-        wrapper.find('.results-header').at(3).simulate('click');
-        wrapper.find('.results-header').at(3).simulate('click');
-        wrapper.find('.results-header').at(4).simulate('click');
-        wrapper.find('.results-header').at(4).simulate('click');
-
-        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
-        expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
-    });
-
-    it('has a modal upon clicking a span', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<MemoryRouter>
-            <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
-        </MemoryRouter>);
-        wrapper.find('.span-click').first().simulate('click');
-        const modal = wrapper.find('SpanDetailsModal').first();
-        expect(modal.props().isOpen).to.be.true;
+        it('has a modal upon clicking a span', () => {
+            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+            const wrapper = mount(<MemoryRouter>
+                <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
+            </MemoryRouter>);
+            wrapper.find('.span-click').first().simulate('click');
+            const modal = wrapper.find('SpanDetailsModal').first();
+            expect(modal.props().isOpen).to.be.true;
+        });
     });
 });
