@@ -162,11 +162,10 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     }
 
     // Returns an array of tag key pairs of the current trace
-    // The keys of the array however are not lowercase
     // Since the keypairs that share key values are simply overwriten by each other by order at which they are called,
     // some tags that have multiple values across the trace will have 'randomly' selected values.
     @computed
-    get fields() {
+    get tags() {
         let tags = [];
         this.spans.forEach((span) => { tags = _.union(tags, span.tags); }); // Create a union of tags of all spans
 

@@ -38,15 +38,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
-    static timePresetOptions = [
-        '5m',
-        '15m',
-        '1h',
-        '4h',
-        '12h',
-        '24h',
-        '3d'
-    ];
+    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
 
     static fieldOptions = (window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions);
 
@@ -57,7 +49,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         this.state = {
             selectedFieldIndex,
             selectedTimeIndex,
-            fields: this.props.store.fields// compute the fields of the original trace
+            tags: this.props.store.tags// compute a dictionary tags of all spans of this trace
         };
 
         this.handleTimeChange = this.handleTimeChange.bind(this);
@@ -85,14 +77,14 @@ export default class RelatedTracesTabContainer extends React.Component {
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
 
         // Rejects API promise if the trace does not have the chosen field
-        if (!this.state.fields[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
+        if (!this.state.tagss[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
             return this.props.store.rejectRelatedTracesPromise('Trace does not have chosen tag to relate with other traces.');
         }
 
         // Builds Query
         const query =  {
             serviceName: '',
-            [chosenField.fieldTag]: this.props[chosenField.propertyToMatch] || this.state.fields[chosenField.propertyToMatch],
+            [chosenField.fieldTag]: this.props[chosenField.propertyToMatch] || this.state.tags[chosenField.propertyToMatch],
             timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
         };
 

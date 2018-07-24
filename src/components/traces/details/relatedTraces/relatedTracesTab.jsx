@@ -76,9 +76,9 @@ export default class relatedTracesTab extends React.Component {
                     }
                     </tbody>
                 </table>
-                {relatedTraces.length > numDisplayedTraces ? null : <span style={{position: 'absolute'}}>End of Results</span>}
+                <span style={{position: 'absolute', marginLeft: '10px', marginTop: '5px'}}> {relatedTraces.length > numDisplayedTraces ? `5 of ${relatedTraces.length} Results` : 'End of Results'}</span>
                 <div style={{textAlign: 'center', marginTop: '15px'}}>
-                    <a role="button" className="btn btn-default" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? 'Show All in Universal' : 'View in Universal Search' }</a>
+                    <a role="button" className="btn btn-default" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? `Show All(${relatedTraces.length}) in Universal` : 'View in Universal Search' }</a>
                 </div>
             </article>
         );

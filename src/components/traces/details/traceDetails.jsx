@@ -127,7 +127,7 @@ export default class TraceDetails extends React.Component {
                             <li className={this.state.tabSelected === 3 ? 'active' : ''}>
                                 <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
                             </li>
-                            { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
+                            { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
                             <li className={this.state.tabSelected === 4 ? 'active' : ''}>
                                 <a role="button" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
                             </li>) : null }
