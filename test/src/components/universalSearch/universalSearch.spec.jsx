@@ -1,7 +1,7 @@
 /*
  * Copyright 2018 Expedia, Inc.
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       Licensed under the Apache License, Version 2.0 (the 'License");
  *       you may not use this file except in compliance with the License.
  *       You may obtain a copy of the License at
  *
@@ -20,6 +20,8 @@ import { shallow, mount } from 'enzyme';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
 
 import UniversalSearch from '../../../../src/components/universalSearch/universalSearch';
 import Autosuggest from '../../../../src/components/universalSearch/searchBar/autosuggest';
@@ -45,6 +47,69 @@ const stubOptions = {
     error: ['true', 'false'],
     serviceName: ['test-a', 'test-b', 'test-c']
 };
+
+// STUBS FOR BACKEND SERVICE RESPONSES
+const stubSearchableKeys = ['traceId', 'spanId', 'serviceName', 'operationName', 'error'];
+const stubServices = [];
+const stubOperations = ['mormont-1', 'seaworth-1', 'bolton-1', 'baelish-1', 'snow-1', 'tully-1', 'dondarrion-1', 'grayjoy-1', 'clegane-1', 'drogo-1', 'tarley-1'];
+// Two traces are neccessary to prevent triggering the trace details api.
+const stubTraces = [{
+    traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
+    root: {
+        url: 'test-1',
+        serviceName: 'test-1',
+        operationName: 'test-1'
+    },
+    services: [
+        {
+            name: 'abc-service',
+            duration: 89548,
+            spanCount: 12
+        },
+        {
+            name: 'def-service',
+            duration: 89548,
+            spanCount: 29
+        },
+        {
+            name: 'ghi-service',
+            duration: 89548,
+            spanCount: 31
+        }
+    ],
+    error: true,
+    startTime: 1499975993,
+    duration: 89548
+},
+    {
+        traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
+        root: {
+            url: 'test-2',
+            serviceName: 'test-2',
+            operationName: 'test-2'
+        },
+        services: [
+            {
+                name: 'abc-service',
+                duration: 1000000,
+                spanCount: 11
+            },
+            {
+                name: 'def-service',
+                duration: 89548,
+                spanCount: 12
+            },
+            {
+                name: 'ghi-service',
+                duration: 89548,
+                spanCount: 12
+            }
+        ],
+        error: false,
+        startTime: 1499985993,
+        duration: 17765
+    }
+];
 
 const stubShortChip = {serviceName: 'test'};
 
@@ -76,6 +141,22 @@ const updatedStubLocation = {
 };
 
 describe('<UniversalSearch />', () => {
+    let server;
+
+    before(() => {
+        server = new MockAdapter(axios);
+        server.onGet('/api/traces/searchableKeys').reply(200, stubSearchableKeys);
+        server.onGet('/api/alerts/root-service/unhealthyCount').reply(200, 0);
+        server.onGet('/api/services').reply(200, stubServices);
+        server.onGet('/api/operations?serviceName=root-service').reply(200, stubOperations);
+        server.onGet(/^\/api\/traces\?/g).reply(200, stubTraces);
+        server.onGet(/^\/api\/traces\/timeline\?/g).reply(200, []);
+    });
+
+    after(() => {
+        server = null;
+    });
+    
     it('should render the universalSearch panel`', () => {
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubLocation} history={stubHistory}/></MemoryRouter>);
         expect(wrapper.find('.universal-search-panel')).to.have.length(1);
