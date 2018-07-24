@@ -91,6 +91,7 @@ export default class Autocomplete extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
+        this.handlePaste = this.handlePaste.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleSelection = this.handleSelection.bind(this);
         this.handleSelectionFill = this.handleSelectionFill.bind(this);
@@ -200,9 +201,7 @@ export default class Autocomplete extends React.Component {
     // Trigger from pressing the search button
     handleSearch() {
         if (this.inputRef.value) {
-            this.updateChips(() => {
-                this.props.search();
-            });
+            this.updateChips();
         }
         this.props.search();
     }
@@ -263,6 +262,18 @@ export default class Autocomplete extends React.Component {
             }
         }
     }
+
+    // Logic for when the user pastes into search bar
+    handlePaste(e) {
+        e.preventDefault();
+        const splitPastedText = e.clipboardData.getData('Text').split('');
+        splitPastedText.forEach((char) => {
+            this.inputRef.value += char;
+            if (char === ' ') this.handleKeyPress({keyCode: SPACE, preventDefault: () => {}});
+        });
+        if (Autocomplete.completeInputString(this.inputRef.value)) this.updateChips();
+    }
+
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
         const keyPressed = e.keyCode || e.which;
@@ -274,11 +285,11 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.updateChips();
             this.props.search();
-        } else if (keyPressed === TAB && e.target.value) {
+        } else if (keyPressed === TAB && this.inputRef.value) {
             e.preventDefault();
             this.updateChips();
         } else if (keyPressed === SPACE) {
-            if (Autocomplete.completeInputString(this.inputRef.value)) {
+            if (Autocomplete.completeInputString(this.inputRef.value.trim())) {
                 e.preventDefault();
                 this.updateChips();
             } else {
@@ -466,6 +477,7 @@ export default class Autocomplete extends React.Component {
                         <input
                             type="text"
                             className="usb-searchbar__input"
+                            onPaste={this.handlePaste}
                             onKeyDown={this.handleKeyPress}
                             onChange={this.updateFieldKv}
                             ref={this.setInputRef}
