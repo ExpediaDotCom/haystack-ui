@@ -27,7 +27,8 @@ import Error from '../common/error';
 export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        isUniversalSearch: PropTypes.bool.isRequired
     };
 
     /**
@@ -70,12 +71,15 @@ export default class ServiceGraphContainer extends React.Component {
 
     render() {
         return (
-            <section className="container">
+            <section>
                 <div className="clearfix" id="service-graph">
-                    <div className="serviceGraph__header-title pull-left">
-                        <span>Service Graph </span>
-                        <span className="h6">(will show list of partial graphs if missing data from services)</span>
-                    </div>
+                    {
+                        !this.props.isUniversalSearch && (
+                            <div className="serviceGraph__header-title pull-left">
+                                <span>Service Graph </span>
+                                <span className="h6">(will show list of partial graphs if missing data from services)</span>
+                            </div>)
+                    }
                     <div className="serviceGraph__tabs pull-right">
                         <ul className="nav nav-tabs">
                             {

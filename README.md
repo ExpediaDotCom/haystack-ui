@@ -30,19 +30,21 @@ $ cd haystack-ui
 If the repository was already cloned, you can initialize and update submodules with `git submodule update --init --recursive`
 
 ### Build and Run
-This application uses [webpack](https://webpack.github.io/) as the UI module bundler. To build + bundle all the required UI assets (CSS/JS) and run expressjs server, use:
+This application uses [webpack](https://webpack.github.io/) for building + bundling resources. To run in developer mode with client and server side hotloading, use:
 
 ```
 $ npm install                # install dependencies
-$ npm run start:dev          # start server in hot-reload server side 
+$ npm run start:dev          # start server in dev mode with hotloading
 ```
 
 Once start is successful you can visit [http://localhost:8080/](http://localhost:8080/)
 
-To continuously re-build the assets while you are developing, use this command in a separate terminal:
+For running in production mode, use:
 
 ```
-$ npm run watch
+$ npm install                # install dependencies
+$ npm run build              # run tests(with coverage), build client side code and emit produciton optimized bundles 
+$ npm start                  # start node server
 ```
 
 ## Testing

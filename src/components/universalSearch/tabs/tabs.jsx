@@ -22,8 +22,8 @@ import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
 import AlertsView from '../../alerts/alertsView';
-import ServiceGraphContainer from './serviceGraphContainer';
-import ServicePerformanceContainer from './servicePerformanceContainer';
+import ServiceGraph from './serviceGraph';
+import ServicePerformance from './servicePerformance';
 import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
@@ -103,9 +103,9 @@ export default class Tabs extends React.Component {
             case 'alerts':
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
-                return <ServiceGraphContainer store={store} history={history}/>;
+                return <ServiceGraph store={store} history={history}/>;
             case 'servicePerformance':
-                return <ServicePerformanceContainer store={store} history={history}/>;
+                return <ServicePerformance store={store} history={history}/>;
             default:
                 return null;
         }
