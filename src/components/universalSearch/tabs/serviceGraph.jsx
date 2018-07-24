@@ -33,7 +33,7 @@ export default class ServiceGraph extends React.Component {
     }
 
     componentDidMount() {
-        import(/* webpackChunkName: "serviceGraphContainer", webpackPreload: true */ '../../serviceGraph/ServiceGraphContainer')
+        import(/* webpackChunkName: "serviceGraphContainer", webpackPreload: true */ '../../serviceGraph/serviceGraphContainer')
         .then((mod) => {
             this.setState({ServiceGraphContainer: mod.default});
         });
