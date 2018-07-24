@@ -119,17 +119,17 @@ export default class TraceDetails extends React.Component {
                     <div className="trace-details-tabs pull-left full-width">
                         <ul className="nav nav-tabs">
                             <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                <a role="button" id="timeline-view" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                             </li>
                             <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                    <a role="button" id="latency-view" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
                             </li>
                             <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
+                                <a role="button" id="trends-view" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
                             </li>
                             { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
                             <li className={this.state.tabSelected === 4 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
+                                <a role="button" id="related-view" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
                             </li>) : null }
                         </ul>
                     </div>

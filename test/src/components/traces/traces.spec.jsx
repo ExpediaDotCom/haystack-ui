@@ -71,34 +71,39 @@ const pendingPromise = {
     case: ({pending}) => pending()
 };
 
-const stubResults = [{
-    traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
-    root: {
-        url: 'test-1',
-        serviceName: 'test-1',
-        operationName: 'test-1'
+const stubResults = [
+    {
+        traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
+        root: {
+            url: 'test-1',
+            serviceName: 'test-1',
+            operationName: 'test-1'
+        },
+        operationName: 'dummy',
+        rootError: false,
+        spanCount: 12,
+        serviceName: 'abc-service',
+        services: [
+            {
+                name: 'abc-service',
+                duration: 89548,
+                spanCount: 12
+            },
+            {
+                name: 'def-service',
+                duration: 89548,
+                spanCount: 29
+            },
+            {
+                name: 'ghi-service',
+                duration: 89548,
+                spanCount: 31
+            }
+        ],
+        error: true,
+        startTime: 1499975993,
+        duration: 89548
     },
-    services: [
-        {
-            name: 'abc-service',
-            duration: 89548,
-            spanCount: 12
-        },
-        {
-            name: 'def-service',
-            duration: 89548,
-            spanCount: 29
-        },
-        {
-            name: 'ghi-service',
-            duration: 89548,
-            spanCount: 31
-        }
-    ],
-    error: true,
-    startTime: 1499975993,
-    duration: 89548
-},
     {
         traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
         root: {
@@ -106,6 +111,10 @@ const stubResults = [{
             serviceName: 'test-2',
             operationName: 'test-2'
         },
+        operationName: 'dummy',
+        rootError: false,
+        spanCount: 11,
+        serviceName: 'abc-service',
         services: [
             {
                 name: 'abc-service',
@@ -308,16 +317,16 @@ function createStubStore(results, promise, searchQuery = {}) {
     return store;
 }
 
-function createStubDetailsStore(spans, promise, searchQuery = {}) {
+function createStubDetailsStore(spans, promise, relatedResults = []) {
     const store = new TraceDetailsStore();
     sinon.stub(store, 'fetchTraceDetails', () => {
         store.spans = spans;
         store.promiseState = promise;
     });
-    sinon.stub(store, 'fetchRelatedTraces', () => {
-        store.relatedTraces = [];
+    sinon.stub(store, 'fetchRelatedTraces', (query) => {
+        store.relatedTraces = relatedResults;
         store.relatedTracesPromiseState = promise;
-        store.searchQuery = searchQuery;
+        store.searchQuery = query;
     });
 
     return store;
@@ -577,39 +586,65 @@ describe('<Traces />', () => {
     });
 
     describe('<TraceDetails />', () => {
-        it('renders the all spans in the trace in the detail view', () => {
-            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+        describe('Timeline View', () => {
+            it('renders the all spans in the trace', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
-            expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+                expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+            });
+
+            it('renders the descendents on Span Click', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                const parentSpan = wrapper.find('[id="test-span-1"]');
+                expect(wrapper.find('.span-bar')).to.have.length(4);
+                parentSpan.simulate('click');
+                expect(wrapper.find('.span-bar')).to.have.length(1);
+            });
+
+            it('properly renders the time pointers to depict duration', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                const timePointers = wrapper.find('.time-pointer');
+
+                expect(timePointers).to.have.length(5);
+                expect((timePointers).last().text()).to.eq('3.500s ');
+            });
+
+            it('has a modal upon clicking a span', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<MemoryRouter>
+                    <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
+                </MemoryRouter>);
+                wrapper.find('.span-click').first().simulate('click');
+                const modal = wrapper.find('SpanDetailsModal').first();
+                expect(modal.props().isOpen).to.be.true;
+            });
         });
-
-        it('renders the descendents on Span Click in the timeline view', () => {
-            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-            const parentSpan = wrapper.find('[id="test-span-1"]');
-            expect(wrapper.find('.span-bar')).to.have.length(4);
-            parentSpan.simulate('click');
-            expect(wrapper.find('.span-bar')).to.have.length(1);
-        });
-
-        it('properly renders the time pointers to depict duration', () => {
-            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-            const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-            const timePointers = wrapper.find('.time-pointer');
-
-            expect(timePointers).to.have.length(5);
-            expect((timePointers).last().text()).to.eq('3.500s ');
-        });
-
-        it('has a modal upon clicking a span', () => {
-            const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-            const wrapper = mount(<MemoryRouter>
-                <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
-            </MemoryRouter>);
-            wrapper.find('.span-click').first().simulate('click');
-            const modal = wrapper.find('SpanDetailsModal').first();
-            expect(modal.props().isOpen).to.be.true;
+        describe('RelatedTraces View', () => {
+            it('exists and renders correctly', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                expect(wrapper.find('a#related-view')).to.have.length(1);
+                wrapper.find('a#related-view').simulate('click');
+                expect(wrapper.find('[errorMessage="Please try again later"]')).to.have.length(1);
+                // We expect 9 options because there are 7 time preset options and two relate by options (one empty, one 'success').
+                expect(wrapper.find('option')).to.have.length(9);
+            });
+            it('should render related traces with the correct query', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise, stubResults);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[1].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                wrapper.find('a#related-view').simulate('click');
+                // Selected the first field (`success`) to find relatedTraces
+                wrapper.find('select#field').simulate('change', {target: { value: 0}});
+                // Expects that the dictionary of tags was successfully built
+                expect(wrapper.props().traceDetailsStore.tags.success).to.equal('false');
+                // Expects that the searchQuery has the correct field and timepreset to find related traces
+                expect(wrapper.props().traceDetailsStore.searchQuery.success).to.equal('false');
+                expect(wrapper.props().traceDetailsStore.searchQuery.timePreset).to.equal('1h');
+                expect(wrapper.props().traceDetailsStore.relatedTraces.length).to.equal(2);
+            });
         });
     });
 });

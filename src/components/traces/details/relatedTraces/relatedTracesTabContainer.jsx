@@ -77,7 +77,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
 
         // Rejects API promise if the trace does not have the chosen field
-        if (!this.state.tagss[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
+        if (!this.state.tags[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
             return this.props.store.rejectRelatedTracesPromise('Trace does not have chosen tag to relate with other traces.');
         }
 
@@ -113,7 +113,7 @@ export default class RelatedTracesTabContainer extends React.Component {
             <section>
                 <div className="text-left">
                     <span>Relate Traces by: </span>
-                    <select className="time-range-selector" value={selectedFieldIndex || ''} onChange={this.handleFieldChange}>
+                    <select id="field" className="time-range-selector" value={selectedFieldIndex || ''} onChange={this.handleFieldChange}>
                             {!selectedFieldIndex ? <option key="empty" value="" /> : null}
                             {RelatedTracesTabContainer.fieldOptions.map((fieldOp, index) => (
                                 <option
@@ -122,7 +122,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                                 >{fieldOp.fieldDescription}</option>))}
                     </select>
                     <span style={{paddingLeft: '5px'}}>of the </span>
-                    <select className="time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
+                    <select id="time" className="time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
                         {RelatedTracesTabContainer.timePresetOptions.map((preset, index) => (
                             <option
                                 key={preset}
