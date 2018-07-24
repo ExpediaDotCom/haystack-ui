@@ -10,7 +10,8 @@
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" --exit --timeout 10000",
     "build": "npm run clean && npm run codegen && npm run coverage && webpack --mode=production",
     "start": "node server/start.js",
-    "start:dev": "npm run clean && npm run codegen && npm run test && NODE_ENV=development webpack --mode=development && NODE_ENV=development nodemon --ignore 'public/*' server/start.js",
+    "start:dev": "npm run clean && npm run codegen && npm run test && concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
+    "start:devserver": "NODE_ENV=development nodemon --ignore 'public/*' server/start.js",
     "watch": "NODE_ENV=development webpack -w --mode=development"
   },
   "engines": {
@@ -61,6 +62,7 @@
     "chai": "^4.1.2",
     "chalk": "^2.4.1",
     "chart.js": "^2.7.2",
+    "concurrently": "^3.6.0",
     "coveralls": "^3.0.1",
     "css-loader": "^0.28.11",
     "enzyme": "^3.3.0",
@@ -114,6 +116,7 @@
     "vis": "^4.21.0",
     "vizceral": "^4.6.3",
     "vizceral-react": "^4.5.5",
+    "wait-on": "^2.1.0",
     "webpack": "^4.16.1",
     "webpack-bundle-analyzer": "^2.11.3",
     "webpack-command": "^0.4.1"
