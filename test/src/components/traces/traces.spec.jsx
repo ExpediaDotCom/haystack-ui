@@ -23,6 +23,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 import { MemoryRouter } from 'react-router-dom';
 import {observable} from 'mobx';
+import ReactGA from 'react-ga';
 
 import Traces from '../../../../src/components/traces/traces';
 import SearchBar from '../../../../src/components/traces/searchBar/searchBar';
@@ -321,6 +322,11 @@ function createStubDetailsStore(spans, promise, searchQuery = {}) {
 
     return store;
 }
+
+before((done) => {
+    ReactGA.initialize('foo', { testMode: true });
+    done();
+});
 
 describe('<Traces />', () => {
     it('should render Traces panel container', () => {
