@@ -63,6 +63,9 @@ describe('TracesSearchStore', () => {
 
     beforeEach(() => {
         server = new MockAdapter(axios);
+        // Mocking an empty response for the timeline API.
+        // TODO: Change to actual tests.
+        server.onGet(/^\/api\/traces\/timeline\?/g).reply(200, []);
     });
 
     afterEach(() => {
@@ -107,7 +110,7 @@ describe('TracesSearchStore', () => {
                 done();
             });
     });
-
+    
     it('fetches traces from the api and decodes the components before submitting them', (done) => {
         server.onGet('/api/traces?serviceName=service%20name&operationName=operation%20name&startTime=1000&endTime=1000').reply(200, stubTrace);
 
