@@ -38,7 +38,7 @@ const modalStyles = {
 };
 
 const ModalView = ({serviceName, title, isOpen, closeModal, children}) => (
-    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'}>
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'} ariaHideApp={false}>
         <header className="clearfix">
             <div className="pull-left">
                 <div>{serviceName && (<span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>)}</div>

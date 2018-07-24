@@ -293,7 +293,7 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
 }
 
 function TraceDetailsStubComponent({traceDetailsStore, traceId, location, baseServiceName}) {
-    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} traceDetailsStore={traceDetailsStore} />);
+    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} traceDetailsStore={traceDetailsStore} isUniversalSearch={false} />);
 }
 
 function createStubStore(results, promise, searchQuery = {}) {
