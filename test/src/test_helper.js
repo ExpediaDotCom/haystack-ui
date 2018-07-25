@@ -58,6 +58,11 @@ global.window.haystackUiConfig = {
             fieldTag: 'success',
             propertyToMatch: 'success',
             fieldDescription: 'success status'
+        },
+        {
+            fieldTag: 'id',
+            propertyToMatch: 'id',
+            fieldDescription: 'customer identity'
         }
     ],
     tracesTTL: -1,

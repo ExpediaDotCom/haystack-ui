@@ -38,18 +38,23 @@ export default class RelatedTracesTabContainer extends React.Component {
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
-    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
+    static timePresetOptions = (window.haystackUiConfig && window.haystackUiConfig.tracesTimePresetOptions);
 
     static fieldOptions = (window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions);
 
     constructor(props) {
         super(props);
         const selectedFieldIndex = null;
-        const selectedTimeIndex = 2; // Default Time Preset is 1h
+        const selectedTimeIndex = 2; // The default time preset is the third
         this.state = {
             selectedFieldIndex,
             selectedTimeIndex,
-            tags: this.props.store.tags// compute a dictionary tags of all spans of this trace
+            /** 
+             * The following computes a dictionary tags of all spans of this trace
+             * This computation relies that the spans have already been calculated in the traceDetailsStore, which happens
+             * when the Timeline View (which is default) is viewed, and fetchTraceDetails has complete.
+             */
+            tags: this.props.store.tags
         };
 
         this.handleTimeChange = this.handleTimeChange.bind(this);
@@ -71,14 +76,14 @@ export default class RelatedTracesTabContainer extends React.Component {
     fetchRelatedTraces() {
         // If the field is unselected
         if (this.state.selectedFieldIndex === null) {
-            return this.props.store.rejectRelatedTracesPromise('Field is not selected.');
+            return this.props.store.rejectRelatedTracesPromise('Field is not selected');
         }
 
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
 
         // Rejects API promise if the trace does not have the chosen field
         if (!this.state.tags[chosenField.propertyToMatch] && chosenField.propertyToMatch !== 'traceId') {
-            return this.props.store.rejectRelatedTracesPromise('Trace does not have chosen tag to relate with other traces.');
+            return this.props.store.rejectRelatedTracesPromise('This trace does not have the chosen field');
         }
 
         // Builds Query
@@ -132,10 +137,10 @@ export default class RelatedTracesTabContainer extends React.Component {
                 </div>
                 { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
                         pending: () => <Loading />,
-                        rejected: () => <Error />,
+                        rejected: reason => <Error errorMessage={reason}/>,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
                                 ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
-                                : <Error />)
+                                : <Error errorMessage="No related traces found"/>)
                     })
                 }
             </section>
