@@ -49,6 +49,13 @@ export default class SearchBar extends React.Component {
         ServiceStore.fetchServices();
     }
 
+    componentWillReceiveProps(next) {
+        // update time window and chips when a history push occurs
+        if (next.search) {
+            uiState.setStateFromSearch(next.search);
+        }
+    }
+
     handleSubmit() {
         // TODO pass on nested objects for span level queries
         this.props.handleSearch(uiState.getCurrentSearch());

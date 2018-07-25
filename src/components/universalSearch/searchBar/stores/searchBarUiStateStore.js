@@ -27,11 +27,7 @@ export class SearchBarUiStateStore {
 
     @action init(search) {
         // initialize observables using search object
-        Object.keys(search).forEach((key) => {
-            if (key !== 'time' && key !== 'tabId') this.chips[key] = search[key];
-        });
-        this.serviceName = search.serviceName;
-        this.operationName = search.operationName;
+        this.setStateFromSearch(search);
     }
 
     getCurrentSearch() {
@@ -50,6 +46,20 @@ export class SearchBarUiStateStore {
         }
 
         return search;
+    }
+
+    @action setStateFromSearch(search) {
+        this.chips = [];
+        Object.keys(search).forEach((key) => {
+            if (key === 'time') {
+                this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
+                // url query keys that we don't want as chips
+            } else if (key !== 'tabId' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
+                this.chips[key] = search[key];
+            }
+        });
+        this.serviceName = search.serviceName;
+        this.operationName = search.operationName;
     }
 
     @action setTimeWindow(timeWindow) {
