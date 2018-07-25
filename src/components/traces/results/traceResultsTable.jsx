@@ -30,7 +30,6 @@ export default class TraceResultsTable extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
         results: PropTypes.object.isRequired,
-        totalCount: PropTypes.number.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
     };
 
@@ -213,8 +212,7 @@ export default class TraceResultsTable extends React.Component {
     render() {
         const {
             query,
-            results,
-            totalCount
+            results
         } = this.props;
 
         const selectRowProp = {
@@ -249,11 +247,6 @@ export default class TraceResultsTable extends React.Component {
         const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
 
         return (
-            <div>
-                <div className="trace-result-summary">
-                    <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
-                    {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
-                </div>
                 <BootstrapTable
                     data={results}
                     tableStyle={{ border: 'none' }}
@@ -383,7 +376,6 @@ export default class TraceResultsTable extends React.Component {
                         headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
                     ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
                 </BootstrapTable>
-            </div>
         );
     }
 }

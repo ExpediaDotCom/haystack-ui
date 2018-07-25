@@ -37,12 +37,53 @@ export default class TraceResults extends React.Component {
         isUniversalSearch: false
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.toggleView = this.toggleView.bind(this);
+    }
+
+    toggleView() {
+        this.setState({showSpans: !this.state.showSpans});
+    }
+
     render() {
+        const showSpans = this.state.showSpans;
+        const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch}) => (
+            <article>
+                <div className="trace-result-summary clearfix">
+                    <div className="pull-left">
+                        <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                        {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
+                    </div>
+                    <div className="pull-right">
+                        <span>View </span>
+                        <div className="btn-group btn-group-sm">
+                            <button className={showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Traces</button>
+                            <button className={!showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Spans</button>
+                        </div>
+                    </div>
+                </div>
+                <section>
+                    {
+                        showSpans
+                            ? (<div>spans</div>)
+                            : (<TraceResultsTable
+                                query={searchQuery}
+                                results={results}
+                                isUniversalSearch={isUniversalSearch}
+                            />)
+                    }
+                </section>
+            </article>
+            );
+
         return (
             <section>
                 { !this.props.tracesSearchStore.apiQuery.traceId && this.props.tracesSearchStore.timelinePromiseState && this.props.tracesSearchStore.timelinePromiseState.case({
                     pending: () => <div className="text-center timeline-loader">Loading timeline...</div>,
                     rejected: () => <Error />,
+                    empty: () => <div />,
                     fulfilled: () => (
                         (this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length)
                         ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history} isUniversalSearch={this.props.isUniversalSearch}/>
@@ -54,8 +95,8 @@ export default class TraceResults extends React.Component {
                         rejected: () => <Error />,
                         empty: () => <NoSearch />,
                         fulfilled: () => ((this.props.tracesSearchStore.searchResults && this.props.tracesSearchStore.searchResults.length)
-                            ? <TraceResultsTable
-                                query={this.props.tracesSearchStore.searchQuery}
+                            ? <TracesContainer
+                                searchQuery={this.props.tracesSearchStore.searchQuery}
                                 results={this.props.tracesSearchStore.searchResults}
                                 totalCount={this.props.tracesSearchStore.totalCount}
                                 isUniversalSearch={this.props.isUniversalSearch}
