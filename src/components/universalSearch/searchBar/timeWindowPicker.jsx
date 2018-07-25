@@ -45,13 +45,16 @@ export default class TimeWindowPicker extends React.Component {
         this.showTimePicker = this.showTimePicker.bind(this);
         this.state = {showTimeRangePicker: false};
     }
+
     setWrapperRef(node) {
         this.wrapperRef = node;
     }
+
     hideTimePicker() {
         document.removeEventListener('mousedown', this.handleOutsideClick);
         this.setState({showTimeRangePicker: false});
     }
+
     showTimePicker() {
         document.addEventListener('mousedown', this.handleOutsideClick);
         this.setState({showTimeRangePicker: true});
