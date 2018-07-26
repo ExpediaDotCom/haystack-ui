@@ -25,6 +25,7 @@ import NodeDetails from './nodeDetails';
 import Graph from './util/graph';
 import ConnectionDetails from './connectionDetails';
 import './serviceGraph.less';
+import ServiceGraphSearch from './graphSearch';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
@@ -103,7 +104,8 @@ export default class ServiceGraphResults extends React.Component {
         super(props);
         this.state = {
             nodeDetails: undefined,
-            connDetails: undefined
+            connDetails: undefined,
+            searchString: ''
         };
     }
 
@@ -123,6 +125,12 @@ export default class ServiceGraphResults extends React.Component {
         } else {
             this.setState({connDetails: highlightedObject.getName()});
         }
+        this.setState({searchString: ''});
+    };
+    searchStringChanged = (newVal) => {
+        this.setState({
+            searchString: newVal
+        });
     };
 
     render() {
@@ -177,6 +185,7 @@ export default class ServiceGraphResults extends React.Component {
 
         return (
             <article className="serviceGraph__panel">
+                <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
                 <Vizceral
                     traffic={config}
                     view={['haystack']}
@@ -185,6 +194,7 @@ export default class ServiceGraphResults extends React.Component {
                     allowDraggingOfNodes
                     targetFramerate={60}
                     objectHighlighted={this.objectHighlighted}
+                    match={this.state.searchString}
                 />
                 {
                     !!nodeDetails &&
@@ -201,8 +211,8 @@ export default class ServiceGraphResults extends React.Component {
                 {
                     !!connDetails &&
                     <ConnectionDetails
-                        requestRate={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                         onClose={this.onConnectionDetailsClose}
                     />
                 }
