@@ -16,20 +16,28 @@
  */
 
 import React from 'react';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Loading from '../common/loading';
 import ServiceGraphResults from './serviceGraphResults';
 import Error from '../common/error';
+import Graph from './util/graph';
+import timeWindow from '../../utils/timeWindow';
 
 @observer
 export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        isUniversalSearch: PropTypes.bool,
+        search: PropTypes.object,
+        graphStore: PropTypes.object.isRequired
     };
+
+    static defaultProps = {
+        isUniversalSearch: false,
+        search: {},
+        serviceName: undefined
+    }
 
     /**
      *
@@ -40,12 +48,17 @@ export default class ServiceGraphContainer extends React.Component {
      */
     static findRootNode(graph) {
         const dest = _.map(graph, edge => edge.destination.name);
-        const rootNodes = [];
+        let rootNodes = [];
         _.forEach(graph, (edge) => {
             if (!_.includes(dest, edge.source.name)) {
                 rootNodes.push(edge.source.name);
             }
         });
+        // No node found with outgoing connections only. Find the node with the most outgoing traffic as a root node.
+        if (_.isEmpty(rootNodes)) {
+            rootNodes = dest;
+        }
+
         const uniqRoots = _.uniq(rootNodes);
         const sortedRoots = _.sortBy(uniqRoots, (node) => {
             const outgoingEdges = _.filter(graph, edge => edge.source.name === node);
@@ -61,12 +74,34 @@ export default class ServiceGraphContainer extends React.Component {
             tabSelected: 1
         };
         this.toggleTab = this.toggleTab.bind(this);
-        this.props.store.fetchServiceGraph();
+    }
+
+    componentDidMount() {
+        this.fetchServiceGraphFromStore();
     }
 
     toggleTab(tabIndex) {
-        this.props.store.fetchServiceGraph();
         this.setState({tabSelected: tabIndex});
+        this.fetchServiceGraphFromStore();
+    }
+
+    fetchServiceGraphFromStore() {
+        const time = this.props.search.time;
+        const isCustomTimeRange = !!(time && time.from && time.to);
+        let activeWindow;
+
+        if (isCustomTimeRange) {
+            activeWindow = timeWindow.toCustomTimeRange(time.from, time.to);
+        } else {
+            activeWindow =  (time && time.preset) ? timeWindow.findMatchingPresetByShortName(time.preset) : timeWindow.defaultPreset;
+        }
+
+        const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
+        const filterQuery = {
+            from: activeWindowTimeRange.from,
+            to: activeWindowTimeRange.until
+        };
+        this.props.graphStore.fetchServiceGraph(filterQuery);
     }
 
     render() {
@@ -80,31 +115,55 @@ export default class ServiceGraphContainer extends React.Component {
                                 <span className="h6">(will show list of partial graphs if missing data from services)</span>
                             </div>)
                     }
+                    {!this.props.search.serviceName &&
                     <div className="serviceGraph__tabs pull-right">
                         <ul className="nav nav-tabs">
                             {
-                                this.props.store.graphs.map(
+                                this.props.graphStore.graphs.map(
                                     (graph, index) => (
-                                        <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''}>
-                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)} >{ServiceGraphContainer.findRootNode(graph)}</a>
+                                        <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''} key={index.toString()}>
+                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)}>{ServiceGraphContainer.findRootNode(graph)}</a>
                                         </li>
                                     )
                                 )
                             }
                         </ul>
                     </div>
+                    }
                 </div>
                 <div>
-                { this.props.store.promiseState && this.props.store.promiseState.case({
-                    pending: () => <Loading className="serviceGraph__loading"/>,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.store.graphs && this.props.store.graphs.length)
-                        ? <ServiceGraphResults serviceGraph={this.props.store.graphs[this.state.tabSelected - 1]} history={this.props.history} />
-                        : <Error />)
-                })
-                }
+                    {this.props.graphStore.promiseState && this.props.graphStore.promiseState.case({
+                        pending: () => <Loading className="serviceGraph__loading"/>,
+                        rejected: () => <Error/>,
+                        fulfilled: () => ((this.props.graphStore.graphs && this.props.graphStore.graphs.length)
+                            ? <FilteredServiceGraphResults graphs={this.props.graphStore.graphs} serviceName={this.props.search.serviceName} tabSelected={this.state.tabSelected}/>
+                            : <Error/>)
+                    })
+                    }
                 </div>
-            </section>
-        );
+            </section>);
     }
 }
+
+function FilteredServiceGraphResults(props) {
+    if (!props.serviceName) {
+        return (<ServiceGraphResults serviceGraph={props.graphs[props.tabSelected - 1]}/>);
+    }
+    const result = _.find(props.graphs, g => _.includes(Graph.buildGraph(g).allNodes(), props.serviceName));
+    if (typeof result !== 'undefined') {
+        const filtered = _.filter(result, edge => edge.source.name === props.serviceName || edge.destination.name === props.serviceName);
+        return (<ServiceGraphResults serviceGraph={filtered}/>);
+    }
+    return (<Error errorMessage="ServiceGraph data not found for the given time frame."/>);
+}
+
+FilteredServiceGraphResults.propTypes = {
+    graphs: PropTypes.object.isRequired,
+    serviceName: PropTypes.string,
+    tabSelected: PropTypes.number
+};
+
+FilteredServiceGraphResults.defaultProps = {
+    serviceName: undefined,
+    tabSelected: 0
+};

@@ -103,7 +103,7 @@ export default class Tabs extends React.Component {
             case 'alerts':
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
-                return <ServiceGraph store={store} history={history}/>;
+                return <ServiceGraph store={store} search={this.props.search} history={history}/>;
             case 'servicePerformance':
                 return <ServicePerformance store={store} history={history}/>;
             default:

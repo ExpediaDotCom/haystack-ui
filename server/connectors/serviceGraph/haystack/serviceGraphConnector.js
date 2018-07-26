@@ -24,7 +24,6 @@ const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
 const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
-const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
 
 function fetchServiceGraph(from, to) {
     return trendsFetcher
@@ -32,7 +31,6 @@ function fetchServiceGraph(from, to) {
         .then(data => extractor.extractGraphs(data));
 }
 
-connector.getServiceGraph = () => Q.fcall(() => fetchServiceGraph(Date.now() - (WINDOW_SIZE_IN_SECS * 1000), Date.now()));
 connector.getServiceGraphForTimeLine = (from, to) => Q.fcall(() => fetchServiceGraph(from, to));
 
 module.exports = connector;
