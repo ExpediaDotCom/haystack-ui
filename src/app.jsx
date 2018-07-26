@@ -34,7 +34,7 @@ const stores = {
 // mount react components
 ReactDOM.render(
     <Provider {...stores}>
-        <Router history={history}>
+        <Router>
             <Route component={withTracker(Main)}/>
         </Router>
     </Provider>
