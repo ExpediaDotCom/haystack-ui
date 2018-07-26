@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import {PropTypes as MobxPropTypes} from 'mobx-react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Vizceral from 'vizceral-react';
@@ -27,7 +28,10 @@ import './serviceGraph.less';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
-        serviceGraph: PropTypes.object.isRequired
+        serviceGraph: PropTypes.oneOfType([
+            MobxPropTypes.observableArray.isRequired,
+            PropTypes.array
+        ]).isRequired
     };
 
     static getNodeDisplayDetails(errorRate) {

@@ -16,20 +16,14 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-
-import serviceGraphStore from './stores/serviceGraphStore';
 import ServiceGraphContainer from './serviceGraphContainer';
 import './serviceGraph.less';
+import serviceGraphStore from './stores/serviceGraphStore';
 
-const ServiceGraph = props => (
+const ServiceGraph =  () => (
     <section className="service-graph-panel container">
-        <ServiceGraphContainer store={serviceGraphStore} history={props.history}/>
+        <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false}/>
     </section>
 );
-
-ServiceGraph.propTypes = {
-    history: PropTypes.object.isRequired
-};
 
 export default ServiceGraph;

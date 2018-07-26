@@ -23,8 +23,9 @@ import '../../serviceGraph/serviceGraph.less';
 @observer
 export default class ServiceGraph extends React.Component {
     static propTypes = {
-        store: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        search: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -43,7 +44,7 @@ export default class ServiceGraph extends React.Component {
         const ServiceGraphContainer = this.state.ServiceGraphContainer;
         return (
             <section className="service-graph-panel">
-                {ServiceGraphContainer && <ServiceGraphContainer store={this.props.store} history={this.props.history} isUniversalSearch /> }
+                {ServiceGraphContainer && <ServiceGraphContainer graphStore={this.props.store} search={this.props.search} history={this.props.history} isUniversalSearch /> }
             </section>
         );
     }
