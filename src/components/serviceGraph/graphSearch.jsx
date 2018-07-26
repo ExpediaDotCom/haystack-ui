@@ -16,27 +16,18 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'mobx-react';
-import {Route, BrowserRouter as Router} from 'react-router-dom';
-import Main from './main';
-import storesInitializer from './stores/storesInitializer';
-import withTracker from './components/common/withTracker';
-import serviceGraphStore from './components/serviceGraph/stores/serviceGraphStore';
+import PropTypes from 'prop-types';
 
-// app initializers
-storesInitializer.init();
+const ServiceGraphSearch = ({searchString, searchStringChanged}) => (
+        <div>
+            <input type="search" onChange={(event) => { searchStringChanged(event.currentTarget.value); }} value={searchString} placeholder="search service"/>
+        </div>
+    );
 
-const stores = {
-    graphStore: serviceGraphStore
+ServiceGraphSearch.propTypes = {
+    searchStringChanged: PropTypes.func.isRequired,
+    searchString: PropTypes.string.isRequired
 };
 
-// mount react components
-ReactDOM.render(
-    <Provider {...stores}>
-        <Router>
-            <Route component={withTracker(Main)}/>
-        </Router>
-    </Provider>
-    , document.getElementById('root')
-);
+export default ServiceGraphSearch;
+
