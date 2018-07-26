@@ -13,14 +13,6 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-
-/*
- * TODO: Add comments!
- * 
- * 
- */
-
-
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
