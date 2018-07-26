@@ -136,7 +136,7 @@ module.exports = {
         {
             fieldTag: 'url2',
             propertyToMatch: 'url2',
-            fieldDescription: 'test'
+            fieldDescription: 'test trait'
         }
     ]
 
