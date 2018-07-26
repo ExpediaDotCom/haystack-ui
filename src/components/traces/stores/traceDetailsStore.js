@@ -160,9 +160,10 @@ export class TraceDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    // Returns an array of tag key pairs of the current trace
-    // Since the keypairs that share key values are simply overwriten by each other by order at which they are called,
-    // some tags that have multiple values across the trace will have 'randomly' selected values.
+    // Returns an object with the tag key value of the current trace
+    // When it is generated, if two tags of teh spans of the trace have the same key but different values,
+    // one value will simply overwrite the other, something that can be improved on in the future. As a
+    // result, tags that have multiple values across the spans of the trace will have 'randomly' selected values.
     @computed
     get tags() {
         let tags = [];
