@@ -211,8 +211,8 @@ export default class ServiceGraphResults extends React.Component {
                 {
                     !!connDetails &&
                     <ConnectionDetails
-                        requestRate={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                         onClose={this.onConnectionDetailsClose}
                     />
                 }
