@@ -179,11 +179,25 @@ describe('<UniversalSearch />', () => {
         expect(wrapper.find('.universal-search-bar-tabs__nav-text').length).to.equal(3);
     });
 
-    it('should render traces trends and alerts with a serviceName query', () => {
-        const stubError = {search: '?error=true&time.preset=1h'};
-        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubError} history={stubHistory}/></MemoryRouter>);
+    it('should render only traces with anything other than serviceName or operationName', () => {
+        const stubErrorLocation = {search: '?error=true&time.preset=1h'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubErrorLocation} history={stubHistory}/></MemoryRouter>);
 
         expect(wrapper.find('.universal-search-bar-tabs__nav-text').length).to.equal(1);
+    });
+
+    it('should update chips and time preset when location changes', () => {
+        const stubQueryOne = {search: '?serviceName=root-service&time.preset=1h'};
+        const stubQueryTwo = {search: '?serviceName=new-root-service&error=true&time.preset=4h'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQueryOne} history={stubHistory}/></MemoryRouter>);
+
+        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(1);
+        wrapper.setProps({
+            children: React.cloneElement(wrapper.props().children, { location: stubQueryTwo })
+        });
+
+        // Ensure that chips were updated with the location change
+        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(2);
     });
 });
 
