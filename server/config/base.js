@@ -130,6 +130,14 @@ module.exports = {
             longName: '30 days',
             value: 30 * 24 * 60 * 60 * 1000
         }
+    ],
+
+    relatedTracesOptions: [
+        {
+            fieldTag: 'url2',
+            propertyToMatch: 'url2',
+            fieldDescription: 'test'
+        }
     ]
 
     // use if you need SAML back SSO auth

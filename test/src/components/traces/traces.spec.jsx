@@ -760,7 +760,6 @@ describe('<Traces />', () => {
                 linkBuilder.universalSearchTracesLink.restore();
                 delete global.window.open;
             });
-            // it('should have the')
         });
     });
 });

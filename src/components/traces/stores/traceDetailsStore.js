@@ -13,7 +13,6 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-
 import axios from 'axios';
 import _ from 'lodash';
 import {observable, action, computed} from 'mobx';
