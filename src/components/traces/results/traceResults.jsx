@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import TraceTimeline from './traceTimeline';
 import Loading from '../../common/loading';
 import TraceResultsTable from './traceResultsTable';
+import SpansView from './spansView';
 import Error from '../../common/error';
 import NoSearch from './noSearch';
 
@@ -67,7 +68,7 @@ export default class TraceResults extends React.Component {
                 <section>
                     {
                         showSpans
-                            ? (<div>spans</div>)
+                            ? (<SpansView traceIds={[]} location={{}} />)
                             : (<TraceResultsTable
                                 query={searchQuery}
                                 results={results}
