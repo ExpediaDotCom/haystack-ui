@@ -20,7 +20,7 @@ const objectUtils = require('../../utils/objectUtils');
 
 const trace = [
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         spanId: 'root-spanid',
         serviceName: 'stark-service',
         operationName: 'snow-1',
@@ -37,7 +37,7 @@ const trace = [
             }]
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'westeros-1',
         serviceName: 'westeros-service',
@@ -45,11 +45,42 @@ const trace = [
         startTime: 1504784384000 + 250000,
         duration: 1505000,
         logs: [],
-        tags: []
+        tags: [{
+            key: 'url',
+            value: 'http://trace.io/blah'
+        },
+            {
+                key: 'url2',
+                value: 'some:data'
+            },
+            {
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+            {
+                key: 'url2',
+                value: 'some:data'
+            },
+            {
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+            {
+                key: 'url2',
+                value: 'some:data'
+            },
+            {
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+            {
+                key: 'url2',
+                value: 'some:data'
+            }]
     },
 
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'westeros-1',
         spanId: 'tyrell-1',
         serviceName: 'tyrell-service',
@@ -60,7 +91,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'westeros-1',
         spanId: 'dragon-1',
         serviceName: 'dragon-service',
@@ -71,7 +102,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'westeros-1',
         spanId: 'dragon-2',
         serviceName: 'dragon-service',
@@ -82,7 +113,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'dragon-2',
         spanId: 'blackwater-2',
         serviceName: 'blackwater-service',
@@ -93,7 +124,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'baratheon-1',
         serviceName: 'baratheon-service',
@@ -104,7 +135,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'baratheon-1',
         spanId: 'blackwaters-1',
         serviceName: 'blackwater-service',
@@ -115,7 +146,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'westeros-2',
         serviceName: 'westeros-service',
@@ -126,7 +157,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'westeros-3',
         serviceName: 'westeros-service',
@@ -137,7 +168,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'westeros-4',
         serviceName: 'westeros-service',
@@ -148,7 +179,7 @@ const trace = [
         tags: []
     },
     {
-        traceId: 'traceid',
+        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
         parentSpanId: 'root-spanid',
         spanId: 'westeros-5',
         serviceName: 'westeros-service',
@@ -456,6 +487,8 @@ connector.getTrace = () => Q.fcall(() => trace);
 connector.getRawTrace = () => Q.fcall(() => trace);
 
 connector.getRawSpan = () => Q.fcall(() => trace[0]);
+
+connector.findSpans = () => Q.fcall(() => [...trace, ...trace]);
 
 connector.findTraces = query => Q.fcall(() => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');

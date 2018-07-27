@@ -30,6 +30,12 @@ router.get('/traces', (req, res, next) => {
     );
 });
 
+router.get('/spans', (req, res, next) => {
+    handleResponsePromise(res, next, 'spans')(
+        () => tracesConnector.findSpans(req.query)
+    );
+});
+
 router.get('/traces/timeline', (req, res, next) => {
     handleResponsePromise(res, next, 'trace_timeline')(
         () => tracesConnector.getTimeline(req.query)
