@@ -30,9 +30,13 @@ export default class RelatedTracesRow extends React.Component {
         spanCount: PropTypes.number.isRequired,
         startTime: PropTypes.number.isRequired,
         rootError: PropTypes.bool.isRequired,
-        services: MobxPropTypes.observableArray, // eslint-disable-line react/require-default-props
+        services: MobxPropTypes.observableArray,
         duration: PropTypes.number.isRequired,
         isUniversalSearch: PropTypes.bool.isRequired
+    };
+
+    static defaultProps = {
+        services: []
     };
 
     static openTrendDetailInNewTab(traceId, serviceName, operationName, isUniversalSearch) {
@@ -60,6 +64,7 @@ export default class RelatedTracesRow extends React.Component {
                     <div className="table__secondary">{formatters.toTimestring(startTime)}</div>
                 </div>);
     }
+
     // ROOT SUCCESS
     static errorFormatter(cell) {
         const status = cell ? 'error' : 'success';
@@ -67,10 +72,12 @@ export default class RelatedTracesRow extends React.Component {
             <img src={`/images/${status}.svg`} alt={status} height="24" width="24" />
         </div>);
     }
+
     // TOTAL DURATION
     static totalDurationColumnFormatter(duration) {
         return <div className="table__primary-duration text-right">{formatters.toDurationString(duration)}</div>;
     }
+
     // SPAN COUNT
     static handleServiceList(services) {
         const serviceList = services.slice(0, 2).map(svc =>
@@ -82,13 +89,13 @@ export default class RelatedTracesRow extends React.Component {
         }
         return serviceList;
     }
+
     static spanColumnFormatter(spanCount, services) {
         return (<div>
                     <div className="table__primary">{spanCount}</div>
                     <div>{RelatedTracesRow.handleServiceList(services)}</div>
                 </div>);
     }
-
 
     render() {
         const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, isUniversalSearch} = this.props;

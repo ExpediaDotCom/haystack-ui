@@ -1,4 +1,3 @@
-/* eslint-disable react/prefer-stateless-function */
 /*
  * Copyright 2018 Expedia, Inc.
  *
@@ -25,8 +24,12 @@ import linkBuilder from '../../../../utils/linkBuilder';
 export default class relatedTracesTab extends React.Component {
     static propTypes = {
         searchQuery: PropTypes.object.isRequired,
-        relatedTraces: MobxPropTypes.observableArray, // eslint-disable-line react/require-default-props
+        relatedTraces: MobxPropTypes.observableArray,
         isUniversalSearch: PropTypes.bool.isRequired
+    };
+
+    static defaultProps = {
+        relatedTraces: []
     };
 
     constructor(props) {

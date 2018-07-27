@@ -13,6 +13,7 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -86,7 +87,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         };
 
         return this.props.store.fetchRelatedTraces(query);
-    }r
+    }
     
     handleFieldChange(event) {
         const selectedFieldIndex = event.target.value;
