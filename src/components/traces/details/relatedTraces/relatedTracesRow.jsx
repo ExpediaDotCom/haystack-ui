@@ -31,26 +31,17 @@ export default class RelatedTracesRow extends React.Component {
         startTime: PropTypes.number.isRequired,
         rootError: PropTypes.bool.isRequired,
         services: MobxPropTypes.observableArray,
-        duration: PropTypes.number.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        duration: PropTypes.number.isRequired
     };
 
     static defaultProps = {
         services: []
     };
 
-    static openTrendDetailInNewTab(traceId, serviceName, operationName, isUniversalSearch) {
+    static openTrendDetailInNewTab(traceId) {
         let traceUrl = '';
-        if (isUniversalSearch) {
-            const search = {traceId}; // TODO add specific time for trace
-            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-        } else {
-            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
-                serviceName,
-                operationName,
-                traceId
-            }));
-        }
+        const search = {traceId};
+        traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
 
         const tab = window.open(traceUrl, '_blank');
         tab.focus();
@@ -98,10 +89,10 @@ export default class RelatedTracesRow extends React.Component {
     }
 
     render() {
-        const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration, isUniversalSearch} = this.props;
+        const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration} = this.props;
 
         return (
-            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId, serviceName, operationName, isUniversalSearch)}>
+            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId)}>
                 <td className="trace-trend-table_cell">
                     {RelatedTracesRow.timeColumnFormatter(startTime)}
                 </td>

@@ -47,7 +47,7 @@ export default class TraceDetails extends React.Component {
             case 3:
                 return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
             case 4:
-                return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
+                return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore}/>;
             default:
                 return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
         }

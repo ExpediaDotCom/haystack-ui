@@ -27,8 +27,7 @@ import { toPresetDisplayText } from '../../utils/presets';
 export default class RelatedTracesTabContainer extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
-        store: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        store: PropTypes.object.isRequired
     };
 
     static timePresetOptions = (window.haystackUiConfig && window.haystackUiConfig.tracesTimePresetOptions);
@@ -104,13 +103,13 @@ export default class RelatedTracesTabContainer extends React.Component {
     }
 
     render() {
-        const { store, isUniversalSearch } = this.props;
+        const { store } = this.props;
         const { selectedTimeIndex, selectedFieldIndex} = this.state;
 
         return (
             <section>
                 <div className="text-left">
-                    <span>Relate Traces by: </span>
+                    <span>Find Related Traces by: </span>
                     <select id="field" className="time-range-selector" value={selectedFieldIndex || ''} onChange={this.handleFieldChange}>
                             {!selectedFieldIndex ? <option key="empty" value="" /> : null}
                             {RelatedTracesTabContainer.fieldOptions.map((fieldOp, index) => (
@@ -132,7 +131,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                         pending: () => <Loading />,
                         rejected: reason => <Error errorMessage={reason}/>,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
-                                ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces} isUniversalSearch={isUniversalSearch}/>
+                                ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces}/>
                                 : <Error errorMessage="No related traces found"/>)
                     })
                 }
