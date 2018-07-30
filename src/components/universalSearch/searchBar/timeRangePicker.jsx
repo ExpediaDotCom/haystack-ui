@@ -94,7 +94,7 @@ export default class TimeRangePicker extends React.Component {
                     <h5>Presets</h5>
                     <div className="timerange-picker__presets__listblock">
                         <ul className="timerange-picker__presets__list">
-                            {TimeRangePicker.timePresetOptions.map(preset => (<PresetOption key={Math.random()} preset={preset}/>))}
+                            {TimeRangePicker.timePresetOptions.map(preset => (<PresetOption key={Math.random()} preset={preset.shortName}/>))}
                         </ul>
                     </div>
                 </div>

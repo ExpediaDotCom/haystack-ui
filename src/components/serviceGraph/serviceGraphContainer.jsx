@@ -39,6 +39,8 @@ export default class ServiceGraphContainer extends React.Component {
         serviceName: undefined
     }
 
+    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
+
     /**
      *
      * @param graph
@@ -93,7 +95,7 @@ export default class ServiceGraphContainer extends React.Component {
         if (isCustomTimeRange) {
             activeWindow = timeWindow.toCustomTimeRange(time.from, time.to);
         } else {
-            activeWindow =  (time && time.preset) ? timeWindow.findMatchingPresetByShortName(time.preset) : timeWindow.defaultPreset;
+            activeWindow =  (time && time.preset) ? ServiceGraphContainer.timePresetOptions.find(preset => preset.shortName === time.preset) : timeWindow.defaultPreset;
         }
 
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);

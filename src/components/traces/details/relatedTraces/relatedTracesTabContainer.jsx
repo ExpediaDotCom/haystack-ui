@@ -42,7 +42,7 @@ export default class RelatedTracesTabContainer extends React.Component {
         this.state = {
             selectedFieldIndex,
             selectedTimeIndex,
-            /** 
+            /**
              * The following computes a dictionary tags of all spans of this trace
              * This computation relies that the spans have already been calculated in the traceDetailsStore, which happens
              * when the Timeline View (which is default) is viewed, and fetchTraceDetails has complete.
@@ -83,12 +83,12 @@ export default class RelatedTracesTabContainer extends React.Component {
         const query =  {
             serviceName: '',
             [chosenField.fieldTag]: this.props[chosenField.propertyToMatch] || this.state.tags[chosenField.propertyToMatch],
-            timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex]
+            timePreset: RelatedTracesTabContainer.timePresetOptions[this.state.selectedTimeIndex].shortName
         };
 
         return this.props.store.fetchRelatedTraces(query);
     }
-    
+
     handleFieldChange(event) {
         const selectedFieldIndex = event.target.value;
         this.setState({
@@ -123,9 +123,9 @@ export default class RelatedTracesTabContainer extends React.Component {
                     <select id="time" className="time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
                         {RelatedTracesTabContainer.timePresetOptions.map((preset, index) => (
                             <option
-                                key={preset}
+                                key={preset.shortName}
                                 value={index}
-                            >{toPresetDisplayText(preset)}</option>))}
+                            >{toPresetDisplayText(preset.shortName)}</option>))}
                     </select>
                 </div>
                 { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
