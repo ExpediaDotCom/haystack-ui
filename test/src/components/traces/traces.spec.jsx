@@ -310,7 +310,7 @@ function TraceDetailsStubComponent({traceDetailsStore, traceId, location, baseSe
 }
 
 function RelatedTracesContainerStub({traceId, store}) {
-    return (<RelatedTracesTabContainer traceId={traceId} store={store} isUniversalSearch={false} />);
+    return (<RelatedTracesTabContainer traceId={traceId} store={store} />);
 }
 
 function handleExpectedRejections(reason) {
@@ -704,7 +704,7 @@ describe('<Traces />', () => {
                 const absStub = sinon.stub(linkBuilder, 'withAbsoluteUrl').returns('string');
                 const uniStub = sinon.stub(linkBuilder, 'universalSearchTracesLink').returns('string');
 
-                const wrapper = mount(<RelatedTracesTab searchQuery={{}} relatedTraces={observable.array(stubResults)} isUniversalSearch={false} />);
+                const wrapper = mount(<RelatedTracesTab searchQuery={{}} relatedTraces={observable.array(stubResults)} />);
                 // Click showMoreTraces button
                 wrapper.find('a.btn-default').simulate('click');
 
@@ -717,28 +717,6 @@ describe('<Traces />', () => {
                 delete global.window.open;
             });
 
-            it('should have a well formed related trace that opens in a new tab, non universal', () => {
-                // mocking window.open and the window object with focus method it returns
-                const focusStub = sinon.stub();
-                global.window.open = () => ({ focus: focusStub });
-
-                const absStub = sinon.stub(linkBuilder, 'withAbsoluteUrl').returns('string');
-                const creStub = sinon.stub(linkBuilder, 'createTracesLink').returns('string');
-
-                const wrapper = mount(<table><tbody><RelatedTracesRow key={stubResults[0].traceId} {...stubResults[0]} isUniversalSearch={false}/></tbody></table>);
-                expect(wrapper.find('.trace-trend-table_cell')).to.have.length(5);
-
-                wrapper.find('tr').simulate('click');
-
-                expect(absStub.calledOnce).to.equal(true);
-                expect(creStub.calledOnce).to.equal(true);
-                expect(focusStub.calledOnce).to.equal(true);
-
-                linkBuilder.withAbsoluteUrl.restore();
-                linkBuilder.createTracesLink.restore();
-                delete global.window.open;
-            });
-
             it('should have a related trace that opens in a new tab, universal', () => {
                 // mocking window.open and the window object with focus method it returns
                 const focusStub = sinon.stub();
@@ -747,7 +725,7 @@ describe('<Traces />', () => {
                 const absStub = sinon.stub(linkBuilder, 'withAbsoluteUrl').returns('string');
                 const uniStub = sinon.stub(linkBuilder, 'universalSearchTracesLink').returns('string');
 
-                const wrapper = mount(<table><tbody><RelatedTracesRow key={stubResults[0].traceId} {...stubResults[0]} isUniversalSearch /></tbody></table>);
+                const wrapper = mount(<table><tbody><RelatedTracesRow key={stubResults[0].traceId} {...stubResults[0]} /></tbody></table>);
                 expect(wrapper.find('.trace-trend-table_cell')).to.have.length(5);
 
                 wrapper.find('tr').simulate('click');

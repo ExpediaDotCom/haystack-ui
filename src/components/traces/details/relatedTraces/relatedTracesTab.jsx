@@ -24,8 +24,7 @@ import linkBuilder from '../../../../utils/linkBuilder';
 export default class relatedTracesTab extends React.Component {
     static propTypes = {
         searchQuery: PropTypes.object.isRequired,
-        relatedTraces: MobxPropTypes.observableArray,
-        isUniversalSearch: PropTypes.bool.isRequired
+        relatedTraces: MobxPropTypes.observableArray
     };
 
     static defaultProps = {
@@ -50,7 +49,7 @@ export default class relatedTracesTab extends React.Component {
     }
 
     render() {
-        const {relatedTraces, isUniversalSearch} = this.props;
+        const {relatedTraces} = this.props;
         const {numDisplayedTraces} = this.state;
 
         const relatedTracesList = relatedTraces.slice(0, numDisplayedTraces);
@@ -73,7 +72,6 @@ export default class relatedTracesTab extends React.Component {
                             <RelatedTracesRow
                                 key={relatedTrace.traceId}
                                 {...relatedTrace}
-                                isUniversalSearch={isUniversalSearch}
                             />
                         ))
                     }
