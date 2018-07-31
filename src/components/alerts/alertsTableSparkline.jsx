@@ -68,24 +68,28 @@ export default class AlertsTableSparkline extends React.Component {
             datasets: [
                 {
                     data: metricTrend,
-                    backgroundColor: [['rgba(54, 162, 235, 0.2']],
-                    borderColor: [['rgba(54, 162, 235, 1)']],
+                    backgroundColor: [['rgba(54, 162, 235, 0.4']],
+                    borderColor: [['rgba(54, 162, 235, 1.2)']],
                     borderWidth: 1,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 }]
         };
 
-        return (<div className="alert-table_sparkline">
-            {trends &&
-            <Line
-                data={chartData}
-                options={alertsTableSparklineOptions}
-                type="line"
-                height={50}
-                legend={false}
-            />}
-        </div>);
+        if (!trends) {
+            return <span className="alert-table_sparkline-loading table__secondary">loading...</span>;
+        }
+
+        return (
+            <div className="alert-table_sparkline">
+                <Line
+                    data={chartData}
+                    options={alertsTableSparklineOptions}
+                    type="line"
+                    height={50}
+                    legend={false}
+                />
+            </div>);
     }
 }
 
