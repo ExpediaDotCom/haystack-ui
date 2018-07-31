@@ -114,7 +114,10 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static rootColumnFormatter(cell, row) {
-        return `<div class="table__primary">${row.rootOperation}</div>
+        return `<div class="table__primary">
+                <span class="service-spans label ${colorMapper.toBackgroundClass(row.root.serviceName)}">${colorMapper.toBackgroundClass(row.root.serviceName)}</span> 
+                ${row.root.operationName}
+                </div>
                 <div class="table__secondary">${row.root.url}</div>`;
     }
 
@@ -138,17 +141,18 @@ export default class TraceResultsTable extends React.Component {
         return `<div class="table__primary-duration text-right">${formatters.toDurationString(duration)}</div>`;
     }
 
-    static durationFormatter(duration) {
-        return <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>;
+    static serviceDurationFormatter(duration, row) {
+        return (<div>
+            <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
+            <div className="table__secondary text-right">{row.serviceDurationPercent}% of total</div>
+        </div>);
     }
 
-    static durationPercentFormatter(cell) {
-        return (
-            <div className="text-right">
-                <div className="percentDialContainer text-center">
-                    <CircularProgressbar percentage={cell} strokeWidth={8}/>
-                </div>
-            </div>);
+    static operationDurationFormatter(duration, row) {
+        return (<div>
+            <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
+            <div className="table__secondary text-right">{row.operationDurationPercent}% of total</div>
+        </div>);
     }
 
     static getCaret(direction) {
@@ -325,7 +329,7 @@ export default class TraceResultsTable extends React.Component {
                         (query.operationName && query.operationName !== 'all')
                         && <TableHeaderColumn
                             dataField="operationDuration"
-                            dataFormat={TraceResultsTable.durationFormatter}
+                            dataFormat={TraceResultsTable.operationDurationFormatter}
                             width="10"
                             dataSort
                             caretRender={TraceResultsTable.getCaret}
@@ -334,43 +338,16 @@ export default class TraceResultsTable extends React.Component {
                         ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
                     }
                     {
-                        (query.operationName && query.operationName !== 'all')
-                        && <TableHeaderColumn
-                            dataField="operationDurationPercent"
-                            dataFormat={TraceResultsTable.durationPercentFormatter}
-                            width="10"
-                            dataSort
-                            sortFunc={TraceResultsTable.sortByOperDurPcAndTime}
-                            caretRender={TraceResultsTable.getCaret}
-                            thStyle={tableHeaderRightAlignedStyle}
-                            headerText={'Percentage of busy time in timeline for the queried operation as compared to duration of the trace'}
-                        ><TraceResultsTable.Header name="Op Duration %"/></TableHeaderColumn>
-                    }
-                    {
                         query.serviceName
                         ? <TableHeaderColumn
                             dataField="serviceDuration"
-                            dataFormat={TraceResultsTable.durationFormatter}
+                            dataFormat={TraceResultsTable.serviceDurationFormatter}
                             width="10"
                             dataSort
                             caretRender={TraceResultsTable.getCaret}
                             thStyle={tableHeaderRightAlignedStyle}
                             headerText={'Total busy time in timeline for the queried service'}
                         ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
-                        : null
-                    }
-                    {
-                        query.serviceName
-                        ? <TableHeaderColumn
-                            dataField="serviceDurationPercent"
-                            dataFormat={TraceResultsTable.durationPercentFormatter}
-                            width="10"
-                            dataSort
-                            sortFunc={TraceResultsTable.sortBySvcDurPcAndTime}
-                            caretRender={TraceResultsTable.getCaret}
-                            thStyle={tableHeaderRightAlignedStyle}
-                            headerText={'Percentage of busy time in timeline for the queried service as compared to duration of the trace'}
-                        ><TraceResultsTable.Header name="Svc Duration %"/></TableHeaderColumn>
                         : null
                     }
                     <TableHeaderColumn
