@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -41,7 +41,14 @@ global.navigator = {
 };
 global.window.haystackUiConfig = {
     subsystems: ['traces', 'trends', 'alerts'],
-    tracesTimePresetOptions: ['5m', '15m', '1h', '4h', '12h', '24h', '3d'],
+    tracesTimePresetOptions: [
+        {shortName: '5m', value: 5 * 60 * 1000},
+        {shortName: '15m', value: 15 * 60 * 1000},
+        {shortName: '1h', value: 60 * 60 * 1000},
+        {shortName: '4h', value: 4 * 60 * 60 * 1000},
+        {shortName: '12h', value: 12 * 60 * 60 * 1000},
+        {shortName: '24h', value: 24 * 60 * 60 * 1000},
+        {shortName: '3d', value: 3 * 24 * 60 * 60 * 1000}],
     timeWindowPresetOptions: [
         {shortName: '5m', longName: '5 minutes', value: 5 * 60 * 1000},
         {shortName: '15m', longName: '15 minutes', value: 15 * 60 * 1000},
@@ -52,6 +59,18 @@ global.window.haystackUiConfig = {
         {shortName: '3d', longName: '3 days', value: 3 * 24 * 60 * 60 * 1000},
         {shortName: '7d', longName: '7 days', value: 7 * 24 * 60 * 60 * 1000},
         {shortName: '30d', longName: '30 days', value: 30 * 24 * 60 * 60 * 1000}
+    ],
+    relatedTracesOptions: [
+        {
+            fieldTag: 'success',
+            propertyToMatch: 'success',
+            fieldDescription: 'success status'
+        },
+        {
+            fieldTag: 'id',
+            propertyToMatch: 'id',
+            fieldDescription: 'customer identity'
+        }
     ],
     tracesTTL: -1,
     trendsTTL: -1

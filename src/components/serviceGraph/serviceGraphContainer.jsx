@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ export default class ServiceGraphContainer extends React.Component {
         search: {},
         serviceName: undefined
     }
+
+    static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
 
     /**
      *
@@ -93,7 +95,7 @@ export default class ServiceGraphContainer extends React.Component {
         if (isCustomTimeRange) {
             activeWindow = timeWindow.toCustomTimeRange(time.from, time.to);
         } else {
-            activeWindow =  (time && time.preset) ? timeWindow.findMatchingPresetByShortName(time.preset) : timeWindow.defaultPreset;
+            activeWindow =  (time && time.preset) ? ServiceGraphContainer.timePresetOptions.find(preset => preset.shortName === time.preset) : timeWindow.defaultPreset;
         }
 
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);

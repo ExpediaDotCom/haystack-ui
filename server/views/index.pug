@@ -24,10 +24,11 @@ html
             refreshInterval: !{JSON.stringify(refreshInterval || 60000)},
             usbPrimary: !{JSON.stringify(usbPrimary || false)},
             enableAlertSubscriptions: !{JSON.stringify(enableAlertSubscriptions || false)},
-            tracesTimePresetOptions: !{JSON.stringify(tracesTimePresetOptions || ['5m', '15m', '1h', '4h', '12h', '24h', '3d'])},
+            tracesTimePresetOptions: !{JSON.stringify(tracesTimePresetOptions || [{shortName: '5m', value: 5 * 60 * 1000}, {shortName: '15m', value: 15 * 60 * 1000}, {shortName: '1h', value: 60 * 60 * 1000}, {shortName: '4h', value: 4 * 60 * 60 * 1000}, {shortName: '12h', value: 12 * 60 * 60 * 1000}, {shortName: '24h', value: 24 * 60 * 60 * 1000}, {shortName: '3d', value: 3 * 24 * 60 * 60 * 1000}])},
             timeWindowPresetOptions: !{JSON.stringify(timeWindowPresetOptions || [{shortName: '5m', longName: '5 minutes', value: 5 * 60 * 1000}, {shortName: '15m', longName: '15 minutes', value: 15 * 60 * 1000}, {shortName: '1h', longName: '1 hour', value: 60 * 60 * 1000}, {shortName: '6h', longName: '6 hours', value: 6 * 60 * 60 * 1000}, {shortName: '12h', longName: '12 hours', value: 12 * 60 * 60 * 1000}, {shortName: '24h', longName: '24 hours', value: 24 * 60 * 60 * 1000}, {shortName: '3d', longName: '3 days', value: 3 * 24 * 60 * 60 * 1000}, {shortName: '7d', longName: '7 days', value: 7 * 24 * 60 * 60 * 1000}, {shortName: '30d', longName: '30 days', value: 30 * 24 * 60 * 60 * 1000}])},
             tracesTTL: !{JSON.stringify(tracesTTL || -1)},
-            trendsTTL: !{JSON.stringify(trendsTTL || -1)}
+            trendsTTL: !{JSON.stringify(trendsTTL || -1)},
+            relatedTracesOptions: !{JSON.stringify(relatedTracesOptions || [])}
         }
     script(async, defer, src = bundleCommonsJsPath)
     script(async, defer, src = bundleAppJsPath)

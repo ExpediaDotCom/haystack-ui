@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -211,8 +211,8 @@ export default class ServiceGraphResults extends React.Component {
                 {
                     !!connDetails &&
                     <ConnectionDetails
-                        requestRate={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                         onClose={this.onConnectionDetailsClose}
                     />
                 }

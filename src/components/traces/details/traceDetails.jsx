@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import RawTraceModal from './rawTraceModal';
 import TimelineTabContainer from './timeline/timelineTabContainer';
 import LatencyCostTabContainer from './latency/latencyCostTabContainer';
 import TrendsTabContainer from './trends/trendsTabContainer';
+import RelatedTracesTabContainer from './relatedTraces/relatedTracesTabContainer';
 
 import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
@@ -45,6 +46,8 @@ export default class TraceDetails extends React.Component {
                 return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
             case 3:
                 return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
+            case 4:
+                return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore}/>;
             default:
                 return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
         }
@@ -116,14 +119,18 @@ export default class TraceDetails extends React.Component {
                     <div className="trace-details-tabs pull-left full-width">
                         <ul className="nav nav-tabs">
                             <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
+                                <a role="button" id="timeline-view" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                             </li>
                             <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                    <a role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
+                                    <a role="button" id="latency-view" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
                             </li>
                             <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                                <a role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
+                                <a role="button" id="trends-view" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
                             </li>
+                            { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
+                            <li className={this.state.tabSelected === 4 ? 'active' : ''}>
+                                <a role="button" id="related-view" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
+                            </li>) : null }
                         </ul>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 
 /*
 
-  *  Copyright 2018 Expedia, Inc.
+  *  Copyright 2018 Expedia Group
   *
   *     Licensed under the Apache License, Version 2.0 (the "License");
   *     you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ router.get('*', (req, res) => {
         tracesTimePresetOptions: config.connectors.traces.timePresetOptions,
         timeWindowPresetOptions: config.timeWindowPresetOptions,
         tracesTTL: config.connectors.traces.ttl,
-        trendsTTL: config.connectors.trends.ttl
+        trendsTTL: config.connectors.trends.ttl,
+        relatedTracesOptions: config.relatedTracesOptions
     });
 
     onFinished(res, () => {
