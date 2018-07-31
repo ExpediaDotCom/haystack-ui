@@ -27,6 +27,8 @@ linkBuilder.universalSearchTrendsLink = search => `/usb?${convertSearchToUrlQuer
 
 linkBuilder.universalSearchAlertsLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=alerts`;
 
+linkBuilder.universalSearchServiceGraphLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=serviceGraph`;
+
 linkBuilder.createTracesLink = ({serviceName, operationName, from, until, timePreset, traceId}) => {
     const encodedServiceName = serviceName && encodeURIComponent(serviceName);
     const encodedOperationName = operationName && encodeURIComponent(operationName);

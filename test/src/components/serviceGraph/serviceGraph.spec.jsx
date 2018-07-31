@@ -37,6 +37,13 @@ const pendingPromise = {
     case: ({pending}) => pending()
 };
 
+const stubHistory = {
+    location: {
+        search: '/',
+        pathname: '/service/some-service/traces'
+    }
+};
+
 function createServiceGraphStubStore(promiseState) {
     const store = ServiceGraphStore;
     store.promiseState = promiseState;
@@ -49,7 +56,7 @@ function createServiceGraphStubStore(promiseState) {
 
 describe('<ServiceGraph />', () => {
     it('should render the serviceGraph panel`', () => {
-        const wrapper = shallow(<ServiceGraph />);
+        const wrapper = shallow(<ServiceGraph history={stubHistory}/>);
 
         expect(wrapper.find('.service-graph-panel')).to.have.length(1);
     });
@@ -58,7 +65,7 @@ describe('<ServiceGraph />', () => {
 describe('<ServiceGraphContainer />', () => {
     it('should show as loading during a pending graph promise`', () => {
         const stubStore = createServiceGraphStubStore(pendingPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
 
         expect(wrapper.find('.serviceGraph__loading')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -66,7 +73,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should show as error after a rejected graph promise`', () => {
         const stubStore = createServiceGraphStubStore(rejectedPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
 
         expect(wrapper.find('Error')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -74,7 +81,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should render the serviceGraph container and set up the tabs`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
 
         expect(wrapper.find('.serviceGraph__tab-link')).to.have.length(2);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -93,7 +100,7 @@ describe('<ServiceGraphContainer />', () => {
         const search = {
             serviceName: 'baratheon-service'
         };
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={search}/>);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={search} history={stubHistory} />);
         expect(wrapper.find('.serviceGraph__tab-link').exists()).to.equal(false);
 
         ServiceGraphStore.fetchServiceGraph.restore();
