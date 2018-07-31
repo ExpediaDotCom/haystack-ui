@@ -19,9 +19,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ServiceGraphSearch = ({searchString, searchStringChanged}) => (
-        <div>
-            <input type="search" onChange={(event) => { searchStringChanged(event.currentTarget.value); }} value={searchString} placeholder="search service"/>
-        </div>
+        <section className="graph-search__wrapper">
+            <input type="search" className="graph-search__input form-control" onChange={(event) => { searchStringChanged(event.currentTarget.value); }} value={searchString} placeholder="Filter services..."/>
+            <span className="ti-search graph-search__search-icon"/>
+        </section>
     );
 
 ServiceGraphSearch.propTypes = {
