@@ -111,10 +111,6 @@ export default class ServiceGraphResults extends React.Component {
         };
     }
 
-    onNodeDetailsClose = () => {
-        this.setState({nodeDetails: undefined});
-    };
-
     onConnectionDetailsClose = () => {
         this.setState({connDetails: undefined});
     };

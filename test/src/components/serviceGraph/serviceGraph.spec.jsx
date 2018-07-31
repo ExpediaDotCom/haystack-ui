@@ -44,6 +44,13 @@ const stubHistory = {
     }
 };
 
+const search = {
+    serviceName: undefined,
+    time: {
+        preset: '1h'
+    }
+};
+
 function createServiceGraphStubStore(promiseState) {
     const store = ServiceGraphStore;
     store.promiseState = promiseState;
@@ -65,7 +72,7 @@ describe('<ServiceGraph />', () => {
 describe('<ServiceGraphContainer />', () => {
     it('should show as loading during a pending graph promise`', () => {
         const stubStore = createServiceGraphStubStore(pendingPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
 
         expect(wrapper.find('.serviceGraph__loading')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -73,7 +80,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should show as error after a rejected graph promise`', () => {
         const stubStore = createServiceGraphStubStore(rejectedPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
 
         expect(wrapper.find('Error')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -81,7 +88,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should render the serviceGraph container and set up the tabs`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
 
         expect(wrapper.find('.serviceGraph__tab-link')).to.have.length(2);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -89,7 +96,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('tabs for multiple graphs should be selectable`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={search}/>);
         wrapper.find('.serviceGraph__tab-link').last().simulate('click');
         expect((wrapper.find('li').last()).hasClass('active')).to.equal(true);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -97,10 +104,10 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should not show tabs for roots if service name is specified`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const search = {
+        const serviceNameSearch = {
             serviceName: 'baratheon-service'
         };
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={search} history={stubHistory} />);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={serviceNameSearch} history={stubHistory} />);
         expect(wrapper.find('.serviceGraph__tab-link').exists()).to.equal(false);
 
         ServiceGraphStore.fetchServiceGraph.restore();

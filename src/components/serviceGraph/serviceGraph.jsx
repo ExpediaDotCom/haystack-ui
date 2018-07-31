@@ -32,7 +32,7 @@ const ServiceGraph =  ({history}) => {
                 <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false} history={history} search={search}/>
             </section>
     );
-}
+};
 
 ServiceGraph.propTypes = {
     history: PropTypes.object.isRequired
