@@ -645,11 +645,19 @@ describe('<Traces />', () => {
                 expect(modal.props().isOpen).to.be.true;
             });
 
-            it('renders deeplink functionality correctly', () => {
+            it('renders tag value transformation correctly', () => {
                 const wrapper = mount(<TagsTable tags={observable.array(stubDetails[0].tags)} />);
-                expect(wrapper.find('.table-header')).to.have.length(1);
+                // Expect table to have been rendered.
+                expect(wrapper.find('.table-striped')).to.have.length(1);
+                // Expect three rows for three tags.
                 expect(wrapper.find('tbody tr')).to.have.length(3);
+                // Expect boolean transform, which returns an image, to have worked.
+                expect(wrapper.find('img')).to.have.length(1);
+                // Expected two links to be created: one from default transform,
+                // one from the link transform.
                 expect(wrapper.find('a')).to.have.length(2);
+                // Expect text template to have work.
+                expect(wrapper.text()).to.have.string('[Google]');
             });
         });
         describe('RelatedTraces View', () => {

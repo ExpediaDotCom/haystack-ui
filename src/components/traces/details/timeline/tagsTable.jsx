@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import config from '../../../../utils/tagsConfig';
+import transform from '../../../../utils/tagValuesTransformer';
 
 const TagsTable = ({tags}) => {
     const unique = _.uniqBy(tags, tag => tag.key.toLowerCase());
@@ -25,7 +25,7 @@ const TagsTable = ({tags}) => {
 
     if (sortedTags.length) {
         return (<table className="table table-striped">
-            <thead className="table-header">
+            <thead>
                 <tr>
                     <th>Key</th>
                     <th>Value</th>
@@ -34,13 +34,8 @@ const TagsTable = ({tags}) => {
             <tbody>
             {sortedTags.map(tag =>
                 (<tr key={Math.random()}>
-                    <td>{tag.key}</td>
-                    <td>
-                        {config && config[tag.key] ?
-                            config[tag.key](tag.value) :
-                            config.default(tag.value)
-                        }
-                    </td>
+                    <td>{ tag.key }</td>
+                    <td>{ transform(tag) }</td>
                 </tr>)
             )}
             </tbody>
