@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ export default class Tabs extends React.Component {
             case 'alerts':
                 return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
             case 'serviceGraph':
-                return <ServiceGraph store={store} history={history}/>;
+                return <ServiceGraph store={store} search={this.props.search} history={history}/>;
             case 'servicePerformance':
                 return <ServicePerformance store={store} history={history}/>;
             default:

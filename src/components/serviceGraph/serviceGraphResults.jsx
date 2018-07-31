@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import {PropTypes as MobxPropTypes} from 'mobx-react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Vizceral from 'vizceral-react';
@@ -27,7 +28,10 @@ import './serviceGraph.less';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
-        serviceGraph: PropTypes.object.isRequired
+        serviceGraph: PropTypes.oneOfType([
+            MobxPropTypes.observableArray.isRequired,
+            PropTypes.array
+        ]).isRequired
     };
 
     static getNodeDisplayDetails(errorRate) {
@@ -197,8 +201,8 @@ export default class ServiceGraphResults extends React.Component {
                 {
                     !!connDetails &&
                     <ConnectionDetails
-                        requestRate={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                         onClose={this.onConnectionDetailsClose}
                     />
                 }

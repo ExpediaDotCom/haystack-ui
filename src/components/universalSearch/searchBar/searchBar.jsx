@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -47,6 +47,13 @@ export default class SearchBar extends React.Component {
         // TODO move this inside state store's init maybe?
         SearchableKeysStore.fetchKeys();
         ServiceStore.fetchServices();
+    }
+
+    componentWillReceiveProps(next) {
+        // update time window and chips when a history push occurs
+        if (next.search) {
+            uiState.setStateFromSearch(next.search);
+        }
     }
 
     handleSubmit() {

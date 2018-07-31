@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -24,12 +24,8 @@ const router = express.Router();
 
 router.get('/serviceGraph', (req, res, next) => {
     handleResponsePromise(res, next, 'svc_graph_SVC')(
-        () => {
-            if (req.query.from && req.query.to) {
-                return serviceGraphConnector.getServiceGraphForTimeLine(req.query.from, req.query.to);
-            }
-            return serviceGraphConnector.getServiceGraph();
-        }
+        () => serviceGraphConnector.getServiceGraphForTimeLine(req.query.from, req.query.to)
+
     );
 });
 

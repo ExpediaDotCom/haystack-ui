@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@ import {observer} from 'mobx-react';
 import CountGraph from './countGraph';
 import DurationGraph from './durationGraph';
 import SuccessGraph from './successGraph';
-import TrendsRowServiceGraphContainer from '../../../serviceGraph/trendsRowServiceGraphContainer';
 @observer
 export default class GraphContainer extends React.Component {
     static propTypes = {
-        trendsStore: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        trendsStore: PropTypes.object.isRequired
     };
     render() {
         const {
@@ -47,7 +45,6 @@ export default class GraphContainer extends React.Component {
                 <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} from={from} until={until}/>
                 <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} from={from} until={until} />
                 <SuccessGraph successCount={successCount} failureCount={failureCount} from={from} until={until} />
-                <TrendsRowServiceGraphContainer serviceName={this.props.serviceName} from={from} to={until} />
             </div>
         );
     }

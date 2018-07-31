@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the 'License');
  *         you may not use this file except in compliance with the License.
@@ -157,8 +157,6 @@ const serviceGraph = {
         }
     ]
 };
-
-connector.getServiceGraph = () => Q.fcall(() => extractor.extractGraphs(serviceGraph));
 
 /* eslint-disable-next-line no-unused-vars */
 connector.getServiceGraphForTimeLine = (from, to) => Q.fcall(() => extractor.extractGraphs(serviceGraph));

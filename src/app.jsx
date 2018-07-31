@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ const stores = {
 // mount react components
 ReactDOM.render(
     <Provider {...stores}>
-        <Router history={history}>
+        <Router>
             <Route component={withTracker(Main)}/>
         </Router>
     </Provider>

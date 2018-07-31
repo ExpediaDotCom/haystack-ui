@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -45,13 +45,16 @@ export default class TimeWindowPicker extends React.Component {
         this.showTimePicker = this.showTimePicker.bind(this);
         this.state = {showTimeRangePicker: false};
     }
+
     setWrapperRef(node) {
         this.wrapperRef = node;
     }
+
     hideTimePicker() {
         document.removeEventListener('mousedown', this.handleOutsideClick);
         this.setState({showTimeRangePicker: false});
     }
+
     showTimePicker() {
         document.addEventListener('mousedown', this.handleOutsideClick);
         this.setState({showTimeRangePicker: true});

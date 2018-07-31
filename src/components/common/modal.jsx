@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ const modalStyles = {
 };
 
 const ModalView = ({serviceName, title, isOpen, closeModal, children}) => (
-    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'}>
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'} ariaHideApp={false}>
         <header className="clearfix">
             <div className="pull-left">
                 <div>{serviceName && (<span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>)}</div>

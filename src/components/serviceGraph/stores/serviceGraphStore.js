@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -21,31 +21,16 @@ import {ErrorHandlingStore} from '../../../stores/errorHandlingStore';
 
 export class ServiceGraphStore extends ErrorHandlingStore {
     @observable graphs = [];
-    @observable promiseState = null ;
+    @observable promiseState = null;
+    @observable filterQuery = null;
 
-    @observable filteredGraphs  = [];
-    @observable filterQuery = {};
-
-    @action fetchServiceGraph() {
+    @action fetchServiceGraph(filterQuery) {
         this.promiseState = fromPromise(
-            axios
-                .get('/api/serviceGraph')
-                .then((result) => {
-                    this.graphs = result.data;
-                })
-                .catch((result) => {
-                    ServiceGraphStore.handleError(result);
-                })
-        );
-    }
-
-    @action fetchServiceGraphForTimeline(filterQuery) {
-        this.filteredGraphPromiseState = fromPromise(
             axios
                 .get(`/api/serviceGraph?from=${filterQuery.from}&to=${filterQuery.to}`)
                 .then((result) => {
                     this.filterQuery = filterQuery;
-                    this.filteredGraphs = result.data;
+                    this.graphs = result.data;
                 })
                 .catch((result) => {
                     ServiceGraphStore.handleError(result);

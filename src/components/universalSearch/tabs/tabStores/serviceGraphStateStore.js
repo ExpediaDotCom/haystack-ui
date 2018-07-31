@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 /*
- * Copyright 2017 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *         Licensed under the Apache License, Version 2.0 (the "License");
  *         you may not use this file except in compliance with the License.
@@ -31,9 +31,10 @@ export class ServiceGraphStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, ...kv} =  search;
+        const {time, tabId, ...kv} = search;
         const keys = Object.keys(kv);
-        this.isAvailable = enabled && !keys.length;
+        const serviceKey = keys.length && keys.every(key => key === 'serviceName');
+        this.isAvailable = enabled && (serviceKey || !keys.length);
     }
 
     fetch() {

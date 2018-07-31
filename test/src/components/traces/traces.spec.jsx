@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import {shallow, mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
 import { MemoryRouter } from 'react-router-dom';
+import {observable} from 'mobx';
+import ReactGA from 'react-ga';
 
 import Traces from '../../../../src/components/traces/traces';
 import SearchBar from '../../../../src/components/traces/searchBar/searchBar';
@@ -34,6 +36,10 @@ import Autocomplete from '../../../../src/components/traces/utils/autocomplete';
 import {OperationStore} from '../../../../src/stores/operationStore';
 import {ServiceStore} from '../../../../src/stores/serviceStore';
 import TraceDetails from '../../../../src/components/traces/details/traceDetails';
+import RelatedTracesTabContainer from '../../../../src/components/traces/details/relatedTraces/relatedTracesTabContainer';
+import RelatedTracesTab from '../../../../src/components/traces/details/relatedTraces/relatedTracesTab';
+import RelatedTracesRow from '../../../../src/components/traces/details/relatedTraces/relatedTracesRow';
+import linkBuilder from '../../../../src/utils/linkBuilder';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
@@ -68,34 +74,39 @@ const pendingPromise = {
     case: ({pending}) => pending()
 };
 
-const stubResults = [{
-    traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
-    root: {
-        url: 'test-1',
-        serviceName: 'test-1',
-        operationName: 'test-1'
+const stubResults = [
+    {
+        traceId: '15b83d5f-64e1-4f69-b038-aaa23rfn23r',
+        root: {
+            url: 'test-1',
+            serviceName: 'test-1',
+            operationName: 'test-1'
+        },
+        operationName: 'dummy',
+        rootError: false,
+        spanCount: 12,
+        serviceName: 'abc-service',
+        services: observable.array([
+            {
+                name: 'abc-service',
+                duration: 89548,
+                spanCount: 12
+            },
+            {
+                name: 'def-service',
+                duration: 89548,
+                spanCount: 29
+            },
+            {
+                name: 'ghi-service',
+                duration: 89548,
+                spanCount: 31
+            }
+        ]),
+        error: true,
+        startTime: 1499975993,
+        duration: 89548
     },
-    services: [
-        {
-            name: 'abc-service',
-            duration: 89548,
-            spanCount: 12
-        },
-        {
-            name: 'def-service',
-            duration: 89548,
-            spanCount: 29
-        },
-        {
-            name: 'ghi-service',
-            duration: 89548,
-            spanCount: 31
-        }
-    ],
-    error: true,
-    startTime: 1499975993,
-    duration: 89548
-},
     {
         traceId: '23g89z5f-64e1-4f69-b038-c123rc1c1r1',
         root: {
@@ -103,7 +114,11 @@ const stubResults = [{
             serviceName: 'test-2',
             operationName: 'test-2'
         },
-        services: [
+        operationName: 'dummy',
+        rootError: false,
+        spanCount: 11,
+        serviceName: 'abc-service',
+        services: observable.array([
             {
                 name: 'abc-service',
                 duration: 1000000,
@@ -119,7 +134,7 @@ const stubResults = [{
                 duration: 89548,
                 spanCount: 12
             }
-        ],
+        ]),
         error: false,
         startTime: 1499985993,
         duration: 17765
@@ -260,7 +275,7 @@ function createServiceStubStore() {
 
 function createSearchableKeysStore(results) {
     const store = new SearchableKeysStore();
-    store.keys = results;
+    store.keys = observable.array(results);
     sinon.stub(store, 'fetchKeys', () => []);
     return store;
 }
@@ -291,7 +306,18 @@ function TracesStubComponent({tracesSearchStore, history, location, match}) {
 }
 
 function TraceDetailsStubComponent({traceDetailsStore, traceId, location, baseServiceName}) {
-    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} traceDetailsStore={traceDetailsStore} />);
+    return (<TraceDetails traceId={traceId} location={location} baseServiceName={baseServiceName} traceDetailsStore={traceDetailsStore} isUniversalSearch={false} />);
+}
+
+function RelatedTracesContainerStub({traceId, store}) {
+    return (<RelatedTracesTabContainer traceId={traceId} store={store} />);
+}
+
+function handleExpectedRejections(reason) {
+    // These two rejections are expected, so we share exclude them from being logged
+    if (reason !== 'Field is not selected' && reason !== 'This trace does not have the chosen field') {
+        console.log('REJECTION', reason); // eslint-disable-line no-console
+    }
 }
 
 function createStubStore(results, promise, searchQuery = {}) {
@@ -305,15 +331,25 @@ function createStubStore(results, promise, searchQuery = {}) {
     return store;
 }
 
-function createStubDetailsStore(spans, promise) {
+function createStubDetailsStore(spans, promise, relatedTracesPromise = fulfilledPromise, relatedResults = []) {
     const store = new TraceDetailsStore();
     sinon.stub(store, 'fetchTraceDetails', () => {
-        store.spans = spans;
+        store.spans = observable.array(spans);
         store.promiseState = promise;
+    });
+    sinon.stub(store, 'fetchRelatedTraces', (query) => {
+        store.relatedTraces = observable.array(relatedResults);
+        store.relatedTracesPromiseState = relatedTracesPromise;
+        store.searchQuery = query;
     });
 
     return store;
 }
+
+before((done) => {
+    ReactGA.initialize('foo', { testMode: true });
+    done();
+});
 
 describe('<Traces />', () => {
     it('should render Traces panel container', () => {
@@ -421,6 +457,23 @@ describe('<Traces />', () => {
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(2);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
+    });
+
+    it('should be able to sort on columns after getting search results', () => {
+        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(1).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(2).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(3).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+        wrapper.find('.results-header').at(4).simulate('click');
+
+        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
+        expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
     });
 
     it('should not show search results list on empty promise', () => {
@@ -535,7 +588,8 @@ describe('<Traces />', () => {
 
     it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
         const store = createUIStateStore();
-        const wrapper = mount(<Autocomplete options={['test-1', 'test-2', 'test-3']} uiState={store}/>);
+        const options = observable.array(['test-1', 'test-2', 'test-3']);
+        const wrapper = mount(<Autocomplete options={options} uiState={store}/>);
         wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'test'}});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
         wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 40});
@@ -545,55 +599,145 @@ describe('<Traces />', () => {
         expect(wrapper.find('.search-bar-text-box').prop('value')).to.equal('test-3=');
     });
 
-    it('renders the all spans in the trace in the detail view', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+    describe('<TraceDetails />', () => {
+        describe('Timeline View', () => {
+            it('renders the all spans in the trace', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
-        expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
-    });
+                expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+            });
 
-    it('renders the descendents on Span Click in the timeline view', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-        const parentSpan = wrapper.find('[id="test-span-1"]');
-        expect(wrapper.find('.span-bar')).to.have.length(4);
-        parentSpan.simulate('click');
-        expect(wrapper.find('.span-bar')).to.have.length(1);
-    });
+            it('renders the descendents on Span Click', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                const parentSpan = wrapper.find('[id="test-span-1"]');
+                expect(wrapper.find('.span-bar')).to.have.length(4);
+                parentSpan.simulate('click');
+                expect(wrapper.find('.span-bar')).to.have.length(1);
+            });
 
-    it('properly renders the time pointers to depict duration', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-        const timePointers = wrapper.find('.time-pointer');
+            it('properly renders the time pointers to depict duration', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                const timePointers = wrapper.find('.time-pointer');
 
-        expect(timePointers).to.have.length(5);
-        expect((timePointers).last().text()).to.eq('3.500s ');
-    });
+                expect(timePointers).to.have.length(5);
+                expect((timePointers).last().text()).to.eq('3.500s ');
+            });
 
-    it('should be able to sort on columns after getting search results', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+            it('has a modal upon clicking a span', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<MemoryRouter>
+                    <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
+                </MemoryRouter>);
+                wrapper.find('.span-click').first().simulate('click');
+                const modal = wrapper.find('SpanDetailsModal').first();
+                expect(modal.props().isOpen).to.be.true;
+            });
+        });
+        describe('RelatedTraces View', () => {
+            before(() => {
+                process.on('unhandledRejection',  handleExpectedRejections);
+            });
+            after(() => {
+                process.removeListener('unhandledRejection', handleExpectedRejections);
+            });
+            it('exists and renders correctly', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                expect(wrapper.find('a#related-view')).to.have.length(1);
+                wrapper.find('a#related-view').simulate('click');
+                // By default, no field should be selected and the fetchRelatedTraces promise should be rejected.
+                expect(wrapper.find('Error[errorMessage="Field is not selected"]')).to.have.length(1);
+                // We expect 9 options because there are 7 time preset options and two relate by options (one empty, one 'success').
+                expect(wrapper.find('option')).to.have.length(10);
+            });
 
-        wrapper.find('.results-header').at(1).simulate('click');
-        wrapper.find('.results-header').at(1).simulate('click');
-        wrapper.find('.results-header').at(2).simulate('click');
-        wrapper.find('.results-header').at(2).simulate('click');
-        wrapper.find('.results-header').at(3).simulate('click');
-        wrapper.find('.results-header').at(3).simulate('click');
-        wrapper.find('.results-header').at(4).simulate('click');
-        wrapper.find('.results-header').at(4).simulate('click');
+            it('should render error when no traces are found', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise, fulfilledPromise, []);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                wrapper.find('a#related-view').simulate('click');
+                wrapper.find('select#field').simulate('change', {target: { value: 0}});
+                expect(wrapper.find('.error-message_text p').text()).to.equal('No related traces found');
+            });
 
-        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
-        expect(wrapper.find('.react-bs-table-container tr.tr-no-border td').at(0).text()).to.eq('23g89z5f-64e1-4f69-b038-c123rc1c1r1'); // should be sorted by duration at the end
-    });
+            it('should render loading while promise is pending', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise, pendingPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+                wrapper.find('a#related-view').simulate('click');
+                wrapper.find('select#field').simulate('change', {target: { value: 0}});
+                expect(wrapper.find('.loading')).to.have.length(1);
+            });
 
-    it('has a modal upon clicking a span', () => {
-        const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-        const wrapper = mount(<MemoryRouter>
-            <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
-        </MemoryRouter>);
-        wrapper.find('.span-click').first().simulate('click');
-        const modal = wrapper.find('SpanDetailsModal').first();
-        expect(modal.props().isOpen).to.be.true;
+            it('should render related traces with the correct query', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise, fulfilledPromise, stubResults);
+                // The fetchTraceDetails method needs to be called before rendering the Related Traces view
+                traceDetailsStore.fetchTraceDetails();
+                const wrapper = mount(<RelatedTracesContainerStub traceId={stubDetails[1].traceId} store={traceDetailsStore}/>);
+                // Selected field "success" and time '15m' to query relatedTraces
+                wrapper.find('select#field').simulate('change', {target: { value: 0}});
+                wrapper.find('select#time').simulate('change', {target: { value: 1}});
+                // Expects that the dictionary of tags was successfully built
+                expect(wrapper.props().store.tags.success).to.equal('false');
+                // Expects that the searchQuery has the correct field and timepreset to find related traces
+                expect(wrapper.props().store.searchQuery.success).to.equal('false');
+                expect(wrapper.props().store.searchQuery.timePreset).to.equal('15m');
+                // Expects two result traces results - in the store and rendered
+                expect(wrapper.props().store.relatedTraces.length).to.equal(2);
+                expect(wrapper.find('RelatedTracesRow')).to.have.length(2);
+            });
+
+            it('should reject when chosen field is not a property of the given trace', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise, fulfilledPromise, stubResults);
+                traceDetailsStore.fetchTraceDetails();
+                const wrapper = mount(<RelatedTracesContainerStub traceId={stubDetails[1].traceId} store={traceDetailsStore}/>);
+                wrapper.find('select#field').simulate('change', {target: { value: 1}});
+                expect(wrapper.find('Error[errorMessage="This trace does not have the chosen field"]')).to.have.length(1);
+            });
+
+            it('should trigger the correct function for the show all traces button', () => {
+                // mocking window.open and the window object with focus method it returns
+                const focusStub = sinon.stub();
+                global.window.open = () => ({ focus: focusStub });
+
+                const absStub = sinon.stub(linkBuilder, 'withAbsoluteUrl').returns('string');
+                const uniStub = sinon.stub(linkBuilder, 'universalSearchTracesLink').returns('string');
+
+                const wrapper = mount(<RelatedTracesTab searchQuery={{}} relatedTraces={observable.array(stubResults)} />);
+                // Click showMoreTraces button
+                wrapper.find('a.btn-default').simulate('click');
+
+                expect(absStub.calledOnce).to.equal(true);
+                expect(uniStub.calledOnce).to.equal(true);
+                expect(focusStub.calledOnce).to.equal(true);
+
+                linkBuilder.withAbsoluteUrl.restore();
+                linkBuilder.universalSearchTracesLink.restore();
+                delete global.window.open;
+            });
+
+            it('should have a related trace that opens in a new tab, universal', () => {
+                // mocking window.open and the window object with focus method it returns
+                const focusStub = sinon.stub();
+                global.window.open = () => ({ focus: focusStub });
+
+                const absStub = sinon.stub(linkBuilder, 'withAbsoluteUrl').returns('string');
+                const uniStub = sinon.stub(linkBuilder, 'universalSearchTracesLink').returns('string');
+
+                const wrapper = mount(<table><tbody><RelatedTracesRow key={stubResults[0].traceId} {...stubResults[0]} /></tbody></table>);
+                expect(wrapper.find('.trace-trend-table_cell')).to.have.length(5);
+
+                wrapper.find('tr').simulate('click');
+
+                expect(absStub.calledOnce).to.equal(true);
+                expect(uniStub.calledOnce).to.equal(true);
+                expect(focusStub.calledOnce).to.equal(true);
+
+                linkBuilder.withAbsoluteUrl.restore();
+                linkBuilder.universalSearchTracesLink.restore();
+                delete global.window.open;
+            });
+        });
     });
 });
