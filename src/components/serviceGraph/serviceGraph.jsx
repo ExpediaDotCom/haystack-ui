@@ -16,14 +16,25 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import ServiceGraphContainer from './serviceGraphContainer';
 import './serviceGraph.less';
 import serviceGraphStore from './stores/serviceGraphStore';
 
-const ServiceGraph =  () => (
-    <section className="service-graph-panel container">
-        <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false}/>
-    </section>
-);
+const ServiceGraph =  ({history}) => {
+    const search = {
+        serviceName: undefined,
+        time: {
+            preset: '1h'
+        }
+    };
+    return (<section className="service-graph-panel container">
+                <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false} history={history} search={search}/>
+            </section>
+    );
+};
 
+ServiceGraph.propTypes = {
+    history: PropTypes.object.isRequired
+};
 export default ServiceGraph;

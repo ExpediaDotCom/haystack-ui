@@ -21,18 +21,21 @@ import _ from 'lodash';
 import Vizceral from 'vizceral-react';
 
 import config from './vizceralConfig';
-import NodeDetails from './nodeDetails';
 import Graph from './util/graph';
 import ConnectionDetails from './connectionDetails';
 import './serviceGraph.less';
 import ServiceGraphSearch from './graphSearch';
+import linkbuilder from '../../utils/linkBuilder';
+import NodeDetails from './nodeDetails';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
         serviceGraph: PropTypes.oneOfType([
             MobxPropTypes.observableArray.isRequired,
             PropTypes.array
-        ]).isRequired
+        ]).isRequired,
+        search: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     static getNodeDisplayDetails(errorRate) {
@@ -70,8 +73,7 @@ export default class ServiceGraphResults extends React.Component {
                         title: ServiceGraphResults.createNoticeContent(graph.requestRateForNode(node), graph.errorRateForNode(node), nodeDisplayDetails.level),
                         severity: nodeDisplayDetails.severity
                     }
-                ],
-                renderer: 'focusedChild'
+                ]
             };
         });
     }
@@ -109,10 +111,6 @@ export default class ServiceGraphResults extends React.Component {
         };
     }
 
-    onNodeDetailsClose = () => {
-        this.setState({nodeDetails: undefined});
-    };
-
     onConnectionDetailsClose = () => {
         this.setState({connDetails: undefined});
     };
@@ -121,10 +119,12 @@ export default class ServiceGraphResults extends React.Component {
             return;
         }
         if (highlightedObject.type === 'node') {
-            this.setState({nodeDetails: highlightedObject.getName()});
-        } else {
-            this.setState({connDetails: highlightedObject.getName()});
+            const search = this.props.search;
+            search.serviceName = highlightedObject.getName();
+            this.props.history.push(linkbuilder.universalSearchServiceGraphLink(search));
+            return;
         }
+        this.setState({connDetails: highlightedObject.getName()});
         this.setState({searchString: ''});
     };
     searchStringChanged = (newVal) => {
@@ -137,7 +137,6 @@ export default class ServiceGraphResults extends React.Component {
         const serviceGraph = this.props.serviceGraph;
         const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
         const graph = ServiceGraphResults.buildGraph(serviceGraph);
-        const nodeDetails = this.state.nodeDetails;
         const connDetails = this.state.connDetails;
         config.nodes = ServiceGraphResults.createNodes(graph);
         config.connections = ServiceGraphResults.createConnections(graph);
@@ -149,6 +148,7 @@ export default class ServiceGraphResults extends React.Component {
         const brandPrimary = '#e23474';
         const warning = '#e98c15';
         const grey = '#777';
+        const serviceName = this.props.search.serviceName;
 
         const definitions = {
             detailedNode: {
@@ -184,6 +184,7 @@ export default class ServiceGraphResults extends React.Component {
         };
 
         return (
+            <div>
             <article className="serviceGraph__panel">
                 <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
                 <Vizceral
@@ -195,19 +196,8 @@ export default class ServiceGraphResults extends React.Component {
                     targetFramerate={60}
                     objectHighlighted={this.objectHighlighted}
                     match={this.state.searchString}
+                    viewChanged={this.setView}
                 />
-                {
-                    !!nodeDetails &&
-                    <NodeDetails
-                        serviceName={nodeDetails}
-                        requestRate={graph.requestRateForNode(nodeDetails)}
-                        errorPercent={graph.errorRateForNode(nodeDetails)}
-                        onClose={this.onNodeDetailsClose}
-                        incomingEdges={graph.incomingTrafficForNode(nodeDetails)}
-                        outgoingEdges={graph.outgoingTrafficForNode(nodeDetails)}
-                        tags={graph.tagsForNode(nodeDetails)}
-                    />
-                }
                 {
                     !!connDetails &&
                     <ConnectionDetails
@@ -217,6 +207,18 @@ export default class ServiceGraphResults extends React.Component {
                     />
                 }
             </article>
+            {
+                !!serviceName &&
+                <NodeDetails
+                    serviceName={serviceName}
+                    requestRate={graph.requestRateForNode(serviceName)}
+                    errorPercent={graph.errorRateForNode(serviceName)}
+                    incomingEdges={graph.incomingTrafficForNode(serviceName)}
+                    outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
+                    tags={graph.tagsForNode(serviceName)}
+                />
+            }
+            </div>
         );
     }
 }
