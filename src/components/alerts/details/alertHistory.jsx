@@ -56,25 +56,29 @@ export default class AlertHistory extends React.Component {
 
     trendLinkCreator(startTimestamp, endTimestamp) {
         const from = (startTimestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const until = (endTimestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+        const to = (endTimestamp / 1000) + AlertHistory.timeBufferAroundAlert;
 
-        return linkBuilder.createTrendsLink({
+        return linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
             operationName: this.props.operationName,
-            from,
-            until
+            time: {
+                from,
+                to
+            }
         });
     }
 
     traceLinkCreator(startTimestamp, endTimestamp) {
         const from = startTimestamp / 1000;
-        const until = endTimestamp / 1000;
+        const to = endTimestamp / 1000;
 
-        return linkBuilder.createTracesLink({
+        return linkBuilder.universalSearchTracesLink({
             serviceName: this.props.serviceName,
             operationName: this.props.operationName,
-            from,
-            until
+            time: {
+                from,
+                to
+            }
         });
     }
 

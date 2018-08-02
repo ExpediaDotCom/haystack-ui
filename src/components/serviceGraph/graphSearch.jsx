@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Expedia Group
+ * Copyright 2018 Expedia, Inc.
  *
  *       Licensed under the Apache License, Version 2.0 (the "License");
  *       you may not use this file except in compliance with the License.
@@ -17,24 +17,18 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ServiceGraphContainer from './serviceGraphContainer';
-import './serviceGraph.less';
-import serviceGraphStore from './stores/serviceGraphStore';
 
-const ServiceGraph =  ({history}) => {
-    const search = {
-        serviceName: undefined,
-        time: {
-            preset: '1h'
-        }
-    };
-    return (<section className="service-graph-panel container">
-                <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false} history={history} search={search}/>
-            </section>
+const ServiceGraphSearch = ({searchString, searchStringChanged}) => (
+        <section className="graph-search__wrapper">
+            <input type="search" className="graph-search__input form-control" onChange={(event) => { searchStringChanged(event.currentTarget.value); }} value={searchString} placeholder="Filter services..."/>
+            <span className="ti-search graph-search__search-icon"/>
+        </section>
     );
+
+ServiceGraphSearch.propTypes = {
+    searchStringChanged: PropTypes.func.isRequired,
+    searchString: PropTypes.string.isRequired
 };
 
-ServiceGraph.propTypes = {
-    history: PropTypes.object.isRequired
-};
-export default ServiceGraph;
+export default ServiceGraphSearch;
+
