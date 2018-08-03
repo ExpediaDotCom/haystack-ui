@@ -1,18 +1,18 @@
-/* eslint-disable */
 /*
- * Copyright 2017 Expedia, Inc.
+ * Copyright 2018 Expedia Group
  *
- *         Licensed under the Apache License, Version 2.0 (the "License");
- *         you may not use this file except in compliance with the License.
- *         You may obtain a copy of the License at
+ *       Licensed under the Apache License, Version 2.0 (the "License");
+ *       you may not use this file except in compliance with the License.
+ *       You may obtain a copy of the License at
  *
- *             http://www.apache.org/licenses/LICENSE-2.0
+ *           http://www.apache.org/licenses/LICENSE-2.0
  *
- *         Unless required by applicable law or agreed to in writing, software
- *         distributed under the License is distributed on an "AS IS" BASIS,
- *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *         See the License for the specific language governing permissions and
- *         limitations under the License.
+ *       Unless required by applicable law or agreed to in writing, software
+ *       distributed under the License is distributed on an "AS IS" BASIS,
+ *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *       See the License for the specific language governing permissions and
+ *       limitations under the License.
+ *
  */
 
 import React from 'react';
@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import ColorHash from 'color-hash';
 
+import TagsTable from '../details/timeline/tagsTable';
 import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
 import '../../common/resultsTable.less';
@@ -29,8 +30,8 @@ const colorHashDark = new ColorHash({lightness: 0.4});
 
 export default class SpansResultsTable extends React.Component {
     static propTypes = {
-        results: PropTypes.array.isRequired,
-        location: PropTypes.object.isRequired
+        results: PropTypes.array.isRequired
+        // location: PropTypes.object.isRequired
     };
 
     static linkFormatter(traceId) {
@@ -83,6 +84,46 @@ export default class SpansResultsTable extends React.Component {
         return <span className="results-header">{name}</span>;
     }
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            expanding: [],
+            selected: []
+        };
+        this.handleExpand = this.handleExpand.bind(this);
+        this.expandComponent = this.expandComponent.bind(this);
+    }
+
+    handleExpand(rowKey, isExpand) {
+        if (isExpand) {
+            this.setState(
+                {
+                    expanding: [rowKey],
+                    selected: [rowKey]
+                }
+            );
+        } else {
+            this.setState(
+                {
+                    expanding: [],
+                    selected: []
+                }
+            );
+        }
+    }
+
+    expandComponent(row) {
+        if (this.state.selected.filter(id => id === row.spanId).length > 0) {
+            return (<section className="table-row-details">
+                    <div className="tabs-nav-container clearfix">
+                        <TagsTable tags={row.tags}/>
+                    </div>
+                </section>);
+        }
+        return null;
+    }
+
+
     render() {
         const {
             results
@@ -93,7 +134,8 @@ export default class SpansResultsTable extends React.Component {
             clickToExpand: true,
             className: 'selected-row',
             mode: 'checkbox',
-            hideSelectColumn: true
+            hideSelectColumn: true,
+            selected: this.state.selected
         };
 
         const options = {
@@ -105,6 +147,9 @@ export default class SpansResultsTable extends React.Component {
             nextPage: 'Next', // Next page button text
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
+            onExpand: this.handleExpand,
+            expanding: this.state.expanding,
+            expandBodyClass: 'expand-row-body',
             paginationShowsTotal: (start, to, total) =>
                 (<p>Showing traces { start } to { to } out of { total } {total === 1 ? 'sample' : 'samples'}</p>),
             hideSizePerPage: true // Hide page size bar
@@ -120,6 +165,8 @@ export default class SpansResultsTable extends React.Component {
                     trClassName="tr-no-border"
                     options={options}
                     pagination
+                    expandableRow={() => true}
+                    expandComponent={this.expandComponent}
                     selectRow={selectRowProp}
                 >
                     <TableHeaderColumn

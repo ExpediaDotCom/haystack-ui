@@ -21,16 +21,16 @@ const objectUtils = require('../../utils/objectUtils');
 const trace = [
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        spanId: 'root-spanid',
+        spanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
         serviceName: 'stark-service',
         operationName: 'snow-1',
         startTime: 1504784384000,
         duration: 3525000,
         logs: [],
         tags: [{
-            key: 'url',
-            value: 'http://trace.io/blah'
-        },
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
             {
                 key: 'url2',
                 value: 'some:data'
@@ -42,17 +42,17 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'westeros-1',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
         serviceName: 'westeros-service',
         operationName: 'mormont-1',
         startTime: 1504784384000 + 250000,
         duration: 1505000,
         logs: [],
         tags: [{
-            key: 'url',
-            value: 'http://trace.io/blah'
-        },
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
             {
                 key: 'error',
                 value: true
@@ -62,35 +62,34 @@ const trace = [
                 value: 'some:data'
             },
             {
-                key: 'url',
+                key: 'url3',
                 value: 'http://trace.io/blah'
             },
             {
-                key: 'url2',
+                key: 'url4',
                 value: 'some:data'
             },
             {
-                key: 'url',
+                key: 'url5',
                 value: 'http://trace.io/blah'
             },
             {
-                key: 'url2',
+                key: 'url6',
                 value: 'some:data'
             },
             {
-                key: 'url',
+                key: 'url7',
                 value: 'http://trace.io/blah'
             },
             {
-                key: 'url2',
+                key: 'url8',
                 value: 'some:data'
             }]
     },
-
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'westeros-1',
-        spanId: 'tyrell-1',
+        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
+        spanId: '1854daa3-f6a3-489e-fd52-cd9bef25f171',
         serviceName: 'tyrell-service',
         operationName: 'tully-1',
         startTime: 1504784384000 + 250000 + 120000,
@@ -100,8 +99,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'westeros-1',
-        spanId: 'dragon-1',
+        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
+        spanId: 'ae0fd14e-b349-7997-3cd9-a09feb727256',
         serviceName: 'dragon-service',
         operationName: 'drogo-1',
         startTime: 1504784384000 + 250000 + 680000,
@@ -111,8 +110,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'westeros-1',
-        spanId: 'dragon-2',
+        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
+        spanId: '19236fa0-3e57-6983-6849-4fd3fc2eb802',
         serviceName: 'dragon-service',
         operationName: 'grayjoy-1',
         startTime: 1504784384000 + 250000 + 680000,
@@ -122,8 +121,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'dragon-2',
-        spanId: 'blackwater-2',
+        parentSpanId: '19236fa0-3e57-6983-6849-4fd3fc2eb802',
+        spanId: 'cc5f4c3d-c02c-b0d2-66f4-0f1d9c803ec3',
         serviceName: 'blackwater-service',
         operationName: 'clegane-1',
         startTime: 1504784384000 + 250000 + 920000,
@@ -133,8 +132,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'baratheon-1',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: '52df9691-d678-979c-1f31-7eff6f4dea1b',
         serviceName: 'baratheon-service',
         operationName: 'dondarrion-1',
         startTime: 1504784384000 + 1760000,
@@ -144,8 +143,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'baratheon-1',
-        spanId: 'blackwaters-1',
+        parentSpanId: '52df9691-d678-979c-1f31-7eff6f4dea1b',
+        spanId: 'd68e6441-2d68-837c-6c60-141a6d599a10',
         serviceName: 'blackwater-service',
         operationName: 'grayjoy-1',
         startTime: 1504784384000 + 1960000,
@@ -155,8 +154,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'westeros-2',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: 'cf288a66-5f16-2903-0381-298466f2875b',
         serviceName: 'westeros-service',
         operationName: 'tarley-1',
         startTime: 1504784384000 + 2560000 + 105000,
@@ -166,8 +165,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'westeros-3',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: 'a0f06cbf-2cdb-16c2-494d-bc5234b0961b',
         serviceName: 'westeros-service',
         operationName: 'snow-1',
         startTime: 1504784384000 + 2560000 + 105000,
@@ -177,8 +176,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'westeros-4',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: '42ed24aa-97c8-cbd4-b1f5-48e8f537160b',
         serviceName: 'westeros-service',
         operationName: 'tarley-1',
         startTime: 1504784384000 + 2560000 + 105000,
@@ -188,8 +187,8 @@ const trace = [
     },
     {
         traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: 'root-spanid',
-        spanId: 'westeros-5',
+        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
+        spanId: '380433ac-1c68-a78f-6812-29414a4d7c95',
         serviceName: 'westeros-service',
         operationName: 'dondarrion-1',
         startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,

@@ -33,7 +33,7 @@ const TagsTable = ({tags}) => {
             </thead>
             <tbody>
             {sortedTags.map(tag =>
-                (<tr key={Math.random()}>
+                (<tr className="non-highlight-row" key={Math.random()}>
                     <td>{tag.key}</td>
                     <td>
                         {validUrl.isUrl(tag.value) ?
