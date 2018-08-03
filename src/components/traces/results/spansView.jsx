@@ -35,7 +35,7 @@ export default class extends React.Component {
 
     render() {
         return (
-            <section className="operation-results">
+            <section>
                 { store.promiseState && store.promiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,

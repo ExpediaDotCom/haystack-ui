@@ -34,6 +34,10 @@ const trace = [
             {
                 key: 'url2',
                 value: 'some:data'
+            },
+            {
+                key: 'error',
+                value: false
             }]
     },
     {
@@ -49,6 +53,10 @@ const trace = [
             key: 'url',
             value: 'http://trace.io/blah'
         },
+            {
+                key: 'error',
+                value: true
+            },
             {
                 key: 'url2',
                 value: 'some:data'
@@ -488,7 +496,7 @@ connector.getRawTrace = () => Q.fcall(() => trace);
 
 connector.getRawSpan = () => Q.fcall(() => trace[0]);
 
-connector.findSpans = () => Q.fcall(() => [...trace, ...trace]);
+connector.findSpans = () => Q.fcall(() => [...trace, ...trace.map(t => ({...t, traceId: '78327887230'}))]);
 
 connector.findTraces = query => Q.fcall(() => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');

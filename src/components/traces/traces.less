@@ -24,5 +24,70 @@
 
 .trace-result-summary {
   margin-left: @spacing-s;
-  margin-top: @spacing-s;
+  margin-bottom: @spacing-s;
+}
+
+.spans-panel {
+  td:first-child {
+    padding: 0 !important;
+    border-left: 2px;
+  }
+  // overriding default styling for column filters
+  th[data-field] {
+    padding: @spacing-xs 0 @spacing-xs @spacing-s;
+
+    input, select {
+      font-size: 14px;
+      height: 34px;
+      padding-left: @spacing-xs;
+      border: 1px solid @gray-mid-light;
+      border-radius: 3px;
+      background-color: white;
+      color: @gray-darker;
+    }
+  }
+}
+
+.spans-panel__traceid {
+  .ellipsis;
+  line-height: 50px;
+  padding: @spacing-xs @spacing-s;
+  border-left: 4px solid;
+}
+
+.spans-panel__traceid-link {
+  color: @gray-dark;
+  text-decoration: underline;
+}
+
+.spans-panel__tags-listing {
+  display: block;
+  white-space: normal;
+}
+
+.spans-panel__tags-listing-item {
+  display: inline-block;
+  background-color: @gray-mid-lighter;
+  padding: 0 5px;
+  border-radius: 3px;
+}
+
+.spans-panel__tags-listing-more-msg {
+  display: inline-block;
+}
+
+
+.spans-panel .react-bs-table tr:not(.expand-row-body):not(.selected-row):not(.non-highlight-row):hover {
+  .spans-panel__traceid .spans-panel__traceid-link {
+    color: @gray-lighter;
+  }
+
+  .spans-panel__traceid {
+    background-color: @gray-dark !important;
+    color: @gray-lighter;
+    cursor: pointer;
+  }
+  .spans-panel__tags-listing-item {
+    background-color: @gray-darker;
+  }
 }

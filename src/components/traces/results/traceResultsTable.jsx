@@ -229,15 +229,11 @@ export default class TraceResultsTable extends React.Component {
 
         const options = {
             page: 1,  // which page you want to show as default
-            sizePerPage: 15,  // which size per page you want to locate as default
             pageStartIndex: 1, // where to start counting the pages
-            paginationSize: 3,  // the pagination bar size.
             prePage: 'Prev', // Previous page button text
             nextPage: 'Next', // Next page button text
             firstPage: 'First', // First page button text
             lastPage: 'Last', // Last page button text
-            paginationShowsTotal: (start, to, total) =>
-                (<p>Showing traces { start } to { to } out of { total } {total === 1 ? 'sample' : 'samples'}</p>),
             hideSizePerPage: true, // Hide page size bar
             defaultSortName: query.sortBy || 'startTime',  // default sort column name
             defaultSortOrder: 'desc',  // default sort order
@@ -255,7 +251,6 @@ export default class TraceResultsTable extends React.Component {
                     tableStyle={{ border: 'none' }}
                     trClassName="tr-no-border"
                     options={options}
-                    pagination
                     expandableRow={() => true}
                     expandComponent={this.expandComponent}
                     selectRow={selectRowProp}

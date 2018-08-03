@@ -17,21 +17,27 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import CircularProgressbar from 'react-circular-progressbar';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import ColorHash from 'color-hash';
 
 import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
 import '../../common/resultsTable.less';
 
-export default class TraceResultsTable extends React.Component {
+const colorHashLight = new ColorHash({lightness: 0.95});
+const colorHashDark = new ColorHash({lightness: 0.4});
+
+export default class SpansResultsTable extends React.Component {
     static propTypes = {
         results: PropTypes.array.isRequired,
         location: PropTypes.object.isRequired
     };
 
     static linkFormatter(traceId) {
-        return `<div class="table__secondary"><a href="/">${traceId}</a></div>`;
+        return `<div class="spans-panel__traceid" 
+                    style="background-color: ${colorHashLight.hex(traceId)}; border-color: ${colorHashDark.hex(traceId)}">
+                    <span class="ti-new-window"></span> <a class="spans-panel__traceid-link" href="/">${traceId}</a>
+                </div>`;
     }
 
     static serviceFormatter(service) {
@@ -57,30 +63,20 @@ export default class TraceResultsTable extends React.Component {
 
     static tagsFormatter(tags) {
         let tagsList = '';
-        tags.map((tag) => {
-            tagsList += `<span class="table-tags-listing__item">${tag.key}=${tag.value}</span> `;
+        tags.slice(0, 5).map((tag) => {
+            tagsList += `<span class="spans-panel__tags-listing-item">${tag.key}=${tag.value}</span> `;
             return tagsList;
         });
 
+        const moreMessage = tags.length > 5
+            ? `<a class="spans-panel__tags-listing-more-msg">+ ${tags.length - 5} more tags</a>`
+            : '';
 
-        return `<div class="table-tags-listing">${tagsList}<div><a>+ 24 more tags</a></div></div>`;
+        return `<div class="spans-panel__tags-listing">${tagsList} ${moreMessage}<div>`;
     }
 
     static totalDurationColumnFormatter(duration) {
         return `<div class="table__secondary text-right">${formatters.toDurationString(duration)}</div>`;
-    }
-
-    static durationFormatter(duration) {
-        return <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>;
-    }
-
-    static durationPercentFormatter(cell) {
-        return (
-            <div className="text-right">
-                <div className="percentDialContainer text-center">
-                    <CircularProgressbar percentage={cell} strokeWidth={8}/>
-                </div>
-            </div>);
     }
 
     static Header({name}) {
@@ -115,11 +111,11 @@ export default class TraceResultsTable extends React.Component {
         };
 
         const tableHeaderStyle = { border: 'none' };
-        const filter = {type: 'RegexFilter', delay: 500, placeholder: 'Filter Operations (Regex)...'};
+        const filter = {type: 'RegexFilter', delay: 0, placeholder: ' '};
         return (
                 <BootstrapTable
                     data={results}
-                    className="trends-panel"
+                    className="spans-panel"
                     tableStyle={{ border: 'none' }}
                     trClassName="tr-no-border"
                     options={options}
@@ -128,64 +124,64 @@ export default class TraceResultsTable extends React.Component {
                 >
                     <TableHeaderColumn
                         dataField="traceId"
-                        width="10"
-                        dataFormat={TraceResultsTable.linkFormatter}
+                        width="20"
+                        dataFormat={SpansResultsTable.linkFormatter}
                         thStyle={tableHeaderStyle}
                         headerText={''}
-                    ><TraceResultsTable.Header name="TraceId"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="TraceId"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="spanId"
                         width="10"
                         thStyle={tableHeaderStyle}
                         headerText={''}
                         isKey
-                    ><TraceResultsTable.Header name="SpanId"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="SpanId"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="startTime"
-                        dataFormat={TraceResultsTable.timeColumnFormatter}
+                        dataFormat={SpansResultsTable.timeColumnFormatter}
                         width="10"
                         thStyle={tableHeaderStyle}
                         headerText={'Start time of the first span in local timezone'}
-                    ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Start Time"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="serviceName"
-                        dataFormat={TraceResultsTable.serviceFormatter}
+                        dataFormat={SpansResultsTable.serviceFormatter}
                         width="20"
-                        filter={filter}
+                        filter={{...filter, placeholder: 'Filter service...'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Service name'}
-                    ><TraceResultsTable.Header name="Service"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Service"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="operationName"
                         width="20"
-                        filter={filter}
+                        filter={{...filter, placeholder: 'Filter operations...'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Operation name'}
-                    ><TraceResultsTable.Header name="Operation"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Operation"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="error"
                         width="5"
-                        dataFormat={TraceResultsTable.errorFormatter}
-                        filter={filter}
+                        dataFormat={SpansResultsTable.errorFormatter}
+                        filter={{...filter, placeholder: 'Filter true/false...'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Success of the span'}
-                    ><TraceResultsTable.Header name="Success"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Success"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="duration"
-                        dataFormat={TraceResultsTable.totalDurationColumnFormatter}
-                        width="8"
-                        filter={filter}
+                        dataFormat={SpansResultsTable.totalDurationColumnFormatter}
+                        width="10"
+                        filter={{...filter, placeholder: 'Filter duration...'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Duration of the span'}
-                    ><TraceResultsTable.Header name="Duration"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Duration"/></TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="tags"
-                        width="50"
-                        dataFormat={TraceResultsTable.tagsFormatter}
-                        filter={filter}
+                        width="75"
+                        dataFormat={SpansResultsTable.tagsFormatter}
+                        filter={{...filter, placeholder: 'Filter tags...'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Tags of the span'}
-                    ><TraceResultsTable.Header name="Tags"/></TableHeaderColumn>
+                    ><SpansResultsTable.Header name="Tags"/></TableHeaderColumn>
                 </BootstrapTable>
         );
     }

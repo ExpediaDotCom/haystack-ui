@@ -178,8 +178,8 @@ export default class AlertsTable extends React.Component {
 
     render() {
         const operationFilter = this.state.operationName
-            ? {type: 'RegexFilter', defaultValue: decodeURIComponent(this.state.operationName), delay: 500, placeholder: 'FilterOperation (Regex)...'}
-            : {type: 'RegexFilter', delay: 500, placeholder: 'FilterOperation (Regex)...'};
+            ? {type: 'RegexFilter', defaultValue: decodeURIComponent(this.state.operationName), delay: 0, placeholder: 'FilterOperation (Regex)...'}
+            : {type: 'RegexFilter', delay: 0, placeholder: 'FilterOperation (Regex)...'};
 
         const results = this.props.alerts
         .map((result, index) => ({...result, alertId: index, timestamp: result.timestamp || 0}));

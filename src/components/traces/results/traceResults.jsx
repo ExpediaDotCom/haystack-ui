@@ -52,17 +52,14 @@ export default class TraceResults extends React.Component {
         const showSpans = this.state.showSpans;
         const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch}) => (
             <article>
-                <div className="trace-result-summary clearfix">
-                    <div className="pull-left">
-                        <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
-                        {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
-                    </div>
-                    <div className="pull-right">
-                        <span>View </span>
-                        <div className="btn-group btn-group-sm">
-                            <button className={showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Traces</button>
-                            <button className={!showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Spans</button>
-                        </div>
+                <div className="trace-result-summary">
+                    <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                    {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
+                </div>
+                <div className="trace-result-view-selector text-center">
+                    <div className="btn-group btn-group-sm">
+                        <button className={showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Traces View</button>
+                        <button className={!showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => this.toggleView()}>Spans View</button>
                     </div>
                 </div>
                 <section>
