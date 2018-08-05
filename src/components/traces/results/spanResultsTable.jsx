@@ -53,24 +53,20 @@ export default class SpansResultsTable extends React.Component {
 
     static errorFormatter(cell) {
         if (cell) {
-            return (<div className="table__status">
-                <img src="/images/error.svg" alt="Error" height="24" width="24" />
-            </div>);
+            return <img src="/images/error.svg" alt="Error" height="18" width="18" />;
         }
-        return (<div className="table__status">
-            <img src="/images/success.svg" alt="Success" height="24" width="24" />
-        </div>);
+        return <img src="/images/success.svg" alt="Success" height="18" width="18" />;
     }
 
     static tagsFormatter(tags) {
         let tagsList = '';
-        tags.slice(0, 5).map((tag) => {
+        tags.slice(0, 3).map((tag) => {
             tagsList += `<span class="spans-panel__tags-listing-item">${tag.key}=${tag.value}</span> `;
             return tagsList;
         });
 
-        const moreMessage = tags.length > 5
-            ? `<a class="spans-panel__tags-listing-more-msg">+ ${tags.length - 5} more tags</a>`
+        const moreMessage = tags.length > 3
+            ? `<a class="spans-panel__tags-listing-more-msg">+ ${tags.length - 3} more tags</a>`
             : '';
 
         return `<div class="spans-panel__tags-listing">${tagsList} ${moreMessage}<div>`;
@@ -115,9 +111,7 @@ export default class SpansResultsTable extends React.Component {
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.spanId).length > 0) {
             return (<section className="table-row-details">
-                    <div className="tabs-nav-container clearfix">
                         <TagsTable tags={row.tags}/>
-                    </div>
                 </section>);
         }
         return null;
@@ -140,7 +134,7 @@ export default class SpansResultsTable extends React.Component {
 
         const options = {
             page: 1,  // which page you want to show as default
-            sizePerPage: 15,  // which size per page you want to locate as default
+            sizePerPage: 50,  // which size per page you want to locate as default
             pageStartIndex: 1, // where to start counting the pages
             paginationSize: 3,  // the pagination bar size.
             prePage: 'Prev', // Previous page button text

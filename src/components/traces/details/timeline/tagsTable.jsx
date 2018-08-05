@@ -27,8 +27,8 @@ const TagsTable = ({tags}) => {
         return (<table className="table table-striped">
             <thead>
             <tr>
-                <th>Key</th>
-                <th>Value</th>
+                <th width="30%">Key</th>
+                <th width="70%">Value</th>
             </tr>
             </thead>
             <tbody>

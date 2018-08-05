@@ -50,7 +50,6 @@
 
 .spans-panel__traceid {
   .ellipsis;
-  line-height: 50px;
   padding: @spacing-xs @spacing-s;
   border-left: 4px solid;
 }
@@ -77,7 +76,7 @@
 }
 
 
-.spans-panel .react-bs-table tr:not(.expand-row-body):not(.selected-row):not(.non-highlight-row):hover {
+.spans-panel .react-bs-table .selected-row, .spans-panel .react-bs-table tr:not(.expand-row-body):not(.non-highlight-row):hover {
   .spans-panel__traceid .spans-panel__traceid-link {
     color: @gray-lighter;
   }
@@ -90,4 +89,8 @@
   .spans-panel__tags-listing-item {
     background-color: @gray-darker;
   }
+}
+
+.spans-panel .table-row-details td {
+  padding: 6px 12px 6px 12px !important;
 }
