@@ -30,9 +30,9 @@ router.get('/traces', (req, res, next) => {
     );
 });
 
-router.get('/spans', (req, res, next) => {
-    handleResponsePromise(res, next, 'spans')(
-        () => tracesConnector.findSpans(req.query)
+router.get('/traces/raw', (req, res, next) => {
+    handleResponsePromise(res, next, 'traces_raw')(
+        () => tracesConnector.getRawTraces(req.query.traceIds)
     );
 });
 

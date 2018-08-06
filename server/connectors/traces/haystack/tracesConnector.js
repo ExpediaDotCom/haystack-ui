@@ -34,6 +34,7 @@ const fieldValueFetcher = fetcher('getFieldValues');
 const fieldNameFetcher = fetcher('getFieldNames');
 const traceFetcher = fetcher('getTrace');
 const rawTraceFetcher = fetcher('getRawTrace');
+const rawTracesFetcher = fetcher('getRawTraces');
 const rawSpanFetcher = fetcher('getRawSpan');
 const tracesSearchFetcher = fetcher('searchTraces');
 const traceCallGraphFetcher = fetcher('getTraceCallGraph');
@@ -130,6 +131,15 @@ connector.getRawTrace = (traceId) => {
     request.setTraceid(traceId);
 
     return rawTraceFetcher
+    .fetch(request)
+    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
+};
+
+connector.getRawTraces = (traceIds) => {
+    const request = new messages.RawTracesRequest();
+    request.setTraceidList(traceIds);
+
+    return rawTracesFetcher
     .fetch(request)
     .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };

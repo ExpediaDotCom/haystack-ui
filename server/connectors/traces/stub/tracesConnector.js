@@ -495,7 +495,7 @@ connector.getRawTrace = () => Q.fcall(() => trace);
 
 connector.getRawSpan = () => Q.fcall(() => trace[0]);
 
-connector.findSpans = () => Q.fcall(() => [...trace, ...trace.map(t => ({...t, traceId: '78327887230'}))]);
+connector.getRawTraces = () => Q.fcall(() => [...trace, ...trace.map(t => ({...t, traceId: '78327887230'}))]);
 
 connector.findTraces = query => Q.fcall(() => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');

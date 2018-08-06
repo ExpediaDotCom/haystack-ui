@@ -26,7 +26,7 @@ export class SpansSearchStore extends ErrorHandlingStore {
     @action fetchSpans(traceIds) {
         this.promiseState = fromPromise(
             axios
-                .get(`/api/spans?traceIds=${encodeURIComponent(JSON.stringify(traceIds))}`)
+                .get(`/api/traces/raw?traceIds=${encodeURIComponent(JSON.stringify(traceIds))}`)
                 .then((result) => {
                     this.results = result.data;
                 })

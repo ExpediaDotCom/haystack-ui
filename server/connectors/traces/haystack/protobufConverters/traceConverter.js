@@ -44,4 +44,6 @@ converter.toSpanJson = pbSpan => ({
 
 converter.toTraceJson = pbTrace => pbTrace.childspansList.map(pbSpan => converter.toSpanJson(pbSpan));
 
+converter.toTracesJson = pbTraces => pbTraces.getTracesList().flatMap(t => converter.toTraceJson(t));
+
 module.exports = converter;
