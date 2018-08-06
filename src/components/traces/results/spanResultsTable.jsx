@@ -21,6 +21,7 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import ColorHash from 'color-hash';
 
 import TagsTable from '../details/timeline/tagsTable';
+import TagsFilter from './tagsFilter';
 import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
 import linkBuilder from '../../../utils/linkBuilder';
@@ -149,6 +150,8 @@ export default class SpansResultsTable extends React.Component {
             hideSizePerPage: true // Hide page size bar
         };
 
+        const getCustomFilter = filterHandler => <TagsFilter filterHandler={filterHandler}/>;
+
         const tableHeaderStyle = { border: 'none' };
         const filter = {type: 'RegexFilter', delay: 0, placeholder: ' '};
         return (
@@ -219,7 +222,7 @@ export default class SpansResultsTable extends React.Component {
                         dataField="tags"
                         width="75"
                         dataFormat={SpansResultsTable.tagsFormatter}
-                        filter={{...filter, placeholder: 'Filter tags...'}}
+                        filter={{ type: 'CustomFilter', getElement: getCustomFilter}}
                         thStyle={tableHeaderStyle}
                         headerText={'Tags of the span'}
                     ><SpansResultsTable.Header name="Tags"/></TableHeaderColumn>
