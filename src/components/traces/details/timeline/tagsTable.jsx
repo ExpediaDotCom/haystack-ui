@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import validUrl from '../../../../utils/validUrl';
+import transform from '../../../../utils/tagValuesTransformer';
 
 const TagsTable = ({tags}) => {
     const unique = _.uniqBy(tags, tag => tag.key.toLowerCase());
@@ -26,25 +26,16 @@ const TagsTable = ({tags}) => {
     if (sortedTags.length) {
         return (<table className="table table-striped">
             <thead>
-            <tr>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
             </thead>
             <tbody>
             {sortedTags.map(tag =>
                 (<tr key={Math.random()}>
-                    <td>{tag.key}</td>
-                    <td>
-                        {validUrl.isUrl(tag.value) ?
-                            (
-                                <a href={tag.value} target="_blank">
-                                    <span className="ti-new-window"/> <span>{tag.value}</span>
-                                </a>
-                            ) :
-                            (<span>{`${tag.value}`}</span>)
-                        }
-                    </td>
+                    <td>{ tag.key }</td>
+                    <td>{ transform(tag) }</td>
                 </tr>)
             )}
             </tbody>

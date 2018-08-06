@@ -36,6 +36,7 @@ import Autocomplete from '../../../../src/components/traces/utils/autocomplete';
 import {OperationStore} from '../../../../src/stores/operationStore';
 import {ServiceStore} from '../../../../src/stores/serviceStore';
 import TraceDetails from '../../../../src/components/traces/details/traceDetails';
+import TagsTable from '../../../../src/components/traces/details/timeline/tagsTable';
 import RelatedTracesTabContainer from '../../../../src/components/traces/details/relatedTraces/relatedTracesTabContainer';
 import RelatedTracesTab from '../../../../src/components/traces/details/relatedTraces/relatedTracesTab';
 import RelatedTracesRow from '../../../../src/components/traces/details/relatedTraces/relatedTracesRow';
@@ -167,6 +168,14 @@ const stubDetails = [
             {
                 key: 'success',
                 value: 'true'
+            },
+            {
+                key: 'url',
+                value: 'https://www.google.com'
+            },
+            {
+                key: 'url2',
+                value: 'randomquery'
             }
         ]
     },
@@ -634,6 +643,21 @@ describe('<Traces />', () => {
                 wrapper.find('.span-click').first().simulate('click');
                 const modal = wrapper.find('SpanDetailsModal').first();
                 expect(modal.props().isOpen).to.be.true;
+            });
+
+            it('renders tag value transformation correctly', () => {
+                const wrapper = mount(<TagsTable tags={observable.array(stubDetails[0].tags)} />);
+                // Expect table to have been rendered.
+                expect(wrapper.find('.table-striped')).to.have.length(1);
+                // Expect three rows for three tags.
+                expect(wrapper.find('tbody tr')).to.have.length(3);
+                // Expect boolean transform, which returns an image, to have worked.
+                expect(wrapper.find('img')).to.have.length(1);
+                // Expected two links to be created: one from default transform,
+                // one from the link transform.
+                expect(wrapper.find('a')).to.have.length(2);
+                // Expect text template to have work.
+                expect(wrapper.text()).to.have.string('[Google]');
             });
         });
         describe('RelatedTraces View', () => {
