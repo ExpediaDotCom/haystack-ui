@@ -18,185 +18,210 @@ const Q = require('q');
 const _ = require('lodash');
 const objectUtils = require('../../utils/objectUtils');
 
-const trace = [
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        spanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        serviceName: 'stark-service',
-        operationName: 'snow-1',
-        startTime: 1504784384000,
-        duration: 3525000,
-        logs: [],
-        tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
-            {
-                key: 'url2',
-                value: 'some:data'
-            },
-            {
-                key: 'error',
-                value: false
-            }]
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
-        serviceName: 'westeros-service',
-        operationName: 'mormont-1',
-        startTime: 1504784384000 + 250000,
-        duration: 1505000,
-        logs: [],
-        tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
-            {
-                key: 'error',
-                value: true
-            },
-            {
-                key: 'url2',
-                value: 'some:data'
-            },
-            {
-                key: 'url3',
-                value: 'http://trace.io/blah'
-            },
-            {
-                key: 'url4',
-                value: 'some:data'
-            },
-            {
-                key: 'url5',
-                value: 'http://trace.io/blah'
-            },
-            {
-                key: 'url6',
-                value: 'some:data'
-            },
-            {
-                key: 'url7',
-                value: 'http://trace.io/blah'
-            },
-            {
-                key: 'url8',
-                value: 'some:data'
-            }]
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
-        spanId: '1854daa3-f6a3-489e-fd52-cd9bef25f171',
-        serviceName: 'tyrell-service',
-        operationName: 'tully-1',
-        startTime: 1504784384000 + 250000 + 120000,
-        duration: 605000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
-        spanId: 'ae0fd14e-b349-7997-3cd9-a09feb727256',
-        serviceName: 'dragon-service',
-        operationName: 'drogo-1',
-        startTime: 1504784384000 + 250000 + 680000,
-        duration: 645000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '7b8d3143-8010-ac2a-1d21-c7047f113c11',
-        spanId: '19236fa0-3e57-6983-6849-4fd3fc2eb802',
-        serviceName: 'dragon-service',
-        operationName: 'grayjoy-1',
-        startTime: 1504784384000 + 250000 + 680000,
-        duration: 805000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '19236fa0-3e57-6983-6849-4fd3fc2eb802',
-        spanId: 'cc5f4c3d-c02c-b0d2-66f4-0f1d9c803ec3',
-        serviceName: 'blackwater-service',
-        operationName: 'clegane-1',
-        startTime: 1504784384000 + 250000 + 920000,
-        duration: 675000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: '52df9691-d678-979c-1f31-7eff6f4dea1b',
-        serviceName: 'baratheon-service',
-        operationName: 'dondarrion-1',
-        startTime: 1504784384000 + 1760000,
-        duration: 834000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '52df9691-d678-979c-1f31-7eff6f4dea1b',
-        spanId: 'd68e6441-2d68-837c-6c60-141a6d599a10',
-        serviceName: 'blackwater-service',
-        operationName: 'grayjoy-1',
-        startTime: 1504784384000 + 1960000,
-        duration: 234000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: 'cf288a66-5f16-2903-0381-298466f2875b',
-        serviceName: 'westeros-service',
-        operationName: 'tarley-1',
-        startTime: 1504784384000 + 2560000 + 105000,
-        duration: 105000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: 'a0f06cbf-2cdb-16c2-494d-bc5234b0961b',
-        serviceName: 'westeros-service',
-        operationName: 'snow-1',
-        startTime: 1504784384000 + 2560000 + 105000,
-        duration: 505000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: '42ed24aa-97c8-cbd4-b1f5-48e8f537160b',
-        serviceName: 'westeros-service',
-        operationName: 'tarley-1',
-        startTime: 1504784384000 + 2560000 + 105000,
-        duration: 505000 + 225000,
-        logs: [],
-        tags: []
-    },
-    {
-        traceId: '4c22fc0e-cffe-48eb-aed9-869d50d9b142',
-        parentSpanId: '6c0640b9-6d9b-93e8-e310-f2b8ab3d87c4',
-        spanId: '380433ac-1c68-a78f-6812-29414a4d7c95',
-        serviceName: 'westeros-service',
-        operationName: 'dondarrion-1',
-        startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,
-        duration: 150000,
-        logs: [],
-        tags: []
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
     }
-];
+    return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+}
+
+const trace = () => {
+    const traceId = guid();
+    const span1 = guid();
+    const span2 = guid();
+    const span3 = guid();
+    const span4 = guid();
+    const span5 = guid();
+    const span6 = guid();
+    const span7 = guid();
+    const span8 = guid();
+    const span9 = guid();
+    const span10 = guid();
+    const span11 = guid();
+    const span12 = guid();
+
+    return [
+        {
+            traceId,
+            spanId: span1,
+            serviceName: 'stark-service',
+            operationName: 'snow-1',
+            startTime: 1504784384000,
+            duration: 3525000,
+            logs: [],
+            tags: [{
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+                {
+                    key: 'url2',
+                    value: 'some:data'
+                },
+                {
+                    key: 'error',
+                    value: false
+                }]
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span2,
+            serviceName: 'westeros-service',
+            operationName: 'mormont-1',
+            startTime: 1504784384000 + 250000,
+            duration: 1505000,
+            logs: [],
+            tags: [{
+                key: 'url',
+                value: 'http://trace.io/blah'
+            },
+                {
+                    key: 'error',
+                    value: true
+                },
+                {
+                    key: 'url2',
+                    value: 'some:data'
+                },
+                {
+                    key: 'url3',
+                    value: 'http://trace.io/blah'
+                },
+                {
+                    key: 'url4',
+                    value: 'some:data'
+                },
+                {
+                    key: 'url5',
+                    value: 'http://trace.io/blah'
+                },
+                {
+                    key: 'url6',
+                    value: 'some:data'
+                },
+                {
+                    key: 'url7',
+                    value: 'http://trace.io/blah'
+                },
+                {
+                    key: 'url8',
+                    value: 'some:data'
+                }]
+        },
+        {
+            traceId,
+            parentSpanId: span2,
+            spanId: span3,
+            serviceName: 'tyrell-service',
+            operationName: 'tully-1',
+            startTime: 1504784384000 + 250000 + 120000,
+            duration: 605000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span2,
+            spanId: span4,
+            serviceName: 'dragon-service',
+            operationName: 'drogo-1',
+            startTime: 1504784384000 + 250000 + 680000,
+            duration: 645000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span2,
+            spanId: span5,
+            serviceName: 'dragon-service',
+            operationName: 'grayjoy-1',
+            startTime: 1504784384000 + 250000 + 680000,
+            duration: 805000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span5,
+            spanId: span6,
+            serviceName: 'blackwater-service',
+            operationName: 'clegane-1',
+            startTime: 1504784384000 + 250000 + 920000,
+            duration: 675000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span7,
+            serviceName: 'baratheon-service',
+            operationName: 'dondarrion-1',
+            startTime: 1504784384000 + 1760000,
+            duration: 834000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span7,
+            spanId: span8,
+            serviceName: 'blackwater-service',
+            operationName: 'grayjoy-1',
+            startTime: 1504784384000 + 1960000,
+            duration: 234000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span9,
+            serviceName: 'westeros-service',
+            operationName: 'tarley-1',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 105000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span10,
+            serviceName: 'westeros-service',
+            operationName: 'snow-1',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 505000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span11,
+            serviceName: 'westeros-service',
+            operationName: 'tarley-1',
+            startTime: 1504784384000 + 2560000 + 105000,
+            duration: 505000 + 225000,
+            logs: [],
+            tags: []
+        },
+        {
+            traceId,
+            parentSpanId: span1,
+            spanId: span12,
+            serviceName: 'westeros-service',
+            operationName: 'dondarrion-1',
+            startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,
+            duration: 150000,
+            logs: [],
+            tags: []
+        }
+    ];
+};
 
 const connector = {};
 
@@ -489,13 +514,13 @@ const latencyCost = {
 
 connector.getLatencyCost = () => Q.fcall(() => latencyCost);
 
-connector.getTrace = () => Q.fcall(() => trace);
+connector.getTrace = () => Q.fcall(() => trace());
 
-connector.getRawTrace = () => Q.fcall(() => trace);
+connector.getRawTrace = () => Q.fcall(() => trace());
 
-connector.getRawSpan = () => Q.fcall(() => trace[0]);
+connector.getRawSpan = () => Q.fcall(() => trace()[0]);
 
-connector.getRawTraces = () => Q.fcall(() => [...trace, ...trace.map(t => ({...t, traceId: '78327887230'}))]);
+connector.getRawTraces = () => Q.fcall(() => [...trace(), ...trace()]);
 
 connector.findTraces = query => Q.fcall(() => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
