@@ -113,7 +113,7 @@ export default class TraceResultsTable extends React.Component {
 
     static rootColumnFormatter(cell, row) {
         return `<div class="table__primary">
-                <span class="service-spans label ${colorMapper.toBackgroundClass(row.root.serviceName)}">${colorMapper.toBackgroundClass(row.root.serviceName)}</span> 
+                <span class="service-spans label ${colorMapper.toBackgroundClass(row.root.serviceName)}">${row.root.serviceName}</span> 
                 ${row.root.operationName}
                 </div>
                 <div class="table__secondary">${row.root.url}</div>`;

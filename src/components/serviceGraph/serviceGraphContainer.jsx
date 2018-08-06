@@ -29,13 +29,13 @@ import timeWindow from '../../utils/timeWindow';
 export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
         isUniversalSearch: PropTypes.bool,
-        search: PropTypes.object,
-        graphStore: PropTypes.object.isRequired
+        search: PropTypes.object.isRequired,
+        graphStore: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired
     };
 
     static defaultProps = {
         isUniversalSearch: false,
-        search: {},
         serviceName: undefined
     }
 
@@ -138,7 +138,13 @@ export default class ServiceGraphContainer extends React.Component {
                         pending: () => <Loading className="serviceGraph__loading"/>,
                         rejected: () => <Error/>,
                         fulfilled: () => ((this.props.graphStore.graphs && this.props.graphStore.graphs.length)
-                            ? <FilteredServiceGraphResults graphs={this.props.graphStore.graphs} serviceName={this.props.search.serviceName} tabSelected={this.state.tabSelected}/>
+                            ? <FilteredServiceGraphResults
+                                     graphs={this.props.graphStore.graphs}
+                                     serviceName={this.props.search.serviceName}
+                                     tabSelected={this.state.tabSelected}
+                                     history={this.props.history}
+                                     search={this.props.search}
+                            />
                             : <Error/>)
                     })
                     }
@@ -149,12 +155,12 @@ export default class ServiceGraphContainer extends React.Component {
 
 function FilteredServiceGraphResults(props) {
     if (!props.serviceName) {
-        return (<ServiceGraphResults serviceGraph={props.graphs[props.tabSelected - 1]}/>);
+        return (<ServiceGraphResults serviceGraph={props.graphs[props.tabSelected - 1]} history={props.history} search={props.search} />);
     }
     const result = _.find(props.graphs, g => _.includes(Graph.buildGraph(g).allNodes(), props.serviceName));
     if (typeof result !== 'undefined') {
         const filtered = _.filter(result, edge => edge.source.name === props.serviceName || edge.destination.name === props.serviceName);
-        return (<ServiceGraphResults serviceGraph={filtered}/>);
+        return (<ServiceGraphResults serviceGraph={filtered} history={props.history} search={props.search}/>);
     }
     return (<Error errorMessage="ServiceGraph data not found for the given time frame."/>);
 }
@@ -162,7 +168,9 @@ function FilteredServiceGraphResults(props) {
 FilteredServiceGraphResults.propTypes = {
     graphs: PropTypes.object.isRequired,
     serviceName: PropTypes.string,
-    tabSelected: PropTypes.number
+    tabSelected: PropTypes.number,
+    history: PropTypes.object.isRequired,
+    search: PropTypes.object.isRequired
 };
 
 FilteredServiceGraphResults.defaultProps = {
