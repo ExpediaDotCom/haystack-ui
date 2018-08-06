@@ -138,7 +138,18 @@ module.exports = {
             propertyToMatch: 'url2',
             fieldDescription: 'test trait'
         }
-    ]
+    ],
+    
+    tagValuesTransformMap: {
+        success: {
+            type: 'boolean'
+        },
+        url2: {
+            type: 'link',
+            urlTemplate: 'https://www.google.com/search?q=#{value}',
+            textTemplate: '[Google] #{value}'
+        }
+    }
 
     // use if you need SAML back SSO auth
     //
