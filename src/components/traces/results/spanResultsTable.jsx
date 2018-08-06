@@ -23,6 +23,7 @@ import ColorHash from 'color-hash';
 import TagsTable from '../details/timeline/tagsTable';
 import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
+import linkBuilder from '../../../utils/linkBuilder';
 import '../../common/resultsTable.less';
 
 const colorHashLight = new ColorHash({lightness: 0.95});
@@ -37,7 +38,7 @@ export default class SpansResultsTable extends React.Component {
     static linkFormatter(traceId) {
         return `<div class="spans-panel__traceid" 
                     style="background-color: ${colorHashLight.hex(traceId)}; border-color: ${colorHashDark.hex(traceId)}">
-                    <span class="ti-new-window"></span> <a class="spans-panel__traceid-link" href="/">${traceId}</a>
+                    <span class="ti-new-window"></span> <a class="spans-panel__traceid-link" target="_blank" href="${linkBuilder.universalSearchTracesLink({traceId})}">${traceId}</a>
                 </div>`;
     }
 
