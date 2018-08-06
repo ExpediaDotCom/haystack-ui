@@ -50,7 +50,9 @@ export default class TraceResults extends React.Component {
 
     render() {
         const showSpans = this.state.showSpans;
-        const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch}) => (
+        const traceIds = this.props.tracesSearchStore.searchResults.map(t => t.traceId);
+
+        const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch, ids}) => (
             <article>
                 <div className="trace-result-summary">
                     <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
@@ -65,7 +67,7 @@ export default class TraceResults extends React.Component {
                 <section>
                     {
                         showSpans
-                            ? (<SpansView traceIds={[]} location={{}} />)
+                            ? (<SpansView traceIds={ids} location={{}} />)
                             : (<TraceResultsTable
                                 query={searchQuery}
                                 results={results}
@@ -98,6 +100,7 @@ export default class TraceResults extends React.Component {
                                 results={this.props.tracesSearchStore.searchResults}
                                 totalCount={this.props.tracesSearchStore.totalCount}
                                 isUniversalSearch={this.props.isUniversalSearch}
+                                ids={traceIds}
                             />
                             : <Error />)
                     })

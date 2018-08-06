@@ -32,7 +32,6 @@ const colorHashDark = new ColorHash({lightness: 0.4});
 export default class SpansResultsTable extends React.Component {
     static propTypes = {
         results: PropTypes.array.isRequired
-        // location: PropTypes.object.isRequired
     };
 
     static linkFormatter(traceId) {
