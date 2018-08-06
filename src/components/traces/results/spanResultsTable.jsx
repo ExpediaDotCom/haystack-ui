@@ -146,12 +146,11 @@ export default class SpansResultsTable extends React.Component {
             expanding: this.state.expanding,
             expandBodyClass: 'expand-row-body',
             paginationShowsTotal: (start, to, total) =>
-                (<p>Showing traces { start } to { to } out of { total } {total === 1 ? 'sample' : 'samples'}</p>),
+                (<p>Showing spans { start } to { to } out of { total } {total === 1 ? 'sample' : 'samples'}</p>),
             hideSizePerPage: true // Hide page size bar
         };
 
         const getCustomFilter = filterHandler => <TagsFilter filterHandler={filterHandler}/>;
-
         const tableHeaderStyle = { border: 'none' };
         const filter = {type: 'RegexFilter', delay: 0, placeholder: ' '};
         return (

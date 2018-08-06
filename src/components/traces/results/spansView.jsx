@@ -20,29 +20,29 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
 import Loading from '../../common/loading';
-import store from '../../traces/stores/spansSearchStore';
 import Error from '../../common/error';
 import SpanResultsTable from './spanResultsTable';
 
 @observer
-export default class extends React.Component {
+export default class SpansView extends React.Component {
     static propTypes = {
-        traceIds: PropTypes.array.isRequired
+        traceIds: PropTypes.array.isRequired,
+        store: PropTypes.object.isRequired
     };
 
     componentDidMount() {
-        store.fetchSpans(this.props.traceIds);
+        this.props.store.fetchSpans(this.props.traceIds);
     }
 
     render() {
         return (
             <section>
-                { store.promiseState && store.promiseState.case({
+                { this.props.store.promiseState && this.props.store.promiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
                     rejected: () => <Error />,
-                    fulfilled: () => ((store.results && store.results.length)
-                        ? <SpanResultsTable results={store.results}/>
+                    fulfilled: () => ((this.props.store.results && this.props.store.results.length)
+                        ? <SpanResultsTable results={this.props.store.results}/>
                         : <Error />)
                 })
                 }
