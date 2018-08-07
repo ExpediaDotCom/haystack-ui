@@ -27,13 +27,13 @@ const TagsTable = ({tags}) => {
         return (<table className="table table-striped">
             <thead>
                 <tr>
-                    <th>Key</th>
-                    <th>Value</th>
+                    <th width={30}>Key</th>
+                    <th width={70}>Value</th>
                 </tr>
             </thead>
             <tbody>
             {sortedTags.map(tag =>
-                (<tr key={Math.random()}>
+                (<tr  className="non-highlight-row" key={Math.random()}>
                     <td>{ tag.key }</td>
                     <td>{ transform(tag) }</td>
                 </tr>)

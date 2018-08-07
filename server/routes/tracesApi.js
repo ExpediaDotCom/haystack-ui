@@ -30,6 +30,12 @@ router.get('/traces', (req, res, next) => {
     );
 });
 
+router.get('/traces/raw', (req, res, next) => {
+    handleResponsePromise(res, next, 'traces_raw')(
+        () => tracesConnector.getRawTraces(req.query.traceIds)
+    );
+});
+
 router.get('/traces/timeline', (req, res, next) => {
     handleResponsePromise(res, next, 'trace_timeline')(
         () => tracesConnector.getTimeline(req.query)
