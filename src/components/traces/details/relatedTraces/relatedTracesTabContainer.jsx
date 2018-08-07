@@ -68,7 +68,7 @@ export default class RelatedTracesTabContainer extends React.Component {
     fetchRelatedTraces() {
         // If the field is unselected
         if (this.state.selectedFieldIndex === null) {
-            return this.props.store.rejectRelatedTracesPromise('Field is not selected');
+            return this.props.store.rejectRelatedTracesPromise('Select a field to find related traces');
         }
 
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
@@ -106,6 +106,13 @@ export default class RelatedTracesTabContainer extends React.Component {
         const { store } = this.props;
         const { selectedTimeIndex, selectedFieldIndex} = this.state;
 
+        const MessagePlaceholder = ({reason}) =>
+            (<section className="text-center">
+                <div className="no-search_text">
+                    <h5>{reason}</h5>
+                </div>
+            </section>);
+
         return (
             <section>
                 <div className="text-left">
@@ -129,7 +136,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                 </div>
                 { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
                         pending: () => <Loading />,
-                        rejected: reason => <Error errorMessage={reason}/>,
+                        rejected: reason => <MessagePlaceholder reason={reason}/>,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
                                 ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces}/>
                                 : <Error errorMessage="No related traces found"/>)
