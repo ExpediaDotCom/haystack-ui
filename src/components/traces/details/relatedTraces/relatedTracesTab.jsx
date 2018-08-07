@@ -33,7 +33,7 @@ export default class relatedTracesTab extends React.Component {
 
     constructor(props) {
         super(props);
-        const numDisplayedTraces = 5;
+        const numDisplayedTraces = 10;
         this.state = {
             numDisplayedTraces // compute the fields of the original trace
         };
@@ -77,10 +77,12 @@ export default class relatedTracesTab extends React.Component {
                     }
                     </tbody>
                 </table>
-                <span style={{position: 'absolute', marginLeft: '10px', marginTop: '5px'}}> {relatedTraces.length > numDisplayedTraces ? `5 of ${relatedTraces.length} Results` : 'End of Results'}</span>
-                <div style={{textAlign: 'center', marginTop: '15px'}}>
-                    <a role="button" className="btn btn-default" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? `Show All(${relatedTraces.length}) in Universal` : 'View in Universal Search' }</a>
-                </div>
+                <footer>
+                    <div>{relatedTraces.length > numDisplayedTraces ? `5 of ${relatedTraces.length} Results` : 'End of Results'}</div>
+                    <div className="text-center">
+                        <a role="button" className="btn btn-primary" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? `Show All(${relatedTraces.length}) in Universal` : 'View in Universal Search' }</a>
+                    </div>
+                </footer>
             </article>
         );
     }
