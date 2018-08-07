@@ -45,6 +45,6 @@ converter.toSpanJson = pbSpan => ({
 
 converter.toTraceJson = pbTrace => pbTrace.childspansList.map(pbSpan => converter.toSpanJson(pbSpan));
 
-converter.toTracesJson = pbTraces => _.flatMap(pbTraces.tracesList, t => converter.toTraceJson(t));
+converter.toTracesJson = pbTraces => _.flatMap(pbTraces.tracesList, t => converter.toTraceJson(t).sort((s1, s2) => s1.startTime - s2.startTime));
 
 module.exports = converter;

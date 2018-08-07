@@ -68,11 +68,11 @@ export default class SpansResultsTable extends React.Component {
             return tagsList;
         });
 
-        const moreMessage = tags.length > 3
+        const moreMessage = tags.length > 4
             ? `<a class="spans-panel__tags-listing-more-msg">+ ${tags.length - 3} more tags</a>`
             : '';
 
-        return `<div class="spans-panel__tags-listing">${tagsList} ${moreMessage}<div>`;
+        return `<div class="spans-panel__tags-listing"><div class="pull-left">${tagsList}</div> <div class="pull-right">${moreMessage}</div><div>`;
     }
 
     static totalDurationColumnFormatter(duration) {
@@ -169,7 +169,7 @@ export default class SpansResultsTable extends React.Component {
                 >
                     <TableHeaderColumn
                         dataField="traceId"
-                        width="20"
+                        width="16"
                         dataFormat={SpansResultsTable.linkFormatter}
                         thStyle={tableHeaderStyle}
                         headerText={''}
@@ -184,7 +184,7 @@ export default class SpansResultsTable extends React.Component {
                     <TableHeaderColumn
                         dataField="startTime"
                         dataFormat={SpansResultsTable.timeColumnFormatter}
-                        width="10"
+                        width="12"
                         thStyle={tableHeaderStyle}
                         headerText={'Start time of the first span in local timezone'}
                     ><SpansResultsTable.Header name="Start Time"/></TableHeaderColumn>
