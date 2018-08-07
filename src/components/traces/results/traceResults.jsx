@@ -56,8 +56,11 @@ export default class TraceResults extends React.Component {
         const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch, ids}) => (
             <article>
                 <div className="trace-result-summary">
-                    <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
-                    {results.length > 1 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span> : null}
+                    {results.length > 1 ?
+                        <span>
+                            <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                            <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                        </span> : null}
                 </div>
                 <div className="trace-result-view-selector text-center">
                     <div className="btn-group btn-group-sm">
