@@ -137,11 +137,11 @@ connector.getRawTrace = (traceId) => {
 
 connector.getRawTraces = (traceIds) => {
     const request = new messages.RawTracesRequest();
-    request.setTraceidList(traceIds);
+    request.setTraceidList(JSON.parse(traceIds));
 
     return rawTracesFetcher
     .fetch(request)
-    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
+    .then(result => pbTraceConverter.toTracesJson(messages.RawTracesResult.toObject(false, result)));
 };
 
 connector.getRawSpan = (traceId, spanId) => {

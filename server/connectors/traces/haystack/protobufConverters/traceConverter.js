@@ -13,6 +13,7 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
+const _ = require('lodash');
 
 const converter = {};
 
@@ -44,6 +45,6 @@ converter.toSpanJson = pbSpan => ({
 
 converter.toTraceJson = pbTrace => pbTrace.childspansList.map(pbSpan => converter.toSpanJson(pbSpan));
 
-converter.toTracesJson = pbTraces => pbTraces.getTracesList().flatMap(t => converter.toTraceJson(t));
+converter.toTracesJson = pbTraces => _.flatMap(pbTraces.tracesList, t => converter.toTraceJson(t));
 
 module.exports = converter;

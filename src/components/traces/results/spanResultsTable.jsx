@@ -62,7 +62,9 @@ export default class SpansResultsTable extends React.Component {
     static tagsFormatter(tags) {
         let tagsList = '';
         tags.slice(0, 3).map((tag) => {
-            tagsList += `<span class="spans-panel__tags-listing-item">${tag.key}=${tag.value}</span> `;
+            const key = tag.key.length > 12 ? `${tag.key.slice(0, 9)}...` : tag.key;
+            const value = tag.value.length > 12 ? `${tag.value.slice(0, 9)}...` : tag.value;
+            tagsList += `<span class="spans-panel__tags-listing-item">${key}=${value}</span> `;
             return tagsList;
         });
 
