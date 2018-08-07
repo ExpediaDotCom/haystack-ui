@@ -140,7 +140,7 @@ export default class ServiceGraphResults extends React.Component {
         const connDetails = this.state.connDetails;
         config.nodes = ServiceGraphResults.createNodes(graph);
         config.connections = ServiceGraphResults.createConnections(graph);
-        config.maxVolume = maxCountEdge * 20;
+        config.maxVolume = maxCountEdge;
 
         const blue = '#479fd6';
         const darkGrey = '#2d3750';
