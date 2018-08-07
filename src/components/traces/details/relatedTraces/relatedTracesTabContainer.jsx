@@ -68,7 +68,7 @@ export default class RelatedTracesTabContainer extends React.Component {
     fetchRelatedTraces() {
         // If the field is unselected
         if (this.state.selectedFieldIndex === null) {
-            return this.props.store.rejectRelatedTracesPromise('Field is not selected');
+            return this.props.store.rejectRelatedTracesPromise('Select a field to find related traces');
         }
 
         const chosenField = RelatedTracesTabContainer.fieldOptions[this.state.selectedFieldIndex];
@@ -106,20 +106,26 @@ export default class RelatedTracesTabContainer extends React.Component {
         const { store } = this.props;
         const { selectedTimeIndex, selectedFieldIndex} = this.state;
 
+        const MessagePlaceholder = ({message}) =>
+            (<section className="text-center">
+                <div className="no-search_text">
+                    <h5>{message}</h5>
+                </div>
+            </section>);
+
         return (
             <section>
                 <div className="text-left">
                     <span>Find Related Traces by: </span>
                     <select id="field" className="time-range-selector" value={selectedFieldIndex || ''} onChange={this.handleFieldChange}>
-                            {!selectedFieldIndex ? <option key="empty" value="" /> : null}
+                            {!selectedFieldIndex ? <option key="empty" value="">{'<select field>'}</option> : null}
                             {RelatedTracesTabContainer.fieldOptions.map((fieldOp, index) => (
                                 <option
                                     key={fieldOp.fieldTag}
                                     value={index}
                                 >{fieldOp.fieldDescription}</option>))}
                     </select>
-                    <span style={{paddingLeft: '5px'}}>of the </span>
-                    <select id="time" className="time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
+                    <select id="time" className="pull-right time-range-selector" value={selectedTimeIndex} onChange={this.handleTimeChange}>
                         {RelatedTracesTabContainer.timePresetOptions.map((preset, index) => (
                             <option
                                 key={preset.shortName}
@@ -129,7 +135,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                 </div>
                 { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
                         pending: () => <Loading />,
-                        rejected: reason => <Error errorMessage={reason}/>,
+                        rejected: message => <MessagePlaceholder message={message}/>,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
                                 ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces}/>
                                 : <Error errorMessage="No related traces found"/>)
