@@ -106,10 +106,10 @@ export default class RelatedTracesTabContainer extends React.Component {
         const { store } = this.props;
         const { selectedTimeIndex, selectedFieldIndex} = this.state;
 
-        const MessagePlaceholder = ({reason}) =>
+        const MessagePlaceholder = ({message}) =>
             (<section className="text-center">
                 <div className="no-search_text">
-                    <h5>{reason}</h5>
+                    <h5>{message}</h5>
                 </div>
             </section>);
 
@@ -135,7 +135,7 @@ export default class RelatedTracesTabContainer extends React.Component {
                 </div>
                 { store.relatedTracesPromiseState && store.relatedTracesPromiseState.case({
                         pending: () => <Loading />,
-                        rejected: reason => <MessagePlaceholder reason={reason}/>,
+                        rejected: message => <MessagePlaceholder message={message}/>,
                         fulfilled: () => ((store.relatedTraces && store.relatedTraces.length)
                                 ? <RelatedTracesTab searchQuery={store.searchQuery} relatedTraces={store.relatedTraces}/>
                                 : <Error errorMessage="No related traces found"/>)

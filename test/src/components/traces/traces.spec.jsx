@@ -673,7 +673,7 @@ describe('<Traces />', () => {
                 expect(wrapper.find('a#related-view')).to.have.length(1);
                 wrapper.find('a#related-view').simulate('click');
                 // By default, no field should be selected and the fetchRelatedTraces promise should be rejected.
-                expect(wrapper.find('Error[errorMessage="Field is not selected"]')).to.have.length(1);
+                expect(wrapper.find('MessagePlaceholder[message="Select a field to find related traces"]')).to.have.length(1);
                 // We expect 9 options because there are 7 time preset options and two relate by options (one empty, one 'success').
                 expect(wrapper.find('option')).to.have.length(10);
             });
@@ -717,7 +717,7 @@ describe('<Traces />', () => {
                 traceDetailsStore.fetchTraceDetails();
                 const wrapper = mount(<RelatedTracesContainerStub traceId={stubDetails[1].traceId} store={traceDetailsStore}/>);
                 wrapper.find('select#field').simulate('change', {target: { value: 1}});
-                expect(wrapper.find('Error[errorMessage="This trace does not have the chosen field"]')).to.have.length(1);
+                expect(wrapper.find('MessagePlaceholder[message="This trace does not have the chosen field"]')).to.have.length(1);
             });
 
             it('should trigger the correct function for the show all traces button', () => {
@@ -730,7 +730,7 @@ describe('<Traces />', () => {
 
                 const wrapper = mount(<RelatedTracesTab searchQuery={{}} relatedTraces={observable.array(stubResults)} />);
                 // Click showMoreTraces button
-                wrapper.find('a.btn-default').simulate('click');
+                wrapper.find('a.btn-primary').simulate('click');
 
                 expect(absStub.calledOnce).to.equal(true);
                 expect(uniStub.calledOnce).to.equal(true);
