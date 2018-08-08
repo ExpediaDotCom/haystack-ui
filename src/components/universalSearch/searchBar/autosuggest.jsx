@@ -437,7 +437,6 @@ export default class Autocomplete extends React.Component {
             }
             this.setState({inputError: false});
             this.inputRef.value = '';
-            this.props.search();
         }
     }
 
