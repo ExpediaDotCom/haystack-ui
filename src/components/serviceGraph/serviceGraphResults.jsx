@@ -140,14 +140,14 @@ export default class ServiceGraphResults extends React.Component {
         const connDetails = this.state.connDetails;
         config.nodes = ServiceGraphResults.createNodes(graph);
         config.connections = ServiceGraphResults.createConnections(graph);
-        config.maxVolume = maxCountEdge;
+        config.maxVolume = maxCountEdge * 1000;
 
-        const blue = '#479fd6';
+        const blue = '#3c86b4';
         const darkGrey = '#2d3750';
         const white = '#ffffff';
         const brandPrimary = '#e23474';
         const warning = '#e98c15';
-        const grey = '#777';
+        const grey = '#bbb';
         const serviceName = this.props.search.serviceName;
 
         const definitions = {
