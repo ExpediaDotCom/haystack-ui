@@ -23,7 +23,9 @@ export default class TagsFilter extends React.Component {
     };
 
     static hasTagsWithFilters(tags, parsedFilters) {
-        return tags.some(tag => parsedFilters.some(filter => tag && `${tag.key}=${tag.value}`.includes(filter)));
+        return parsedFilters.every(filter =>
+            tags.some(
+                tag => tag && `${tag.key}=${tag.value}`.toLowerCase().includes(filter.toLowerCase())));
     }
     constructor(props) {
         super(props);
