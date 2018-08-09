@@ -459,7 +459,6 @@ export default class Autocomplete extends React.Component {
 
             this.setState({existingKeys: updatedExistingKeys});
             delete this.props.uiState.chips[chipKey];
-            this.props.search();
         }
     }
 

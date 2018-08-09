@@ -20,7 +20,7 @@ const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
 const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters'];
-const DEFAULT_RESULTS_LIMIT = 50;
+const DEFAULT_RESULTS_LIMIT = 25;
 
 function createFieldsList(query) {
     return Object.keys(query)
