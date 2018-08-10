@@ -224,7 +224,7 @@ export default class Autocomplete extends React.Component {
         const equalSplitter = targetInput.indexOf('=');
         let fillValue = '';
         let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
-        value = value.indexOf(' ') > 0 ? `"${value}"` : value;
+        value = Autocomplete.checkForWhitespacedValue(value);
         if (equalSplitter > 0) {
             const key = targetInput.substring(0, equalSplitter);
             fillValue = `${key}=${value}`;
