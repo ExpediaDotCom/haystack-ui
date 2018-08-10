@@ -130,7 +130,12 @@ const trace = () => {
             startTime: 1504784384000 + 250000 + 680000,
             duration: 645000,
             logs: [],
-            tags: []
+            tags: [
+                {
+                    key: 'error',
+                    value: true
+                }
+            ]
         },
         {
             traceId,
@@ -218,7 +223,12 @@ const trace = () => {
             startTime: 1504784384000 + 2560000 + 105000 + 505000 + 225000,
             duration: 150000,
             logs: [],
-            tags: []
+            tags: [
+                {
+                    key: 'error',
+                    value: true
+                }
+            ]
         }
     ];
 };

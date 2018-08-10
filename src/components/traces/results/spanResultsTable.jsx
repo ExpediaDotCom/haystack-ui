@@ -35,6 +35,18 @@ export default class SpansResultsTable extends React.Component {
         results: PropTypes.object.isRequired
     };
 
+    static insertErrorAsKeyInResults(results) {
+        const mappedResults = results;
+        mappedResults.map((span) => {
+            const newSpan = span;
+            let error = false;
+            newSpan.tags.forEach((tag) => { if (tag.key === 'error' && tag.value === true) error = true; });
+            newSpan.error = error;
+            return newSpan;
+        });
+        return mappedResults;
+    }
+
     static linkFormatter(traceId) {
         return `<div class="spans-panel__traceid" 
                     style="background-color: ${colorHashLight.hex(traceId)}; border-color: ${colorHashDark.hex(traceId)}">
@@ -52,8 +64,8 @@ export default class SpansResultsTable extends React.Component {
         return `<div class="table__secondary">${formatters.toTimestring(startTime)}</div>`;
     }
 
-    static errorFormatter(cell) {
-        if (cell) {
+    static errorFormatter(error) {
+        if (error === true) {
             return <img src="/images/error.svg" alt="Error" height="18" width="18" />;
         }
         return <img src="/images/success.svg" alt="Success" height="18" width="18" />;
@@ -126,6 +138,8 @@ export default class SpansResultsTable extends React.Component {
             results
         } = this.props;
 
+        const formattedResults = SpansResultsTable.insertErrorAsKeyInResults(results);
+
         const selectRowProp = {
             clickToSelect: true,
             clickToExpand: true,
@@ -152,12 +166,17 @@ export default class SpansResultsTable extends React.Component {
             hideSizePerPage: true // Hide page size bar
         };
 
+        const successFilterTypes = {
+            true: 'Error',
+            false: 'Success'
+        };
+
         const getCustomFilter = filterHandler => <TagsFilter filterHandler={filterHandler}/>;
         const tableHeaderStyle = { border: 'none' };
         const filter = {type: 'RegexFilter', delay: 0, placeholder: ' '};
         return (
                 <BootstrapTable
-                    data={results}
+                    data={formattedResults}
                     className="spans-panel"
                     tableStyle={{ border: 'none' }}
                     trClassName="tr-no-border"
@@ -207,7 +226,8 @@ export default class SpansResultsTable extends React.Component {
                         dataField="error"
                         width="5"
                         dataFormat={SpansResultsTable.errorFormatter}
-                        filter={{...filter, placeholder: 'Filter true/false...'}}
+                        // formatExtraData={successFilterTypes}
+                        filter={{type: 'SelectFilter', options: successFilterTypes, placeholder: 'All'}}
                         thStyle={tableHeaderStyle}
                         headerText={'Success of the span'}
                     ><SpansResultsTable.Header name="Success"/></TableHeaderColumn>
