@@ -113,6 +113,8 @@ const stubTraces = [{
 
 const stubShortChip = {serviceName: 'test'};
 
+const stubWhitespaceChip = {serviceName: 'whitespace test'};
+
 const stubLongChip = {nested_0: {serviceName: 'test', error: 'true'}};
 
 function createOperationStubStore() {
@@ -327,7 +329,15 @@ describe('<Autosuggest />', () => {
         input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}});
 
         expect(spy.callCount).to.equal(1);
-        sinon.restore(Autosuggest.prototype, 'modifyChip');
+        expect(wrapper.instance().inputRef.value).to.equal('(serviceName=test error=true)');
+        Autosuggest.prototype.modifyChip.restore();
+    });
+
+    it('should be able to modify a chip with whitespace', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore(stubWhitespaceChip)} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        wrapper.instance().modifyChip('serviceName');
+        expect(wrapper.instance().inputRef.value).to.equal('serviceName="whitespace test"');
     });
 
     it('should be able to delete an existing chip', () => {
@@ -398,6 +408,20 @@ describe('<Autosuggest />', () => {
         expect(spy.callCount).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
         wrapper.instance().inputRef.value = 'serviceName=test';
+        input.prop('onKeyDown')({keyCode: 32, preventDefault: () => {}});
+        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+
+        expect(spy.callCount).to.equal(1);
+        expect(wrapperChips.length).to.equal(1);
+        Autosuggest.prototype.updateChips.restore();
+    });
+
+    it('should be able to add a chip with whitespace', () => {
+        const spy = sinon.spy(Autosuggest.prototype, 'updateChips');
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        expect(spy.callCount).to.equal(0);
+        const input = wrapper.find('.usb-searchbar__input');
+        wrapper.instance().inputRef.value = 'serviceName="whitespace test"';
         input.prop('onKeyDown')({keyCode: 32, preventDefault: () => {}});
         const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
 
