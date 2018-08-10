@@ -45,7 +45,7 @@ const stubHistory = {
 
 const stubOptions = {
     error: ['true', 'false'],
-    serviceName: ['test-a', 'test-b', 'test-c']
+    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test']
 };
 
 // STUBS FOR BACKEND SERVICE RESPONSES
@@ -119,7 +119,7 @@ const stubLongChip = {nested_0: {serviceName: 'test', error: 'true'}};
 
 function createOperationStubStore() {
     const store = new OperationStore();
-    store.operations = ['test-operation-a', 'test-operation-b'];
+    store.operations = ['test-operation-a', 'test operation b'];
     sinon.stub(store, 'fetchOperations', (val, callback) => { callback(); });
     return store;
 }
@@ -285,6 +285,15 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onChange')({target: {value: 'err'}});
 
+        expect(wrapper.instance().state.suggestionStrings.length).to.equal(1);
+    });
+
+    it('should change be able to suggest when encapsulating value in quotations', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
+        const input = wrapper.find('.usb-searchbar__input');
+        input.prop('onChange')({target: {value: 'serviceName="whitespace t'}});
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(1);
     });
 

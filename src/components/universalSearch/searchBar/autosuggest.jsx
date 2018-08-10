@@ -141,16 +141,17 @@ export default class Autocomplete extends React.Component {
     // Takes current active word and searches suggestion options for keys that are valid.
     setSuggestions(input) {
         const suggestionArray = [];
-        const splitInput = input.replace(/\s*=\s*/g, '=').replace('(', '').split(' ');
+        const rawSplitInput = input.replace(/\s*=\s*/g, '=').replace('(', '').split(' ');
+        const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
-
         const equalSplitter = targetInput.indexOf('=');
+
         let value;
         let type;
         if (equalSplitter > 0) {
             type = 'Values';
             const key = targetInput.substring(0, equalSplitter).trim();
-            value = targetInput.substring(equalSplitter + 1, targetInput.length).trim();
+            value = targetInput.substring(equalSplitter + 1, targetInput.length).trim().replace('"', '');
             if (this.props.options[key]) {
                 this.props.options[key].forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
@@ -256,20 +257,13 @@ export default class Autocomplete extends React.Component {
         let splitInputArrayToBeChecked = splitInput;
         splitInputArrayToBeChecked.forEach((potentialKV, index) => {
             if ((potentialKV.match(/"/g) || []).length === 1) {
-                const nextItem = splitInput[index + 1];
+                const nextItem = splitInput[index + 1] === '' ? ' ' : splitInput[index + 1];
                 if (nextItem) {
                     splitInputArrayToBeChecked[index] = [potentialKV, nextItem].join(' ');
                     splitInputArrayToBeChecked.splice(index + 1, 1);
                     splitInputArrayToBeChecked = this.checkSplitInputForValuesWithWhitespace(splitInputArrayToBeChecked);
-                } else {
-                    this.setState({
-                        inputError: 'Unclosed quotations found'
-                    });
-                    splitInputArrayToBeChecked = [null];
-                    return false;
                 }
             }
-            return true;
         });
         return splitInputArrayToBeChecked;
     }
