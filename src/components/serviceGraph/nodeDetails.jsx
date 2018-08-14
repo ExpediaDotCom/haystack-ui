@@ -17,8 +17,24 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import TrafficTable from './TrafficTable';
 
-const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
+const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => {
+    const incomingTrafficEdges = incomingEdges.map(e => (
+        {
+            node: e.source.name,
+            count: e.stats.count,
+            errorPercent: (e.stats.errorCount * 100) / e.stats.count
+        }));
+
+    const outgoingTrafficEdges = outgoingEdges.map(e => (
+        {
+            node: e.destination.name,
+            count: e.stats.count,
+            errorPercent: (e.stats.errorCount * 100) / e.stats.count
+        }));
+
+    return (
         <article>
             <div className="row">
                 <section className="col-md-4">
@@ -46,74 +62,21 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
                         </tbody>
                     </table>
                 </section>
-                <section className="col-md-4">
-                    <div className="service-graph__info">
-                        <span className="service-graph__info-header">Incoming Traffic</span> <span className="service-graph__info-sub">(last 1 hour average)</span>
-                    </div>
-                    <table className="service-graph__info-table">
-                        <thead>
-                        <tr>
-                            <th>service</th>
-                            <th>Rq/sec</th>
-                            <th>Errors/sec</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            incomingEdges && incomingEdges.length
-                                ? incomingEdges.sort((a, b) => a.stats.count - b.stats.count).map(edge => (
-                                    <tr>
-                                        <td>{edge.source.name}</td>
-                                        <td>{edge.stats.count.toFixed(2)}</td>
-                                        <td>{edge.stats.errorCount.toFixed(2)}%</td>
-                                    </tr>
-                                ))
-                                : <tr><td>NA</td><td/><td/></tr>
-                        }
-                        </tbody>
-                    </table>
-                </section>
-                <section className="col-md-4">
-                    <div className="service-graph__info">
-                        <span className="service-graph__info-header">Outgoing Traffic</span> <span className="service-graph__info-sub">(last 1 hour average)</span>
-                    </div>
-                    <table className="service-graph__info-table">
-                        <thead>
-                        <tr>
-                            <th>service</th>
-                            <th>Rq/sec</th>
-                            <th>Errors/sec</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            outgoingEdges && outgoingEdges.length
-                                ? outgoingEdges.sort((a, b) => b.stats.count - a.stats.count).map(edge => (
-                                    <tr>
-                                        <td>{edge.source.name}</td>
-                                        <td>{edge.stats.count.toFixed(2)}</td>
-                                        <td>{edge.stats.errorCount.toFixed(2)}</td>
-                                    </tr>
-                                  ))
-                                : <tr><td>NA</td><td/><td/></tr>
-                        }
-                        </tbody>
-                    </table>
-                </section>
+                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming"/>
+                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing"/>
             </div>
         </article>
-);
+    );
+};
 
 NodeDetails.defaultProps = {
     tags: {}
 };
 
-NodeDetails.propTypes =
-    {
-        incomingEdges: PropTypes.array.isRequired,
-        outgoingEdges: PropTypes.array.isRequired,
-        tags: PropTypes.object
-
-    };
+NodeDetails.propTypes = {
+    incomingEdges: PropTypes.array.isRequired,
+    outgoingEdges: PropTypes.array.isRequired,
+    tags: PropTypes.object
+};
 export default NodeDetails;
 
