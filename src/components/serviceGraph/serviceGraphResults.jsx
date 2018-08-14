@@ -50,15 +50,21 @@ export default class ServiceGraphResults extends React.Component {
     }
 
     static createNoticeContent(node, incomingEdges) {
-        const incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map(e => `
-            <tr>
-                <td>${e.source.name}</td>
-                <td class="text-right">${e.stats.count.toFixed(2)}</td>
-                <td class="text-right">${e.stats.errorCount.toFixed(2)}</td>
-            </tr>
-        `);
+        let incomingEdgesList = ['<tr><td>No incoming service</td><td/><td/></tr>'];
 
-        const rows = incomingEdgesList.join('');
+        if (incomingEdges.length) {
+            incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map((e) => {
+                const errorPercentage = (e.stats.errorCount * 100) / e.stats.count;
+                const level = ServiceGraphResults.getNodeDisplayDetails(errorPercentage);
+                return `
+                    <tr>
+                        <td>${e.source.name}</td>
+                        <td class="text-right">${e.stats.count.toFixed(2)}</td>
+                        <td class="text-right service-graph__info-error-${level.level}">${errorPercentage.toFixed(2)}%</td>
+                    </tr>`;
+            });
+        }
+
         return `
                 <h5>Traffic in <b>${node}</b></h5>
                 <div class="text-muted">(last 1 hour average)</div>
@@ -70,7 +76,7 @@ export default class ServiceGraphResults extends React.Component {
                             <th class="text-right">Error%</th>
                         </tr>
                     </thead>
-                    <tbody>${rows}</tbody>
+                    <tbody>${incomingEdgesList.join('')}</tbody>
                 </table>
             `;
     }

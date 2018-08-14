@@ -25,6 +25,17 @@ export default class TrafficTable extends React.Component {
 
     static MAX_ROWS = 7;
 
+    static getErrorLevel(errorPercentage) {
+        const ERROR_LEVEL = 10;
+        const WARN_LEVEL = 1;
+        if (errorPercentage > ERROR_LEVEL) {
+            return 'danger';
+        } else if (errorPercentage > WARN_LEVEL) {
+            return 'warning';
+        }
+        return 'normal';
+    }
+
     constructor(props) {
         super(props);
         this.state = { isExpanded: false };
@@ -86,7 +97,7 @@ export default class TrafficTable extends React.Component {
                             <tr key={edge.node}>
                                 <td>{edge.node}</td>
                                 <td className="text-right">{edge.count.toFixed(2)}</td>
-                                <td className="text-right">{edge.errorPercent.toFixed(2)}%</td>
+                                <td className={`text-right service-graph__info-error-${TrafficTable.getErrorLevel(edge.errorPercent)}`}>{edge.errorPercent.toFixed(2)}%</td>
                             </tr>
                         ))
                         : <tr><td>NA</td><td/><td/></tr>
