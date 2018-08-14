@@ -50,7 +50,7 @@ export default class ServiceGraphResults extends React.Component {
     }
 
     static createNoticeContent(node, incomingEdges) {
-        let incomingEdgesList = ['<tr><td>No incoming service</td><td/><td/></tr>'];
+        let incomingEdgesList = ['<tr><td>NA</td><td/><td/></tr>'];
 
         if (incomingEdges.length) {
             incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map((e) => {
