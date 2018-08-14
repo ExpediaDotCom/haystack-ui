@@ -185,39 +185,39 @@ export default class ServiceGraphResults extends React.Component {
 
         return (
             <div>
-            <article className="serviceGraph__panel">
-                <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
-                <Vizceral
-                    traffic={config}
-                    view={['haystack']}
-                    styles={style}
-                    definitions={definitions}
-                    allowDraggingOfNodes
-                    targetFramerate={60}
-                    objectHighlighted={this.objectHighlighted}
-                    match={this.state.searchString}
-                    viewChanged={this.setView}
-                />
                 {
-                    !!connDetails &&
-                    <ConnectionDetails
-                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        onClose={this.onConnectionDetailsClose}
+                    !!serviceName &&
+                    <NodeDetails
+                        serviceName={serviceName}
+                        requestRate={graph.requestRateForNode(serviceName)}
+                        errorPercent={graph.errorRateForNode(serviceName)}
+                        incomingEdges={graph.incomingTrafficForNode(serviceName)}
+                        outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
+                        tags={graph.tagsForNode(serviceName)}
                     />
                 }
-            </article>
-            {
-                !!serviceName &&
-                <NodeDetails
-                    serviceName={serviceName}
-                    requestRate={graph.requestRateForNode(serviceName)}
-                    errorPercent={graph.errorRateForNode(serviceName)}
-                    incomingEdges={graph.incomingTrafficForNode(serviceName)}
-                    outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
-                    tags={graph.tagsForNode(serviceName)}
-                />
-            }
+                <article className="serviceGraph__panel">
+                    <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
+                    <Vizceral
+                        traffic={config}
+                        view={['haystack']}
+                        styles={style}
+                        definitions={definitions}
+                        allowDraggingOfNodes
+                        targetFramerate={60}
+                        objectHighlighted={this.objectHighlighted}
+                        match={this.state.searchString}
+                        viewChanged={this.setView}
+                    />
+                    {
+                        !!connDetails &&
+                        <ConnectionDetails
+                            requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                            errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                            onClose={this.onConnectionDetailsClose}
+                        />
+                    }
+                </article>
             </div>
         );
     }

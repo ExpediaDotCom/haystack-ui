@@ -17,28 +17,86 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
 
-import _ from 'lodash';
-
-
-const NodeDetails = ({serviceName, requestRate, errorPercent, incomingEdges, outgoingEdges, tags}) => {
-    const titleLinkStr = `/usb?serviceName=${serviceName}`;
-    const incomingEdgeStr = _.reduce(_.slice(incomingEdges, 1), (result, val) => `${result}  ${val}`, incomingEdges[0]);
-    const outgoingEdgeStr = _.reduce(_.slice(outgoingEdges, 1), (result, val) => `${result}  ${val}`, outgoingEdges[0]);
-    return (
-         <div>
-            <header className="clearfix">
-                <h3 className="text-center service-graph__label-large">name: <strong><Link to={titleLinkStr}>{serviceName}</Link></strong></h3>
-                <h4 className="text-center"><strong>Request Rate:</strong> {requestRate}/sec</h4>
-                <h4 className="text-center"><strong>Error Rate:</strong> {errorPercent}/sec</h4>
-                <p className="text-center service-graph__label-small"><strong>Incoming edges:</strong> {incomingEdgeStr}</p>
-                <p className="text-center service-graph__label-small"><strong>Outgoing edges:</strong> {outgoingEdgeStr}</p>
-                <p className="text-center service-graph__label-small"><strong>Tags:</strong> {JSON.stringify(tags)}</p>
-            </header>
-         </div>
-    );
-};
+const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
+        <article>
+            <div className="row">
+                <section className="col-md-4">
+                    <div>
+                        <span className="h4">Tags</span>
+                    </div>
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            Object.keys(tags).map(tagKey => (
+                                <tr>
+                                    <td>{tagKey}</td>
+                                    <td>{tags[tagKey]}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                </section>
+                <section className="col-md-4">
+                    <div>
+                        <span className="h4">Incoming Traffic</span> <span>(1 hour average)</span>
+                    </div>
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>service</th>
+                            <th>Rq/sec</th>
+                            <th>Errors/sec</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            incomingEdges.map(edge => (
+                                <tr>
+                                    <td>{edge.source.name}</td>
+                                    <td>{edge.stats.count.toFixed(2)}</td>
+                                    <td>{edge.stats.errorCount.toFixed(2)}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                </section>
+                <section className="col-md-4">
+                    <div>
+                        <span className="h4">Outgoing Traffic</span> <span>(1 hour average)</span>
+                    </div>
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>service</th>
+                            <th>Rq/sec</th>
+                            <th>Errors/sec</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            outgoingEdges.map(edge => (
+                                <tr>
+                                    <td>{edge.source.name}</td>
+                                    <td>{edge.stats.count.toFixed(2)}</td>
+                                    <td>{edge.stats.errorCount.toFixed(2)}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </article>
+);
 
 NodeDetails.defaultProps = {
     tags: {}
@@ -46,9 +104,6 @@ NodeDetails.defaultProps = {
 
 NodeDetails.propTypes =
     {
-        serviceName: PropTypes.string.isRequired,
-        requestRate: PropTypes.string.isRequired,
-        errorPercent: PropTypes.string.isRequired,
         incomingEdges: PropTypes.array.isRequired,
         outgoingEdges: PropTypes.array.isRequired,
         tags: PropTypes.object
