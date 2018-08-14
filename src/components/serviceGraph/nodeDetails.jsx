@@ -22,10 +22,10 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
         <article>
             <div className="row">
                 <section className="col-md-4">
-                    <div>
-                        <span className="h4">Tags</span>
+                    <div className="service-graph__info">
+                        <span className="service-graph__info-header">Tags</span>
                     </div>
-                    <table className="table">
+                    <table className="service-graph__info-table">
                         <thead>
                         <tr>
                             <th>Name</th>
@@ -34,21 +34,23 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
                         </thead>
                         <tbody>
                         {
-                            Object.keys(tags).map(tagKey => (
-                                <tr>
-                                    <td>{tagKey}</td>
-                                    <td>{tags[tagKey]}</td>
-                                </tr>
-                            ))
+                            Object.keys(tags).length
+                                ? Object.keys(tags).map(tagKey => (
+                                    <tr>
+                                        <td>{tagKey}</td>
+                                        <td>{tags[tagKey]}</td>
+                                    </tr>
+                                ))
+                                : <tr><td>NA</td><td/></tr>
                         }
                         </tbody>
                     </table>
                 </section>
                 <section className="col-md-4">
-                    <div>
-                        <span className="h4">Incoming Traffic</span> <span>(1 hour average)</span>
+                    <div className="service-graph__info">
+                        <span className="service-graph__info-header">Incoming Traffic</span> <span className="service-graph__info-sub">(last 1 hour average)</span>
                     </div>
-                    <table className="table">
+                    <table className="service-graph__info-table">
                         <thead>
                         <tr>
                             <th>service</th>
@@ -58,22 +60,24 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
                         </thead>
                         <tbody>
                         {
-                            incomingEdges.map(edge => (
-                                <tr>
-                                    <td>{edge.source.name}</td>
-                                    <td>{edge.stats.count.toFixed(2)}</td>
-                                    <td>{edge.stats.errorCount.toFixed(2)}</td>
-                                </tr>
-                            ))
+                            incomingEdges && incomingEdges.length
+                                ? incomingEdges.sort((a, b) => a.stats.count - b.stats.count).map(edge => (
+                                    <tr>
+                                        <td>{edge.source.name}</td>
+                                        <td>{edge.stats.count.toFixed(2)}</td>
+                                        <td>{edge.stats.errorCount.toFixed(2)}%</td>
+                                    </tr>
+                                ))
+                                : <tr><td>NA</td><td/><td/></tr>
                         }
                         </tbody>
                     </table>
                 </section>
                 <section className="col-md-4">
-                    <div>
-                        <span className="h4">Outgoing Traffic</span> <span>(1 hour average)</span>
+                    <div className="service-graph__info">
+                        <span className="service-graph__info-header">Outgoing Traffic</span> <span className="service-graph__info-sub">(last 1 hour average)</span>
                     </div>
-                    <table className="table">
+                    <table className="service-graph__info-table">
                         <thead>
                         <tr>
                             <th>service</th>
@@ -83,13 +87,15 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => (
                         </thead>
                         <tbody>
                         {
-                            outgoingEdges.map(edge => (
-                                <tr>
-                                    <td>{edge.source.name}</td>
-                                    <td>{edge.stats.count.toFixed(2)}</td>
-                                    <td>{edge.stats.errorCount.toFixed(2)}</td>
-                                </tr>
-                            ))
+                            outgoingEdges && outgoingEdges.length
+                                ? outgoingEdges.sort((a, b) => b.stats.count - a.stats.count).map(edge => (
+                                    <tr>
+                                        <td>{edge.source.name}</td>
+                                        <td>{edge.stats.count.toFixed(2)}</td>
+                                        <td>{edge.stats.errorCount.toFixed(2)}</td>
+                                    </tr>
+                                  ))
+                                : <tr><td>NA</td><td/><td/></tr>
                         }
                         </tbody>
                     </table>
