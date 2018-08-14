@@ -49,17 +49,30 @@ export default class ServiceGraphResults extends React.Component {
         return {level: 'normal', severity: 0, errorRate};
     }
 
-    static createNoticeContent(requestRate, errorPercent, level) {
-        return `<table>
-                    <tr>
-                        <td class="vizceral-notice__title">Incoming rq :</td>
-                        <td><b>${Number(requestRate).toFixed(2)}/sec</b></td>
-                    </tr>
-                    <tr>
-                        <td class="vizceral-notice__title">Error :</td>
-                        <td class="vizceral-${level}"><b>${Number(errorPercent).toFixed(2)}%</b></td>
-                    </tr>
-                </table>`;
+    static createNoticeContent(node, incomingEdges) {
+        const incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map(e => `
+            <tr>
+                <td>${e.source.name}</td>
+                <td class="text-right">${e.stats.count.toFixed(2)}</td>
+                <td class="text-right">${e.stats.errorCount.toFixed(2)}</td>
+            </tr>
+        `);
+
+        const rows = incomingEdgesList.join('');
+        return `
+                <h5>Traffic in <b>${node}</b></h5>
+                <div class="text-muted">(last 1 hour average)</div>
+                <table class="service-graph__info-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th class="text-right">Rq/Sec</th>
+                            <th class="text-right">Error%</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
     }
 
     static createNodes(graph) {
@@ -70,7 +83,7 @@ export default class ServiceGraphResults extends React.Component {
                 class: nodeDisplayDetails.level,
                 notices: [
                     {
-                        title: ServiceGraphResults.createNoticeContent(graph.requestRateForNode(node), graph.errorRateForNode(node), nodeDisplayDetails.level),
+                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node)),
                         severity: nodeDisplayDetails.severity
                     }
                 ]
