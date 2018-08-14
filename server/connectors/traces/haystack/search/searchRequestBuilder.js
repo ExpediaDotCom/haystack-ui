@@ -19,7 +19,7 @@ const createFilterExpression = require('../expressionTreeBuilder').createFilterE
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters'];
+const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
 const DEFAULT_RESULTS_LIMIT = 25;
 
 function createFieldsList(query) {
