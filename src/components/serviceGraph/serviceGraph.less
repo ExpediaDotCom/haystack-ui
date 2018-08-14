@@ -53,12 +53,12 @@
 }
 .vizceral-notice {
   position: absolute;
-  padding: @spacing-xs;
+  padding: @spacing-s;
 
   ul {
     margin: 0 !important;
     padding: @spacing-xs @spacing-s !important;
-    box-shadow: 0.5px 0.5px 1px 1px @gray-mid-light;
+    box-shadow: 1px 1px 1.5px 1.5px @gray-mid-light;
     background: @gray-lighter;
     color: @gray-darker;
 
@@ -111,4 +111,48 @@
 
 .graph-search__search-icon {
   font-size: @font-size-h6;
+}
+
+.service-graph__info {
+  padding-bottom: @spacing-s;
+}
+
+.service-graph__info-header {
+  .h5
+}
+
+.service-graph__info-sub {
+  .text-muted;
+  font-size: @font-size-small;
+}
+
+.service-graph__info-table {
+  .table;
+  border-bottom: 1px solid @gray-mid-light;
+
+  > thead > tr > th {
+    border-bottom: 1px solid @gray-mid-light;
+  }
+
+  > tbody {
+    background-color: white;
+    > tr > td {
+      line-height: 1.2;
+    }
+  }
+}
+
+.service-graph__info-error-normal {
+  font-weight: 600;
+  color: #3c86b4;
+}
+
+.service-graph__info-error-warning {
+  font-weight: 600;
+  color: #e98c15;
+}
+
+.service-graph__info-error-danger {
+  font-weight: 600;
+  color: #e23474;
 }
