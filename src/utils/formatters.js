@@ -73,7 +73,7 @@ formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
 };
 
-formatters.toTimeRangeTextFromTimeWindow = ({timePreset, startTime, endTime}) => {
+formatters.toTimeRangeTextFromTimeWindow = (timePreset, startTime, endTime) => {
     if (timePreset) {
         return toPresetDisplayText(timePreset);
     }

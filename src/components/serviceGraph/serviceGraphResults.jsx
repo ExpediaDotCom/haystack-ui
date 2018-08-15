@@ -27,6 +27,7 @@ import './serviceGraph.less';
 import ServiceGraphSearch from './graphSearch';
 import linkbuilder from '../../utils/linkBuilder';
 import NodeDetails from './nodeDetails';
+import formatters from '../../utils/formatters';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
@@ -49,7 +50,7 @@ export default class ServiceGraphResults extends React.Component {
         return {level: 'normal', severity: 0, errorRate};
     }
 
-    static createNoticeContent(node, incomingEdges, tags) {
+    static createNoticeContent(node, incomingEdges, tags, time) {
         let incomingEdgesList = ['<tr><td>NA</td><td/><td/></tr>'];
 
         if (incomingEdges.length) {
@@ -70,10 +71,14 @@ export default class ServiceGraphResults extends React.Component {
             tagsListing = Object.keys(tags).map(t => `<span class="label label-success">${t} = ${tags[t]}</span> `).join(' ');
         }
 
+        const timeWindowText = time
+            ? `(${formatters.toTimeRangeTextFromTimeWindow(time.preset, time.from, time.to)} average)`
+            : '(last 1 hour average)';
+
         return `
                 <div class="text-small">${tagsListing}</div>
                 <div class="service-graph__info-header">Traffic in <b>${node}</b></div>
-                <div class="text-muted">(last 1 hour average)</div>
+                <div class="text-muted">${timeWindowText}</div>
                 <table class="service-graph__info-table">
                     <thead>
                         <tr>
@@ -87,7 +92,7 @@ export default class ServiceGraphResults extends React.Component {
             `;
     }
 
-    static createNodes(graph) {
+    static createNodes(graph, time) {
         return graph.allNodes().map((node) => {
             const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(graph.errorRateForNode(node));
             return {
@@ -95,7 +100,7 @@ export default class ServiceGraphResults extends React.Component {
                 class: nodeDisplayDetails.level,
                 notices: [
                     {
-                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node), graph.tagsForNode(node)),
+                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node), graph.tagsForNode(node), time),
                         severity: nodeDisplayDetails.severity
                     }
                 ]
@@ -163,7 +168,7 @@ export default class ServiceGraphResults extends React.Component {
         const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
         const graph = ServiceGraphResults.buildGraph(serviceGraph);
         const connDetails = this.state.connDetails;
-        config.nodes = ServiceGraphResults.createNodes(graph);
+        config.nodes = ServiceGraphResults.createNodes(graph, this.props.search.time);
         config.connections = ServiceGraphResults.createConnections(graph);
         config.maxVolume = maxCountEdge * 1000;
 
@@ -219,6 +224,7 @@ export default class ServiceGraphResults extends React.Component {
                         incomingEdges={graph.incomingTrafficForNode(serviceName)}
                         outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
                         tags={graph.tagsForNode(serviceName)}
+                        time={this.props.search.time}
                     />
                 }
                 <article className="serviceGraph__panel">

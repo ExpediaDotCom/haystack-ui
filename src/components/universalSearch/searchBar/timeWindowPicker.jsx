@@ -53,7 +53,7 @@ export default class TimeWindowPicker extends React.Component {
 
     timeRangeChangeCallback(timePreset, startTime, endTime) {
         this.props.uiState.setTimeWindow({timePreset, startTime, endTime});
-        this.setState({timeRangePickerToggleText: formatters.toTimeRangeTextFromTimeWindow({timePreset, startTime, endTime})});
+        this.setState({timeRangePickerToggleText: formatters.toTimeRangeTextFromTimeWindow(timePreset, startTime, endTime)});
         this.hideTimePicker();
     }
 
@@ -70,7 +70,7 @@ export default class TimeWindowPicker extends React.Component {
             endTime
         } = this.props.uiState.timeWindow;
 
-        const timeRangePickerToggleText = formatters.toTimeRangeTextFromTimeWindow({timePreset, startTime, endTime});
+        const timeRangePickerToggleText = formatters.toTimeRangeTextFromTimeWindow(timePreset, startTime, endTime);
 
         return (
             <div ref={this.setWrapperRef} className="usb-timepicker">
