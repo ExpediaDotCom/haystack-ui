@@ -49,7 +49,7 @@ export default class ServiceGraphResults extends React.Component {
         return {level: 'normal', severity: 0, errorRate};
     }
 
-    static createNoticeContent(node, incomingEdges) {
+    static createNoticeContent(node, incomingEdges, tags) {
         let incomingEdgesList = ['<tr><td>NA</td><td/><td/></tr>'];
 
         if (incomingEdges.length) {
@@ -65,8 +65,14 @@ export default class ServiceGraphResults extends React.Component {
             });
         }
 
+        let tagsListing = '';
+        if (tags && Object.keys(tags).length) {
+            tagsListing = Object.keys(tags).map(t => `<span class="label label-success">${t} = ${tags[t]}</span> `).join(' ');
+        }
+
         return `
-                <h5>Traffic in <b>${node}</b></h5>
+                <div class="text-small">${tagsListing}</div>
+                <div class="service-graph__info-header">Traffic in <b>${node}</b></div>
                 <div class="text-muted">(last 1 hour average)</div>
                 <table class="service-graph__info-table">
                     <thead>
@@ -89,7 +95,7 @@ export default class ServiceGraphResults extends React.Component {
                 class: nodeDisplayDetails.level,
                 notices: [
                     {
-                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node)),
+                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node), graph.tagsForNode(node)),
                         severity: nodeDisplayDetails.severity
                     }
                 ]
