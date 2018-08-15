@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TrafficTable from './TrafficTable';
 
-const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => {
+const NodeDetails = ({incomingEdges, outgoingEdges, tags, time}) => {
     const incomingTrafficEdges = incomingEdges.map(e => (
         {
             node: e.source.name,
@@ -62,8 +62,8 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags}) => {
                         </tbody>
                     </table>
                 </section>
-                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming"/>
-                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing"/>
+                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming" time={time}/>
+                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing" time={time}/>
             </div>
         </article>
     );
@@ -76,7 +76,8 @@ NodeDetails.defaultProps = {
 NodeDetails.propTypes = {
     incomingEdges: PropTypes.array.isRequired,
     outgoingEdges: PropTypes.array.isRequired,
-    tags: PropTypes.object
+    tags: PropTypes.object,
+    time: PropTypes.object.isRequired
 };
 export default NodeDetails;
 

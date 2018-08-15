@@ -16,11 +16,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import formatters from '../../utils/formatters';
 
 export default class TrafficTable extends React.Component {
     static propTypes = {
         trafficType: PropTypes.string.isRequired,
-        trafficEdges: PropTypes.array.isRequired
+        trafficEdges: PropTypes.array.isRequired,
+        time: PropTypes.object.isRequired
     };
 
     static MAX_ROWS = 7;
@@ -47,7 +49,7 @@ export default class TrafficTable extends React.Component {
     }
 
     render() {
-        const {trafficEdges, trafficType} = this.props;
+        const {trafficEdges, trafficType, time} = this.props;
         const { isExpanded } = this.state;
 
         let trafficEdgesList = trafficEdges.sort((a, b) => b.count - a.count);
@@ -78,9 +80,13 @@ export default class TrafficTable extends React.Component {
             }
         }
 
+        const timeWindowText = time
+            ? `(${formatters.toTimeRangeTextFromTimeWindow(time.preset, time.from, time.to)} average)`
+            : '(last 1 hour average)';
+
         return (<section className="col-md-4">
                 <div className="service-graph__info">
-                    <span className="service-graph__info-header">{trafficType} Traffic</span> <span className="service-graph__info-sub">(last 1 hour average)</span>
+                    <span className="service-graph__info-header">{trafficType} Traffic</span> <span className="service-graph__info-sub">{timeWindowText}</span>
                 </div>
                 <table className="service-graph__info-table">
                     <thead>
