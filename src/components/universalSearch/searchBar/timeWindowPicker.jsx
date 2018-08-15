@@ -18,7 +18,6 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import TimeRangePicker from './timeRangePicker';
-import { toPresetDisplayText } from '../../traces/utils/presets';
 import formatters from '../../../utils/formatters';
 
 @observer
@@ -26,14 +25,6 @@ export default class TimeWindowPicker extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired
     };
-
-    static getTimeRangeText(timePreset, startTime, endTime) {
-        if (timePreset) {
-            return toPresetDisplayText(timePreset);
-        }
-
-        return formatters.toTimeRangeString(parseInt(startTime, 10), parseInt(endTime, 10));
-    }
 
     constructor(props) {
         super(props);
@@ -62,7 +53,7 @@ export default class TimeWindowPicker extends React.Component {
 
     timeRangeChangeCallback(timePreset, startTime, endTime) {
         this.props.uiState.setTimeWindow({timePreset, startTime, endTime});
-        this.setState({timeRangePickerToggleText: TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime)});
+        this.setState({timeRangePickerToggleText: formatters.toTimeRangeTextFromTimeWindow({timePreset, startTime, endTime})});
         this.hideTimePicker();
     }
 
@@ -79,7 +70,7 @@ export default class TimeWindowPicker extends React.Component {
             endTime
         } = this.props.uiState.timeWindow;
 
-        const timeRangePickerToggleText = TimeWindowPicker.getTimeRangeText(timePreset, startTime, endTime);
+        const timeRangePickerToggleText = formatters.toTimeRangeTextFromTimeWindow({timePreset, startTime, endTime});
 
         return (
             <div ref={this.setWrapperRef} className="usb-timepicker">
