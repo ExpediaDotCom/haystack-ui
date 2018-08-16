@@ -27,6 +27,7 @@ import './serviceGraph.less';
 import ServiceGraphSearch from './graphSearch';
 import linkbuilder from '../../utils/linkBuilder';
 import NodeDetails from './nodeDetails';
+import formatters from '../../utils/formatters';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
@@ -49,20 +50,49 @@ export default class ServiceGraphResults extends React.Component {
         return {level: 'normal', severity: 0, errorRate};
     }
 
-    static createNoticeContent(requestRate, errorPercent, level) {
-        return `<table>
+    static createNoticeContent(node, incomingEdges, tags, time) {
+        let incomingEdgesList = ['<tr><td>NA</td><td/><td/></tr>'];
+
+        if (incomingEdges.length) {
+            incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map((e) => {
+                const errorPercentage = (e.stats.errorCount * 100) / e.stats.count;
+                const level = ServiceGraphResults.getNodeDisplayDetails(errorPercentage);
+                return `
                     <tr>
-                        <td class="vizceral-notice__title">Incoming rq :</td>
-                        <td><b>${Number(requestRate).toFixed(2)}/sec</b></td>
-                    </tr>
-                    <tr>
-                        <td class="vizceral-notice__title">Error :</td>
-                        <td class="vizceral-${level}"><b>${Number(errorPercent).toFixed(2)}%</b></td>
-                    </tr>
-                </table>`;
+                        <td>${e.source.name}</td>
+                        <td class="text-right">${e.stats.count.toFixed(2)}</td>
+                        <td class="text-right service-graph__info-error-${level.level}">${errorPercentage.toFixed(2)}%</td>
+                    </tr>`;
+            });
+        }
+
+        let tagsListing = '';
+        if (tags && Object.keys(tags).length) {
+            tagsListing = Object.keys(tags).map(t => `<span class="label label-success">${t} = ${tags[t]}</span> `).join(' ');
+        }
+
+        const timeWindowText = time
+            ? `(${formatters.toTimeRangeTextFromTimeWindow(time.preset, time.from, time.to)} average)`
+            : '(last 1 hour average)';
+
+        return `
+                <div class="text-small">${tagsListing}</div>
+                <div class="service-graph__info-header">Traffic in <b>${node}</b></div>
+                <div class="text-muted">${timeWindowText}</div>
+                <table class="service-graph__info-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th class="text-right">Rq/Sec</th>
+                            <th class="text-right">Error%</th>
+                        </tr>
+                    </thead>
+                    <tbody>${incomingEdgesList.join('')}</tbody>
+                </table>
+            `;
     }
 
-    static createNodes(graph) {
+    static createNodes(graph, time) {
         return graph.allNodes().map((node) => {
             const nodeDisplayDetails = ServiceGraphResults.getNodeDisplayDetails(graph.errorRateForNode(node));
             return {
@@ -70,7 +100,7 @@ export default class ServiceGraphResults extends React.Component {
                 class: nodeDisplayDetails.level,
                 notices: [
                     {
-                        title: ServiceGraphResults.createNoticeContent(graph.requestRateForNode(node), graph.errorRateForNode(node), nodeDisplayDetails.level),
+                        title: ServiceGraphResults.createNoticeContent(node, graph.incomingTrafficForNode(node), graph.tagsForNode(node), time),
                         severity: nodeDisplayDetails.severity
                     }
                 ]
@@ -138,7 +168,7 @@ export default class ServiceGraphResults extends React.Component {
         const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
         const graph = ServiceGraphResults.buildGraph(serviceGraph);
         const connDetails = this.state.connDetails;
-        config.nodes = ServiceGraphResults.createNodes(graph);
+        config.nodes = ServiceGraphResults.createNodes(graph, this.props.search.time);
         config.connections = ServiceGraphResults.createConnections(graph);
         config.maxVolume = maxCountEdge * 1000;
 
@@ -185,39 +215,40 @@ export default class ServiceGraphResults extends React.Component {
 
         return (
             <div>
-            <article className="serviceGraph__panel">
-                <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
-                <Vizceral
-                    traffic={config}
-                    view={['haystack']}
-                    styles={style}
-                    definitions={definitions}
-                    allowDraggingOfNodes
-                    targetFramerate={60}
-                    objectHighlighted={this.objectHighlighted}
-                    match={this.state.searchString}
-                    viewChanged={this.setView}
-                />
                 {
-                    !!connDetails &&
-                    <ConnectionDetails
-                        requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
-                        onClose={this.onConnectionDetailsClose}
+                    !!serviceName &&
+                    <NodeDetails
+                        serviceName={serviceName}
+                        requestRate={graph.requestRateForNode(serviceName)}
+                        errorPercent={graph.errorRateForNode(serviceName)}
+                        incomingEdges={graph.incomingTrafficForNode(serviceName)}
+                        outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
+                        tags={graph.tagsForNode(serviceName)}
+                        time={this.props.search.time}
                     />
                 }
-            </article>
-            {
-                !!serviceName &&
-                <NodeDetails
-                    serviceName={serviceName}
-                    requestRate={graph.requestRateForNode(serviceName)}
-                    errorPercent={graph.errorRateForNode(serviceName)}
-                    incomingEdges={graph.incomingTrafficForNode(serviceName)}
-                    outgoingEdges={graph.outgoingTrafficForNode(serviceName)}
-                    tags={graph.tagsForNode(serviceName)}
-                />
-            }
+                <article className="serviceGraph__panel">
+                    <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
+                    <Vizceral
+                        traffic={config}
+                        view={['haystack']}
+                        styles={style}
+                        definitions={definitions}
+                        allowDraggingOfNodes
+                        targetFramerate={60}
+                        objectHighlighted={this.objectHighlighted}
+                        match={this.state.searchString}
+                        viewChanged={this.setView}
+                    />
+                    {
+                        !!connDetails &&
+                        <ConnectionDetails
+                            requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                            errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
+                            onClose={this.onConnectionDetailsClose}
+                        />
+                    }
+                </article>
             </div>
         );
     }

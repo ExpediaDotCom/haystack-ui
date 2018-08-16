@@ -56,11 +56,11 @@ class Graph {
     }
 
     incomingTrafficForNode(name) {
-        return _.filter(this.edges, e => e.destination.name === name).map(e => e.source.name);
+        return _.filter(this.edges, e => e.destination.name === name);
     }
 
     outgoingTrafficForNode(name) {
-        return _.filter(this.edges, e => e.source.name === name).map(e => e.destination.name);
+        return _.filter(this.edges, e => e.source.name === name);
     }
 
     buildErrorRateMapForNode(name) {

@@ -199,7 +199,7 @@ export default class AlertSubscriptions extends React.Component {
         </div>);
 
         const SubscriptionRow = ({subscription}) => (
-            <tr className="non-highlight-row subscription-row" key={subscription.subscriptionId}>
+            <tr className="non-highlight-row subscription-row">
                 <td>{AlertSubscriptions.getSubscriptionType(subscription)}</td>
                 <td>
                     <input
@@ -259,7 +259,7 @@ export default class AlertSubscriptions extends React.Component {
                     <tbody>
                         {
                             alertSubscriptions && alertSubscriptions.length
-                                ? alertSubscriptions.map(subscription => <SubscriptionRow subscription={subscription}/>)
+                                ? alertSubscriptions.map(subscription => <SubscriptionRow key={subscription.subscriptionId} subscription={subscription}/>)
                                 : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
                         }
                         <NewSubscription/>

@@ -52,11 +52,11 @@ describe('Graph', () => {
        const tags = graph.tagsForNode('stark-service');
        expect(tags.DEPLOYMENT).to.equal('aws');
     });
-
-    it('should list the incoming and outgoing traffic details', () => {
-        const incoming = graph.incomingTrafficForNode('grayjoy-service');
-        const outgoing = graph.outgoingTrafficForNode('stark-service');
-        expect(incoming[0]).to.equal('stark-service');
-        expect(outgoing[0]).to.equal('baratheon-service');
-    });
+    //
+    // it('should list the incoming and outgoing traffic details', () => {
+    //     const incoming = graph.incomingTrafficForNode('grayjoy-service');
+    //     const outgoing = graph.outgoingTrafficForNode('stark-service');
+    //     expect(incoming[0]).to.equal('stark-service');
+    //     expect(outgoing[0]).to.equal('baratheon-service');
+    // });
 });

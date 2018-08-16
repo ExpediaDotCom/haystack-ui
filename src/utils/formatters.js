@@ -16,6 +16,7 @@
 
 import timeago from 'timeago.js';
 import moment from 'moment';
+import { toPresetDisplayText } from '../components/traces/utils/presets';
 
 const formatters = {};
 
@@ -70,6 +71,14 @@ formatters.toTimeRangeString = (fromInMs, untilInMs) => {
     const end = moment(untilInMs);
 
     return `${start.format('L')} ${start.format('LT')} - ${end.format('L')} ${end.format('LT')}`;
+};
+
+formatters.toTimeRangeTextFromTimeWindow = (timePreset, startTime, endTime) => {
+    if (timePreset) {
+        return toPresetDisplayText(timePreset);
+    }
+
+    return formatters.toTimeRangeString(parseInt(startTime, 10), parseInt(endTime, 10));
 };
 
 export default formatters;

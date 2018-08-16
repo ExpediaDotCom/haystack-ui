@@ -17,26 +17,55 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
+import TrafficTable from './TrafficTable';
 
-import _ from 'lodash';
+const NodeDetails = ({incomingEdges, outgoingEdges, tags, time}) => {
+    const incomingTrafficEdges = incomingEdges.map(e => (
+        {
+            node: e.source.name,
+            count: e.stats.count,
+            errorPercent: (e.stats.errorCount * 100) / e.stats.count
+        }));
 
+    const outgoingTrafficEdges = outgoingEdges.map(e => (
+        {
+            node: e.destination.name,
+            count: e.stats.count,
+            errorPercent: (e.stats.errorCount * 100) / e.stats.count
+        }));
 
-const NodeDetails = ({serviceName, requestRate, errorPercent, incomingEdges, outgoingEdges, tags}) => {
-    const titleLinkStr = `/search?serviceName=${serviceName}`;
-    const incomingEdgeStr = _.reduce(_.slice(incomingEdges, 1), (result, val) => `${result}  ${val}`, incomingEdges[0]);
-    const outgoingEdgeStr = _.reduce(_.slice(outgoingEdges, 1), (result, val) => `${result}  ${val}`, outgoingEdges[0]);
     return (
-         <div>
-            <header className="clearfix">
-                <h3 className="text-center service-graph__label-large">name: <strong><Link to={titleLinkStr}>{serviceName}</Link></strong></h3>
-                <h4 className="text-center"><strong>Request Rate:</strong> {requestRate}/sec</h4>
-                <h4 className="text-center"><strong>Error Rate:</strong> {errorPercent}/sec</h4>
-                <p className="text-center service-graph__label-small"><strong>Incoming edges:</strong> {incomingEdgeStr}</p>
-                <p className="text-center service-graph__label-small"><strong>Outgoing edges:</strong> {outgoingEdgeStr}</p>
-                <p className="text-center service-graph__label-small"><strong>Tags:</strong> {JSON.stringify(tags)}</p>
-            </header>
-         </div>
+        <article>
+            <div className="row">
+                <section className="col-md-4">
+                    <div className="service-graph__info">
+                        <span className="service-graph__info-header">Tags</span>
+                    </div>
+                    <table className="service-graph__info-table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            Object.keys(tags).length
+                                ? Object.keys(tags).map(tagKey => (
+                                    <tr>
+                                        <td>{tagKey}</td>
+                                        <td>{tags[tagKey]}</td>
+                                    </tr>
+                                ))
+                                : <tr><td>NA</td><td/></tr>
+                        }
+                        </tbody>
+                    </table>
+                </section>
+                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming" time={time}/>
+                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing" time={time}/>
+            </div>
+        </article>
     );
 };
 
@@ -44,15 +73,11 @@ NodeDetails.defaultProps = {
     tags: {}
 };
 
-NodeDetails.propTypes =
-    {
-        serviceName: PropTypes.string.isRequired,
-        requestRate: PropTypes.string.isRequired,
-        errorPercent: PropTypes.string.isRequired,
-        incomingEdges: PropTypes.array.isRequired,
-        outgoingEdges: PropTypes.array.isRequired,
-        tags: PropTypes.object
-
-    };
+NodeDetails.propTypes = {
+    incomingEdges: PropTypes.array.isRequired,
+    outgoingEdges: PropTypes.array.isRequired,
+    tags: PropTypes.object,
+    time: PropTypes.object.isRequired
+};
 export default NodeDetails;
 

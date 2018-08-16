@@ -90,6 +90,7 @@ export default class trendsTab extends React.Component {
                     {
                         serviceOperationList.map(serviceOp => (
                             <ServiceOperationTrendRow
+                                key={Math.random()}
                                 serviceName={serviceOp.serviceName}
                                 operationName={serviceOp.operationName}
                                 granularity={granularity}
