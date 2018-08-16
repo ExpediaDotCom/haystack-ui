@@ -118,10 +118,10 @@ describe('<Home />', () => {
         const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
 
         wrapper.instance().handleChange({value: 'some-app'});
-        expect(stubLocation).to.equal('/service/some-app/trends');
+        expect(stubLocation).to.equal('/legacy/service/some-app/trends');
 
         wrapper.instance().handleChange({value: '#/something/.app/ui/test'});
-        expect(stubLocation).to.equal('/service/%23%2Fsomething%2F.app%2Fui%2Ftest/trends');
+        expect(stubLocation).to.equal('/legacy/service/%23%2Fsomething%2F.app%2Fui%2Ftest/trends');
     });
 
     it('should render the servicePerformance', () => {
