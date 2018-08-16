@@ -42,6 +42,7 @@ const Layout = () => (
                     <Route exact path="/legacy" component={Home}/>
                     <Route path="/legacy/traces/:traceId" render={props => <HeaderSearchInterstitial traceDetailsStore={traceDetailsStore} {...props} />} />
                     <Route path="/legacy/service/:serviceName" component={ServiceTools}/>
+                    <Route path="/legacy/*" component={NoMatch}/>
                 </Switch>
             }
         </article>
