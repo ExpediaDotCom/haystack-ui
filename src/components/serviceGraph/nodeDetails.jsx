@@ -23,7 +23,7 @@ import _ from 'lodash';
 
 
 const NodeDetails = ({serviceName, requestRate, errorPercent, incomingEdges, outgoingEdges, tags}) => {
-    const titleLinkStr = `/usb?serviceName=${serviceName}`;
+    const titleLinkStr = `/search?serviceName=${serviceName}`;
     const incomingEdgeStr = _.reduce(_.slice(incomingEdges, 1), (result, val) => `${result}  ${val}`, incomingEdges[0]);
     const outgoingEdgeStr = _.reduce(_.slice(outgoingEdges, 1), (result, val) => `${result}  ${val}`, outgoingEdges[0]);
     return (

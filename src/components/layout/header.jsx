@@ -62,7 +62,7 @@ class SearchBar extends React.Component {
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">
-                            <Link to="/" className="navbar-brand">
+                            <Link to="/legacy" className="navbar-brand">
                                 <img src="/images/logo.png" alt="Logo" className="logo"/>
                                 <span>Haystack</span>
                             </Link>

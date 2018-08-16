@@ -26,7 +26,6 @@ module.exports = {
     gaTrackingID: 'UA-XXXXXXXX-X',
 
     // Feature switches
-    usbPrimary: true,
     enableServicePerformance: true,
     enableServiceLevelTrends: true,
 

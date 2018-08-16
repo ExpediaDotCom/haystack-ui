@@ -16,14 +16,18 @@
 
 
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 export default () => (
     <header className="universal-search-header">
         <div className="container">
             <a className="navbar-brand universal-search-header__container" href="/">
                 <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
-                <span className="usb-logo universal-search-header__title">Haystack <sub className="sub-smaller"> [beta]</sub></span>
+                <span className="usb-logo universal-search-header__title">Haystack</span>
             </a>
+            <div className="pull-right usb-legacy-button">
+                <Link to="/legacy"><div className="btn btn-default">To Legacy Haystack View</div></Link>
+            </div>
         </div>
     </header>
 );
