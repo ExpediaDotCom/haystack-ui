@@ -26,7 +26,7 @@ export default () => (
                 <span className="usb-logo universal-search-header__title">Haystack</span>
             </a>
             <div className="pull-right usb-legacy-button">
-                <Link to="/legacy"><div className="btn btn-default">To Legacy Haystack View</div></Link>
+                <Link to="/legacy"><div className="btn btn-default">Go To Legacy Haystack View</div></Link>
             </div>
         </div>
     </header>

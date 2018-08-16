@@ -47,7 +47,7 @@ class SearchBar extends React.Component {
     searchRedirect(event) {
         event.preventDefault();
         if (this.state.traceId.length) {
-            this.props.history.push(`/traces/${this.state.traceId.trim()}`);
+            this.props.history.push(`legacy/traces/${this.state.traceId.trim()}`);
         }
         ReactGA.event({
             category: 'Trace Search',
