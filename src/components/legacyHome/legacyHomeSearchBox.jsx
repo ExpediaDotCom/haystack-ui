@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import Typist from 'react-typist';
 import {Link} from 'react-router-dom';
 
-import './homeSearchBox.less';
+import './legacyHomeSearchBox.less';
 
 @observer
 export default class HomeSearchBox extends Component {

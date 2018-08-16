@@ -21,10 +21,10 @@ import {expect} from 'chai';
 import {MemoryRouter} from 'react-router-dom';
 import sinon from 'sinon';
 
-import Header from '../../../src/components/layout/header';
+import Header from '../../../src/components/layout/legacyHeader';
 import Footer from '../../../src/components/layout/footer';
-import ServiceTools from '../../../src/components/layout/serviceTools';
-import HeaderSearchInterstitial from '../../../src/components/layout/headerSearchInterstitial';
+import ServiceTools from '../../../src/components/layout/legacyServiceTools';
+import HeaderSearchInterstitial from '../../../src/components/layout/legacyHeaderSearchInterstitial';
 import {TraceDetailsStore} from '../../../src/components/traces/stores/traceDetailsStore';
 
 

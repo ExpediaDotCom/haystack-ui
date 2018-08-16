@@ -17,7 +17,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Route, Switch} from 'react-router-dom';
-import './serviceTools.less';
+import './legacyServiceTools.less';
 
 import Traces from '../traces/traces';
 import Trends from '../trends/trends';

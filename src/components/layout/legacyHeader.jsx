@@ -23,10 +23,10 @@ import {observer} from 'mobx-react';
 import authenticationStore from '../../stores/authenticationStore';
 import AuthenticationTimeoutModal from './authenticationTimeoutModal';
 
-import './header.less';
+import './legacyHeader.less';
 
 @observer
-class SearchBar extends React.Component {
+class LegacyHeader extends React.Component {
     static propTypes = {
         history: PropTypes.shape({
             push: PropTypes.func.isRequired
@@ -90,4 +90,4 @@ class SearchBar extends React.Component {
     }
 }
 
-export default withRouter(SearchBar);
+export default withRouter(LegacyHeader);

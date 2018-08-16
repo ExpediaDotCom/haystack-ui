@@ -18,10 +18,10 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import HomeSearchBox from './homeSearchBox';
+import HomeSearchBox from './legacyHomeSearchBox';
 import serviceStore from '../../stores/serviceStore';
 import servicePerfStore from './stores/servicePerfStore';
-import './home.less';
+import './legacyHome.less';
 
 const enableServicePerformance = (window.haystackUiConfig.enableServicePerformance);
 const enableServiceGraph = (window.haystackUiConfig.subsystems.includes('serviceGraph'));

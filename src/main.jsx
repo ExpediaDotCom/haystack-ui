@@ -18,12 +18,12 @@
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 
-import Header from './components/layout/header';
+import Header from './components/layout/legacyHeader';
 import Footer from './components/layout/footer';
-import Home from './components/home/home';
-import TracesHome from './components/home/TracesHome';
-import ServiceTools from './components/layout/serviceTools';
-import HeaderSearchInterstitial from './components/layout/headerSearchInterstitial';
+import LegacyHome from './components/legacyHome/legacyHome';
+import TracesHome from './components/legacyHome/legacyTracesHome';
+import ServiceTools from './components/layout/legacyServiceTools';
+import HeaderSearchInterstitial from './components/layout/legacyHeaderSearchInterstitial';
 import traceDetailsStore from './components/traces/stores/traceDetailsStore';
 import Login from './components/common/login';
 import NoMatch from './components/common/noMatch';
@@ -39,7 +39,7 @@ const Layout = () => (
                     <Route path="/legacy/traces/:traceId" render={props => <HeaderSearchInterstitial traceDetailsStore={traceDetailsStore} {...props} />} />
                 </Switch> :
                 <Switch>
-                    <Route exact path="/legacy" component={Home}/>
+                    <Route exact path="/legacy" component={LegacyHome}/>
                     <Route path="/legacy/traces/:traceId" render={props => <HeaderSearchInterstitial traceDetailsStore={traceDetailsStore} {...props} />} />
                     <Route path="/legacy/service/:serviceName" component={ServiceTools}/>
                     <Route path="/legacy/*" component={NoMatch}/>
