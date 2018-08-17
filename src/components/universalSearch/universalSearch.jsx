@@ -42,7 +42,7 @@ import AuthenticationTimeoutModal from '../layout/authenticationTimeoutModal';
 // search object contains all the information to trigger any search for any subsystem in tabs
 // flow search object to all the child modules, child components should not deserialize location
 //
-// SearchBar creates search object and pushes it in URL and that triggers receiveProps for UniversalSearch,
+// LegacyHeader creates search object and pushes it in URL and that triggers receiveProps for UniversalSearch,
 // which in turn re-triggers all tabs
 @observer
 class UniversalSearch extends React.Component {

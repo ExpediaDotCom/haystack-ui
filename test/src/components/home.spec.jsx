@@ -19,11 +19,11 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {expect} from 'chai';
 import sinon from 'sinon';
-import Home from '../../../src/components/home/home';
-import HomeSearchBox from '../../../src/components/home/homeSearchBox';
-import ServicePerformance from '../../../src/components/home/servicePerformance';
+import Home from '../../../src/components/legacyHome/legacyHome';
+import HomeSearchBox from '../../../src/components/legacyHome/legacyHomeSearchBox';
+import ServicePerformance from '../../../src/components/legacyHome/servicePerformance';
 import {ServiceStore} from '../../../src/stores/serviceStore';
-import {ServicePerfStore} from '../../../src/components/home/stores/servicePerfStore';
+import {ServicePerfStore} from '../../../src/components/legacyHome/stores/servicePerfStore';
 
 
 const serviceStubResults = [
@@ -95,7 +95,7 @@ function createServicePerfStubStore(results) {
     return store;
 }
 
-describe('<Home />', () => {
+describe('<LegacyHome />', () => {
     it('should render the homepage', () => {
         const wrapper = shallow(<Home history={stubHistory}/>);
         expect(wrapper.find('.home-panel')).to.have.length(1);
@@ -118,10 +118,10 @@ describe('<Home />', () => {
         const wrapper = shallow(<HomeSearchBox history={stubHistory} services={serviceStore.services}/>);
 
         wrapper.instance().handleChange({value: 'some-app'});
-        expect(stubLocation).to.equal('/service/some-app/trends');
+        expect(stubLocation).to.equal('/legacy/service/some-app/trends');
 
         wrapper.instance().handleChange({value: '#/something/.app/ui/test'});
-        expect(stubLocation).to.equal('/service/%23%2Fsomething%2F.app%2Fui%2Ftest/trends');
+        expect(stubLocation).to.equal('/legacy/service/%23%2Fsomething%2F.app%2Fui%2Ftest/trends');
     });
 
     it('should render the servicePerformance', () => {

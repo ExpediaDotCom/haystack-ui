@@ -23,10 +23,10 @@ import {observer} from 'mobx-react';
 import authenticationStore from '../../stores/authenticationStore';
 import AuthenticationTimeoutModal from './authenticationTimeoutModal';
 
-import './header.less';
+import './legacyHeader.less';
 
 @observer
-class SearchBar extends React.Component {
+class LegacyHeader extends React.Component {
     static propTypes = {
         history: PropTypes.shape({
             push: PropTypes.func.isRequired
@@ -47,7 +47,7 @@ class SearchBar extends React.Component {
     searchRedirect(event) {
         event.preventDefault();
         if (this.state.traceId.length) {
-            this.props.history.push(`/traces/${this.state.traceId.trim()}`);
+            this.props.history.push(`legacy/traces/${this.state.traceId.trim()}`);
         }
         ReactGA.event({
             category: 'Trace Search',
@@ -62,7 +62,7 @@ class SearchBar extends React.Component {
                 <nav className="navbar navbar-default">
                     <div className="container">
                         <div className="navbar-header">
-                            <Link to="/" className="navbar-brand">
+                            <Link to="/legacy" className="navbar-brand">
                                 <img src="/images/logo.png" alt="Logo" className="logo"/>
                                 <span>Haystack</span>
                             </Link>
@@ -90,4 +90,4 @@ class SearchBar extends React.Component {
     }
 }
 
-export default withRouter(SearchBar);
+export default withRouter(LegacyHeader);

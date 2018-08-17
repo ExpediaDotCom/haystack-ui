@@ -17,7 +17,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Route, Switch} from 'react-router-dom';
-import './serviceTools.less';
+import './legacyServiceTools.less';
 
 import Traces from '../traces/traces';
 import Trends from '../trends/trends';
@@ -44,10 +44,10 @@ export default class ServiceToolsContainer extends Component {
         return (
             <article className="serviceToolsContainer container">
                 <Switch>
-                    <Route exact path="/service/:serviceName" component={Trends}/>
-                    <Route exact path="/service/:serviceName/traces" component={Traces}/>
-                    {isTrendsEnabled && <Route exact path="/service/:serviceName/trends" component={Trends}/>}
-                    {isAlertsEnabled && <Route exact path="/service/:serviceName/alerts" component={Alerts}/>}
+                    <Route exact path="/legacy/service/:serviceName" component={Trends}/>
+                    <Route exact path="/legacy/service/:serviceName/traces" component={Traces}/>
+                    {isTrendsEnabled && <Route exact path="/legacy/service/:serviceName/trends" component={Trends}/>}
+                    {isAlertsEnabled && <Route exact path="/legacy/service/:serviceName/alerts" component={Alerts}/>}
                 </Switch>
             </article>
         );

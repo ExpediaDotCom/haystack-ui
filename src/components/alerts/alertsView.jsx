@@ -31,7 +31,11 @@ export default class AlertsPanel extends React.Component {
         serviceName: PropTypes.string.isRequired,
         history: PropTypes.object.isRequired,
         defaultPreset: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        isUniversalSearch: PropTypes.bool
+    };
+
+    static defaultProps = {
+        isUniversalSearch: false
     };
 
     render() {

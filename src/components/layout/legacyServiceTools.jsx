@@ -22,10 +22,10 @@ import {NavLink} from 'react-router-dom';
 import Select from 'react-select';
 import {observer} from 'mobx-react';
 
-import './serviceTools.less';
+import './legacyServiceTools.less';
 import AlertCounter from '../alerts/alertCounter';
 import serviceStore from '../../stores/serviceStore';
-import ServiceToolsContainer from './serviceToolsContainer';
+import ServiceToolsContainer from './legacyServiceToolsContainer';
 import loginRenewer from '../../utils/loginRenewer';
 
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
@@ -96,7 +96,7 @@ export default class ServiceTools extends Component {
                 <NavLink
                     className={navLinkClass}
                     activeClassName={navLinkClassActive}
-                    to={`/service/${serviceName}/trends`}
+                    to={`/legacy/service/${serviceName}/trends`}
                 >
                     <span className="serviceToolsTab__tab-option-icon ti-stats-up"/>
                     Trends
@@ -105,7 +105,7 @@ export default class ServiceTools extends Component {
             <NavLink
                 className={navLinkClass}
                 activeClassName={navLinkClassActive}
-                to={`/service/${serviceName}/traces`}
+                to={`/legacy/service/${serviceName}/traces`}
             >
                 <span className="serviceToolsTab__tab-option-icon ti-align-left"/>
                 Traces
@@ -114,7 +114,7 @@ export default class ServiceTools extends Component {
                 <NavLink
                     className={navLinkClass}
                     activeClassName={navLinkClassActive}
-                    to={`/service/${serviceName}/alerts`}
+                    to={`/legacy/service/${serviceName}/alerts`}
                 >
                     <span className="serviceToolsTab__tab-option-icon ti-bell"/>
                     <span>Alerts</span>

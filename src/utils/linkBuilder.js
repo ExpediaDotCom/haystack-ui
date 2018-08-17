@@ -19,15 +19,15 @@ const linkBuilder = {};
 
 linkBuilder.withAbsoluteUrl = relativeUrl => `${window.location.protocol}//${window.location.host}${relativeUrl}`;
 
-linkBuilder.universalSearchLink = search => `/usb?${convertSearchToUrlQuery(search)}`;
+linkBuilder.universalSearchLink = search => `/search?${convertSearchToUrlQuery(search)}`;
 
-linkBuilder.universalSearchTracesLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=traces`;
+linkBuilder.universalSearchTracesLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=traces`;
 
-linkBuilder.universalSearchTrendsLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=trends`;
+linkBuilder.universalSearchTrendsLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=trends`;
 
-linkBuilder.universalSearchAlertsLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=alerts`;
+linkBuilder.universalSearchAlertsLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=alerts`;
 
-linkBuilder.universalSearchServiceGraphLink = search => `/usb?${convertSearchToUrlQuery(search)}&tabId=serviceGraph`;
+linkBuilder.universalSearchServiceGraphLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=serviceGraph`;
 
 linkBuilder.createTracesLink = ({serviceName, operationName, from, until, timePreset, traceId}) => {
     const encodedServiceName = serviceName && encodeURIComponent(serviceName);
@@ -35,29 +35,29 @@ linkBuilder.createTracesLink = ({serviceName, operationName, from, until, timePr
 
     if (traceId) {
         if (serviceName && operationName) {
-            return `/service/${encodedServiceName}/traces?serviceName=${encodedServiceName}&operationName=${encodedOperationName}&traceId=${traceId}`;
+            return `/legacy/service/${encodedServiceName}/traces?serviceName=${encodedServiceName}&operationName=${encodedOperationName}&traceId=${traceId}`;
         }
 
         if (serviceName) {
-            return `/service/${encodedServiceName}/traces?serviceName=${encodedServiceName}&traceId=${traceId}`;
+            return `/legacy/service/${encodedServiceName}/traces?serviceName=${encodedServiceName}&traceId=${traceId}`;
         }
 
-        return `/service/${encodedServiceName}/traces?traceId=${traceId}`;
+        return `/legacy/service/${encodedServiceName}/traces?traceId=${traceId}`;
     }
 
     if (from && until) {
-        return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}&startTime=${from}&endTime=${until}`;
+        return `/legacy/service/${encodedServiceName}/traces?operationName=${encodedOperationName}&startTime=${from}&endTime=${until}`;
     }
 
     if (timePreset) {
-        return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}&timePreset=${timePreset}`;
+        return `/legacy/service/${encodedServiceName}/traces?operationName=${encodedOperationName}&timePreset=${timePreset}`;
     }
 
     if (operationName) {
-        return `/service/${encodedServiceName}/traces?operationName=${encodedOperationName}`;
+        return `/legacy/service/${encodedServiceName}/traces?operationName=${encodedOperationName}`;
     }
 
-    return `/service/${encodedServiceName}/traces`;
+    return `/legacy/service/${encodedServiceName}/traces`;
 };
 
 linkBuilder.createTrendsLink = ({serviceName, operationName, from, until}) => {
@@ -65,17 +65,17 @@ linkBuilder.createTrendsLink = ({serviceName, operationName, from, until}) => {
     const encodedOperationName = operationName && encodeURIComponent(operationName);
 
     if (from && until) {
-        return `/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$&from=${from}&until=${until}`;
+        return `/legacy/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$&from=${from}&until=${until}`;
     }
 
-    return `/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$`;
+    return `/legacy/service/${encodedServiceName}/trends?operationName=^${encodedOperationName}$`;
 };
 
 linkBuilder.createAlertsLink = ({serviceName, operationName, type}) => {
     const encodedServiceName = serviceName && encodeURIComponent(serviceName);
     const encodedOperationName = operationName && encodeURIComponent(operationName);
 
-    return `/service/${encodedServiceName}/alerts?operationName=^${encodedOperationName}$&type=${type}`;
+    return `/legacy/service/${encodedServiceName}/alerts?operationName=^${encodedOperationName}$&type=${type}`;
 };
 
 export default linkBuilder;

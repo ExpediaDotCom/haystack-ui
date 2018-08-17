@@ -18,7 +18,7 @@
 import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import ServiceTools from '../../../src/components/layout/serviceTools';
+import ServiceTools from '../../../src/components/layout/legacyServiceTools';
 
 
 describe('<ServiceTools />', () => {
