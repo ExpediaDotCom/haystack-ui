@@ -21,10 +21,10 @@ import {Link} from 'react-router-dom';
 export default () => (
     <header className="universal-search-header">
         <div className="container">
-            <a className="navbar-brand universal-search-header__container" href="/">
+            <Link className="navbar-brand universal-search-header__container" to="/">
                 <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
                 <span className="usb-logo universal-search-header__title">Haystack</span>
-            </a>
+            </Link>
             <div className="pull-right usb-legacy-button">
                 <Link to="/legacy" className="btn-sm universal-search-header__view-switch"><span className="ti-exchange-vertical"/> Switch To Legacy Haystack View</Link>
             </div>
