@@ -110,7 +110,7 @@ export default class TraceResults extends React.Component {
                                 isUniversalSearch={this.props.isUniversalSearch}
                                 ids={traceIds}
                             />
-                            : <Error />)
+                            : <Error errorMessage={'No results found, please try expanding your query.'}/>)
                     })
                 }
             </section>
