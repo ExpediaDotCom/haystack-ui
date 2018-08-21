@@ -45,7 +45,8 @@ const stubHistory = {
 
 const stubOptions = {
     error: ['true', 'false'],
-    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test']
+    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test'],
+    traceId: []
 };
 
 // STUBS FOR BACKEND SERVICE RESPONSES
@@ -232,13 +233,13 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.simulate('click');
 
-        expect(wrapper.instance().state.suggestionStrings.length).to.equal(2);
+        expect(wrapper.instance().state.suggestionStrings.length).to.equal(3);
     });
 
     it('update suggestion string index on suggestion mouseover', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         wrapper.instance().state.suggestionIndex = 0;
-        wrapper.instance().updateFieldKv({target: {value: 'e'}});
+        wrapper.instance().updateFieldKv({target: {value: 'er'}});
         wrapper.update();
 
         const firstSuggestion = wrapper.find('.usb-suggestions__field').last();
@@ -309,7 +310,7 @@ describe('<Autosuggest />', () => {
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
@@ -365,15 +366,15 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.simulate('click');
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
+        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
-        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
-        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(0);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
+        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
     });
@@ -384,7 +385,7 @@ describe('<Autosuggest />', () => {
         expect(spy.callCount).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
         input.simulate('click');
-        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
+        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
         input.simulate('click');
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
@@ -467,5 +468,13 @@ describe('<Autosuggest />', () => {
         wrapper.find('input').simulate('paste', {clipboardData: {getData: () => 'serviceName=asdf error=true (serviceName=abc error=true)'}});
         const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
         expect(wrapperChips.length).to.equal(3);
+    });
+
+    it('should be able to paste a traceId', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        wrapper.find('input').simulate('paste', {clipboardData: {getData: () => '3b12c105-61fd-4b98-9d7f-357f7bf8c2a1'}});
+        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        expect(wrapperChips.length).to.equal(1);
     });
 });
