@@ -230,7 +230,7 @@ describe('<Autosuggest />', () => {
 
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
 
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(2);
     });
@@ -261,7 +261,7 @@ describe('<Autosuggest />', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
 
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
 
         input.prop('onKeyDown')({keyCode: 27, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
@@ -271,7 +271,7 @@ describe('<Autosuggest />', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
 
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
         const dummy = document.createElement('div');
         wrapper.instance().handleOutsideClick(dummy);
 
@@ -302,7 +302,7 @@ describe('<Autosuggest />', () => {
 
         expect(wrapper.instance().state.suggestionIndex).to.equal(null);
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
 
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
@@ -363,7 +363,7 @@ describe('<Autosuggest />', () => {
     it('should be able to navigate suggestions with arrow keys', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
@@ -383,10 +383,10 @@ describe('<Autosuggest />', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         expect(spy.callCount).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
-        input.prop('onFocus')({target: {value: ''}});
+        input.simulate('click');
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
         wrapper.find('.usb-submit__button').simulate('click');
