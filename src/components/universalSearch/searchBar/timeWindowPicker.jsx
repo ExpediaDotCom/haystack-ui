@@ -74,7 +74,7 @@ export default class TimeWindowPicker extends React.Component {
         const timeRangePickerToggleText = formatters.toTimeRangeTextFromTimeWindow(timePreset, startTime, endTime);
 
         return (
-            <div ref={this.setWrapperRef} onClick={this.props.handleClick} className="usb-timepicker">
+            <div ref={this.setWrapperRef} onClick={this.props.handleClick} className="usb-timepicker" role="button" tabIndex="-1">
                     <button
                         className="usb-timepicker__button"
                         type="button"
