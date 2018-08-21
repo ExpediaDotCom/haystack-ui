@@ -165,6 +165,7 @@
         0,
         "never"
       ],
+      "jsx-a11y/no-autofocus": 0,
       "react/jsx-indent-props": 0,
       "react/jsx-tag-spacing": 0,
       "react/forbid-prop-types": 0,
