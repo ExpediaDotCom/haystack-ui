@@ -54,7 +54,7 @@ export class SearchBarUiStateStore {
             if (key === 'time') {
                 this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
                 // url query keys that we don't want as chips
-            } else if (key !== 'tabId' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
+            } else if (key !== 'tabId' && key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
                 this.chips[key] = search[key];
             }
         });

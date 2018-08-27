@@ -30,7 +30,7 @@ export class TracesTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, ...kv} =  search;
+        const {time, tabId, type, ...kv} =  search;
         this.isAvailable = !!Object.keys(kv).length;
     }
 
