@@ -17,7 +17,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import TrafficTable from './TrafficTable';
+import TrafficTable from './trafficTable';
 
 const NodeDetails = ({incomingEdges, outgoingEdges, tags, time}) => {
     const incomingTrafficEdges = incomingEdges.map(e => (

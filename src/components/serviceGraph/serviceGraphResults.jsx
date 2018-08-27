@@ -25,7 +25,7 @@ import Graph from './util/graph';
 import ConnectionDetails from './connectionDetails';
 import './serviceGraph.less';
 import ServiceGraphSearch from './graphSearch';
-import linkbuilder from '../../utils/linkBuilder';
+import linkBuilder from '../../utils/linkBuilder';
 import NodeDetails from './nodeDetails';
 import formatters from '../../utils/formatters';
 
@@ -144,6 +144,7 @@ export default class ServiceGraphResults extends React.Component {
     onConnectionDetailsClose = () => {
         this.setState({connDetails: undefined});
     };
+
     objectHighlighted = (highlightedObject) => {
         if (typeof highlightedObject === 'undefined') {
             return;
@@ -151,12 +152,13 @@ export default class ServiceGraphResults extends React.Component {
         if (highlightedObject.type === 'node') {
             const search = this.props.search;
             search.serviceName = highlightedObject.getName();
-            this.props.history.push(linkbuilder.universalSearchServiceGraphLink(search));
+            this.props.history.push(linkBuilder.universalSearchServiceGraphLink(search));
             return;
         }
         this.setState({connDetails: highlightedObject.getName()});
         this.setState({searchString: ''});
     };
+
     searchStringChanged = (newVal) => {
         this.setState({
             searchString: newVal
