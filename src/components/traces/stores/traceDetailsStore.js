@@ -54,13 +54,11 @@ export function formatResults(results) {
     });
 }
 
-function createSpanTree(span, trace, groupByParentId = null) {
-    const spansWithParent = _.filter(trace, s => s.parentSpanId);
-    const grouped = groupByParentId !== null ? groupByParentId : _.groupBy(spansWithParent, s => s.parentSpanId);
+function createSpanTree(span, trace, grouped) {
     return {
         span,
         children: (grouped[span.spanId] || [])
-            .map(s => createSpanTree(s, trace, grouped))
+        .map(s => createSpanTree(s, trace, grouped))
     };
 }
 
@@ -200,7 +198,8 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     get timelineSpans() {
         if (this.spans.length === 0) return [];
 
-        const tree = createSpanTree(this.rootSpan, this.spans);
+        const grouped = _.groupBy(_.filter(this.spans, s => s.parentSpanId), s => s.parentSpanId);
+        const tree = createSpanTree(this.rootSpan, this.spans, grouped);
         return createFlattenedSpanTree(tree, 0, this.startTime, this.totalDuration, this.spans.length > TraceDetailsStore.maxSpansBeforeCollapse);
     }
 
