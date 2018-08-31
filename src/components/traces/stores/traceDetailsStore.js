@@ -22,7 +22,7 @@ import { ErrorHandlingStore } from '../../../stores/errorHandlingStore';
 import {toDurationMicroseconds} from '../utils/presets';
 import {toQueryUrlString} from '../../../utils/queryParser';
 
-export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall) {
+export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfall, spanMap) {
     parent.children.forEach((childId) => {
         let showExpanded = parent.expanded;
         let displaySpans = parent.expanded;
@@ -30,10 +30,10 @@ export function setChildExpandState(timelineSpans, parent, shouldCollapseWaterfa
             showExpanded = false;
             displaySpans = true;
         }
-        const childSpan = timelineSpans.find(s => s.spanId === childId);
+        const childSpan = spanMap[childId];
         childSpan.display = displaySpans;
         childSpan.expanded = showExpanded;
-        setChildExpandState(timelineSpans, childSpan, shouldCollapseWaterfall);
+        setChildExpandState(timelineSpans, childSpan, shouldCollapseWaterfall, spanMap);
     });
 }
 
@@ -212,7 +212,10 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     toggleExpand(selectedParentId) {
         const parent = this.timelineSpans.find(s => s.spanId === selectedParentId);
         parent.expanded = !parent.expanded;
-        setChildExpandState(this.timelineSpans, parent, this.timelineSpans.length > TraceDetailsStore.maxSpansBeforeCollapse);
+        const spanMap = {};
+        this.timelineSpans.forEach((s) => { spanMap[s.spanId] = s; });
+
+        setChildExpandState(this.timelineSpans, parent, this.timelineSpans.length > TraceDetailsStore.maxSpansBeforeCollapse, spanMap);
     }
 }
 
