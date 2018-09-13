@@ -69,7 +69,7 @@ export default class ServiceTools extends Component {
     handleServiceChange(event) {
         const pathname = this.props.location.pathname;
         const activeView = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length);
-        this.props.history.push(`/service/${encodeURIComponent(event.value)}/${activeView}`);
+        this.props.history.push(`/legacy/service/${encodeURIComponent(event.value)}/${activeView}`);
         this.setState({serviceChangeToggleOpen: false});
     }
 
