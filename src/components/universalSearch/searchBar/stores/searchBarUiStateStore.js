@@ -24,6 +24,7 @@ export class SearchBarUiStateStore {
     @observable timeWindow = null;
     @observable chips = [];
     @observable displayErrors = {};
+    @observable tabId = null;
 
     @action init(search) {
         // initialize observables using search object
@@ -33,7 +34,10 @@ export class SearchBarUiStateStore {
     getCurrentSearch() {
         // construct current search object using observables
         const search = {...this.chips};
-
+        const showAllTabs = Object.keys(search).every(key => key === 'serviceName' || key === 'operationName');
+        if (this.tabId && showAllTabs) {
+            search.tabId = this.tabId;
+        }
         if (this.timeWindow.startTime && this.timeWindow.endTime) {
             search.time = {
                 from: this.timeWindow.startTime,
@@ -49,12 +53,15 @@ export class SearchBarUiStateStore {
     }
 
     @action setStateFromSearch(search) {
+        // construct observables from search
         this.chips = [];
         Object.keys(search).forEach((key) => {
             if (key === 'time') {
                 this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
+            } else if (key === 'tabId') {
+                this.tabId = search[key];
                 // url query keys that we don't want as chips
-            } else if (key !== 'tabId' && key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
+            } else if (key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
                 this.chips[key] = search[key];
             }
         });
