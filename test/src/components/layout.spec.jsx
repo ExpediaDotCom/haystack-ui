@@ -236,9 +236,9 @@ describe('<ServiceTools />', () => {
         const wrapper = shallow(<ServiceTools history={stubHistory} match={stubMatch} location={stubHistory.location}/>);
 
         wrapper.instance().handleServiceChange({value: 'some-app'});
-        expect(stubLocation).to.equal('/service/some-app/traces');
+        expect(stubLocation).to.equal('/legacy/service/some-app/traces');
 
         wrapper.instance().handleServiceChange({value: '#/something/.app/ui/test'});
-        expect(stubLocation).to.equal('/service/%23%2Fsomething%2F.app%2Fui%2Ftest/traces');
+        expect(stubLocation).to.equal('/legacy/service/%23%2Fsomething%2F.app%2Fui%2Ftest/traces');
     });
 });
