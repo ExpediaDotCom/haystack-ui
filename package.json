@@ -115,11 +115,11 @@
     "supertest": "^3.0.0",
     "timeago.js": "^3.0.2",
     "vis": "^4.21.0",
-    "vizceral": "^4.7.0",
-    "vizceral-react": "^4.6.0",
+    "vizceral": "^4.7.3",
+    "vizceral-react": "^4.6.4",
     "wait-on": "^2.1.0",
-    "webpack": "^4.16.1",
-    "webpack-bundle-analyzer": "^2.11.3",
+    "webpack": "^4.17.1",
+    "webpack-bundle-analyzer": "^2.13.1",
     "webpack-command": "^0.4.1"
   },
   "eslintConfig": {
