@@ -24,7 +24,12 @@ import './timeRangePicker.less';
 
 export default class TimeRangePicker extends React.Component {
     static propTypes = {
-        timeRangeChangeCallback: PropTypes.func.isRequired
+        timeRangeChangeCallback: PropTypes.func.isRequired,
+        range: PropTypes.object
+    };
+
+    static defaultProps = {
+        range: null
     };
 
     static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
@@ -35,7 +40,10 @@ export default class TimeRangePicker extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = this.props.range ? {
+                startDateTime: this.props.range.from,
+                endDateTime: this.props.range.to
+            } : {
             startDateTime: moment().subtract(1, 'h'),
             endDateTime: moment()
         };

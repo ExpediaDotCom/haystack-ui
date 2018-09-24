@@ -225,6 +225,49 @@ describe('<Autosuggest />', () => {
         expect(wrapper.find('.usb-wrapper')).to.have.length(1);
     });
 
+    it('should show time window upon selecting the timepicker', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        expect(wrapper.find('.timerange-picker').length).to.equal(0);
+
+        wrapper.find('.usb-timepicker__button').simulate('click');
+
+        expect(wrapper.find('.timerange-picker').length).to.equal(1);
+    });
+
+    it('should update the picker upon selecting a preset', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.find('.usb-timepicker__button').simulate('click');
+
+        wrapper.find('.timerange-picker__preset').first().simulate('click');
+        expect(wrapper.instance().props.uiState.timeWindow.timePreset).to.equal('5m');
+    });
+
+    it('should update the picker upon manually selecting a time', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        expect(wrapper.instance().props.uiState.timeWindow.startTime).to.equal(undefined);
+
+        wrapper.find('.usb-timepicker__button').simulate('click');
+        wrapper.find('.datetimerange-picker').first().simulate('click');
+        wrapper.find('.rdtDay').first().simulate('click');
+        wrapper.find('.custom-timerange-apply').simulate('click');
+
+        expect(wrapper.instance().props.uiState.timeWindow.startTime).to.be.a('number');
+    });
+
+    it('should retain custom time when re-opening the picker after previously selecting a custom time', () => {
+        const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+
+        wrapper.find('.usb-timepicker__button').simulate('click');
+        const customTime = '04/18/1988 8:00 AM';
+        wrapper.find('.datetimerange-picker').find('.form-control').first().simulate('change', {target: {value: customTime}});
+        wrapper.find('.custom-timerange-apply').simulate('click');
+        wrapper.find('.usb-timepicker__button').simulate('click');
+
+        const uiStartTime = wrapper.find('.datetimerange-picker').find('.form-control').first().instance().value;
+
+        expect(uiStartTime).to.equal(customTime);
+    });
+
     it('should populate suggestions when input is focused', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
 
@@ -358,7 +401,6 @@ describe('<Autosuggest />', () => {
 
         expect(spy.callCount).to.equal(1);
     });
-
 
     it('should be able to navigate suggestions with arrow keys', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);

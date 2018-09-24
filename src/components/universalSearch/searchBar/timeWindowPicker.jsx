@@ -82,7 +82,10 @@ export default class TimeWindowPicker extends React.Component {
                         {timeRangePickerToggleText}
                     </button>
                 { this.state.showTimeRangePicker
-                    ? <TimeRangePicker timeRangeChangeCallback={this.timeRangeChangeCallback}/>
+                    ? <TimeRangePicker
+                        timeRangeChangeCallback={this.timeRangeChangeCallback}
+                        range={startTime && endTime ? {from: startTime, to: endTime} : null}
+                    />
                     : null }
             </div>
         );
