@@ -122,7 +122,7 @@ export default class Tabs extends React.Component {
             (
                 <li key={tab.tabId} className={tab.tabId === tabId ? 'active' : ''}>
                     <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => handleTabSelection(tab.tabId)}>
-                        <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
+                        <span className={`usb-tab-icon ${tab.icon}`}/>
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ?
                             <div className="universal-search-bar-tabs__alert-counter">

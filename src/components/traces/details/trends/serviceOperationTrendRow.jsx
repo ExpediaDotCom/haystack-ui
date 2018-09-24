@@ -62,24 +62,18 @@ export default class TrendRow extends React.Component {
         operationName: PropTypes.string.isRequired,
         from: PropTypes.number.isRequired,
         until: PropTypes.number.isRequired,
-        granularity: PropTypes.number.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        granularity: PropTypes.number.isRequired
     };
 
-    static openTrendDetailInNewTab(serviceName, operationName, from, until, isUniversalSearch) {
-        let url = '';
-        if (isUniversalSearch) {
-            url = linkBuilder.universalSearchTrendsLink({
-                serviceName,
-                operationName,
-                time: {
-                    from,
-                    to: until
-                }
-            });
-        } else {
-            url = linkBuilder.createTrendsLink({serviceName, operationName, from, until});
-        }
+    static openTrendDetailInNewTab(serviceName, operationName, from, until) {
+        const url = linkBuilder.universalSearchTrendsLink({
+            serviceName,
+            operationName,
+            time: {
+                from,
+                to: until
+            }
+        });
 
         const tab = window.open(url, '_blank');
         tab.focus();
@@ -100,7 +94,7 @@ export default class TrendRow extends React.Component {
     }
 
     render() {
-        const {serviceName, operationName, from, until, isUniversalSearch} = this.props;
+        const {serviceName, operationName, from, until} = this.props;
         const trends = this.state && this.state.trends;
         
         const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
@@ -113,7 +107,7 @@ export default class TrendRow extends React.Component {
         const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount);
 
         return (
-            <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until, isUniversalSearch)}>
+            <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until)}>
                 <td className="trace-trend-table_cell">
                     <div className={`service-spans label label-default ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</div>
                     <div className="trace-trend-table_op-name">{operationName}</div>

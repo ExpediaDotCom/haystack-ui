@@ -20,6 +20,7 @@ import {Route, Switch} from 'react-router-dom';
 
 import Login from './components/common/login';
 import UniversalSearch from './components/universalSearch/universalSearch';
+import './app.less';
 
 export default () => (
     <Route>
