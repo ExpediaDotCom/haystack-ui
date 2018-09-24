@@ -18,7 +18,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
-import servicePerfStore from '../../legacyHome/stores/servicePerfStore';
+import servicePerfStore from '../../servicePerf/stores/servicePerfStore';
 
 @observer
 export default class ServicePerformance extends React.Component {
@@ -36,7 +36,7 @@ export default class ServicePerformance extends React.Component {
     }
 
     componentDidMount() {
-        import(/* webpackChunkName: "servicePerformance", webpackPreload: true */ '../../legacyHome/servicePerformance')
+        import(/* webpackChunkName: "servicePerformance", webpackPreload: true */ '../../servicePerf/servicePerformance')
         .then((mod) => {
             this.setState({ServicePerformanceView: mod.default});
         });

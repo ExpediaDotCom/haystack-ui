@@ -32,8 +32,7 @@ export default class AlertsToolbar extends React.Component {
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        defaultPreset: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -133,21 +132,6 @@ export default class AlertsToolbar extends React.Component {
         return (
             <header className="alerts-toolbar">
                 <div className="pull-right text-right">
-                    {
-                        !this.props.isUniversalSearch &&
-                        (<div className="alerts-toolbar__time-range-selector">
-                            <span>Show trend for </span>
-                            <select
-                                className="time-range-selector"
-                                onChange={this.handleTimeChange}
-                                value={timeWindow.presets.findIndex(presets => presets.shortName === this.state.activeWindow.shortName)}
-                            >
-                                {this.state.options.map((window, index) => (
-                                    <option key={window.longName} value={index}>last {window.longName}</option>))}
-                            </select>
-                        </div>)
-                    }
-
                     <div>
                         <div>
                             <span>Auto Refresh {this.state.autoRefresh ? `in ${Math.round(countDownMiliSec / 1000)}s` : ''} </span>

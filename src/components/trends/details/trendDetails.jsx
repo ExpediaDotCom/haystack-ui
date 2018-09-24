@@ -28,12 +28,10 @@ import './trendDetails.less';
 export default class TrendDetails extends React.Component {
     static propTypes = {
         store: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         serviceSummary: PropTypes.bool,
         opName: PropTypes.string,
-        statsType: PropTypes.string,
-        isUniversalSearch: PropTypes.bool.isRequired
+        statsType: PropTypes.string
     };
 
     static defaultProps = {
@@ -48,11 +46,9 @@ export default class TrendDetails extends React.Component {
                 <TrendDetailsToolbar
                     serviceSummary={this.props.serviceSummary}
                     trendsStore={this.props.store}
-                    location={this.props.location}
                     serviceName={encodeURIComponent(this.props.serviceName)}
                     opName={encodeURIComponent(this.props.opName)}
                     statsType={this.props.statsType}
-                    isUniversalSearch={this.props.isUniversalSearch}
                 />
                 { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,

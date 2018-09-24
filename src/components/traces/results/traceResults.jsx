@@ -31,12 +31,7 @@ import NoSearch from './noSearch';
 export default class TraceResults extends React.Component {
     static propTypes = {
         tracesSearchStore: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool
-    };
-
-    static defaultProps = {
-        isUniversalSearch: false
+        history: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -53,7 +48,7 @@ export default class TraceResults extends React.Component {
         const showSpans = this.state.showSpans;
         const traceIds = this.props.tracesSearchStore.searchResults.map(t => t.traceId);
 
-        const TracesContainer = ({searchQuery, results, totalCount, isUniversalSearch, ids}) => (
+        const TracesContainer = ({searchQuery, results, totalCount, ids}) => (
             <article>
                 <div className="trace-result-summary">
                     {results.length > 1 ?
@@ -79,7 +74,6 @@ export default class TraceResults extends React.Component {
                             : (<TraceResultsTable
                                 query={searchQuery}
                                 results={results}
-                                isUniversalSearch={isUniversalSearch}
                             />)
                     }
                 </section>
@@ -94,7 +88,7 @@ export default class TraceResults extends React.Component {
                     empty: () => <div />,
                     fulfilled: () => (
                         (this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length)
-                        ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history} isUniversalSearch={this.props.isUniversalSearch}/>
+                        ? <TraceTimeline store={this.props.tracesSearchStore} history={this.props.history} />
                         : null)
                 })
                 }
@@ -107,7 +101,6 @@ export default class TraceResults extends React.Component {
                                 searchQuery={this.props.tracesSearchStore.searchQuery}
                                 results={this.props.tracesSearchStore.searchResults}
                                 totalCount={this.props.tracesSearchStore.totalCount}
-                                isUniversalSearch={this.props.isUniversalSearch}
                                 ids={traceIds}
                             />
                             : <Error errorMessage={'No results found, please try expanding your query.'}/>)

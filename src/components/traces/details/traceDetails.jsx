@@ -30,22 +30,19 @@ import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
 import linkBuilder from '../../../utils/linkBuilder';
 
-import uiState from '../searchBar/searchBarUiStateStore';
-
 @observer
 export default class TraceDetails extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
-        traceDetailsStore: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        traceDetailsStore: PropTypes.object.isRequired
     };
 
-    static tabViewer(traceId, tabSelected, traceDetailsStore, isUniversalSearch) {
+    static tabViewer(traceId, tabSelected, traceDetailsStore) {
         switch (tabSelected) {
             case 2:
                 return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
             case 3:
-                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} isUniversalSearch={isUniversalSearch}/>;
+                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} />;
             case 4:
                 return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore}/>;
             default:
@@ -83,19 +80,11 @@ export default class TraceDetails extends React.Component {
     }
 
     render() {
-        const {traceId, traceDetailsStore, isUniversalSearch} = this.props;
+        const {traceId, traceDetailsStore} = this.props;
 
-        let traceUrl = '';
-        if (isUniversalSearch) {
-            const search = {traceId}; // TODO add specific time for trace
-            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-        } else {
-            traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.createTracesLink({
-                serviceName: uiState.serviceName,
-                operationName: uiState.operationName,
-                traceId
-            }));
-        }
+        const search = {traceId}; // TODO add specific time for trace
+        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
+
 
         return (
             <section className="table-row-details">
@@ -135,7 +124,7 @@ export default class TraceDetails extends React.Component {
                     </div>
                 </div>
 
-                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore, isUniversalSearch)}</section>
+                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore)}</section>
 
                 <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
             </section>

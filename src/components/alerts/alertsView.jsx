@@ -30,12 +30,7 @@ export default class AlertsPanel extends React.Component {
         alertsStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         history: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool
-    };
-
-    static defaultProps = {
-        isUniversalSearch: false
+        defaultPreset: PropTypes.object.isRequired
     };
 
     render() {
@@ -47,7 +42,6 @@ export default class AlertsPanel extends React.Component {
                     alertsStore={this.props.alertsStore}
                     location={this.props.location}
                     serviceName={this.props.serviceName}
-                    isUniversalSearch={this.props.isUniversalSearch}
                 />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
@@ -59,7 +53,6 @@ export default class AlertsPanel extends React.Component {
                             alertsStore={this.props.alertsStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
-                            isUniversalSearch={this.props.isUniversalSearch}
                         />
                         : <Error />)
                 })}

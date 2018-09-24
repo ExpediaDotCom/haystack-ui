@@ -28,8 +28,7 @@ import '../../common/resultsTable.less';
 export default class TraceResultsTable extends React.Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
-        results: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        results: PropTypes.object.isRequired
     };
 
     static sortByStartTime(a, b, order) {
@@ -207,7 +206,7 @@ export default class TraceResultsTable extends React.Component {
     }
     expandComponent(row) {
         if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} isUniversalSearch={this.props.isUniversalSearch}/>;
+            return <TraceDetails traceId={row.traceId} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} />;
         }
         return null;
     }

@@ -25,18 +25,17 @@ export default class AlertTabs extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        defaultPreset: PropTypes.object.isRequired
     };
 
-    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, isUniversalSearch) {
+    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset) {
         switch (tabSelected) {
             case 3:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.AADuration} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.AADuration} alertType="durationTP99" location={location} serviceName={serviceName} />;
             case 2:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} />;
             default:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} isUniversalSearch={isUniversalSearch}/>;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} />;
         }
     }
 
@@ -60,7 +59,6 @@ export default class AlertTabs extends React.Component {
         const {
             serviceName,
             location,
-            isUniversalSearch,
             defaultPreset
         } = this.props;
 
@@ -93,7 +91,7 @@ export default class AlertTabs extends React.Component {
                         </li>
                     </ul>
                 </div>
-                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset, isUniversalSearch)}</section>
+                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset)}</section>
             </section>
         );
     }

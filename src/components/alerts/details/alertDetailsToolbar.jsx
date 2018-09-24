@@ -27,9 +27,7 @@ import linkBuilder from '../../../utils/linkBuilder';
 export default class AlertDetailsToolbar extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        operationName: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        operationName: PropTypes.string.isRequired
     };
 
     constructor(props) {
@@ -47,28 +45,16 @@ export default class AlertDetailsToolbar extends React.Component {
     }
 
     render() {
-        const isUniversalSearch = this.props.isUniversalSearch;
-
         const serviceOperation = {
             serviceName: this.props.serviceName,
             operationName: this.props.operationName
         };
 
-        const trendsLink = isUniversalSearch
-            ? linkBuilder.universalSearchTrendsLink(serviceOperation)
-            : linkBuilder.createTrendsLink(serviceOperation);
+        const trendsLink = linkBuilder.universalSearchTrendsLink(serviceOperation);
 
-        const tracesLink = isUniversalSearch
-            ? linkBuilder.universalSearchTracesLink(serviceOperation)
-            : linkBuilder.createTracesLink(serviceOperation);
+        const tracesLink = linkBuilder.universalSearchTracesLink(serviceOperation);
 
-        const alertsLink = isUniversalSearch
-            ? linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchAlertsLink(serviceOperation))
-            : linkBuilder.withAbsoluteUrl(
-                linkBuilder.createAlertsLink({
-                    ...serviceOperation,
-                    type: this.props.type
-                }));
+        const alertsLink = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchAlertsLink(serviceOperation));
 
         return (
             <div>

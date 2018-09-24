@@ -29,7 +29,7 @@ const ServiceGraph =  ({history}) => {
         }
     };
     return (<section className="service-graph-panel container">
-                <ServiceGraphContainer graphStore={serviceGraphStore} isUniversalSearch={false} history={history} search={search}/>
+                <ServiceGraphContainer graphStore={serviceGraphStore} history={history} search={search}/>
             </section>
     );
 };
