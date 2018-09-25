@@ -56,7 +56,7 @@ export default class TrendDetails extends React.Component {
                     rejected: () => <Error />,
                     fulfilled: () => (this.props.store.trendsResults && Object.keys(this.props.store.trendsResults).length
                         ? <GraphContainer trendsStore={this.props.store} serviceName={this.props.serviceName}/>
-                        : <Error />)
+                        : <Error errorMessage="There was a problem displaying trend details. Please try again later." />)
                 })
                 }
             </div>

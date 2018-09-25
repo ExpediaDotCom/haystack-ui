@@ -43,7 +43,7 @@ export default class SpansView extends React.Component {
                     rejected: () => <Error />,
                     fulfilled: () => ((this.props.store.results && this.props.store.results.length)
                         ? <SpanResultsTable results={this.props.store.results}/>
-                        : <Error />)
+                        : <Error errorMessage="There was a problem displaying the spans. Please try again later."/>)
                 })
                 }
             </section>

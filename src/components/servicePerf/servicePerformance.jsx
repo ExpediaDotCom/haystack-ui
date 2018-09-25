@@ -188,7 +188,7 @@ export default class ServicePerformance extends Component {
                             onLeafMouseOut={() => this.setState({hoveredNode: false})}
                             onLeafClick={this.handleNodeClick}
                         />
-                        : <Error />)
+                        : <Error errorMessage="There was a problem displaying the service performance graph. Please try again later."/>)
                 })}
                 <section>
                     <div className="pull-right clearfix">

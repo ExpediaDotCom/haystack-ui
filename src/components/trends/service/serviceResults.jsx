@@ -46,7 +46,7 @@ export default class ServiceResults extends React.Component {
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />
-                        : <Error errorMessage={''} />)
+                        : <Error errorMessage="There was a problem displaying service trend results. Please try again later."/>)
                 })
                 }
             </section>

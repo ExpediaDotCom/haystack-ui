@@ -43,7 +43,7 @@ export default class operationResults extends React.Component {
                             operationStore={this.props.operationStore}
                             serviceName={this.props.serviceName}
                         />
-                        : <Error />)
+                        : <Error errorMessage="There was a problem displaying operation results. Please try again later." />)
                 })
                 }
             </section>

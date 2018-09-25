@@ -47,7 +47,7 @@ export default class TimelineTabContainer extends React.Component {
                                     startTime={store.startTime}
                                     toggleExpand={store.toggleExpand}
                                 />
-                                : <Error />)
+                                : <Error errorMessage="There was a problem displaying the timeline tab. Please try again later."/>)
                     })
                 }
             </section>

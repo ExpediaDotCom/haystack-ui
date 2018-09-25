@@ -53,7 +53,7 @@ export default class RawTraceModal extends React.Component {
                                     return <pre>{JSON.stringify(rawTraceStore.rawTrace, null, 2)}</pre>;
                                 }
 
-                                return <Error />;
+                                return <Error errorMessage="There was a problem displaying the raw span. Please try again later." />;
                             }
                         })
                     }
