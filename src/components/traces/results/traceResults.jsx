@@ -26,6 +26,7 @@ import SpanSearchStore from '../stores/spansSearchStore';
 import SpansView from './spansView';
 import Error from '../../common/error';
 import NoSearch from './noSearch';
+import '../traces.less';
 
 @observer
 export default class TraceResults extends React.Component {
