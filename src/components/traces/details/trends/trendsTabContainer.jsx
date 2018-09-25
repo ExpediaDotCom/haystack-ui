@@ -42,7 +42,7 @@ export default class extends React.Component {
                         rejected: () => <Error />,
                         fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
                                 ? <TrendsTab timelineSpans={store.timelineSpans} />
-                                : <Error />)
+                                : <Error errorMessage="There was a problem displaying the trends tab. Please try again later." />)
                     })
                 }
             </section>

@@ -54,7 +54,7 @@ export default class AlertsPanel extends React.Component {
                             location={this.props.location}
                             serviceName={this.props.serviceName}
                         />
-                        : <Error />)
+                        : <Error errorMessage="There was a problem displaying alerts. Please try again later."/>)
                 })}
             </section>
         );

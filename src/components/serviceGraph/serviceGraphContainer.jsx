@@ -136,7 +136,7 @@ export default class ServiceGraphContainer extends React.Component {
                                      history={this.props.history}
                                      search={this.props.search}
                             />
-                            : <Error/>)
+                            : <Error errorMessage="There was a problem displaying Service Graph results. Please try again later."/>)
                     })
                     }
                 </div>
@@ -153,7 +153,7 @@ function FilteredServiceGraphResults(props) {
         const filtered = _.filter(result, edge => edge.source.name === props.serviceName || edge.destination.name === props.serviceName);
         return (<ServiceGraphResults serviceGraph={filtered} history={props.history} search={props.search}/>);
     }
-    return (<Error errorMessage="ServiceGraph data not found for the given time frame."/>);
+    return (<Error errorMessage="Service Graph data not found for the given time frame."/>);
 }
 
 FilteredServiceGraphResults.propTypes = {

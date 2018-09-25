@@ -47,7 +47,7 @@ export default class RawSpan extends React.Component {
                                     return <pre className="raw-span">{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>;
                                 }
 
-                                return <Error />;
+                                return <Error errorMessage="There was a problem displaying the raw span. Please try again later."/>;
                             }
                         })
                     }
