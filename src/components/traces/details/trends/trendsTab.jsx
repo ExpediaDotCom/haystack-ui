@@ -24,8 +24,7 @@ import ServiceOperationTrendRow from './serviceOperationTrendRow';
 
 export default class trendsTab extends React.Component {
     static propTypes = {
-        timelineSpans: PropTypes.array.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        timelineSpans: PropTypes.array.isRequired
     };
 
     constructor(props) {
@@ -54,7 +53,7 @@ export default class trendsTab extends React.Component {
     }
 
     render() {
-        const {timelineSpans, isUniversalSearch} = this.props;
+        const {timelineSpans} = this.props;
         const {selectedIndex, from, until} = this.state;
         const selectedPreset = timeWindow.presets[selectedIndex];
         const granularity = timeWindow.getLowerGranularity(selectedPreset.value).value;
@@ -96,7 +95,6 @@ export default class trendsTab extends React.Component {
                                 granularity={granularity}
                                 from={from}
                                 until={until}
-                                isUniversalSearch={isUniversalSearch}
                             />
                         ))
                     }

@@ -26,9 +26,7 @@ import './operationResultsTable.less';
 export default class OperationResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        location: PropTypes.object.isRequired,
-        operationStore: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        operationStore: PropTypes.object.isRequired
     };
 
     static Header({name}) {
@@ -81,10 +79,8 @@ export default class OperationResultsTable extends React.Component {
             return (<TrendDetails
                         serviceSummary={false}
                         store={this.props.operationStore}
-                        location={this.props.location}
                         serviceName={this.props.serviceName}
                         opName={row.operationName}
-                        isUniversalSearch={this.props.isUniversalSearch}
             />);
         }
         return null;

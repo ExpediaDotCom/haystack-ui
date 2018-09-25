@@ -28,19 +28,12 @@ import Error from '../../common/error';
 export default class operationResults extends React.Component {
     static propTypes = {
         operationStore: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
-    };
-
-    static defaultProps = {
-        isUniversalSearch: false
+        serviceName: PropTypes.string.isRequired
     };
 
     render() {
         return (
             <section className="operation-results">
-                { this.props.isUniversalSearch ?  null : <div className="results-table-heading">Operations</div>}
                 { this.props.operationStore.statsPromiseState && this.props.operationStore.statsPromiseState.case({
                     empty: () => <Loading />,
                     pending: () => <Loading />,
@@ -48,9 +41,7 @@ export default class operationResults extends React.Component {
                     fulfilled: () => ((this.props.operationStore.statsPromiseState && this.props.operationStore.statsResults.length)
                         ? <OperationResultsTable
                             operationStore={this.props.operationStore}
-                            location={this.props.location}
                             serviceName={this.props.serviceName}
-                            isUniversalSearch={this.props.isUniversalSearch}
                         />
                         : <Error />)
                 })

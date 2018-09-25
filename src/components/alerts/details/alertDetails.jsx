@@ -31,8 +31,7 @@ export default class AlertDetails extends React.Component {
         serviceName: PropTypes.string.isRequired,
         operationName: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired,
-        alertDetailsStore: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        alertDetailsStore: PropTypes.object.isRequired
     };
 
     static historyWindow = 86400000;
@@ -49,7 +48,7 @@ export default class AlertDetails extends React.Component {
             <section className="table-row-details">
                 <div className="alert-details-container">
                     <div className="clearfix alert-details-container_header">
-                        <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} type={this.props.type} isUniversalSearch={this.props.isUniversalSearch}/>
+                        <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} />
                     </div>
                     <div className="row">
                         {
@@ -61,7 +60,6 @@ export default class AlertDetails extends React.Component {
                                     serviceName={this.props.serviceName}
                                     alertDetailsStore={this.props.alertDetailsStore}
                                     historyWindow={AlertDetails.historyWindow}
-                                    isUniversalSearch={this.props.isUniversalSearch}
                                 />)
                             })
                         }

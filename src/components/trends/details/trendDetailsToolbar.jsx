@@ -31,11 +31,9 @@ export default class TrendDetailsToolbar extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         trendsStore: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired,
         opName: PropTypes.string,
         statsType: PropTypes.string,
-        serviceSummary: PropTypes.bool.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        serviceSummary: PropTypes.bool.isRequired
     };
 
     static defaultProps = {
@@ -107,28 +105,13 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     setClipboardText(activeWindow) {
-        if (this.props.isUniversalSearch) {
-            return linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTrendsLink({
-                serviceName: this.props.serviceName,
-                operationName: this.props.opName,
-                time: {
-                    from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
-                    to: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
-                }
-            }));
-        }
-
-        if (this.props.serviceSummary === true) {
-            return `${window.location.protocol}//${window.location.host}${this.props.location.pathname}?from=${activeWindow.from ||
-            timeWindow.toTimeRange(activeWindow.value).from}&until=${activeWindow.until ||
-            timeWindow.toTimeRange(activeWindow.value).until}`;
-        }
-
-        return linkBuilder.withAbsoluteUrl(linkBuilder.createTrendsLink({
+        return linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
             operationName: this.props.opName,
-            from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
-            until: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
+            time: {
+                from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
+                to: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
+            }
         }));
     }
 
@@ -250,23 +233,13 @@ export default class TrendDetailsToolbar extends React.Component {
     render() {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
 
-        let tracesLink = '';
-
-        if (this.props.isUniversalSearch) {
-            tracesLink = linkBuilder.universalSearchTracesLink({
-                serviceName: this.props.serviceName,
-                operationName: this.props.opName,
-                time: {
-                    preset: this.state.activeWindow.shortName
-                }
-            });
-        } else {
-            tracesLink = linkBuilder.createTracesLink({
-                serviceName: this.props.serviceName,
-                operationName: this.props.opName,
-                timePreset: this.state.activeWindow.shortName
-            });
-        }
+        const tracesLink = linkBuilder.universalSearchTracesLink({
+            serviceName: this.props.serviceName,
+            operationName: this.props.opName,
+            time: {
+                preset: this.state.activeWindow.shortName
+            }
+        });
 
         const PresetOption = ({preset}) => (
             <button

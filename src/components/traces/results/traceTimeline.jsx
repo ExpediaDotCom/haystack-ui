@@ -19,7 +19,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import {Bar} from 'react-chartjs-2';
-import {toQueryUrlString} from '../../../utils/queryParser';
 import { convertSearchToUrlQuery } from '../../universalSearch/utils/urlUtils';
 
 import './traceTimeline.less';
@@ -28,8 +27,7 @@ import './traceTimeline.less';
 export default class TraceTimeline extends React.Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
-        store: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        store: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -51,30 +49,18 @@ export default class TraceTimeline extends React.Component {
             const granularityMs = (results[1].x - results[0].x) / 1000;
             const endTime = startTime + granularityMs;
 
-            let queryUrl = '';
-            if (this.props.isUniversalSearch) {
-                const newSearch = {
-                    ...this.props.store.searchQuery,
-                    timePreset: null,
-                    startTime: null,
-                    endTime: null,
-                    time: {
-                        from: startTime,
-                        to: endTime
-                    }
-                };
+            const newSearch = {
+                ...this.props.store.searchQuery,
+                timePreset: null,
+                startTime: null,
+                endTime: null,
+                time: {
+                    from: startTime,
+                    to: endTime
+                }
+            };
 
-                queryUrl = `?${convertSearchToUrlQuery(newSearch)}`;
-            } else {
-                const newQuery = {
-                    ...this.props.store.searchQuery,
-                    timePreset: null,
-                    startTime,
-                    endTime
-                };
-
-                queryUrl = `?${toQueryUrlString(newQuery)}`;
-            }
+            const queryUrl = `?${convertSearchToUrlQuery(newSearch)}`;
             this.props.history.push({
                 search: queryUrl
             });

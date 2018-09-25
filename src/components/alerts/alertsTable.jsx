@@ -36,8 +36,7 @@ export default class AlertsTable extends React.Component {
         serviceName: PropTypes.string.isRequired,
         alerts: PropTypes.array.isRequired,
         defaultPreset: PropTypes.object.isRequired,
-        alertType: PropTypes.string.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        alertType: PropTypes.string.isRequired
     };
 
     static nameColumnFormatter(cell) {
@@ -171,7 +170,7 @@ export default class AlertsTable extends React.Component {
 
     expandComponent(row) {
         if (this.state.selected.filter(alertId => alertId === row.alertId).length > 0) {
-            return (<AlertDetails serviceName={this.props.serviceName} operationName={row.operationName} type={row.type} alertDetailsStore={alertDetailsStore} isUniversalSearch={this.props.isUniversalSearch} />);
+            return (<AlertDetails serviceName={this.props.serviceName} operationName={row.operationName} type={row.type} alertDetailsStore={alertDetailsStore} />);
         }
         return null;
     }

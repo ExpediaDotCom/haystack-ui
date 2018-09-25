@@ -26,8 +26,7 @@ import TrendsTab from './trendsTab';
 export default class extends React.Component {
     static propTypes = {
         traceId: PropTypes.string.isRequired,
-        store: PropTypes.object.isRequired,
-        isUniversalSearch: PropTypes.bool.isRequired
+        store: PropTypes.object.isRequired
     };
 
     componentWillMount() {
@@ -35,14 +34,14 @@ export default class extends React.Component {
     }
 
     render() {
-        const { store, isUniversalSearch } = this.props;
+        const { store } = this.props;
         return (
             <section>
                 { store.promiseState && store.promiseState.case({
                         pending: () => <Loading />,
                         rejected: () => <Error />,
                         fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <TrendsTab timelineSpans={store.timelineSpans} isUniversalSearch={isUniversalSearch}/>
+                                ? <TrendsTab timelineSpans={store.timelineSpans} />
                                 : <Error />)
                     })
                 }

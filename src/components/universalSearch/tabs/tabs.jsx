@@ -97,11 +97,11 @@ export default class Tabs extends React.Component {
 
         switch (tabId) {
             case 'traces':
-                return <TraceResults tracesSearchStore={store} history={history} isUniversalSearch />;
+                return <TraceResults tracesSearchStore={store} history={history} />;
             case 'trends':
-                return <OperationResults operationStore={store} history={history} location={location} serviceName={this.props.search.serviceName} isUniversalSearch/>;
+                return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} />;
             case 'alerts':
-                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} isUniversalSearch/>;
+                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} />;
             case 'serviceGraph':
                 return <ServiceGraph store={store} search={this.props.search} history={history}/>;
             case 'servicePerformance':
@@ -122,7 +122,7 @@ export default class Tabs extends React.Component {
             (
                 <li key={tab.tabId} className={tab.tabId === tabId ? 'active' : ''}>
                     <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => handleTabSelection(tab.tabId)}>
-                        <span className={`serviceToolsTab__tab-option-icon ${tab.icon}`}/>
+                        <span className={`usb-tab-icon ${tab.icon}`}/>
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ?
                             <div className="universal-search-bar-tabs__alert-counter">

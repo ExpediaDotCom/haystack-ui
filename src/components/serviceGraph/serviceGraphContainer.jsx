@@ -28,14 +28,12 @@ import timeWindow from '../../utils/timeWindow';
 @observer
 export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
-        isUniversalSearch: PropTypes.bool,
         search: PropTypes.object.isRequired,
         graphStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        isUniversalSearch: false,
         serviceName: undefined
     }
 
@@ -110,13 +108,6 @@ export default class ServiceGraphContainer extends React.Component {
         return (
             <section>
                 <div className="clearfix" id="service-graph">
-                    {
-                        !this.props.isUniversalSearch && (
-                            <div className="serviceGraph__header-title pull-left">
-                                <span>Service Graph </span>
-                                <span className="h6">(will show list of partial graphs if missing data from services)</span>
-                            </div>)
-                    }
                     {!this.props.search.serviceName &&
                     <div className="serviceGraph__tabs pull-right">
                         <ul className="nav nav-tabs">
