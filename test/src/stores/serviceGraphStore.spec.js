@@ -68,7 +68,7 @@ describe('ServiceGraphStore', () => {
         server = null;
     });
 
-    it('fetches active alerts from API', (done) => {
+    it('fetches service graph from the api', (done) => {
         server.onGet('/api/serviceGraph?from=1&to=2').reply(200, stubGraph);
 
         store.fetchServiceGraph(stubFilter);
