@@ -22,11 +22,20 @@ const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
 const trendsConnector = require('../../../../../server/connectors/trends/haystack/trendsConnector');
 
-const server = new MockAdapter(axios);
-server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{success-span}&from=1530828169&to=1530829069').reply(200, []);
-server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{failure-span}&from=1530828169&to=1530829069').reply(200, []);
-server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{*_99}.{duration}&from=1530828169&to=1530829069').reply(200, []);
 
 describe('trendsConnector', () => {
+    let server;
+
+    before(() => {
+        server = new MockAdapter(axios);
+        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{success-span}&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{failure-span}&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{*_99}.{duration}&from=1530828169&to=1530829069').reply(200, []);
+    });
+
+    after(() => {
+        server = null;
+    });
+
     it('encodes and decodes correctly', () => trendsConnector.getServicePerfStats(3000, 1530828169000, 1530829069000).then(result => expect(result).to.be.empty));
 });

@@ -44,11 +44,17 @@ const stubResponse = {
     }]
 };
 
-
-const server = new MockAdapter(axios);
-
-server.onGet('undefined?from=1530828169&to=1530829069').reply(200, stubResponse);
-
 describe('serviceGraphConnector', () => {
+    let server;
+
+    before(() => {
+        server = new MockAdapter(axios);
+        server.onGet('undefined?from=1530828169&to=1530829069').reply(200, stubResponse);
+    });
+
+    after(() => {
+        server = null;
+    });
+
     it('pulls and formats service graph data', () => serviceGraphConnector.getServiceGraphForTimeLine(1530828169, 1530829069).then(result => expect(result).to.have.length(1)));
 });
