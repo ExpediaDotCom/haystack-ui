@@ -22,6 +22,7 @@ import sinon from 'sinon';
 
 import edges from './util/edges';
 import ServiceGraph from '../../../../src/components/serviceGraph/serviceGraph';
+import ServiceGraphResults from '../../../../src/components/serviceGraph/serviceGraphResults';
 import ServiceGraphContainer from '../../../../src/components/serviceGraph/serviceGraphContainer';
 import ServiceGraphStore from '../../../../src/components/serviceGraph/stores/serviceGraphStore';
 
@@ -44,12 +45,43 @@ const stubHistory = {
     }
 };
 
-const search = {
+const stubSearch = {
     serviceName: undefined,
     time: {
         preset: '1h'
     }
 };
+
+const stubGraph = [
+    {
+        destination: {
+            name: 'service-2'
+        },
+        source: {
+            name: 'service-1',
+            tags: {
+                DEPLOYMENT: 'aws'
+            }
+        },
+        stats: {
+            count: 12,
+            errorCount: 2.5
+        }
+    },
+    {
+        destination: {
+            name: 'service-3'
+        },
+        source: {
+            name: 'service-2'
+        },
+        stats: {
+            count: 16,
+            errorCount: 3.5
+        }
+    }
+];
+
 
 function createServiceGraphStubStore(promiseState) {
     const store = ServiceGraphStore;
@@ -72,7 +104,7 @@ describe('<ServiceGraph />', () => {
 describe('<ServiceGraphContainer />', () => {
     it('should show as loading during a pending graph promise`', () => {
         const stubStore = createServiceGraphStubStore(pendingPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={stubSearch}/>);
 
         expect(wrapper.find('.serviceGraph__loading')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -80,7 +112,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should show as error after a rejected graph promise`', () => {
         const stubStore = createServiceGraphStubStore(rejectedPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={stubSearch}/>);
 
         expect(wrapper.find('Error')).to.have.length(1);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -88,7 +120,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should render the serviceGraph container and set up the tabs`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={search}/>);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} history={stubHistory} search={stubSearch}/>);
 
         expect(wrapper.find('.serviceGraph__tab-link')).to.have.length(2);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -96,7 +128,7 @@ describe('<ServiceGraphContainer />', () => {
 
     it('tabs for multiple graphs should be selectable`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={search}/>);
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={stubSearch}/>);
         wrapper.find('.serviceGraph__tab-link').last().simulate('click');
         expect((wrapper.find('li').last()).hasClass('active')).to.equal(true);
         ServiceGraphStore.fetchServiceGraph.restore();
@@ -111,5 +143,13 @@ describe('<ServiceGraphContainer />', () => {
         expect(wrapper.find('.serviceGraph__tab-link').exists()).to.equal(false);
 
         ServiceGraphStore.fetchServiceGraph.restore();
+    });
+});
+
+describe('<ServiceGraphResults />', () => {
+    it('should render the ServiceGraphResults panel`', () => {
+        const wrapper = shallow(<ServiceGraphResults history={stubHistory} search={stubSearch} serviceGraph={stubGraph}/>);
+
+        expect(wrapper.find('.serviceGraph__panel')).to.have.length(1);
     });
 });
