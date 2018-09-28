@@ -20,22 +20,41 @@ import {expect} from 'chai';
 
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const trendsConnector = require('../../../../../server/connectors/trends/haystack/trendsConnector');
+const serviceGraphConnector = require('../../../../../server/connectors/serviceGraph/haystack/serviceGraphConnector');
 
+const stubResponse = {
+    edges: [{
+        source: {
+            name: 'test'
+        },
+        destination: {
+            name: 'test-2'
+        },
+        stats: {
+            count: 5000,
+            errorCount: 5000
+        }
+    }, {
+        source: 'test-2',
+            destination: 'test-3',
+        stats: {
+        count: 1000,
+            errorCount: 1000
+        }
+    }]
+};
 
-describe('trendsConnector', () => {
+describe('serviceGraphConnector', () => {
     let server;
 
     before(() => {
         server = new MockAdapter(axios);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{success-span}&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{failure-span}&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{*_99}.{duration}&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined?from=1530828169&to=1530829069').reply(200, stubResponse);
     });
 
     after(() => {
         server = null;
     });
 
-    it('encodes and decodes correctly', () => trendsConnector.getServicePerfStats(3000, 1530828169000, 1530829069000).then(result => expect(result).to.be.empty));
+    it('pulls and formats service graph data', () => serviceGraphConnector.getServiceGraphForTimeLine(1530828169, 1530829069).then(result => expect(result).to.have.length(1)));
 });
