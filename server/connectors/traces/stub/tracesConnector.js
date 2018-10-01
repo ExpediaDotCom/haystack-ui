@@ -51,10 +51,11 @@ const trace = () => {
             startTime: 1504784384000,
             duration: 3525000,
             logs: [],
-            tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
+            tags: [
+                {
+                    key: 'url',
+                    value: 'http://trace.io/blah'
+                },
                 {
                     key: 'url2',
                     value: 'some:data'
@@ -73,10 +74,11 @@ const trace = () => {
             startTime: 1504784384000 + 250000,
             duration: 1505000,
             logs: [],
-            tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
+            tags: [
+                {
+                    key: 'url',
+                    value: 'http://trace.io/blah'
+                },
                 {
                     key: 'error',
                     value: true
@@ -114,12 +116,15 @@ const trace = () => {
             traceId,
             parentSpanId: span2,
             spanId: span3,
-            serviceName: 'tyrell-service',
+            serviceName: 'this-should-not-show',
             operationName: 'tully-1',
             startTime: 1504784384000 + 250000 + 120000,
             duration: 605000,
             logs: [],
-            tags: []
+            tags: [{
+                key: 'service',
+                value: 'tyrell-service'
+            }]
         },
         {
             traceId,
