@@ -23,6 +23,7 @@ import formatters from '../../../utils/formatters';
 @observer
 export default class TimeWindowPicker extends React.Component {
     static propTypes = {
+        handleClick: PropTypes.func.isRequired,
         uiState: PropTypes.object.isRequired
     };
 
@@ -73,7 +74,7 @@ export default class TimeWindowPicker extends React.Component {
         const timeRangePickerToggleText = formatters.toTimeRangeTextFromTimeWindow(timePreset, startTime, endTime);
 
         return (
-            <div ref={this.setWrapperRef} className="usb-timepicker">
+            <div ref={this.setWrapperRef} onClick={this.props.handleClick} className="usb-timepicker" role="button" tabIndex="-1">
                     <button
                         className="usb-timepicker__button"
                         type="button"

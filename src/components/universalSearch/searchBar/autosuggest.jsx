@@ -63,6 +63,10 @@ export default class Autocomplete extends React.Component {
         return value.indexOf(' ') < 0 ? value : `"${value}"`;
     }
 
+    static checkIfPastedStringIsGuid(value) {
+        return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+    }
+
     static completeInputString(inputString) {
         if (inputString[0] === '(') {
             return inputString[inputString.length - 1] === ')';
@@ -293,7 +297,14 @@ export default class Autocomplete extends React.Component {
     // Logic for when the user pastes into search bar
     handlePaste(e) {
         e.preventDefault();
-        const splitPastedText = e.clipboardData.getData('Text').split('');
+        const pastedText =  e.clipboardData.getData('Text');
+        // Logic to check for pasting a traceId in an empty field
+        if (Autocomplete.checkIfPastedStringIsGuid(pastedText) && !Object.keys(this.props.uiState.chips).length && !this.inputRef.value) {
+            this.inputRef.value = `traceId=${pastedText}`;
+            this.handleSearch();
+            return;
+        }
+        const splitPastedText = pastedText.split('');
         splitPastedText.forEach((char) => {
             this.inputRef.value += char;
             if (char === ' ') this.handleKeyPress({keyCode: SPACE, preventDefault: () => {}});
@@ -500,7 +511,7 @@ export default class Autocomplete extends React.Component {
         const ErrorMessaging = ({inputError}) => (inputError ? <div className="usb-search__error-message">{this.state.inputError}</div> : null);
 
         return (
-            <article className="usb-wrapper">
+            <article className="usb-wrapper" ref={this.setWrapperRef} >
                 <div className="usb-search" role="form" onClick={Autocomplete.focusInput}>
                     <Chips deleteChip={this.deleteChip} uiState={uiState} />
                     <div className="usb-searchbar">
@@ -511,15 +522,16 @@ export default class Autocomplete extends React.Component {
                             onKeyDown={this.handleKeyPress}
                             onChange={this.updateFieldKv}
                             ref={this.setInputRef}
-                            onFocus={this.handleFocus}
-                            placeholder={uiState.chips.length ? '' : 'Search tags and services...'}
+                            onClick={this.handleFocus}
+                            autoFocus
+                            placeholder={Object.keys(uiState.chips).length > 0 ? '' : 'Search tags and services or paste a traceId...'}
                         />
                     </div>
-                    <TimeWindowPicker uiState={uiState} />
-                    <SearchSubmit handleSearch={this.handleSearch} />
+                    <TimeWindowPicker uiState={uiState} handleClick={this.handleBlur} />
+                    <SearchSubmit handleSearch={this.handleSearch} handleClick={this.handleBlur} />
                 </div>
                 <div className="usb-suggestions">
-                    <div ref={this.setWrapperRef} className={this.state.suggestionStrings.length ? 'usb-suggestions__tray clearfix' : 'hidden'}>
+                    <div className={this.state.suggestionStrings.length ? 'usb-suggestions__tray clearfix' : 'hidden'}>
                         <Suggestions
                             handleHover={this.handleHover}
                             handleSelection={this.handleDropdownSelection}

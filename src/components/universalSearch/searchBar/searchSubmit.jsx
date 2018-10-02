@@ -17,8 +17,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Submit = ({handleSearch}) => (
-    <div className="usb-submit">
+const Submit = ({handleSearch, handleClick}) => (
+    <div className="usb-submit" onClick={handleClick} role="button" tabIndex="-1">
         <button type="submit" className="usb-submit__button" onClick={handleSearch}>
             <span className="ti-search"/>
         </button>
@@ -26,6 +26,7 @@ const Submit = ({handleSearch}) => (
 );
 
 Submit.propTypes = {
+    handleClick: PropTypes.func.isRequired,
     handleSearch: PropTypes.func.isRequired
 };
 
