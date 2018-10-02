@@ -65,7 +65,7 @@ function isSpanError(span) {
 }
 
 function createServicesSummary(trace) {
-  const services = _.countBy(trace, span => span.serviceName);
+  const services = _.countBy(trace, span => findTag(span, 'service') || span.serviceName);
 
   return _.keys(services).map(service => ({
     name: service,
@@ -100,9 +100,10 @@ function createQueriedOperationSummary(trace, operationName, endToEndDuration) {
 
 function toSearchResult(trace, query) {
   const rootSpan = trace.find(span => !span.parentSpanId);
+  const serviceName = findTag(rootSpan.tags, 'service') || rootSpan.serviceName;
   const root = {
     url: findTag(rootSpan.tags, 'url') || '',
-    serviceName: rootSpan.serviceName,
+    serviceName,
     operationName: rootSpan.operationName,
     duration: rootSpan.duration,
     error: isSpanError(rootSpan)
