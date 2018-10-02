@@ -27,6 +27,12 @@ function tracesConnector(config) {
   });
 }
 
+// When an HTTP GET is invoked, this returns the supplied data as a response.
+function stubGetReturns(sandbox, data) {
+  const resolved = new Promise(r => r({ data }));
+  return sandbox.stub(axios, 'get').returns(resolved);
+}
+
 // TODO: migrate to v2 https://github.com/ExpediaDotCom/haystack-ui/issues/396
 const zipkinUrl = 'http://localhost/api/v1';
 const config = {connectors: {traces: {zipkinUrl}, trends: {connectorName: 'stub'}}};
@@ -38,14 +44,8 @@ describe('tracesConnector.getServices', () => {
   });
   afterEach(() => sandbox.restore());
 
-  // When an HTTP GET is invoked, this returns the supplied data as a response.
-  function stubGetReturns(data) {
-    const resolved = new Promise(r => r({ data }));
-    return sandbox.stub(axios, 'get').returns(resolved);
-  }
-
   it('should not error when empty', (done) => {
-    stubGetReturns([]);
+    stubGetReturns(sandbox, []);
 
     tracesConnector(config).getServices().then((result) => {
       expect(result).to.have.length(0);
@@ -53,7 +53,7 @@ describe('tracesConnector.getServices', () => {
   });
 
   it('should call correct URL', (done) => {
-    const spy = stubGetReturns([]);
+    const spy = stubGetReturns(sandbox, []);
 
     tracesConnector(config).getServices().then(() => {
       expect(spy.args[0][0]).to.equal('http://localhost/api/v1/services');
@@ -61,7 +61,7 @@ describe('tracesConnector.getServices', () => {
   });
 
   it('should not filter out services when servicesFilter is unconfigured', (done) => {
-    stubGetReturns(['frontend', 'backend']);
+    stubGetReturns(sandbox, ['frontend', 'backend']);
 
     tracesConnector(config).getServices().then((result) => {
       expect(result).to.deep.equal(['frontend', 'backend']);
@@ -69,7 +69,7 @@ describe('tracesConnector.getServices', () => {
   });
 
   it('should not filter out services when empty servicesFilter is configured', (done) => {
-    stubGetReturns(['frontend', 'backend']);
+    stubGetReturns(sandbox, ['frontend', 'backend']);
 
     config.connectors.traces.servicesFilter = [];
     tracesConnector(config).getServices().then((result) => {
@@ -78,7 +78,7 @@ describe('tracesConnector.getServices', () => {
   });
   
   it('should filter out services that match regex servicesFilter', (done) => {
-    stubGetReturns([
+    stubGetReturns(sandbox, [
         'value-1',
         '$/special/values',
         '#/special/.values',
@@ -92,7 +92,7 @@ describe('tracesConnector.getServices', () => {
   });
 
   it('should filter out services that match any regex servicesFilter', (done) => {
-    stubGetReturns([
+    stubGetReturns(sandbox, [
         'value-1',
         '$/special/values',
         '#/special/.values',
@@ -106,7 +106,7 @@ describe('tracesConnector.getServices', () => {
   });
 
   it('should filter out services that match regex servicesFilter - special character', (done) => {
-    stubGetReturns([
+    stubGetReturns(sandbox, [
         'value-1',
         '$/special/values',
         '#/special/.values',
@@ -120,6 +120,39 @@ describe('tracesConnector.getServices', () => {
           '#/special/.values',
           'values'
       ]);
+    }).then(done, done);
+  });
+});
+
+describe('tracesConnector.getOperations', () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => sandbox.restore());
+
+  it('should not error when empty', (done) => {
+    stubGetReturns(sandbox, []);
+
+    tracesConnector(config).getOperations('frontend').then((result) => {
+      expect(result).to.have.length(0);
+    }).then(done, done);
+  });
+
+  it('should call correct URL', (done) => {
+    const spy = stubGetReturns(sandbox, []);
+
+    tracesConnector(config).getOperations('frontend').then(() => {
+      expect(spy.args[0][0]).to.equal('http://localhost/api/v1/spans?serviceName=frontend');
+    }).then(done, done);
+  });
+
+  it('should return list of operations from spans response', (done) => {
+    const spanNames = ['get /users/{userId}', 'post /'];
+    stubGetReturns(sandbox, spanNames);
+
+    tracesConnector(config).getOperations('frontend').then((result) => {
+      expect(result).to.deep.equal(spanNames);
     }).then(done, done);
   });
 });
