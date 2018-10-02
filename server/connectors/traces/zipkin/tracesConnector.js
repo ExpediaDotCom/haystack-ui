@@ -21,6 +21,7 @@ const fetcher = require('../../operations/restFetcher');
 
 const connector = {};
 const baseZipkinUrl = config.connectors.traces.zipkinUrl;
+const servicesFilter = config.connectors.traces.servicesFilter;
 
 const servicesFetcher = fetcher('getServices');
 const operationsFetcher = fetcher('getOperations');
@@ -57,9 +58,20 @@ function mapQueryParams(query) {
         .join('&');
 }
 
-connector.getServices = () =>
-    servicesFetcher
-    .fetch(`${baseZipkinUrl}/services`);
+connector.getServices = () => {
+  const fetched = servicesFetcher.fetch(`${baseZipkinUrl}/services`);
+  if (!servicesFilter) {
+    return fetched;
+  }
+  return fetched.then(result => result.filter((value) => {
+      for (let i = 0; i < servicesFilter.length; i += 1) {
+          if (servicesFilter[i].test(value)) {
+              return false;
+          }
+      }
+      return true;
+  }));
+};
 
 connector.getOperations = serviceName =>
     operationsFetcher
