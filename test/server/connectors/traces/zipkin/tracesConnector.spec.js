@@ -33,8 +33,7 @@ function stubGetReturns(sandbox, data) {
   return sandbox.stub(axios, 'get').returns(resolved);
 }
 
-// TODO: migrate to v2 https://github.com/ExpediaDotCom/haystack-ui/issues/396
-const zipkinUrl = 'http://localhost/api/v1';
+const zipkinUrl = 'http://localhost/api/v2';
 const config = {connectors: {traces: {zipkinUrl}, trends: {connectorName: 'stub'}}};
 
 describe('tracesConnector.getServices', () => {
@@ -56,7 +55,7 @@ describe('tracesConnector.getServices', () => {
     const spy = stubGetReturns(sandbox, []);
 
     tracesConnector(config).getServices().then(() => {
-      expect(spy.args[0][0]).to.equal('http://localhost/api/v1/services');
+      expect(spy.args[0][0]).to.equal('http://localhost/api/v2/services');
     }).then(done, done);
   });
 
@@ -143,7 +142,7 @@ describe('tracesConnector.getOperations', () => {
     const spy = stubGetReturns(sandbox, []);
 
     tracesConnector(config).getOperations('frontend').then(() => {
-      expect(spy.args[0][0]).to.equal('http://localhost/api/v1/spans?serviceName=frontend');
+      expect(spy.args[0][0]).to.equal('http://localhost/api/v2/spans?serviceName=frontend');
     }).then(done, done);
   });
 
@@ -153,6 +152,44 @@ describe('tracesConnector.getOperations', () => {
 
     tracesConnector(config).getOperations('frontend').then((result) => {
       expect(result).to.deep.equal(spanNames);
+    }).then(done, done);
+  });
+});
+
+describe('tracesConnector.getTrace', () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => sandbox.restore());
+
+  it('should call correct URL', (done) => {
+    const spy = stubGetReturns(sandbox, []);
+
+    tracesConnector(config).getTrace('0000000000000001').then(() => {
+      expect(spy.args[0][0]).to.equal('http://localhost/api/v2/trace/0000000000000001');
+    }).then(done, done);
+  });
+
+  it('should convert Zipkin v2 span into a Haystack one', (done) => {
+    stubGetReturns(sandbox, [{
+      traceId: '0000000000000001',
+      id: '0000000000000002',
+      name: 'get',
+      localEndpoint: {serviceName: 'frontend'},
+      annotations: [],
+      tags: {}
+    }]);
+
+    tracesConnector(config).getTrace('0000000000000001').then((result) => {
+      expect(result[0]).to.deep.equal({
+        traceId: '0000000000000001',
+        spanId: '0000000000000002',
+        operationName: 'get',
+        serviceName: 'frontend',
+        logs: [],
+        tags: []
+      });
     }).then(done, done);
   });
 });

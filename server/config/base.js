@@ -38,7 +38,7 @@ module.exports = {
             //  - haystack - gets data from haystack query service
             //  - zipkin - bridge for using an existing zipkin api,
             //             zipkin connector expects a zipkin config field specifying zipkin api url,
-            //             eg. zipkinUrl: 'http://<zipkin>/api/v1'}
+            //             eg. zipkinUrl: 'http://<zipkin>/api/v2'}
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub'
         },
