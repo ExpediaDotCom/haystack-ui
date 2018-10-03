@@ -55,7 +55,11 @@ export default class TraceResults extends React.Component {
                     {results.length > 1 ?
                         <span>
                             <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
-                            <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                            {
+                                this.props.tracesSearchStore.timelineResults && this.props.tracesSearchStore.timelineResults.length
+                                    ? <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                                    : null
+                            }
                         </span> : null}
                 </div>
                 <div className="trace-result-view-selector text-center">

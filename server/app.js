@@ -87,10 +87,10 @@ if (config.enableSSO) {
 // API ROUTING
 const servicesApi = require('./routes/servicesApi');
 const tracesApi = require('./routes/tracesApi');
-const servicesPerfApi = require('./routes/servicesPerfApi');
 
-const apis = [servicesApi, tracesApi, servicesPerfApi];
+const apis = [servicesApi, tracesApi];
 if (config.connectors.trends) apis.push(require('./routes/trendsApi'));
+if (config.connectors.trends) apis.push(require('./routes/servicesPerfApi'));
 if (config.connectors.alerts) apis.push(require('./routes/alertsApi'));
 if (config.connectors.serviceGraph) apis.push(require('./routes/serviceGraphApi'));
 
