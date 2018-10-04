@@ -41,13 +41,16 @@ export default class TimeRangePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.props.range ? {
-                startDateTime: this.props.range.from,
-                endDateTime: this.props.range.to
+                startDateTime: moment(parseInt(this.props.range.from, 10)),
+                endDateTime: moment(parseInt(this.props.range.to, 10))
             } : {
             startDateTime: moment().subtract(1, 'h'),
             endDateTime: moment()
         };
 
+        this.state.timeError = false;
+
+        this.showTimeError = this.showTimeError.bind(this);
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.handleCustomTimeRange = this.handleCustomTimeRange.bind(this);
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
@@ -56,7 +59,11 @@ export default class TimeRangePicker extends React.Component {
     }
 
     handleCustomTimeRange() {
-        this.props.timeRangeChangeCallback(null, this.state.startDateTime.valueOf(), this.state.endDateTime.valueOf());
+        if (TimeRangePicker.fromValid(moment(this.state.startDateTime)) && this.toValid(moment(this.state.endDateTime))) {
+            this.props.timeRangeChangeCallback(null, this.state.startDateTime.valueOf(), this.state.endDateTime.valueOf());
+        } else {
+            this.showTimeError();
+        }
     }
 
     handlePresetSelection(preset) {
@@ -75,6 +82,18 @@ export default class TimeRangePicker extends React.Component {
         return current > moment(this.state.startDateTime).subtract(1, 'day') && current < DateTime.moment();
     }
 
+    showTimeError() {
+        this.setState({
+            timeError: true
+        }, () => {
+            setTimeout(() => {
+                this.setState({
+                    timeError: false
+                });
+            }, 5000);
+        });
+    }
+
     render() {
         const PresetOption = ({preset}) => (<li key={preset}>
             <a className="timerange-picker__preset" key={preset} role="link" tabIndex={0} onClick={() => this.handlePresetSelection(preset)}>{toPresetDisplayText(preset)}</a>
@@ -83,6 +102,7 @@ export default class TimeRangePicker extends React.Component {
         return (
             <div className="timerange-picker">
                 <div className="timerange-picker__custom">
+                    {this.state.timeError && <div className="datetimerange-error">Invalid time selection</div>}
                     <h5>Time Range</h5>
                     <div className="form-group">
                         <h6>From :</h6>
