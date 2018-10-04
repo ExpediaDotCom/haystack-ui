@@ -45,12 +45,14 @@ export default class TrendTimeRangePicker extends React.Component {
         this.isToValid = this.isToValid.bind(this);
     }
 
-    handleFromChange(from) {
-        this.setState({from});
+    handleFromChange(rawFrom) {
+        const from = moment(rawFrom);
+        if (from < this.state.to) this.setState({from});
     }
 
-    handleToChange(to) {
-        this.setState({to});
+    handleToChange(rawTo) {
+        const to = moment(rawTo);
+        if (to > this.state.from) this.setState({to});
     }
 
     handleApply() {
