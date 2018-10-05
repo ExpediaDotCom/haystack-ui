@@ -23,7 +23,7 @@ const extractor = require('./graphDataExtractor');
 const trendsFetcher = fetcher('serviceGraph');
 
 const connector = {};
-const serviceGraphUrl = config.connectors.serviceGraph.serviceGraphUrl;
+const serviceGraphUrl = config.connectors.serviceGraph && config.connectors.serviceGraph.serviceGraphUrl;
 
 function fetchServiceGraph(from, to) {
     return trendsFetcher

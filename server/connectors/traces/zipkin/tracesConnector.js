@@ -15,6 +15,7 @@
  */
 
 const config = require('../../../config/config');
+const Q = require('q');
 const converter = require('./converter');
 const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/restFetcher');
@@ -30,7 +31,7 @@ const searchTracesFetcher = fetcher('searchTraces');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 
-const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
+const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
 const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
@@ -101,10 +102,19 @@ connector.findTraces = (query) => {
 
 connector.getRawTrace = traceId =>
     rawTraceFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
-connector.getRawSpan = (traceId, spanId) =>
+connector.getRawSpan = traceId =>
     rawSpanFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
+
+// Not supported for zipkin
+connector.getRawTraces = () => Q.fcall(() => []);
+
+// Not supported for zipkin
+connector.getTimeline = () => Q.fcall(() => []);
+
+// TODO get whitelisted keys from configuration
+connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error']);
 
 module.exports = connector;

@@ -25,10 +25,6 @@ module.exports = {
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
-    // Feature switches
-    enableServicePerformance: true,
-    enableServiceLevelTrends: true,
-
     // this list defines subsystems for which UI should be enabled
     // traces connector must be there in connectors config
     connectors: {
@@ -49,7 +45,10 @@ module.exports = {
             //               haystack connector also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
             connectorName: 'stub',
-            encoder: 'periodreplacement'
+            encoder: 'periodreplacement',
+            // Feature switches
+            enableServicePerformance: true,
+            enableServiceLevelTrends: true
         },
         alerts: {
             // name of config connector module to use for fetching anomaly detection data from downstream

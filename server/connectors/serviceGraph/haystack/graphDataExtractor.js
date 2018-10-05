@@ -21,7 +21,7 @@ const extractor = {};
 
 const config = require('../../../config/config');
 
-const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
+const WINDOW_SIZE_IN_SECS =  config.connectors.serviceGraph && config.connectors.serviceGraph.windowSizeInSecs;
 
 function getEdgeName(vertex) {
     if (vertex.name) {
