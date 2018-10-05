@@ -37,6 +37,7 @@ router.get('*', (req, res) => {
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
         usbPrimary: config.usbPrimary,
+        enableTrends: !!config.connectors.trends,
         enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
         enableServiceLevelTrends: config.connectors.trends && config.connectors.trends.enableServiceLevelTrends,
         services: servicesConnector.getServicesSync(),

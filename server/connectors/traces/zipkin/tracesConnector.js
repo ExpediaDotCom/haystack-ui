@@ -102,12 +102,16 @@ connector.findTraces = (query) => {
 
 connector.getRawTrace = traceId =>
     rawTraceFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
-connector.getRawSpan = (traceId, spanId) =>
+connector.getRawSpan = traceId =>
     rawSpanFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
+// Not supported for zipkin
+connector.getRawTraces = () => Q.fcall(() => []);
+
+// Not supported for zipkin
 connector.getTimeline = () => Q.fcall(() => []);
 
 // TODO get whitelisted keys from configuration
