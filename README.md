@@ -75,4 +75,4 @@ For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/w
 
 ## Haystack-ui as drop-in replacement for Zipkin UI
 If you have an existing zipkin cluster you can use haystack UI as a drop-in replacement for zipkin's UI.
-For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store)
+For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors#using-haystack-ui-as-replacement-for-zipkin-ui](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors#using-haystack-ui-as-replacement-for-zipkin-ui)
