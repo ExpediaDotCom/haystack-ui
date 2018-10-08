@@ -104,11 +104,14 @@ connector.getRawTrace = traceId =>
     rawTraceFetcher
     .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
+// TODO: get by trace, span ID is not supported by Zipkin. However, should we
+// not just issue getRawTrace and then filter by span ID?
 connector.getRawSpan = traceId =>
     rawSpanFetcher
     .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
-// Not supported for zipkin
+// TODO: get by multiple ID is not supported by Zipkin. However, should we not
+// just issue multiple calls to getRawTrace?
 connector.getRawTraces = () => Q.fcall(() => []);
 
 // Not supported for zipkin
