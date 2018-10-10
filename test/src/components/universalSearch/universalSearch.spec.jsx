@@ -22,6 +22,7 @@ import sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import moment from 'moment';
 
 import UniversalSearch from '../../../../src/components/universalSearch/universalSearch';
 import Autosuggest from '../../../../src/components/universalSearch/searchBar/autosuggest';
@@ -256,15 +257,18 @@ describe('<Autosuggest />', () => {
 
     it('should retain custom time when re-opening the picker after previously selecting a custom time', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
-
         wrapper.find('.usb-timepicker__button').simulate('click');
         const customTime = '04/18/1988 8:00 AM';
-        wrapper.find('.datetimerange-picker').find('.form-control').first().simulate('change', {target: {value: customTime}});
-        wrapper.find('.custom-timerange-apply').simulate('click');
-        wrapper.find('.usb-timepicker__button').simulate('click');
+        const timeRangePicker = wrapper.find('TimeRangePicker');
+        const timeWindowPicker = wrapper.find('TimeWindowPicker');
+
+        // Change date, submit, and re-open time picker to check if date retains
+        timeWindowPicker.instance().showTimePicker();
+        timeRangePicker.instance().handleChangeStartDate(moment(customTime, 'MM-DD-YYYY H:m'));
+        timeRangePicker.instance().handleCustomTimeRange();
+        timeWindowPicker.instance().showTimePicker();
 
         const uiStartTime = wrapper.find('.datetimerange-picker').find('.form-control').first().instance().value;
-
         expect(uiStartTime).to.equal(customTime);
     });
 
