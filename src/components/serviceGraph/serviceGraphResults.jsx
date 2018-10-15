@@ -130,7 +130,7 @@ export default class ServiceGraphResults extends React.Component {
             graph.addEdge(edge);
         });
         return graph;
-    }
+    };
 
     constructor(props) {
         super(props);
@@ -152,7 +152,8 @@ export default class ServiceGraphResults extends React.Component {
         if (highlightedObject.type === 'node') {
             const search = this.props.search;
             search.serviceName = highlightedObject.getName();
-            this.props.history.push(linkBuilder.universalSearchServiceGraphLink(search));
+            search.tabId = 'serviceGraph';
+            this.props.history.push(linkBuilder.universalSearchLink(search));
             return;
         }
         this.setState({connDetails: highlightedObject.getName()});

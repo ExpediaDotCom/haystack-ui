@@ -28,6 +28,4 @@ linkBuilder.universalSearchTrendsLink = search => `/search?${convertSearchToUrlQ
 
 linkBuilder.universalSearchAlertsLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=alerts`;
 
-linkBuilder.universalSearchServiceGraphLink = search => `/search?${convertSearchToUrlQuery(search)}&tabId=serviceGraph`;
-
 export default linkBuilder;
