@@ -1,7 +1,7 @@
 
 # Zipkin haystack-ui Quickstart Utility
 
-Utility script to haystack-ui with a zipkin instance as backend for traces. It also spins sleuth-webmvc-example services for feeding data in Zipkin cluster and sets up some traces in Zipkin for haystack-ui to display.
+Utility script to run haystack-ui with a zipkin instance as backend for traces. It spins sleuth-webmvc-example services for feeding traces in Zipkin cluster and generates some examples. It configures haystack-ui point to Zipkin V2 api and has only traces subsystem.
 
 
 ### PREREQUISITES
