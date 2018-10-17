@@ -23,3 +23,6 @@ coverage
 # HTTPS Certs
 server.cert
 server.key
+
+# Zipkin runner
+zipkin-workspace
