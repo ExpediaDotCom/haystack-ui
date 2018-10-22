@@ -61,7 +61,7 @@ function parseOperationAlertsResponse(data, until) {
 }
 
 function fetchOperationAlerts(serviceName, from, until) {
-    const target = `haystack.serviceName.${serviceName}.operationName.*.alertType.*.anomaly`;
+    const target = encodeURIComponent(`anomaly;product=haystack;serviceName=${serviceName};operationName=*;alertType=*`);
 
     return serviceAlertsFetcher
         .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
@@ -132,7 +132,7 @@ connector.getServiceAlerts = (serviceName, query) => {
 };
 
 connector.getAlertHistory = (serviceName, operationName, alertType, from) => {
-    const target = `haystack.serviceName.${serviceName}.operationName.${metricpointNameEncoder.encodeMetricpointName(operationName)}.alertType.${alertType}.anomaly`;
+    const target = encodeURIComponent(`anomaly;product=haystack;serviceName=${serviceName};operationName=${metricpointNameEncoder.encodeMetricpointName(operationName)};alertType=${alertType}`);
 
     return alertHistoryFetcher
         .fetch(`${metricTankUrl}/render?target=${target}&from=${Math.trunc(from / 1000)}&to=${Math.trunc(Date.now() / 1000)}`)
