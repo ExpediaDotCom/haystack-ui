@@ -27,15 +27,15 @@ const metricTankUrl = config.connectors.trends && config.connectors.trends.metri
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
 
 function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames) {
-    return `haystack.serviceName.{${services}}.operationName.{${operations}}.interval.${timeWindow}.stat.{${metricStats}}.${metricNames}`;
+    return encodeURIComponent(`${metricNames};mtype=gauge;product=haystack;serviceName={${services}};operationName={${operations}};interval=${timeWindow};stat={${metricStats}}`);
 }
 
 function createOperationTarget(service, operationName, timeWindow, metricStats, metricNames) {
-    return `haystack.serviceName.${service}.operationName.${operationName}.interval.${timeWindow}.stat.{${metricStats}}.{${metricNames}}`;
+    return encodeURIComponent(`{${metricNames}};mtype=gauge;product=haystack;serviceName=${service};operationName=${operationName};interval=${timeWindow};stat={${metricStats}}`);
 }
 
 function getServiceTargetStat(service, timeWindow, metricStats, metricNames) {
-    return `haystack.serviceName.${service}.interval.${timeWindow}.stat.{${metricStats}}.{${metricNames}}`;
+    return encodeURIComponent(`{${metricNames}};mtype=gauge;product=haystack;serviceName=${service};interval=${timeWindow};stat={${metricStats}}`);
 }
 
 function convertGranularityToTimeWindow(timespan) {
