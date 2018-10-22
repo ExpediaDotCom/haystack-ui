@@ -28,9 +28,9 @@ describe('trendsConnector', () => {
 
     before(() => {
         server = new MockAdapter(axios);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{success-span}&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{count}.{failure-span}&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=haystack.serviceName.*.interval.OneMinute.stat.{*_99}.{duration}&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined/render?target=%7Bsuccess-span%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7Bcount%7D&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined/render?target=%7Bfailure-span%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7Bcount%7D&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet('undefined/render?target=%7Bduration%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7B*_99%7D&from=1530828169&to=1530829069').reply(200, []);
     });
 
     after(() => {
