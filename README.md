@@ -71,7 +71,7 @@ $ make all
 
 ## Configuration
 Haystack UI can be configured to use one or more stores, each providing user interface for one subsystem in Haystack. Based on what subsystems you have available in your haystack cluster, you can configure corresponding stores and UI will adapt to show interfaces only for the configured subsystems. 
-For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores)
+For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores)
 
 ## Haystack-ui as drop-in replacement for Zipkin UI
 If you have an existing zipkin cluster you can use haystack UI as a drop-in replacement for zipkin's UI.
