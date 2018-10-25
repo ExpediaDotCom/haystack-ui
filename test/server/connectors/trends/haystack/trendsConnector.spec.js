@@ -14,7 +14,7 @@
  *       limitations under the License.
  *
  */
-
+/* eslint-disable max-len */
 
 import {expect} from 'chai';
 
@@ -28,9 +28,9 @@ describe('trendsConnector', () => {
 
     before(() => {
         server = new MockAdapter(axios);
-        server.onGet('undefined/render?target=%7Bsuccess-span%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7Bcount%7D&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=%7Bfailure-span%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7Bcount%7D&from=1530828169&to=1530829069').reply(200, []);
-        server.onGet('undefined/render?target=%7Bduration%7D%3Bmtype%3Dgauge%3Bproduct%3Dhaystack%3BserviceName%3D*%3Binterval%3DOneMinute%3Bstat%3D%7B*_99%7D&from=1530828169&to=1530829069').reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3D%7Bsuccess-span%7D'%2C'mtype%3Dgauge'%2C'product%3Dhaystack'%2C'serviceName%3D*'%2C'interval%3DOneMinute'%2C'stat%3D%7Bcount%7D'%2C'unit%3D%7Bshort%7D')&from=1530828169&to=1530829069").reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3D%7Bfailure-span%7D'%2C'mtype%3Dgauge'%2C'product%3Dhaystack'%2C'serviceName%3D*'%2C'interval%3DOneMinute'%2C'stat%3D%7Bcount%7D'%2C'unit%3D%7Bshort%7D')&from=1530828169&to=1530829069").reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3D%7Bduration%7D'%2C'mtype%3Dgauge'%2C'product%3Dhaystack'%2C'serviceName%3D*'%2C'interval%3DOneMinute'%2C'stat%3D%7B*_99%7D'%2C'unit%3D%7Bmicroseconds%7D')&from=1530828169&to=1530829069").reply(200, []);
     });
 
     after(() => {

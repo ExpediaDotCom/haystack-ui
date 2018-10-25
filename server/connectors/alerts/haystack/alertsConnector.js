@@ -113,9 +113,7 @@ function parseAlertDetailResponse(data) {
         endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
     }));
 
-    const mergedPonts = mergeSuccessiveAlertPoints(unhealthyPoints);
-
-    return mergedPonts;
+    return mergeSuccessiveAlertPoints(unhealthyPoints);
 }
 
 function getActiveAlertCount(operationAlerts) {
