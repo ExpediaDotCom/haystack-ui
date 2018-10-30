@@ -27,7 +27,7 @@ const metricTankUrl = config.connectors.trends && config.connectors.trends.metri
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
 
 function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames, units) {
-    return encodeURIComponent(`seriesByTag('name=${metricNames}','mtype=gauge','product=haystack','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
+    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
 }
 
 function createOperationTarget(service, operationName, timeWindow, metricStats, metricNames) {
@@ -35,7 +35,7 @@ function createOperationTarget(service, operationName, timeWindow, metricStats, 
 }
 
 function getServiceTargetStat(service, timeWindow, metricStats, metricNames, units) {
-    return encodeURIComponent(`seriesByTag('name=${metricNames}','mtype=gauge','product=haystack','serviceName=${service}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
+    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${service}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
 }
 
 function convertGranularityToTimeWindow(timespan) {
@@ -63,14 +63,11 @@ function toMilliseconds(micro) {
 
 function groupResponseByServiceOperation(data) {
     return data.map((op) => {
-        const targetSplit = op.target.split(/[;|=]/);
+        const tags = op.tags;
 
-        const serviceNameTagIndex = targetSplit.indexOf('serviceName');
-        const operationNameTagIndex = targetSplit.indexOf('operationName');
-        const serviceName = (serviceNameTagIndex !== -1) ? metricpointNameEncoder.decodeMetricpointName(targetSplit[serviceNameTagIndex + 1]) : null;
-        const operationName = (operationNameTagIndex !== -1) ? metricpointNameEncoder.decodeMetricpointName(targetSplit[operationNameTagIndex + 1]) : null;
-        const trendStatTagIndex = targetSplit.indexOf('stat');
-        const trendStat = `${targetSplit[0]}.${targetSplit[trendStatTagIndex + 1]}`;
+        const serviceName = tags.serviceName ? metricpointNameEncoder.decodeMetricpointName(tags.serviceName) : null;
+        const operationName = tags.operationName ? metricpointNameEncoder.decodeMetricpointName(tags.operationName) : null;
+        const trendStat = `${tags.stat}.${tags.name}`;
 
         return {
             serviceName,
