@@ -28,9 +28,9 @@ describe('trendsConnector', () => {
 
     before(() => {
         server = new MockAdapter(axios);
-        server.onGet("undefined/render?target=seriesByTag('name%3Dsuccess-span'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3Dcount'%2C'unit%3Dundefined')&from=1530828169&to=1530829069").reply(200, []);
-        server.onGet("undefined/render?target=seriesByTag('name%3Dfailure-span'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3Dcount'%2C'unit%3Dundefined')&from=1530828169&to=1530829069").reply(200, []);
-        server.onGet("undefined/render?target=seriesByTag('name%3Dduration'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3D*_99'%2C'unit%3Dundefined')&from=1530828169&to=1530829069").reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3Dsuccess-span'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3Dcount')&from=1530828169&to=1530829069").reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3Dfailure-span'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3Dcount')&from=1530828169&to=1530829069").reply(200, []);
+        server.onGet("undefined/render?target=seriesByTag('name%3Dduration'%2C'serviceName%3D~.*'%2C'interval%3DOneMinute'%2C'stat%3D*_99')&from=1530828169&to=1530829069").reply(200, []);
     });
 
     after(() => {

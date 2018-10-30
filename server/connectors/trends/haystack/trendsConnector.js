@@ -26,16 +26,16 @@ const connector = {};
 const metricTankUrl = config.connectors.trends && config.connectors.trends.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
 
-function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames, units) {
-    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
+function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames) {
+    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}')`);
 }
 
 function createOperationTarget(service, operationName, timeWindow, metricStats, metricNames) {
     return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${service}','operationName=${operationName}','interval=${timeWindow}','stat=${metricStats}')`);
 }
 
-function getServiceTargetStat(service, timeWindow, metricStats, metricNames, units) {
-    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${service}','interval=${timeWindow}','stat=${metricStats}','unit=${units}')`);
+function getServiceTargetStat(service, timeWindow, metricStats, metricNames) {
+    return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${service}','interval=${timeWindow}','stat=${metricStats}')`);
 }
 
 function convertGranularityToTimeWindow(timespan) {
@@ -233,7 +233,7 @@ function getServicePerfStatsResults(timeWindow, from, until) {
 }
 
 function getServiceSummaryResults(serviceName, timeWindow, from, until) {
-    const target = getServiceTargetStat(serviceName, timeWindow, '~(count)|(*_99)', '~(success-span)|(failure-span)|(duration)', '~(short)|(microseconds)');
+    const target = getServiceTargetStat(serviceName, timeWindow, '~(count)|(*_99)', '~(success-span)|(failure-span)|(duration)');
 
     return fetchTrendValues(target, from, until)
         .then(values => extractServiceSummary(values));
@@ -286,7 +286,7 @@ function getEdgeLatencyTrendResults(edges, from, until) {
     const serviceNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.serviceName)).join(',');
     const operationNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.operationName)).join(',');
 
-    const target = createServicesOperationsTarget(`~${serviceNameRegex}`, `~${operationNameRegex}`, 'OneHour', '~(mean)|(\\*_99)', 'latency', 'microseconds');
+    const target = createServicesOperationsTarget(`~${serviceNameRegex}`, `~${operationNameRegex}`, 'OneHour', '~(mean)|(\\*_99)', 'latency');
 
     return fetchTrendValues(target, from, until)
         .then(trends => trends);
