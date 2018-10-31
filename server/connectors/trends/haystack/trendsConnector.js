@@ -233,7 +233,7 @@ function getServicePerfStatsResults(timeWindow, from, until) {
 }
 
 function getServiceSummaryResults(serviceName, timeWindow, from, until) {
-    const target = getServiceTargetStat(serviceName, timeWindow, '~(count)|(*_99)', '~(success-span)|(failure-span)|(duration)');
+    const target = getServiceTargetStat(serviceName, timeWindow, '~(count)|(\\*_99)', '~(success-span)|(failure-span)|(duration)');
 
     return fetchTrendValues(target, from, until)
         .then(values => extractServiceSummary(values));
