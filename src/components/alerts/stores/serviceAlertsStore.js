@@ -27,7 +27,7 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
 
     @action fetchUnhealthyAlertCount(serviceName) {
         axios
-        .get(`/api/alerts/${serviceName}/unhealthyCount`)
+        .get(`/api/alerts/${encodeURIComponent(serviceName)}/unhealthyCount`)
         .then((result) => {
             this.unhealthyAlertCount = result.data;
         })

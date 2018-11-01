@@ -47,7 +47,7 @@ export default class AlertCounter extends React.Component {
     }
 
     render() {
-        if (alertsStore.unhealthyAlertCount) {
+        if (alertsStore.unhealthyAlertCount && typeof alertsStore.unhealthyAlertCount === 'number') {
             return (
                 <span className="badge alert-counter">{alertsStore.unhealthyAlertCount}</span>
             );
