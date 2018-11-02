@@ -33,6 +33,8 @@
 
 // chips
 .usb-chips {
+    white-space: nowrap;
+    overflow: hidden;
     padding-left: @spacing-xs;
 }
 
@@ -45,6 +47,19 @@
     line-height: 30px;
     background: @brand-primary;
     color: white;
+}
+
+.usb-surplus-button {
+    color: @brand-primary;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-right: @spacing-s;
+}
+
+.usb-surplus {
+    margin-top: @spacing-xs;
+    margin-bottom: @spacing-xs;
 }
 
 .usb-chip__key {
@@ -92,6 +107,8 @@
 }
 
 .usb-timepicker__button {
+    white-space: nowrap;
+    overflow: hidden;
     padding: 0 @spacing-s;
     border: none;
     line-height: 43px;
