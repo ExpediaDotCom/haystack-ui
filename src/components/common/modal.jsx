@@ -37,11 +37,21 @@ const modalStyles = {
     }
 };
 
-const ModalView = ({serviceName, title, isOpen, closeModal, children}) => (
+const ServiceNameTitle = ({serviceName}) => <span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>;
+
+ServiceNameTitle.propTypes = {
+    serviceName: PropTypes.string.isRequired
+};
+
+const ModalView = ({serviceName, title, isOpen, closeModal, children, clientServiceName}) => (
     <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'} ariaHideApp={false}>
         <header className="clearfix">
             <div className="pull-left">
-                <div>{serviceName && (<span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>)}</div>
+                {serviceName &&
+                clientServiceName ?
+                    (<div><ServiceNameTitle serviceName={clientServiceName} /><ServiceNameTitle serviceName={serviceName} /></div>) :
+                    (<div><ServiceNameTitle serviceName={serviceName} /></div>)
+                }
                 <h4>{title}</h4>
             </div>
             <button className="close pull-right" onClick={closeModal}>&times;</button>
@@ -53,18 +63,20 @@ const ModalView = ({serviceName, title, isOpen, closeModal, children}) => (
 );
 
 ModalView.defaultProps = {
-    serviceName: ''
+    serviceName: '',
+    clientServiceName: null
 };
 
 ModalView.propTypes = {
-    serviceName: PropTypes.string,
+    serviceName: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
     children: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.object
-    ]).isRequired
+    ]).isRequired,
+    clientServiceName: PropTypes.string
 };
 
 export default ModalView;
