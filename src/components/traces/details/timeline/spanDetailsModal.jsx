@@ -71,10 +71,14 @@ export default class SpanDetailsModal extends React.Component {
                 <div className="tabs-nav-container clearfix">
                     <ul className="nav nav-tabs pull-left">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-2" className="tags-tab" onClick={() => this.toggleTab(1)} >Tags</a>
+                            <a role="button" tabIndex="-2" className="tags-tab" onClick={() => this.toggleTab(1)} >
+                                {this.props.clientServiceName ? 'Merged Tags' : 'Tags'}
+                            </a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" className="log-tab" tabIndex="-1" onClick={() => this.toggleTab(2)} >Logs</a>
+                            <a role="button" className="log-tab" tabIndex="-1" onClick={() => this.toggleTab(2)} >
+                                {this.props.clientServiceName ? 'Merged Logs' : 'Logs'}
+                            </a>
                         </li>
                         <li className={this.state.tabSelected === 3 ? 'active' : ''}>
                             <a role="button" tabIndex="-3" className="raw-tab" onClick={() => this.toggleTab(3)} >
