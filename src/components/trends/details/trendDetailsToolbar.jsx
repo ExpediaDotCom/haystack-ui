@@ -154,9 +154,9 @@ export default class TrendDetailsToolbar extends React.Component {
         };
 
         if (this.props.opName) {
-            this.props.trendsStore.fetchTrends(this.props.serviceName, this.props.opName, query);
+            this.props.trendsStore.fetchTrends(encodeURIComponent(this.props.serviceName), encodeURIComponent(this.props.opName), query);
         } else {
-            this.props.trendsStore.fetchTrends(this.props.serviceName, this.props.statsType, query);
+            this.props.trendsStore.fetchTrends(encodeURIComponent(this.props.serviceName), encodeURIComponent(this.props.statsType), query);
         }
     }
 
