@@ -117,6 +117,7 @@ function toSearchResult(trace, query) {
   return {
     traceId: rootSpan.traceId,
     spanCount: trace.length,
+    errorSpanCount: trace.filter(span => isSpanError(span)).length,
     services,
     root,
     queriedService,
