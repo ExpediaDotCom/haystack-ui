@@ -119,7 +119,7 @@ export default class TraceResultsTable extends React.Component {
     }
 
     static spanColumnFormatter(cell, row) {
-        const errorText = row.errorSpanCount ? `<small class="error-span-count label">${row.errorSpanCount} errors</small>` : '';
+        const errorText = row.errorSpanCount ? `<small class="error-span-count label">${row.errorSpanCount} ${row.errorSpanCount > 1 ? 'errors' : 'error'}</small>` : '';
         return `<div class="table__primary">${cell} ${errorText}</div>
                 <div>${TraceResultsTable.handleServiceList(row.services)}</div>`;
     }
