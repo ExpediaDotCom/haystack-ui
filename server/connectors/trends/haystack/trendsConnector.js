@@ -82,7 +82,7 @@ function groupResponseByServiceOperation(data) {
 
 function fetchTrendValues(target, from, until) {
     return trendsFetcher
-        .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
+        .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`, { 'x-org-id': 1})
         .then(data => groupResponseByServiceOperation(data));
 }
 
