@@ -42,6 +42,8 @@ export default class SpanDetailsModal extends React.Component {
         this.setState({tabSelected: tabIndex});
     }
     tabViewer(span) {
+        const duplicateSpanId = this.props.clientSpanId === this.props.span.spanId;
+
         switch (this.state.tabSelected) {
             case 1:
                 return <TagsTable tags={span.tags} />;
@@ -49,10 +51,10 @@ export default class SpanDetailsModal extends React.Component {
                 return <LogsTable logs={span.logs} startTime={this.props.startTime} />;
             case 3:
                 rawSpanStore.fetchRawSpan(span.traceId, span.spanId);
-                return <RawSpan rawSpanStore={rawSpanStore}/>;
+                return <RawSpan duplicateSpanId={duplicateSpanId} rawSpanStore={rawSpanStore}/>;
             case 4:
                 rawSpanStore.fetchRawSpan(span.traceId, this.props.clientSpanId);
-                return <RawSpan rawSpanStore={rawSpanStore}/>;
+                return <RawSpan duplicateSpanId={duplicateSpanId} rawSpanStore={rawSpanStore}/>;
             default:
                 return null;
         }
@@ -63,7 +65,6 @@ export default class SpanDetailsModal extends React.Component {
         const operationTitle = `${this.props.fullOperationName}: ${formatters.toDurationString(this.props.span.duration)}`;
         const fullTitle = this.props.isMergedSpan ? `Merged Span - ${operationTitle}` : operationTitle;
         const serviceName = this.props.span.serviceName;
-
         return (
             <Modal
                 serviceName={serviceName}
