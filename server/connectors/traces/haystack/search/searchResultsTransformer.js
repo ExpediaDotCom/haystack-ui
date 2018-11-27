@@ -65,7 +65,7 @@ function isSpanError(span) {
 }
 
 function createServicesSummary(trace) {
-  const services = _.countBy(trace, span => findTag(span, 'service') || span.serviceName);
+  const services = _.countBy(trace, span => findTag(span.tags, 'service') || span.serviceName);
 
   return _.keys(services).map(service => ({
     name: service,
