@@ -205,6 +205,10 @@ const stubDetails = [
             {
                 key: 'success',
                 value: 'false'
+            },
+            {
+                key: 'service',
+                value: 'service-tag'
             }
         ]
     },
@@ -414,7 +418,6 @@ describe('<Traces />', () => {
     it('should render results after getting search results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
@@ -615,6 +618,15 @@ describe('<Traces />', () => {
                 const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
                 expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
+            });
+
+            it('renders serviceName correctly when it is liked in service tag', () => {
+                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
+                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
+
+                const spanServiceName = wrapper.find('Span').at(1).find('.span-service-label').text();
+
+                expect(spanServiceName).to.equal('service-tag');
             });
 
             it('renders the descendents on Span Click', () => {
