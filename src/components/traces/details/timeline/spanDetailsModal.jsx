@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
+import {observer} from 'mobx-react';
 
 import TagsTable from './tagsTable';
 import LogsTable from './logsTable';
@@ -26,6 +27,7 @@ import rawSpanStore from '../../stores/rawSpanStore';
 import formatters from '../../../../utils/formatters';
 import linkBuilder from '../../../../utils/linkBuilder';
 
+@observer
 export default class SpanDetailsModal extends React.Component {
     constructor(props) {
         super(props);
@@ -46,9 +48,11 @@ export default class SpanDetailsModal extends React.Component {
             case 2:
                 return <LogsTable logs={span.logs} startTime={this.props.startTime} />;
             case 3:
-                return <RawSpan traceId={span.traceId} spanId={span.spanId} rawSpanStore={rawSpanStore}/>;
+                rawSpanStore.fetchRawSpan(span.traceId, span.spanId);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
             case 4:
-                return <RawSpan traceId={span.traceId} spanId={this.props.clientSpanId} rawSpanStore={rawSpanStore}/>;
+                rawSpanStore.fetchRawSpan(span.traceId, this.props.clientSpanId);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
             default:
                 return null;
         }

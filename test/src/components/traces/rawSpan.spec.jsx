@@ -23,7 +23,6 @@ import axios from 'axios';
 import { when } from 'mobx';
 import MockAdapter from 'axios-mock-adapter';
 import { mount } from 'enzyme';
-import sinon from 'sinon';
 
 import {RawSpanStore} from '../../../../src/components/traces/stores/rawSpanStore';
 import RawSpan from '../../../../src/components/traces/details/timeline/rawSpan';
@@ -41,16 +40,14 @@ const pendingPromise = {
     case: ({pending}) => pending()
 };
 
-const stubTrace = [{
+const stubSpan = [{
     traceId: 'test-stub'
 }];
 
 function createStubStore(results, promise) {
     const store = new RawSpanStore();
-    sinon.stub(store, 'fetchRawSpan', () => {
-        store.rawSpan = results;
-        promise ? store.promiseState = promise : null;
-    });
+    store.rawSpan = results;
+    promise ? store.promiseState = promise : null;
 
     return store;
 }
@@ -68,7 +65,7 @@ describe('RawSpanStore', () => {
     });
 
     it('fetches raw span from the api', (done) => {
-        server.onGet('/api/trace/raw/test-stub/test-span').reply(200, stubTrace);
+        server.onGet('/api/trace/raw/test-stub/test-span').reply(200, stubSpan);
         store.fetchRawSpan('test-stub', 'test-span');
 
         when(
@@ -81,28 +78,25 @@ describe('RawSpanStore', () => {
 });
 
 describe('RawSpan', () => {
-    it('should render a formatted panel with the raw span from the store', () => {
-        const store = createStubStore(stubTrace, fulfilledPromise);
-        const wrapper = mount(<RawSpan traceId={'test-stub'} spanId={'test-span'} rawSpanStore={store} />);
+    it('should render a formatted panel with the raw span from the store upon successful promise', () => {
+        const store = createStubStore(stubSpan, fulfilledPromise);
+        const wrapper = mount(<RawSpan rawSpanStore={store} />);
 
-        expect(store.fetchRawSpan.callCount).to.equal(1);
         expect(wrapper.find('.raw-span')).to.have.length(1);
     });
 
-    it('should render a formatted panel with the raw span from the store', () => {
-        const store = createStubStore(stubTrace, pendingPromise);
-        const wrapper = mount(<RawSpan traceId={'test-stub'} spanId={'test-span'} rawSpanStore={store} />);
+    it('should render a loading panel with a pending promise state', () => {
+        const store = createStubStore(stubSpan, pendingPromise);
+        const wrapper = mount(<RawSpan rawSpanStore={store} />);
 
-        expect(store.fetchRawSpan.callCount).to.equal(1);
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.raw-span')).to.have.length(0);
     });
 
-    it('should render a formatted panel with the raw span from the store', () => {
-        const store = createStubStore(stubTrace, rejectedPromise);
-        const wrapper = mount(<RawSpan traceId={'test-stub'} spanId={'test-span'} rawSpanStore={store} />);
+    it('should render an error message on a failed promise', () => {
+        const store = createStubStore(stubSpan, rejectedPromise);
+        const wrapper = mount(<RawSpan rawSpanStore={store} />);
 
-        expect(store.fetchRawSpan.callCount).to.equal(1);
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.raw-span')).to.have.length(0);
     });
