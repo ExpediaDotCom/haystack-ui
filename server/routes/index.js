@@ -37,8 +37,9 @@ router.get('*', (req, res) => {
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
         usbPrimary: config.usbPrimary,
-        enableServicePerformance: config.enableServicePerformance,
-        enableServiceLevelTrends: config.enableServiceLevelTrends,
+        enableTrends: !!config.connectors.trends,
+        enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
+        enableServiceLevelTrends: config.connectors.trends && config.connectors.trends.enableServiceLevelTrends,
         services: servicesConnector.getServicesSync(),
         enableSSO: config.enableSSO,
         refreshInterval: config.refreshInterval,
@@ -46,7 +47,7 @@ router.get('*', (req, res) => {
         tracesTimePresetOptions: config.connectors.traces.timePresetOptions,
         timeWindowPresetOptions: config.timeWindowPresetOptions,
         tracesTTL: config.connectors.traces.ttl,
-        trendsTTL: config.connectors.trends.ttl,
+        trendsTTL: config.connectors.trends && config.connectors.trends.ttl,
         relatedTracesOptions: config.relatedTracesOptions,
         tagValuesTransformMap: config.tagValuesTransformMap
     });

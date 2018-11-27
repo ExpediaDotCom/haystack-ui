@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
+import {observer} from 'mobx-react';
 
 import TagsTable from './tagsTable';
 import LogsTable from './logsTable';
@@ -26,6 +27,7 @@ import rawSpanStore from '../../stores/rawSpanStore';
 import formatters from '../../../../utils/formatters';
 import linkBuilder from '../../../../utils/linkBuilder';
 
+@observer
 export default class SpanDetailsModal extends React.Component {
     constructor(props) {
         super(props);
@@ -46,7 +48,11 @@ export default class SpanDetailsModal extends React.Component {
             case 2:
                 return <LogsTable logs={span.logs} startTime={this.props.startTime} />;
             case 3:
-                return <RawSpan traceId={span.traceId} spanId={span.spanId} rawSpanStore={rawSpanStore}/>;
+                rawSpanStore.fetchRawSpan(span.traceId, span.spanId);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
+            case 4:
+                rawSpanStore.fetchRawSpan(span.traceId, this.props.clientSpanId);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
             default:
                 return null;
         }
@@ -54,24 +60,40 @@ export default class SpanDetailsModal extends React.Component {
 
     render() {
         const subsystems = window.haystackUiConfig.subsystems;
+        const title = this.props.fullOperationName ?
+            `Merged Span - ${this.props.fullOperationName}: ${formatters.toDurationString(this.props.span.duration)}` :
+            `${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`;
+
         return (
             <Modal
                 serviceName={this.props.serviceName}
-                title={`${this.props.span.operationName}: ${formatters.toDurationString(this.props.span.duration)}`}
+                title={title}
                 isOpen={this.props.isOpen}
                 closeModal={this.props.closeModal}
+                clientServiceName={this.props.clientServiceName}
             >
                 <div className="tabs-nav-container clearfix">
                     <ul className="nav nav-tabs pull-left">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a role="button" tabIndex="-2" className="tags-tab" onClick={() => this.toggleTab(1)} >Tags</a>
+                            <a role="button" tabIndex="-2" className="tags-tab" onClick={() => this.toggleTab(1)} >
+                                {this.props.clientServiceName ? 'Merged Tags' : 'Tags'}
+                            </a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a role="button" className="log-tab" tabIndex="-1" onClick={() => this.toggleTab(2)} >Logs</a>
+                            <a role="button" className="log-tab" tabIndex="-1" onClick={() => this.toggleTab(2)} >
+                                {this.props.clientServiceName ? 'Merged Logs' : 'Logs'}
+                            </a>
                         </li>
                         <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                            <a role="button" tabIndex="-3" className="raw-tab" onClick={() => this.toggleTab(3)} >Raw Span</a>
+                            <a role="button" tabIndex="-3" className="raw-tab" onClick={() => this.toggleTab(3)} >
+                                {this.props.clientServiceName ? 'Raw Server Span' : 'Raw Span'}
+                            </a>
                         </li>
+                        { this.props.clientServiceName && (
+                            <li className={this.state.tabSelected === 4 ? 'active' : ''}>
+                                <a role="button" tabIndex="-4" className="raw-tab" onClick={() => this.toggleTab(4)} >Raw Client Span</a>
+                            </li>
+                        )}
                     </ul>
                     { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
                     ? null
@@ -100,5 +122,14 @@ SpanDetailsModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
     serviceName: PropTypes.string.isRequired,
     span: PropTypes.object.isRequired,
-    startTime: PropTypes.number.isRequired
+    startTime: PropTypes.number.isRequired,
+    clientServiceName: PropTypes.string,
+    fullOperationName: PropTypes.string,
+    clientSpanId: PropTypes.string
+};
+
+SpanDetailsModal.defaultProps = {
+    clientServiceName: null,
+    fullOperationName: null,
+    clientSpanId: null
 };

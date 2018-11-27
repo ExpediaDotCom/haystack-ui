@@ -189,6 +189,7 @@ export default class Span extends React.Component {
         const clientStartTimePercent = isMergedSpan && (((clientStartTime - startTime) / totalDuration) * 100);
         const clientLeftOffsetPercent = isMergedSpan && Span.getOffsetPercent(clientStartTimePercent, timelineWidthPercent);
         const clientSpanWidthPercent = isMergedSpan && ((clientDuration / totalDuration) * 100) * (timelineWidthPercent / 100);
+        const clientSpanId = isMergedSpan && Span.getTagValue(span, auxillaryTags.CLIENT_SPAN_ID);
 
         const ClientSpanBar = isMergedSpan && (<g>
                 <rect
@@ -255,13 +256,25 @@ export default class Span extends React.Component {
                         >{expanded ? '-' : '+'}</text>
                     </g>
                     : null }
-                <SpanDetailsModal
-                    isOpen={this.state.modalIsOpen}
-                    closeModal={this.closeModal}
-                    serviceName={serviceName}
-                    span={span}
-                    startTime={startTime}
-                />
+                {isMergedSpan ?
+                    <SpanDetailsModal
+                        isOpen={this.state.modalIsOpen}
+                        closeModal={this.closeModal}
+                        serviceName={serviceName}
+                        span={span}
+                        startTime={startTime}
+                        clientServiceName={clientServiceName}
+                        fullOperationName={fullOperationName}
+                        clientSpanId={clientSpanId}
+                    /> :
+                    <SpanDetailsModal
+                        isOpen={this.state.modalIsOpen}
+                        closeModal={this.closeModal}
+                        serviceName={serviceName}
+                        span={span}
+                        startTime={startTime}
+                    />
+                }
                 <clipPath id="overflow">
                     <rect
                         x="0"

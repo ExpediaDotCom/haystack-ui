@@ -9,7 +9,7 @@ Haystack-ui is the web UI for haystack. It is the central place for visualizing 
 Visualization tools in haystack-ui include -
 * **Traces** - Distributed tracing visualization for easy root cause analysis 
 * **Trends** - Trends visualizing for vital service trends 
-* **Service Dependency** [coming soon] - Real time dependency graph with health and connectivity indicators 
+* **Service Dependency** - Real time dependency graph with health and connectivity indicators
 * **Alerts and Anomaly detection** [coming soon] - UI for configuring and subscribing alerts 
 
 Haystack-ui's navigation is pivoted around services. On selecting a service, you will get various visualizations tools each corresponding to a haystack sub-systems.
@@ -71,8 +71,8 @@ $ make all
 
 ## Configuration
 Haystack UI can be configured to use one or more stores, each providing user interface for one subsystem in Haystack. Based on what subsystems you have available in your haystack cluster, you can configure corresponding stores and UI will adapt to show interfaces only for the configured subsystems. 
-For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores)
+For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores)
 
 ## Haystack-ui as drop-in replacement for Zipkin UI
 If you have an existing zipkin cluster you can use haystack UI as a drop-in replacement for zipkin's UI.
-For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Stores#zipkin-store)
+For more details on this refer - [https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors#using-haystack-ui-as-replacement-for-zipkin-ui](https://github.com/ExpediaDotCom/haystack-ui/wiki/Configuring-Subsystem-Connectors#using-haystack-ui-as-replacement-for-zipkin-ui)

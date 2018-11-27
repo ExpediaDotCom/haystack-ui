@@ -131,7 +131,7 @@ export default class OperationResultsTable extends React.Component {
         } = this.props.operationStore.statsQuery.filters || {};
 
         const operationNameFilter = operationName
-            ? {type: 'RegexFilter', defaultValue: operationName, delay: 0, placeholder: 'FilterOperation (Regex)...'}
+            ? {type: 'RegexFilter', defaultValue: `${operationName}`, delay: 0, placeholder: 'FilterOperation (Regex)...'}
             : {type: 'RegexFilter', delay: 0, placeholder: 'Filter Operations (Regex)...'};
 
         const numberFilterFormatter = {

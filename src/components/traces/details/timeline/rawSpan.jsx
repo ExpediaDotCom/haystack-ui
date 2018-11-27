@@ -23,14 +23,8 @@ import Error from '../../../common/error';
 @observer
 export default class RawSpan extends React.Component {
     static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        spanId: PropTypes.string.isRequired,
         rawSpanStore: PropTypes.object.isRequired
     };
-
-    componentDidMount() {
-        this.props.rawSpanStore.fetchRawSpan(this.props.traceId, this.props.spanId);
-    }
 
     render() {
         const {rawSpanStore} = this.props;

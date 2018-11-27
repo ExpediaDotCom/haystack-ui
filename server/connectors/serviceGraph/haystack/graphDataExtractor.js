@@ -21,7 +21,7 @@ const extractor = {};
 
 const config = require('../../../config/config');
 
-const WINDOW_SIZE_IN_SECS = config.connectors.serviceGraph.windowSizeInSecs;
+const WINDOW_SIZE_IN_SECS =  config.connectors.serviceGraph && config.connectors.serviceGraph.windowSizeInSecs;
 
 function getEdgeName(vertex) {
     if (vertex.name) {
@@ -134,11 +134,7 @@ function extractConnectedComponents(edges) {
     return connectedComponents;
 }
 
-
-extractor.extractGraphs = (data) => {
-    // convert servicegraph to expected ui data format
-    const serviceToServiceEdges = flattenStats(data.edges);
-
+extractor.extractGraphFromEdges = (serviceToServiceEdges) => {
     // get list of connected components in the full graph
     const connectedComponents = extractConnectedComponents(serviceToServiceEdges);
 
@@ -152,6 +148,12 @@ extractor.extractGraphs = (data) => {
 
     // return graphs, one for each connected component
     return graphs;
+};
+
+extractor.extractGraphs = (data) => {
+    // convert servicegraph to expected ui data format
+    const serviceToServiceEdges = flattenStats(data.edges);
+    return extractor.extractGraphFromEdges(serviceToServiceEdges);
 };
 
 module.exports = extractor;

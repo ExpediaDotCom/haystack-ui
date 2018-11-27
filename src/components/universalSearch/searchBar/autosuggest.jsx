@@ -119,7 +119,7 @@ export default class Autocomplete extends React.Component {
         when(() => this.props.serviceStore.services.length,
             () => {
                 this.props.options.serviceName = this.props.serviceStore.services;
-                delete this.props.options.operationName;
+                this.props.options.operationName = [];
             });
 
         const serviceName = this.props.uiState.chips.serviceName;
@@ -281,7 +281,7 @@ export default class Autocomplete extends React.Component {
                 const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
                 const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
                 if (chipKey.includes('serviceName')) {
-                    this.props.options.operationName = null;
+                    this.props.options.operationName = [];
                     this.props.operationStore.fetchOperations(chipValue, () => {
                         this.props.options.operationName = this.props.operationStore.operations;
                     });
@@ -461,7 +461,7 @@ export default class Autocomplete extends React.Component {
             }
             this.props.uiState.chips[chipKey] = chipValue;
             if (chipKey.includes('serviceName')) {
-                this.props.options.operationName = null;
+                this.props.options.operationName = [];
                 this.props.operationStore.fetchOperations(chipValue, () => {
                     this.props.options.operationName = this.props.operationStore.operations;
                 });
@@ -483,7 +483,7 @@ export default class Autocomplete extends React.Component {
                     this.setState({
                         serviceName: null
                     });
-                    delete this.props.options.operationName;
+                    this.props.options.operationName = [];
                 }
                 const itemIndex = updatedExistingKeys.indexOf(key);
                 updatedExistingKeys.splice(itemIndex, 1);

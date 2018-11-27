@@ -22,6 +22,7 @@ import sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import moment from 'moment';
 
 import UniversalSearch from '../../../../src/components/universalSearch/universalSearch';
 import Autosuggest from '../../../../src/components/universalSearch/searchBar/autosuggest';
@@ -45,7 +46,8 @@ const stubHistory = {
 
 const stubOptions = {
     error: ['true', 'false'],
-    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test']
+    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test'],
+    operationName: []
 };
 
 // STUBS FOR BACKEND SERVICE RESPONSES
@@ -256,15 +258,18 @@ describe('<Autosuggest />', () => {
 
     it('should retain custom time when re-opening the picker after previously selecting a custom time', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
-
         wrapper.find('.usb-timepicker__button').simulate('click');
         const customTime = '04/18/1988 8:00 AM';
-        wrapper.find('.datetimerange-picker').find('.form-control').first().simulate('change', {target: {value: customTime}});
-        wrapper.find('.custom-timerange-apply').simulate('click');
-        wrapper.find('.usb-timepicker__button').simulate('click');
+        const timeRangePicker = wrapper.find('TimeRangePicker');
+        const timeWindowPicker = wrapper.find('TimeWindowPicker');
+
+        // Change date, submit, and re-open time picker to check if date retains
+        timeWindowPicker.instance().showTimePicker();
+        timeRangePicker.instance().handleChangeStartDate(moment(customTime, 'MM-DD-YYYY H:m'));
+        timeRangePicker.instance().handleCustomTimeRange();
+        timeWindowPicker.instance().showTimePicker();
 
         const uiStartTime = wrapper.find('.datetimerange-picker').find('.form-control').first().instance().value;
-
         expect(uiStartTime).to.equal(customTime);
     });
 
@@ -275,7 +280,7 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onFocus')({target: {value: ''}});
 
-        expect(wrapper.instance().state.suggestionStrings.length).to.equal(2);
+        expect(wrapper.instance().state.suggestionStrings.length).to.equal(3);
     });
 
     it('update suggestion string index on suggestion mouseover', () => {
@@ -287,7 +292,7 @@ describe('<Autosuggest />', () => {
         const firstSuggestion = wrapper.find('.usb-suggestions__field').last();
         firstSuggestion.simulate('mouseEnter');
 
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
     });
 
     it('update suggestion string index on suggestion mouseover', () => {
@@ -352,7 +357,7 @@ describe('<Autosuggest />', () => {
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
@@ -407,15 +412,15 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onFocus')({target: {value: ''}});
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
+        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
-        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
-        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(0);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
+        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
     });

@@ -545,6 +545,7 @@ connector.findTraces = query => Q.fcall(() => {
           {
             traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
             spanCount: 12,
+            errorSpanCount: 2,
             services: [
               {
                 name: 'stark-service',
@@ -581,6 +582,7 @@ connector.findTraces = query => Q.fcall(() => {
       {
         traceId: 'x00245a5-g0c4-4c37-55a7-da83def7127a',
         spanCount: 34,
+        errorSpanCount: 2,
         services: [
           {
             name: 'stark-service',
@@ -612,8 +614,9 @@ connector.findTraces = query => Q.fcall(() => {
         duration: 240000
       }, {
         traceId: 'a40165e5-e0c4-4c51-11x7-bb79def7597a',
-        spanCount: 9,
-        services: [
+          spanCount: 34,
+          errorSpanCount: 2,
+          services: [
           {
             name: 'stark-service',
             spanCount: 1

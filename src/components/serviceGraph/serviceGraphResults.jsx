@@ -130,15 +130,18 @@ export default class ServiceGraphResults extends React.Component {
             graph.addEdge(edge);
         });
         return graph;
-    }
+    };
 
     constructor(props) {
         super(props);
         this.state = {
             nodeDetails: undefined,
             connDetails: undefined,
-            searchString: ''
+            searchString: '',
+            lowCpu: false
         };
+
+        this.handleCheckbox = this.handleCheckbox.bind(this);
     }
 
     onConnectionDetailsClose = () => {
@@ -152,7 +155,8 @@ export default class ServiceGraphResults extends React.Component {
         if (highlightedObject.type === 'node') {
             const search = this.props.search;
             search.serviceName = highlightedObject.getName();
-            this.props.history.push(linkBuilder.universalSearchServiceGraphLink(search));
+            search.tabId = 'serviceGraph';
+            this.props.history.push(linkBuilder.universalSearchLink(search));
             return;
         }
         this.setState({connDetails: highlightedObject.getName()});
@@ -164,6 +168,12 @@ export default class ServiceGraphResults extends React.Component {
             searchString: newVal
         });
     };
+
+    handleCheckbox() {
+        this.setState(prevState => ({
+            lowCpu: !prevState.lowCpu
+        }));
+    }
 
     render() {
         const serviceGraph = this.props.serviceGraph;
@@ -215,8 +225,17 @@ export default class ServiceGraphResults extends React.Component {
             }
         };
 
+        const frameRate = this.state.lowCpu ? 15 : 60;
+
+        const LowCpuCheckbox = () => (
+            <section className="graph-search__wrapper">
+                <input type="checkbox" onChange={this.handleCheckbox} checked={this.state.lowCpu} />
+                <span>Enable Low Cpu Mode</span>
+            </section>
+        );
+
         return (
-            <div>
+            <div key={frameRate}>
                 {
                     !!serviceName &&
                     <NodeDetails
@@ -231,13 +250,14 @@ export default class ServiceGraphResults extends React.Component {
                 }
                 <article className="serviceGraph__panel">
                     <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
+                    <LowCpuCheckbox />
                     <Vizceral
                         traffic={config}
                         view={['haystack']}
                         styles={style}
                         definitions={definitions}
                         allowDraggingOfNodes
-                        targetFramerate={60}
+                        targetFramerate={frameRate}
                         objectHighlighted={this.objectHighlighted}
                         match={this.state.searchString}
                         viewChanged={this.setView}

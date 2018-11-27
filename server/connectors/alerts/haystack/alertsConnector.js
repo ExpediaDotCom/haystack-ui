@@ -40,12 +40,10 @@ function fetchOperations(serviceName) {
 
 function parseOperationAlertsResponse(data, until) {
     return data.map((op) => {
-        const targetSplit = op.target.split('.');
+        const tags = op.tags;
 
-        const operationNameTagIndex = targetSplit.indexOf('operationName');
-        const alertTypeIndex = targetSplit.indexOf('alertType');
-        const operationName = metricpointNameEncoder.decodeMetricpointName(targetSplit[operationNameTagIndex + 1]);
-        const type = metricpointNameEncoder.decodeMetricpointName(targetSplit[alertTypeIndex + 1]);
+        const operationName = tags.operationName;
+        const alertType = metricpointNameEncoder.decodeMetricpointName(tags.alertType);
         const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
 
         const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - alertFreqInSec));
@@ -53,7 +51,7 @@ function parseOperationAlertsResponse(data, until) {
 
         return {
             operationName,
-            type,
+            alertType,
             isUnhealthy,
             timestamp
         };
@@ -61,7 +59,7 @@ function parseOperationAlertsResponse(data, until) {
 }
 
 function fetchOperationAlerts(serviceName, from, until) {
-    const target = `haystack.serviceName.${serviceName}.operationName.*.alertType.*.anomaly`;
+    const target = encodeURIComponent(`seriesByTag('name=anomaly','serviceName=${serviceName}','operationName=~.*','alertType=~.*')`);
 
     return serviceAlertsFetcher
         .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
@@ -113,9 +111,7 @@ function parseAlertDetailResponse(data) {
         endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
     }));
 
-    const mergedPonts = mergeSuccessiveAlertPoints(unhealthyPoints);
-
-    return mergedPonts;
+    return mergeSuccessiveAlertPoints(unhealthyPoints);
 }
 
 function getActiveAlertCount(operationAlerts) {
@@ -132,7 +128,7 @@ connector.getServiceAlerts = (serviceName, query) => {
 };
 
 connector.getAlertHistory = (serviceName, operationName, alertType, from) => {
-    const target = `haystack.serviceName.${serviceName}.operationName.${metricpointNameEncoder.encodeMetricpointName(operationName)}.alertType.${alertType}.anomaly`;
+    const target = encodeURIComponent(`seriesByTag('name=anomaly','serviceName=${serviceName}','operationName=${metricpointNameEncoder.encodeMetricpointName(operationName)}','alertType=${alertType}')`);
 
     return alertHistoryFetcher
         .fetch(`${metricTankUrl}/render?target=${target}&from=${Math.trunc(from / 1000)}&to=${Math.trunc(Date.now() / 1000)}`)

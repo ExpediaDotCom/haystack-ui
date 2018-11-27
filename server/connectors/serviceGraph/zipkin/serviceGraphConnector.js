@@ -18,17 +18,21 @@ const Q = require('q');
 
 const fetcher = require('../../operations/restFetcher');
 const config = require('../../../config/config');
-const extractor = require('./graphDataExtractor');
+const converter = require('./converter');
+const extractor = require('../haystack/graphDataExtractor');
 
-const trendsFetcher = fetcher('serviceGraph');
+const dependenciesFetcher = fetcher('getDependencies');
 
 const connector = {};
-const serviceGraphUrl = config.connectors.serviceGraph && config.connectors.serviceGraph.serviceGraphUrl;
+const baseZipkinUrl = config.connectors.serviceGraph.zipkinUrl;
 
 function fetchServiceGraph(from, to) {
-    return trendsFetcher
-        .fetch(`${serviceGraphUrl}?from=${from}&to=${to}`)
-        .then(data => extractor.extractGraphs(data));
+  const endTs = parseInt(to, 10);
+  const lookback = endTs - parseInt(from, 10);
+
+  return dependenciesFetcher
+        .fetch(`${baseZipkinUrl}/dependencies?endTs=${endTs}&lookback=${lookback}`)
+        .then(data => extractor.extractGraphFromEdges(converter.toHaystackServiceEdges(data)));
 }
 
 connector.getServiceGraphForTimeLine = (from, to) => Q.fcall(() => fetchServiceGraph(from, to));

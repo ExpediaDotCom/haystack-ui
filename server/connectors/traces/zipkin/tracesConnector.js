@@ -15,12 +15,14 @@
  */
 
 const config = require('../../../config/config');
+const Q = require('q');
 const converter = require('./converter');
 const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/restFetcher');
 
 const connector = {};
 const baseZipkinUrl = config.connectors.traces.zipkinUrl;
+const servicesFilter = config.connectors.traces.servicesFilter;
 
 const servicesFetcher = fetcher('getServices');
 const operationsFetcher = fetcher('getOperations');
@@ -29,7 +31,7 @@ const searchTracesFetcher = fetcher('searchTraces');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 
-const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit'];
+const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
 const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
@@ -57,9 +59,20 @@ function mapQueryParams(query) {
         .join('&');
 }
 
-connector.getServices = () =>
-    servicesFetcher
-    .fetch(`${baseZipkinUrl}/services`);
+connector.getServices = () => {
+  const fetched = servicesFetcher.fetch(`${baseZipkinUrl}/services`);
+  if (!servicesFilter) {
+    return fetched;
+  }
+  return fetched.then(result => result.filter((value) => {
+      for (let i = 0; i < servicesFilter.length; i += 1) {
+          if (servicesFilter[i].test(value)) {
+              return false;
+          }
+      }
+      return true;
+  }));
+};
 
 connector.getOperations = serviceName =>
     operationsFetcher
@@ -89,10 +102,22 @@ connector.findTraces = (query) => {
 
 connector.getRawTrace = traceId =>
     rawTraceFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
-connector.getRawSpan = (traceId, spanId) =>
+// TODO: get by trace, span ID is not supported by Zipkin. However, should we
+// not just issue getRawTrace and then filter by span ID?
+connector.getRawSpan = traceId =>
     rawSpanFetcher
-    .fetch(`${baseZipkinUrl}/trace/raw/${traceId}/${spanId}`);
+    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
+
+// TODO: get by multiple ID is not supported by Zipkin. However, should we not
+// just issue multiple calls to getRawTrace?
+connector.getRawTraces = () => Q.fcall(() => []);
+
+// Not supported for zipkin
+connector.getTimeline = () => Q.fcall(() => []);
+
+// TODO get whitelisted keys from configuration
+connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error']);
 
 module.exports = connector;

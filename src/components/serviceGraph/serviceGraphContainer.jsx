@@ -108,7 +108,7 @@ export default class ServiceGraphContainer extends React.Component {
         return (
             <section>
                 <div className="clearfix" id="service-graph">
-                    {!this.props.search.serviceName &&
+                    {!this.props.search.serviceName && this.props.graphStore.graphs &&
                     <div className="serviceGraph__tabs pull-right">
                         <ul className="nav nav-tabs">
                             {
@@ -136,7 +136,7 @@ export default class ServiceGraphContainer extends React.Component {
                                      history={this.props.history}
                                      search={this.props.search}
                             />
-                            : <Error errorMessage="There was a problem displaying Service Graph results. Please try again later."/>)
+                            : <Error errorMessage="No edges found"/>)
                     })
                     }
                 </div>
