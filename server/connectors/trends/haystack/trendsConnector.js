@@ -73,7 +73,7 @@ function groupResponseByServiceOperation(data) {
             serviceName,
             operationName,
             [trendStat]: op.datapoints.map(datapoint => ({
-                value: (datapoint[0] && datapoint[0] > 0) ? toMilliseconds(datapoint[0]) : datapoint[0],
+                value: datapoint[0] ? datapoint[0] : 0,
                 timestamp: convertEpochTimeInSecondsToMillis(datapoint[1])
             }))
         };
