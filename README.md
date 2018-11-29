@@ -7,17 +7,35 @@
 # Haystack-UI
 Haystack-ui is the web UI for haystack. It is the central place for visualizing processed data from various haystack sub-systems. 
 Visualization tools in haystack-ui include -
-* **Traces** - Distributed tracing visualization for easy root cause analysis
-![Traces](./public/images/assets/traces.png) ![Trace Timeline](./public/images/assets/trace_timeline.png)
-* **Trends** - Trends visualizing for vital service trends
-![Trends](./public/images/assets/trends.png)
-* **Service Graph** - Real time dependency graph with health and connectivity indicators
-![Service Graph](./public/images/assets/service_graph.gif)
-* **Alerts and Anomaly detection** [coming soon] - UI for configuring and subscribing alerts 
-![Alerts](./public/images/assets/alerts.png)
+
+|             Traces              |
+| :------------------------------------: |
+|  Distributed tracing visualization for easy root cause analysis |
+| ![Trace Timeline](./public/images/assets/trace_timeline.png) |
+ 
+
+|              Trends              |
+| :------------------------------------: |
+| Visualization of vital service and operation trending |
+| ![Trends](./public/images/assets/trends.png) |
 
 
-Haystack-ui's navigation is pivoted around services. On selecting a service, you will get various visualizations tools each corresponding to a haystack sub-systems.
+|              Service Graph              |
+| :------------------------------------: |
+| Real time dependency graph with health and connectivity indicators |
+| ![Service Graph](./public/images/assets/service_graph.gif) |
+
+
+|              Alerts and Anomaly Detection              |
+| :------------------------------------: |
+|              UI for displaying, configuring, and subscribing to alerts              |
+| ![Alerts](./public/images/assets/alerts.png) |
+
+
+|              Universal Search              |
+| :------------------------------------: |
+|              Navigation pivoted around a universal search bar, allowing for intuitive, sandbox-style searching for accurate results.
+| ![Universal Search](./public/images/assets/demo.gif) |
 
 
 ## Development
