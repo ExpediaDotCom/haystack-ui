@@ -23,19 +23,20 @@ Visualization tools in haystack-ui include -
 |              Service Graph              |
 | :------------------------------------: |
 | Real time dependency graph with health and connectivity indicators |
-| ![Service Graph](./public/images/assets/service_graph.gif) |
+| ![Service Graph](./public/images/assets/service_graph.png) |
 
 
 |              Alerts and Anomaly Detection              |
 | :------------------------------------: |
-|              UI for displaying, configuring, and subscribing to alerts              |
+| UI for displaying, configuring, and subscribing to alerts |
 | ![Alerts](./public/images/assets/alerts.png) |
 
 
 |              Universal Search              |
 | :------------------------------------: |
-|              Navigation pivoted around a universal search bar, allowing for intuitive, sandbox-style searching for accurate results.
-| ![Universal Search](./public/images/assets/demo.gif) |
+| Intuitive, sandbox-style searching for accurate results. |
+| ![Universal Search](./public/images/assets/universal_search.png) |
+
 
 
 ## Development
