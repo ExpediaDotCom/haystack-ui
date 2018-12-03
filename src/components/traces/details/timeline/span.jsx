@@ -88,6 +88,7 @@ export default class Span extends React.Component {
         } = this.props;
 
         const {
+            serviceName,
             depth,
             expandable,
             expanded,
@@ -95,8 +96,6 @@ export default class Span extends React.Component {
             duration,
             operationName
         } = span;
-
-        const serviceName = Span.getTagValue(span, 'service') || span.serviceName;
 
         const depthFactor = depth * 0.5;
 

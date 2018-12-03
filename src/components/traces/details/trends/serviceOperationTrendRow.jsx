@@ -100,7 +100,7 @@ export default class TrendRow extends React.Component {
         const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
         const totalPoints = trends && trends.count && trends.count.map(p => p.value);
 
-        const latestDuration = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration[trends.tp99Duration.length - 1].value / 1000;
+        const latestDuration = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration[trends.tp99Duration.length - 1].value;
         const durationPoints = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration.map(p => p.value);
 
         const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount);

@@ -156,7 +156,7 @@ const stubDetails = [
                 fields: [{
                     key: 'event',
                     value: 'sr'
-                    },
+                },
                     {
                         key: 'event',
                         value: 'cs'
@@ -193,7 +193,7 @@ const stubDetails = [
                 fields: [{
                     key: 'event',
                     value: 'sr'
-                    },
+                },
                     {
                         key: 'event',
                         value: 'cs'
@@ -205,10 +205,6 @@ const stubDetails = [
             {
                 key: 'success',
                 value: 'false'
-            },
-            {
-                key: 'service',
-                value: 'service-tag'
             }
         ]
     },
@@ -226,7 +222,7 @@ const stubDetails = [
                 fields: [{
                     key: 'event',
                     value: 'sr'
-                    },
+                },
                     {
                         key: 'event',
                         value: 'cs'
@@ -255,10 +251,10 @@ const stubDetails = [
                 fields: [{
                     key: 'event',
                     value: 'sr'
-                    },
+                },
                     {
-                    key: 'event',
-                    value: 'cs'
+                        key: 'event',
+                        value: 'cs'
                     }
                 ]
             }
@@ -418,6 +414,7 @@ describe('<Traces />', () => {
     it('should render results after getting search results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
+
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
@@ -445,10 +442,10 @@ describe('<Traces />', () => {
 
         wrapper.find('.results-header').at(0).simulate('click');
         let traceIdA = wrapper.find('tr.tr-no-border').at(0).children().first();
-            traceIdA = traceIdA.props().children;
+        traceIdA = traceIdA.props().children;
         wrapper.find('.results-header').at(0).simulate('click');
         let traceIdB = wrapper.find('tr.tr-no-border').at(0).children().first();
-            traceIdB = traceIdB.props().children;
+        traceIdB = traceIdB.props().children;
         expect(traceIdA).to.not.equal(traceIdB);
 
         wrapper.find('.results-header').at(4).simulate('click');
@@ -618,15 +615,6 @@ describe('<Traces />', () => {
                 const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
 
                 expect(wrapper.find('.span-bar')).to.have.length(stubDetails.length);
-            });
-
-            it('renders serviceName correctly when it is liked in service tag', () => {
-                const traceDetailsStore = createStubDetailsStore(stubDetails, fulfilledPromise);
-                const wrapper = mount(<TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} />);
-
-                const spanServiceName = wrapper.find('Span').at(1).find('.span-service-label').text();
-
-                expect(spanServiceName).to.equal('service-tag');
             });
 
             it('renders the descendents on Span Click', () => {

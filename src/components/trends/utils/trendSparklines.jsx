@@ -42,7 +42,7 @@ sparklines.CountSparkline.propTypes = {
 sparklines.DurationSparkline = ({latest, points}) =>
     (<div className="sparkline-container">
         { !isNaN(latest) &&
-            <div className="sparkline-title">latest <b>{formatters.toDurationStringFromMs(latest)}</b></div>
+            <div className="sparkline-title">latest <b>{formatters.toDurationString(latest)}</b></div>
         }
         <div className="sparkline-graph">
             <Sparklines className="sparkline" data={points} min={0} height={48}>
