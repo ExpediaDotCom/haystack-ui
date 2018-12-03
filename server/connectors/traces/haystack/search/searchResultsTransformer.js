@@ -29,10 +29,17 @@ function calculateEndToEndDuration(spans) {
     return difference || 1;
 }
 
+function findTag(tags, tagName) {
+    const foundTag = tags.find(tag => tag.key && tag.key.toLowerCase() === tagName.toLowerCase());
+    return foundTag && foundTag.value;
+}
+
 function calculateShadowDuration(spans) {
     if (!spans.length) return 0;
 
-    const shadows = _.flatMap(spans, span => [{time: span.startTime, value: 1}, {time: span.startTime + span.duration, value: -1}]);
+    const filteredSpans = spans.filter(span => !findTag(span.tags, 'X-HAYSTACK-AUTOGEN'));
+
+    const shadows = _.flatMap(filteredSpans, span => [{time: span.startTime, value: 1}, {time: span.startTime + span.duration, value: -1}]);
 
     const sortedShadows = shadows.sort((a, b) => a.time - b.time);
 
@@ -53,11 +60,6 @@ function calculateShadowDuration(spans) {
     }
 
     return runningShadowDuration;
-}
-
-function findTag(tags, tagName) {
-    const foundTag = tags.find(tag => tag.key && tag.key.toLowerCase() === tagName);
-    return foundTag && foundTag.value;
 }
 
 function isSpanError(span) {
