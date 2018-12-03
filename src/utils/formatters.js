@@ -32,9 +32,13 @@ formatters.toDurationString = (duration) => {
     if (duration === 0) {
         return '0';
     } else if (duration < 1000000) {
-        return `${Math.floor(duration / 1000)}ms`;
+        return `${Math.floor(duration / 1000)} ms`;
+    } else if (duration < 120000000) {
+        return `${(duration / 1000000).toFixed(2)} s`;
+    } else if (duration < 7200000000) {
+        return `${(duration / 60000000).toFixed(2)} min`;
     }
-    return `${(duration / 1000000).toFixed(3)}s`;
+    return `${(duration / 3600000000).toFixed(2)} h`;
 };
 
 formatters.toDurationStringInSecAndMin = (duration) => {

@@ -644,7 +644,7 @@ describe('<Traces />', () => {
                 const timePointers = wrapper.find('.time-pointer');
 
                 expect(timePointers).to.have.length(5);
-                expect((timePointers).last().text()).to.eq('3.500s ');
+                expect((timePointers).last().text()).to.eq('3.50 s ');
             });
 
             it('has a modal upon clicking a span', () => {
