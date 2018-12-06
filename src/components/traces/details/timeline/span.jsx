@@ -153,7 +153,7 @@ export default class Span extends React.Component {
         // span bar
         const leftOffsetPercent = Span.getOffsetPercent(startTimePercent, timelineWidthPercent);
         const spanWidthPercent = ((duration / totalDuration) * 100) * (timelineWidthPercent / 100);
-        const formattedDuration = `${formatters.toDurationMsString(duration)}`;
+        const formattedDuration = `${formatters.toDurationString(duration)}`;
         const SpanBar = (<g>
             <text
                 className={Span.getSpanError(span) ? 'span-label span-label_failure' : 'span-label'}

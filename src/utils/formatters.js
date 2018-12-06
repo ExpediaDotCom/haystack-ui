@@ -33,10 +33,10 @@ formatters.toDurationString = (duration) => {
         return '0';
     } else if (duration < 1000000) {
         return `${Math.floor(duration / 1000)} ms`;
-    } else if (duration < 120000000) {
+    } else if (duration < 60000000) {
         return `${(duration / 1000000).toFixed(2)} s`;
     } else if (duration < 7200000000) {
-        return `${(duration / 60000000).toFixed(2)} min`;
+        return `${(duration / 60000000).toFixed(2)} mins`;
     }
     return `${(duration / 3600000000).toFixed(2)} h`;
 };
