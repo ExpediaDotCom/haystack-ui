@@ -14,8 +14,8 @@
  *         limitations under the License.
  */
 
-const Q = require('q');
 const grpc = require('grpc');
+const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
 
 // NO-OP for now, TODO implement subscription mechanism
 const config = require('../../../config/config');
@@ -32,24 +32,62 @@ const grpcOptions = {
 
 
 const client = new services.SubscriptionManagementClient(
-    `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`, // todo: figure out host/port
+    `${config.connectors.alerts.subscriptions.haystackHost}:${config.connectors.alerts.subscriptions.haystackPort}`,
     grpc.credentials.createInsecure(),
     grpcOptions); // TODO make client secure
 
 const subscriptionPoster = poster('createSubscription', client);
 const subscriptionPutter = putter('updateSubscription', client);
 const subscriptionDeleter = deleter('deleteSubscription', client);
-const getSubscriptionFetcher = fetcher('getSubscription', client);
-const searchSubscriptionFetcher = fetcher('searchSubscription', client);
+const getSubscriptionFetcher = fetcher('getSubscription', client); // get individual subscription
+// const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get group of subscriptions
 
 const connector = {};
 
-connector.getAlertSubscriptions = () => Q.fcall(() => null);
+const converter = {};
 
-connector.addAlertSubscription = () => Q.fcall(() => null);
+converter.toSubscriptionJson = pbSub => ({
+    subscriptionId: pbSub.subscriptionid,
+    user: pbSub.user,
+    dispatchersList: pbSub.dispatchersList,
+    expressionTree: pbSub.expressiontree,
+    lastModifiedTime: pbSub.lastmodifiedtime,
+    createdTime: pbSub.createdtime
+});
 
-connector.updateAlertSubscription = () => Q.fcall(() => null);
+connector.getAlertSubscriptions = (subscriptionId) => {
+    const request = new messages.GetSubscriptionRequest();
+    request.setSubscriptionId(subscriptionId);
 
-connector.deleteAlertSubscription = () => Q.fcall(() => null);
+    return getSubscriptionFetcher
+        .fetch(request)
+        .then(result => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, result)));
+};
+
+connector.addAlertSubscription = (user, subscription) => {
+    const request = new messages.CreateSubscriptionRequest();
+    request.setUser(user);
+    request.setSubscriptionrequest(subscription);
+
+    return subscriptionPoster.post(request)
+        .then(result => result);
+};
+
+connector.updateAlertSubscription = (id, subscription) => {
+    const request = new messages.UpdateSubscriptionRequest();
+    request.setSubscriptionid(id);
+    request.setSubscriptionrequest(subscription);
+
+    return subscriptionPutter.put(request)
+        .then(() => {});
+};
+
+connector.deleteAlertSubscription = (id) => {
+    const request = new messages.DeleteSubscriptionRequest();
+    request.setSubscriptionid(id);
+
+    return subscriptionDeleter.delete(request)
+        .then(() => {});
+};
 
 module.exports = connector;
