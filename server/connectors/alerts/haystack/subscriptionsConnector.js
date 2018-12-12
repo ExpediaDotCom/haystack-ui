@@ -17,7 +17,6 @@
 const grpc = require('grpc');
 const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
 
-// NO-OP for now, TODO implement subscription mechanism
 const config = require('../../../config/config');
 const services = require('../../../../static_codegen/subscription/subscriptionManagement_grpc_pb');
 const fetcher = require('../../operations/grpcFetcher');
@@ -40,7 +39,7 @@ const subscriptionPoster = poster('createSubscription', client);
 const subscriptionPutter = putter('updateSubscription', client);
 const subscriptionDeleter = deleter('deleteSubscription', client);
 const getSubscriptionFetcher = fetcher('getSubscription', client); // get individual subscription
-// const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get group of subscriptions
+const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get group of subscriptions
 
 const connector = {};
 
@@ -55,15 +54,27 @@ converter.toSubscriptionJson = pbSub => ({
     createdTime: pbSub.createdtime
 });
 
+// Get subscription from subscriptionId. Returns SubscriptionResponse.
 connector.getAlertSubscriptions = (subscriptionId) => {
     const request = new messages.GetSubscriptionRequest();
-    request.setSubscriptionId(subscriptionId);
+    request.setSubscriptionid(subscriptionId);
 
     return getSubscriptionFetcher
         .fetch(request)
         .then(result => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, result)));
 };
 
+// Search subscriptions given a set of labels. Returns a SearchSubscriptionResponse (array of SubscriptionResponses).
+connector.searchSubscriptions = (query) => {
+    const request = new messages.SearchSubscriptionRequest();
+    request.getLabelsMap().set('serviceName', query.serviceName).set('operationName', query.operationName);
+
+    return searchSubscriptionFetcher
+        .fetch(request)
+        .then(result => result.map(pbSubResponse => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSubResponse))));
+};
+
+// Create a new subscription. Returns a subscription id.
 connector.addAlertSubscription = (user, subscription) => {
     const request = new messages.CreateSubscriptionRequest();
     request.setUser(user);
@@ -73,15 +84,16 @@ connector.addAlertSubscription = (user, subscription) => {
         .then(result => result);
 };
 
+// Update a subscription. All updates would be idempotent. Returns empty.
 connector.updateAlertSubscription = (id, subscription) => {
     const request = new messages.UpdateSubscriptionRequest();
     request.setSubscriptionid(id);
     request.setSubscriptionrequest(subscription);
 
-    return subscriptionPutter.put(request)
-        .then(() => {});
+    return subscriptionPutter.put(request);
 };
 
+// Delete a subscription. Returns empty.
 connector.deleteAlertSubscription = (id) => {
     const request = new messages.DeleteSubscriptionRequest();
     request.setSubscriptionid(id);
