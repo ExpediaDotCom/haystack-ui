@@ -62,7 +62,7 @@ router.get('/trace/raw/:traceId', (req, res, next) => {
 
 router.get('/trace/raw/:traceId/:spanId', (req, res, next) => {
     handleResponsePromise(res, next, 'trace_raw_TRACEID_SPANID')(
-        () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId)
+        () => tracesConnector.getRawSpan(req.params.traceId, req.params.spanId, req.query.serviceName)
     );
 });
 

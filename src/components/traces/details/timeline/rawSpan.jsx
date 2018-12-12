@@ -23,12 +23,11 @@ import Error from '../../../common/error';
 @observer
 export default class RawSpan extends React.Component {
     static propTypes = {
-        rawSpanStore: PropTypes.object.isRequired,
-        duplicateSpanId: PropTypes.bool.isRequired
+        rawSpanStore: PropTypes.object.isRequired
     };
 
     render() {
-        const {rawSpanStore, duplicateSpanId} = this.props;
+        const {rawSpanStore} = this.props;
 
         return (
                 <div>
@@ -41,9 +40,6 @@ export default class RawSpan extends React.Component {
                                 if (rawSpanStore.rawSpan) {
                                     return (
                                         <div>
-                                            {duplicateSpanId && <div>
-                                                <strong>Client and Server Span ID are identical - results may be incorrect. Check the raw trace for full span list.</strong>
-                                            </div>}
                                             <pre className="raw-span">{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>
                                         </div>);
                                 }

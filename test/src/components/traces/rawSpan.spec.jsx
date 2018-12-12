@@ -66,7 +66,7 @@ describe('RawSpanStore', () => {
 
     it('fetches raw span from the api', (done) => {
         server.onGet('/api/trace/raw/test-stub/test-span').reply(200, stubSpan);
-        store.fetchRawSpan('test-stub', 'test-span');
+        store.fetchRawSpan('test-stub', 'test-span', 'test-service');
 
         when(
             () => store.rawSpan.length > 0,

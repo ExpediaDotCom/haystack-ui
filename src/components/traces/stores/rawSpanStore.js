@@ -23,10 +23,10 @@ export class RawSpanStore extends ErrorHandlingStore {
 
     @observable promiseState = null;
 
-    @action fetchRawSpan(traceId, spanId) {
+    @action fetchRawSpan(traceId, spanId, serviceName) {
         this.promiseState = fromPromise(
             axios
-                .get(`/api/trace/raw/${traceId}/${spanId}`)
+                .get(`/api/trace/raw/${traceId}/${spanId}?serviceName=${serviceName}`)
                 .then((result) => {
                     this.rawSpan = result.data;
                 })
