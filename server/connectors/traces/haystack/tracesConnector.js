@@ -144,14 +144,17 @@ connector.getRawTraces = (traceIds) => {
     .then(result => pbTraceConverter.toTracesJson(messages.RawTracesResult.toObject(false, result)));
 };
 
-connector.getRawSpan = (traceId, spanId) => {
+connector.getRawSpan = (traceId, spanId, serviceName) => {
     const request = new messages.SpanRequest();
     request.setTraceid(traceId);
     request.setSpanid(spanId);
-
     return rawSpanFetcher
     .fetch(request)
-    .then(result => pbTraceConverter.toSpanJson(messages.Span.toObject(false, result)));
+    .then((result) => {
+        const spanResponse = messages.SpanResponse.toObject(false, result);
+        const serviceSpan = spanResponse.spansList.find(span => span.getserviceName === serviceName);
+        return pbTraceConverter.toSpanJson(serviceSpan);
+     }); 
 };
 
 connector.getLatencyCost = (traceId) => {

@@ -42,19 +42,17 @@ export default class SpanDetailsModal extends React.Component {
         this.setState({tabSelected: tabIndex});
     }
     tabViewer(span) {
-        const duplicateSpanId = this.props.clientSpanId === this.props.span.spanId;
-
         switch (this.state.tabSelected) {
             case 1:
                 return <TagsTable tags={span.tags} />;
             case 2:
                 return <LogsTable logs={span.logs} startTime={this.props.startTime} />;
             case 3:
-                rawSpanStore.fetchRawSpan(span.traceId, span.spanId);
-                return <RawSpan duplicateSpanId={duplicateSpanId} rawSpanStore={rawSpanStore}/>;
+                rawSpanStore.fetchRawSpan(span.traceId, span.spanId, span.serviceName);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
             case 4:
-                rawSpanStore.fetchRawSpan(span.traceId, this.props.clientSpanId);
-                return <RawSpan duplicateSpanId={duplicateSpanId} rawSpanStore={rawSpanStore}/>;
+                rawSpanStore.fetchRawSpan(span.traceId, this.props.clientSpanId, this.props.clientServiceName);
+                return <RawSpan rawSpanStore={rawSpanStore}/>;
             default:
                 return null;
         }
