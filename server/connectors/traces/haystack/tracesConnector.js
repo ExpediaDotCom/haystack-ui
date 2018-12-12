@@ -150,9 +150,9 @@ connector.getRawSpan = (traceId, spanId, serviceName) => {
     request.setSpanid(spanId);
     return rawSpanFetcher
     .fetch(request)
-    .then(result => {
+    .then((result) => {
         const spanResponse = messages.SpanResponse.toObject(false, result);
-        const serviceSpan = spanResponse.spansList.find(span => span.getserviceName == serviceName)
+        const serviceSpan = spanResponse.spansList.find(span => span.getserviceName === serviceName);
         return pbTraceConverter.toSpanJson(serviceSpan);
      }); 
 };
