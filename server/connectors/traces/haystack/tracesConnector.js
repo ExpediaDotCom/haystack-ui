@@ -152,8 +152,8 @@ connector.getRawSpan = (traceId, spanId, serviceName) => {
     .fetch(request)
     .then((result) => {
         const spanResponse = messages.SpanResponse.toObject(false, result);
-        const serviceSpan = spanResponse.spansList.find(span => span.getserviceName === serviceName);
-        return pbTraceConverter.toSpanJson(serviceSpan);
+        const pbSpan = spanResponse.spansList.find(span => span.servicename === serviceName);
+        return pbTraceConverter.toSpanJson(pbSpan);
      }); 
 };
 
