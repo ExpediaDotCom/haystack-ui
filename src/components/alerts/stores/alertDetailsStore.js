@@ -53,10 +53,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId, successCallback, errorCallback) {
+    @action addNewSubscription(subscription, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .post(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
+                .post(`/api/alert/${subscription.serviceName}/${subscription.operationName}/${subscription.type}/subscriptions`, {subscription})
                 .then(successCallback)
                 .catch((result) => {
                     errorCallback();
@@ -65,14 +65,11 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action updateSubscription(subscriptionId, dispatcherId, errorCallback) {
+    @action updateSubscription(subscription, updateAction, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .put(`/api/alert/subscriptions/${subscriptionId}`, {dispatcherId})
-                .then(() => {
-                    const original = this.alertSubscriptions.find(subscription => subscription.subscriptionId === subscriptionId);
-                    original.dispatcherIds[0] = dispatcherId;
-                })
+                .put(`/api/alert/subscriptions/${subscription.id}`, {subscription, updateAction})
+                .then(() => {})
                 .catch((result) => {
                     errorCallback();
                     AlertDetailsStore.handleError(result);

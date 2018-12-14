@@ -71,9 +71,9 @@ connector.getSubscription = (subscriptionId) => {
 };
 
 // Search subscriptions given a set of labels. Returns a SearchSubscriptionResponse (array of SubscriptionResponses).
-connector.searchSubscriptions = (query) => {
+connector.searchSubscriptions = (serviceName, operationName, type) => {
     const request = new messages.SearchSubscriptionRequest();
-    request.getLabelsMap().set('serviceName', query.serviceName).set('operationName', query.operationName);
+    request.getLabelsMap().set('serviceName', serviceName).set('operationName', operationName).set('type', type);
 
     return searchSubscriptionFetcher
         .fetch(request)
@@ -81,7 +81,7 @@ connector.searchSubscriptions = (query) => {
 };
 
 // Create a new subscription. Returns a subscription id.
-connector.addAlertSubscription = (username, subscriptionObj) => {
+connector.addSubscription = (username, subscriptionObj) => {
     const user = new messages.User();
     user.setUsername(username);
 
@@ -110,77 +110,47 @@ connector.addAlertSubscription = (username, subscriptionObj) => {
         .then(result => result);
 };
 
-// Update an expression tree
-connector.updateExpressionTree = (id, subscriptionObj) => {
-    const serverSubscription = connector.getPBSubscription(id);
+
+// Update an expression tree, returns SubscriptionRequest
+function updateExpressionTree(clientSubscription, serverSubscription) {
     const serverDispatchers = serverSubscription.getDispatchersList();
-    const newExpressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
+    const newExpressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(clientSubscription);
 
     const subscription = messages.SubscriptionRequest();
     subscription.setExpressiontree(newExpressionTree);
     subscription.setDispatchersList(serverDispatchers);
+    return subscription;
+}
 
-    const request = new messages.UpdateSubscriptionRequest();
-    request.setSubscriptionid(id);
-    request.setSubscriptionrequest(subscription);
-
-    return subscriptionPutter.put(request);
-};
-
-// Add dispatcher
-connector.addDispatcher = (id, dispatcher) => {
-    const serverSubscription = connector.getPBSubscription(id);
-    const serverExpression = serverSubscription.getExpressiontree();
-    const serverDispatchers = serverSubscription.getDispatchersList();
-
-    const subscription = messages.SubscriptionRequest();
-    subscription.setExpressiontree(serverExpression);
+// Adds a dispatcher to an existing subscription, returns SubscriptionRequest
+function addDispatcher(subscription, serverDispatchers, clientSubscription) {
     subscription.setDispatchersList(serverDispatchers);
 
+    const dispatcherToAdd = clientSubscription.modifiedDispatcher;
     const newDispatcher = new messages.Dispatcher();
-    newDispatcher.setType(dispatcher.type);
-    newDispatcher.setValue(dispatcher.value);
+    newDispatcher.setType(dispatcherToAdd.type);
+    newDispatcher.setValue(dispatcherToAdd.value);
     subscription.addDispatchers(newDispatcher);
+    return subscription;
+}
 
-    const request = new messages.UpdateSubscriptionRequest();
-    request.setSubscriptionid(id);
-    request.setSubscriptionrequest(subscription);
-
-    return subscriptionPutter.put(request);
-};
-
-// Delete dispatcher
-connector.deleteDispatcher = (id, dispatcherToDelete) => {
-    const serverSubscription = connector.getPBSubscription(id);
-    const serverExpression = serverSubscription.getExpressiontree();
-    const serverDispatchers = serverSubscription.getDispatchersList();
-
-    const subscription = messages.SubscriptionRequest();
-    subscription.setExpressiontree(serverExpression);
+// Delete dispatcher from existing subscription, returns SubscriptionRequest
+function deleteDispatcher(clientSubscription, serverDispatchers, subscription) {
+    const dispatcherToDelete = clientSubscription.modifiedDispatcher;
     serverDispatchers.forEach((dispatcher) => {
         if (dispatcher.type !== dispatcherToDelete.type && dispatcher.value !== dispatcherToDelete.value) {
             subscription.addDispatchers(dispatcher);
         }
     });
+    return subscription;
+}
 
-    const request = new messages.UpdateSubscriptionRequest();
-    request.setSubscriptionid(id);
-    request.setSubscriptionrequest(subscription);
-
-    return subscriptionPutter.put(request);
-};
-
-
-// Modify dispatcher
-connector.modifyDispatcher = (id, dispatcherToModify, modifiedDispatcher) => {
-    const serverSubscription = connector.getPBSubscription(id);
-    const serverExpression = serverSubscription.getExpressiontree();
-    const serverDispatchers = serverSubscription.getDispatchersList();
-
-    const subscription = messages.SubscriptionRequest();
-    subscription.setExpressiontree(serverExpression);
+// Edit the type and/or value of an existing dispatcher in an existing subscription, returns SubscriptionRequest
+function modifyDispatcher(clientSubscription, serverDispatchers, subscription) {
+    const dispatcherBeforeModification = clientSubscription.modifiedDispatcher.old;
+    const modifiedDispatcher = clientSubscription.modifiedDispatcher.new;
     serverDispatchers.forEach((dispatcher) => {
-        if (dispatcher.type !== dispatcherToModify.type && dispatcher.value !== dispatcherToModify.value) {
+        if (dispatcher.type !== dispatcherBeforeModification.type && dispatcher.value !== dispatcherBeforeModification.value) {
             subscription.addDispatchers(dispatcher);
         } else {
             const newDispatcher = new messages.Dispatcher();
@@ -190,12 +160,41 @@ connector.modifyDispatcher = (id, dispatcherToModify, modifiedDispatcher) => {
             subscription.addDispatchers(newDispatcher);
         }
     });
+    return subscription;
+}
+
+// Put call for above subscription modification methods, returns empty.
+connector.updateSubscription = (id, clientSubscription, updateAction) => {
+    const serverSubscription = connector.getPBSubscription(id);
+    let subscription;
+    if (updateAction === 'updateExpressionTree') {
+        subscription = updateExpressionTree(clientSubscription, serverSubscription);
+    } else {
+        subscription = messages.SubscriptionRequest();
+        const serverExpression = serverSubscription.getExpressiontree();
+        const serverDispatchers = serverSubscription.getDispatchersList();
+        subscription.setExpressiontree(serverExpression);
+
+        switch (updateAction) {
+            case 'addDispatcher':
+                subscription = addDispatcher(subscription, serverDispatchers, clientSubscription);
+                break;
+            case 'deleteDispatcher':
+                subscription = deleteDispatcher(clientSubscription, serverDispatchers, subscription);
+                break;
+            case 'modifyDispatcher':
+                subscription = modifyDispatcher(clientSubscription, serverDispatchers, subscription);
+                break;
+            default:
+                return null;
+        }
+    }
 
     const request = new messages.UpdateSubscriptionRequest();
     request.setSubscriptionid(id);
     request.setSubscriptionrequest(subscription);
-
-    return subscriptionPutter.put(request);
+    return subscriptionPutter.put(request)
+        .then(() => {});
 };
 
 // Delete a subscription. Returns empty.
