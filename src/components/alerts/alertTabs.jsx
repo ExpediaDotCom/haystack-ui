@@ -25,17 +25,16 @@ export default class AlertTabs extends React.Component {
         location: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired
+        defaultPreset: PropTypes.object.isRequired,
+        interval: PropTypes.string.isRequired
     };
 
-    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset) {
+    static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval) {
         switch (tabSelected) {
-            case 3:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.AADuration} alertType="durationTP99" location={location} serviceName={serviceName} />;
             case 2:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} />;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99} alertType="durationTP99" location={location} serviceName={serviceName} interval={interval} />;
             default:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} />;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount} alertType="failureCount" location={location} serviceName={serviceName} interval={interval} />;
         }
     }
 
@@ -59,13 +58,13 @@ export default class AlertTabs extends React.Component {
         const {
             serviceName,
             location,
-            defaultPreset
+            defaultPreset,
+            interval
         } = this.props;
 
         const groupedAlerts = _.groupBy(this.props.alertsStore.alerts, _.property('type'));
         const unhealthyFailureCountAlerts = groupedAlerts.failureCount.filter(alert => alert.isUnhealthy).length;
         const unhealthyDurationTP99Alerts = groupedAlerts.durationTP99.filter(alert => alert.isUnhealthy).length;
-        const unhealthyAADurationAlerts = groupedAlerts.AADuration.filter(alert => alert.isUnhealthy).length;
 
         return (
             <section>
@@ -83,15 +82,11 @@ export default class AlertTabs extends React.Component {
                                 <span className="badge">{unhealthyDurationTP99Alerts}</span>
                             </a>
                         </li>
-                        <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                            <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(3)} >
-                                <span>AA Duration </span>
-                                <span className="badge">{unhealthyAADurationAlerts}</span>
-                            </a>
-                        </li>
                     </ul>
                 </div>
-                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset)}</section>
+                <section>
+                    {AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval)}
+                </section>
             </section>
         );
     }

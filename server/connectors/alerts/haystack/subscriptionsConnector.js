@@ -71,20 +71,25 @@ connector.getSubscription = (subscriptionId) => {
 };
 
 // Search subscriptions given a set of labels. Returns a SearchSubscriptionResponse (array of SubscriptionResponses).
-connector.searchSubscriptions = (serviceName, operationName, type) => {
+connector.searchSubscriptions = (serviceName, operationName, alertType, interval) => {
+    const stat = alertType === 'failure-span' ? 'count' : '*_99';
+
     const request = new messages.SearchSubscriptionRequest();
-    request.getLabelsMap().set('serviceName', serviceName).set('operationName', operationName).set('type', type);
+    request.getLabelsMap()
+        .set('serviceName', serviceName)
+        .set('operationName', operationName)
+        .set('name', alertType)
+        .set('stat', stat)
+        .set('interval', interval)
+        .set('product', 'haystack')
+        .set('mtype', 'gauge');
 
     return searchSubscriptionFetcher
         .fetch(request)
         .then(result => result.map(pbSubResponse => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSubResponse))));
 };
 
-// Create a new subscription. Returns a subscription id.
-connector.addSubscription = (username, subscriptionObj) => {
-    const user = new messages.User();
-    user.setUsername(username);
-
+function constructSubscription(subscriptionObj) {
     const subscription = new messages.SubscriptionRequest();
 
     // construct dispatcher list containing type (email or slack) and handle
@@ -101,6 +106,15 @@ connector.addSubscription = (username, subscriptionObj) => {
     // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
     const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
     subscription.setExpressiontree(expressionTree);
+    return subscription;
+}
+
+// Create a new subscription. Returns a subscription id.
+connector.addSubscription = (userName, subscriptionObj) => {
+    const user = new messages.User();
+    user.setUsername(userName);
+
+    const subscription = constructSubscription(subscriptionObj);
 
     const request = new messages.CreateSubscriptionRequest();
     request.setUser(user);
@@ -110,91 +124,19 @@ connector.addSubscription = (username, subscriptionObj) => {
         .then(result => result);
 };
 
-
-// Update an expression tree, returns SubscriptionRequest
-function updateExpressionTree(clientSubscription, serverSubscription) {
-    const serverDispatchers = serverSubscription.getDispatchersList();
-    const newExpressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(clientSubscription);
-
-    const subscription = messages.SubscriptionRequest();
-    subscription.setExpressiontree(newExpressionTree);
-    subscription.setDispatchersList(serverDispatchers);
-    return subscription;
-}
-
-// Adds a dispatcher to an existing subscription, returns SubscriptionRequest
-function addDispatcher(subscription, serverDispatchers, clientSubscription) {
-    subscription.setDispatchersList(serverDispatchers);
-
-    const dispatcherToAdd = clientSubscription.modifiedDispatcher;
-    const newDispatcher = new messages.Dispatcher();
-    newDispatcher.setType(dispatcherToAdd.type);
-    newDispatcher.setValue(dispatcherToAdd.value);
-    subscription.addDispatchers(newDispatcher);
-    return subscription;
-}
-
-// Delete dispatcher from existing subscription, returns SubscriptionRequest
-function deleteDispatcher(clientSubscription, serverDispatchers, subscription) {
-    const dispatcherToDelete = clientSubscription.modifiedDispatcher;
-    serverDispatchers.forEach((dispatcher) => {
-        if (dispatcher.type !== dispatcherToDelete.type && dispatcher.value !== dispatcherToDelete.value) {
-            subscription.addDispatchers(dispatcher);
-        }
-    });
-    return subscription;
-}
-
-// Edit the type and/or value of an existing dispatcher in an existing subscription, returns SubscriptionRequest
-function modifyDispatcher(clientSubscription, serverDispatchers, subscription) {
-    const dispatcherBeforeModification = clientSubscription.modifiedDispatcher.old;
-    const modifiedDispatcher = clientSubscription.modifiedDispatcher.new;
-    serverDispatchers.forEach((dispatcher) => {
-        if (dispatcher.type !== dispatcherBeforeModification.type && dispatcher.value !== dispatcherBeforeModification.value) {
-            subscription.addDispatchers(dispatcher);
-        } else {
-            const newDispatcher = new messages.Dispatcher();
-            newDispatcher.setType(modifiedDispatcher.type);
-            newDispatcher.setValue(modifiedDispatcher.value);
-
-            subscription.addDispatchers(newDispatcher);
-        }
-    });
-    return subscription;
-}
-
-// Put call for above subscription modification methods, returns empty.
-connector.updateSubscription = (id, clientSubscription, updateAction) => {
+// Update a subscription. Checks server for changes. If none, replace existing subscription with new SubscriptionRequest
+connector.updateSubscription = (id, clientSubscription) => {
     const serverSubscription = connector.getPBSubscription(id);
-    let subscription;
-    if (updateAction === 'updateExpressionTree') {
-        subscription = updateExpressionTree(clientSubscription, serverSubscription);
-    } else {
-        subscription = messages.SubscriptionRequest();
-        const serverExpression = serverSubscription.getExpressiontree();
-        const serverDispatchers = serverSubscription.getDispatchersList();
-        subscription.setExpressiontree(serverExpression);
+    if (serverSubscription === clientSubscription.old) {
+        const subscription = constructSubscription(clientSubscription.new);
+        const request = new messages.UpdateSubscriptionRequest();
 
-        switch (updateAction) {
-            case 'addDispatcher':
-                subscription = addDispatcher(subscription, serverDispatchers, clientSubscription);
-                break;
-            case 'deleteDispatcher':
-                subscription = deleteDispatcher(clientSubscription, serverDispatchers, subscription);
-                break;
-            case 'modifyDispatcher':
-                subscription = modifyDispatcher(clientSubscription, serverDispatchers, subscription);
-                break;
-            default:
-                return null;
-        }
+        request.setSubscriptionid(id);
+        request.setSubscriptionrequest(subscription);
+        return subscriptionPutter.put(request)
+            .then(() => {});
     }
-
-    const request = new messages.UpdateSubscriptionRequest();
-    request.setSubscriptionid(id);
-    request.setSubscriptionrequest(subscription);
-    return subscriptionPutter.put(request)
-        .then(() => {});
+    return null;
 };
 
 // Delete a subscription. Returns empty.

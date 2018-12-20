@@ -53,6 +53,7 @@ export default class AlertsPanel extends React.Component {
                             alertsStore={this.props.alertsStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
+                            interval="5m"
                         />
                         : <Error errorMessage="There was a problem displaying alerts. Please try again later."/>)
                 })}

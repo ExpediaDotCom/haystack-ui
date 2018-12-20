@@ -46,9 +46,14 @@ router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, n
     );
 });
 
-router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
+router.get('/alert/:serviceName/:operationName/:alertType/:interval/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'getsubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.searchSubscriptions(req.params.serviceName, req.params.operationName, req.params.alertType)
+        () => subscriptionsConnector.searchSubscriptions(
+            req.params.serviceName,
+            req.params.operationName,
+            req.params.alertType,
+            req.params.interval
+        )
     );
 });
 
@@ -63,8 +68,7 @@ router.put('/alert/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
         () => subscriptionsConnector.updateSubscription(
             req.params.subscriptionId,
-            req.body.subscription,
-            req.body.updateAction)
+            req.body.subscriptions)
     );
 });
 

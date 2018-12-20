@@ -126,7 +126,7 @@
   padding-left: 5px;
   background-color: @white;
   display: inline-block;
-  width: 100%;
+  width: 20%;
   .Select-placeholder {
     color: @white;
   }
@@ -134,7 +134,7 @@
 
 .alert-details__input {
   background-color: @white;
-  width: 100%;
+  width: 80%;
 }
 
 .subscription-button {
@@ -152,6 +152,7 @@
   width: 100%;
   border: 0;
   padding-left: 4px;
+  cursor: pointer !important;
   &::-webkit-input-placeholder {
     color: @gray-dark;
   }
@@ -161,8 +162,15 @@
   &:-ms-input-placeholder { /* IE 10+ */
     color: @gray-dark;
   }
+  &:hover {
+  background-color: #f2f4fb
+}
 }
 
 .alerts-table .react-bs-table .table-bordered > tbody > tr > td {
   height: 56px;
+}
+
+.subscription-dispatcher-row {
+  display: flex;
 }

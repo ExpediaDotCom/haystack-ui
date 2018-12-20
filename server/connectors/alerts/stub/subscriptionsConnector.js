@@ -16,67 +16,97 @@
 
 const Q = require('q');
 
-const subscriptions =
+const subscriptions = (serviceName, operationName, alertType, interval) => (
     [
         {
             subscriptionId: 101,
-            dispatcherType: 'slack',
-            dispatcherIds: [
-                '#stub-haystackanomalychecks'
-            ]
+            user: {userName: 'haystack-team'},
+            dispatchers: [
+                {
+                    type: 'EMAIL',
+                    endpoint: 'haystack@expedia.com'
+                },
+                {
+                    type: 'SLACK',
+                    endpoint: '#haystack'
+                }
+            ],
+            expressionTree: {
+                serviceName,
+                operationName,
+                name: alertType,
+                interval,
+                stat: alertType === 'failure-span' ? 'count' : '*_99',
+                mtype: 'gauge',
+                product: 'haystack'
+            }
         },
         {
             subscriptionId: 102,
-            dispatcherType: 'smtp',
-            dispatcherIds: [
-                'stub-haystack@expedia.com'
-            ]
+            user: {userName: 'haystack-team'},
+            dispatchers: [
+                {
+                    type: 'EMAIL',
+                    endpoint: 'haystack@opentracing.io'
+                },
+                {
+                    type: 'SLACK',
+                    endpoint: '#haystack-tracing'
+                }
+            ],
+            expressionTree: {
+                serviceName,
+                operationName,
+                name: alertType,
+                interval,
+                stat: alertType === 'failure-span' ? 'count' : '*_99',
+                mtype: 'gauge',
+                product: 'haystack'
+            }
         }
-    ];
+    ]
+);
 
-function getAlertSubscriptions(serviceName, operationName, alertType) {
+function searchSubscriptions(serviceName, operationName, alertType, interval) {
     if (serviceName && operationName && alertType) {
-        return subscriptions;
+        return subscriptions(serviceName, operationName, alertType, interval);
     }
     throw new Error('Unable to get subscriptions');
 }
 
-function addAlertSubscription(serviceName, operationName, alertType, dispatcherType, dispatcherId) {
-    if (serviceName && operationName && alertType && dispatcherType && dispatcherId) {
-        return 'New subscription created';
+function addSubscription(userName, subscriptionObj) {
+    if (userName && subscriptionObj) {
+        return Math.floor(Math.random() * 300);
     }
     throw new Error('Unable to add subscription');
 }
 
-function updateAlertSubscription(subscriptionId, dispatcherId) {
-    if (subscriptionId && dispatcherId) {
-        return 'Subscription updated';
+function updateSubscription(id, subscription) {
+    if (id && subscription && subscription.old && subscription.modified) {
+        return;
     }
     throw new Error('Unable to update subscription');
 }
 
-function deleteAlertSubscription(subscriptionId) {
+function deleteSubscription(subscriptionId) {
     if (subscriptionId) {
-        return 'Subscription deleted';
+        return;
     }
     throw new Error('Unable to delete subscription');
 }
 
 const connector = {};
 
-connector.getAlertSubscriptions = (serviceName, operationName, alertType) => Q.fcall(() => getAlertSubscriptions(serviceName, operationName, alertType));
+connector.searchSubscriptions = (serviceName, operationName, alertType, interval) => Q.fcall(() => searchSubscriptions(serviceName, operationName, alertType, interval));
 
-connector.addAlertSubscription = (serviceName, operationName, alertType, dispatcherType, dispatcherId) => Q.fcall(() => addAlertSubscription(
-    serviceName,
-    operationName,
-    alertType,
-    dispatcherType,    // smtp / slack
-    dispatcherId)      // emailId / slackId
+connector.addSubscription = (userName, subscriptionObj) => Q.fcall(() => addSubscription(
+    userName || 'haystack',
+    subscriptionObj)
 );
 
-connector.updateAlertSubscription = (subscriptionId, dispatcherId) => Q.fcall(() => updateAlertSubscription(subscriptionId, dispatcherId));
+connector.updateSubscription = (id, subscription) => Q.fcall(() => updateSubscription(id, subscription));
 
-connector.deleteAlertSubscription = subscriptionId => Q.fcall(() => deleteAlertSubscription(subscriptionId));
+connector.deleteSubscription = subscriptionId => Q.fcall(() => deleteSubscription(subscriptionId));
 
 
 module.exports = connector;
