@@ -14,6 +14,7 @@
  *         limitations under the License.
  */
 
+const Q = require('q');
 const grpc = require('grpc');
 const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
 const expressionTreeBuilder = require('./expressionTreeBuilder');
@@ -31,7 +32,7 @@ const grpcOptions = {
 
 
 const client = new services.SubscriptionManagementClient(
-    `${config.connectors.alerts.subscriptions.haystackHost}:${config.connectors.alerts.subscriptions.haystackPort}`,
+    `${config.connectors.alerts.haystackHost}:${config.connectors.alerts.haystackPort}`,
     grpc.credentials.createInsecure(),
     grpcOptions); // TODO make client secure
 
@@ -126,17 +127,18 @@ connector.addSubscription = (userName, subscriptionObj) => {
 
 // Update a subscription. Checks server for changes. If none, replace existing subscription with new SubscriptionRequest
 connector.updateSubscription = (id, clientSubscription) => {
-    const serverSubscription = connector.getPBSubscription(id);
-    if (serverSubscription === clientSubscription.old) {
-        const subscription = constructSubscription(clientSubscription.new);
-        const request = new messages.UpdateSubscriptionRequest();
+    Q.fcall(connector.getPBSubscription(id)).then((serverSubscription) => {
+        if (serverSubscription === clientSubscription.old) {
+            const subscription = constructSubscription(clientSubscription.new);
+            const request = new messages.UpdateSubscriptionRequest();
 
-        request.setSubscriptionid(id);
-        request.setSubscriptionrequest(subscription);
-        return subscriptionPutter.put(request)
-            .then(() => {});
-    }
-    return null;
+            request.setSubscriptionid(id);
+            request.setSubscriptionrequest(subscription);
+            return subscriptionPutter.put(request)
+                .then(() => {});
+        }
+        return null;
+    });
 };
 
 // Delete a subscription. Returns empty.

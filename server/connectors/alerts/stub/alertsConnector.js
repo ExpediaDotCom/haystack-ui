@@ -21,13 +21,15 @@ function getRandomTimeStamp() {
     return (currentTime - Math.floor((Math.random() * 5000 * 60 * 1000)));
 }
 
-function getAlertHistoryTimestamps() {
+function generateAnomaly() {
     const currentTime = ((new Date()).getTime()) * 1000;
-    const end = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
-    const start = end - Math.floor((Math.random() * 5000 * 60 * 1000));
+    const timestamp = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
+    const expectedValue = Math.floor(Math.random() * 100000);
+    const observedValue = Math.floor(expectedValue * (Math.random() * 100));
     return {
-        startTimestamp: start,
-        endTimestamp: end
+        observedValue,
+        expectedValue,
+        timestamp
     };
 }
 
@@ -86,34 +88,28 @@ function getAlerts() {
             type: 'failureCount',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
-        },
-        {
-            operationName: 'dondarrion-1',
-            type: 'AADuration',
-            isUnhealthy: false,
-            timestamp: getRandomTimeStamp()
         }
     ];
 }
 
-const alertDetails = [
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps(),
-        getAlertHistoryTimestamps()
+const anomalies = [
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly(),
+    generateAnomaly()
 ];
 
 const connector = {};
 
 connector.getServiceAlerts = (service, query) => Q.fcall(() => getAlerts(query));
 
-connector.getAlertHistory = () => Q.fcall(() => alertDetails);
+connector.getAnomalies = () => Q.fcall(() => anomalies);
 
 connector.getServiceUnhealthyAlertCount = () => Q.fcall(() => Math.floor(Math.random() * 3));
 

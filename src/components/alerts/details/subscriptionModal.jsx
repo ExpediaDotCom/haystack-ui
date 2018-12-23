@@ -42,7 +42,6 @@ export default class SubscriptionModal extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
             dispatchers: this.props.dispatchers
         };
@@ -102,7 +101,7 @@ export default class SubscriptionModal extends React.Component {
         const {isOpen, closeModal, title} = this.props;
 
         return (
-            <Modal isOpen={isOpen} closeModal={closeModal} title={title} height="40%" width="400px">
+            <Modal isOpen={isOpen} closeModal={closeModal} title={title} height="40%" width="450px">
                 <div>
                     <div>
                         <h5 className="dispatcher-header">Dispatchers:</h5>
@@ -112,7 +111,7 @@ export default class SubscriptionModal extends React.Component {
                         {this.state.dispatchers.map((dispatcher, index) => (
                                 <div className="dispatcher-row" key={JSON.stringify(index)}>
                                     <select
-                                        className="subscription-select"
+                                        className="subscription-select form-control subscription-form"
                                         value={dispatcher.type.toLowerCase()}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="type"
@@ -121,8 +120,8 @@ export default class SubscriptionModal extends React.Component {
                                         <option value="email">Email</option>
                                     </select>
                                     <input
-                                        className="dispatcher-input"
-                                        placeholder="Email Id or Public Slack Channel Id"
+                                        className="dispatcher-input form-control subscription-form"
+                                        placeholder={dispatcher.type.toLowerCase() === 'slack' ? 'Public Slack Channel' : 'Email Address'}
                                         value={dispatcher.endpoint}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="endpoint"

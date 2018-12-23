@@ -26,16 +26,19 @@
 }
 
 .subscription-select {
-    margin-left: 10px;
-    display: inline;
-    width: 80px;
     margin-right: 15px;
-    padding-bottom: 2px;
-    padding-top: 1px;
     padding-left: 4px;
+    width: 80px !important; // Override bootstrap
 }
 
 .dispatcher-input {
-    width: 55%;
     margin-right: 15px;
+    width: 55% !important; // Override bootstrap
+
+}
+
+.subscription-form {
+    // bootstrap overrides
+    display: inline !important;
+    color: @gray-darker !important;
 }

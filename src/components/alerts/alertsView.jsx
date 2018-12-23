@@ -33,6 +33,19 @@ export default class AlertsPanel extends React.Component {
         defaultPreset: PropTypes.object.isRequired
     };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {interval: '5m'};
+        this.updateInterval = this.updateInterval.bind(this);
+    }
+
+    updateInterval(newInterval) {
+        this.setState({
+            interval: newInterval
+        });
+    }
+
     render() {
         return (
             <section className="alert-results">
@@ -42,6 +55,8 @@ export default class AlertsPanel extends React.Component {
                     alertsStore={this.props.alertsStore}
                     location={this.props.location}
                     serviceName={this.props.serviceName}
+                    interval={this.state.interval}
+                    updateInterval={this.updateInterval}
                 />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
@@ -53,7 +68,7 @@ export default class AlertsPanel extends React.Component {
                             alertsStore={this.props.alertsStore}
                             location={this.props.location}
                             serviceName={this.props.serviceName}
-                            interval="5m"
+                            interval={this.state.interval}
                         />
                         : <Error errorMessage="There was a problem displaying alerts. Please try again later."/>)
                 })}
