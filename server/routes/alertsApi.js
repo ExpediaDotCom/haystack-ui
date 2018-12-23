@@ -74,7 +74,7 @@ router.put('/alert/subscriptions/:subscriptionId', (req, res, next) => {
 
 router.delete('/alert/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'deletesubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.deleteAlertSubscription(req.params.subscriptionId)
+        () => subscriptionsConnector.deleteSubscription(req.params.subscriptionId)
     );
 });
 

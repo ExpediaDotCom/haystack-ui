@@ -142,7 +142,7 @@ connector.updateSubscription = (id, clientSubscription) => {
 };
 
 // Delete a subscription. Returns empty.
-connector.deleteAlertSubscription = (id) => {
+connector.deleteSubscription = (id) => {
     const request = new messages.DeleteSubscriptionRequest();
     request.setSubscriptionid(id);
 

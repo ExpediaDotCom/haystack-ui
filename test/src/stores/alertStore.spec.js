@@ -86,8 +86,8 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert subscriptions', (done) => {
-        server.onGet('/api/alert/svc/op/type/subscriptions').reply(200, stubSubscriptions);
-        store.fetchAlertSubscriptions('svc', 'op', 'type');
+        server.onGet('/api/alert/svc/op/type/interval/subscriptions').reply(200, stubSubscriptions);
+        store.fetchAlertSubscriptions('svc', 'op', 'type', 'interval');
 
         when(
             () => store.alertSubscriptions.length > 0,
