@@ -126,7 +126,7 @@ export default class AlertSubscriptions extends React.Component {
                     </button>
                 </div>
                 <div className={subscriptionError ? 'subscription-error' : 'hidden'}>
-                    /* TODO: more verbose errors */
+                    {/* TODO: more verbose errors */}
                     Could not process subscription. Please try again.
                 </div>
             </section>

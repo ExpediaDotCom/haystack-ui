@@ -85,7 +85,9 @@ ModalView.propTypes = {
         PropTypes.array,
         PropTypes.object
     ]).isRequired,
-    clientServiceName: PropTypes.string
+    clientServiceName: PropTypes.string,
+    height: PropTypes.string,
+    width: PropTypes.string
 };
 
 export default ModalView;
