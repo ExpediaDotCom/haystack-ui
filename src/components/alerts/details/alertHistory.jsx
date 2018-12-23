@@ -96,7 +96,7 @@ export default class AlertHistory extends React.Component {
                 <table className="table">
                     <thead>
                     <tr>
-                        <th width="30%">Timestamp</th>
+                        <th width="40%">Timestamp</th>
                         <th width="20%" className="text-right">Observed Value</th>
                         <th width="20%" className="text-right">Expected Value</th>
                         <th width="20%" className="text-right">Trends & Traces</th>
