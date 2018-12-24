@@ -118,6 +118,6 @@ connector.getRawTraces = () => Q.fcall(() => []);
 connector.getTimeline = () => Q.fcall(() => []);
 
 // TODO get whitelisted keys from configuration
-connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error']);
+connector.getSearchableKeys = () => Q.fcall(() => ['serviceName', 'operationName', 'traceId', 'error']);
 
 module.exports = connector;

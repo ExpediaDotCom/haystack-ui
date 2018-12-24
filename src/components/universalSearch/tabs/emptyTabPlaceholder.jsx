@@ -23,7 +23,7 @@ export default () => (
                 <div className="no-search_text">
                     <h5>
                         <span>Start with a query for serviceName, traceId, or any other </span>
-                        <a href="/api/traces/searchableKeys" target="_blank" className="underlined-anchor">whitelisted key</a>
+                        <a href="/api/traces/searchableKeys" target="_blank" className="underlined-anchor">searchable key</a>
                     </h5>
                     <p>
                         e.g. <span className="traces-error-message__code">serviceName=test-service</span>
