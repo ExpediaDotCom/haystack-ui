@@ -338,10 +338,9 @@ describe('<Autosuggest />', () => {
 
     it('should change be able to suggest when encapsulating value in quotations', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
-
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onChange')({target: {value: 'serviceName="whitespace t'}});
+        input.prop('onChange')({target: {value: 'error="tr'}});
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(1);
     });
 

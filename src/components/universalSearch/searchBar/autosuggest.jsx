@@ -115,6 +115,9 @@ export default class Autocomplete extends React.Component {
     }
 
     componentDidMount() {
+        this.props.options.serviceName = this.props.serviceStore.services;
+        this.props.options.operationName = [];
+
         // Automatically checks for operations when a user supplies a new serviceName
         when(() => this.props.serviceStore.services.length,
             () => {
@@ -168,6 +171,7 @@ export default class Autocomplete extends React.Component {
                 }
             });
         }
+
         this.setState({
             suggestionStrings: suggestionArray,
             suggestedOnValue: value,
