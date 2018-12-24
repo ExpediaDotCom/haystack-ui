@@ -69,7 +69,7 @@ connector.getSearchableKeys = () => {
         .then((result) => {
             const keys = result.getNamesList();
             // additional keys which are not part of Index
-            keys.concat(['traceId', 'serviceName', 'operationName']);
+            keys.push('traceId', 'serviceName', 'operationName');
             return keys;
         });
 };
