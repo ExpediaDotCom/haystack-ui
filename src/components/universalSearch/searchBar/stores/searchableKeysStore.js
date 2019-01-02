@@ -31,9 +31,13 @@ export class SearchableKeysStore {
             .then((response) => {
                 const rawKeys = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                 for (let i = 0; i < rawKeys.length; i += 1) {
-                    this.keys[rawKeys[i]] = [];
+                    if (rawKeys[i] !== 'serviceName') {
+                        this.keys[rawKeys[i]] = [];
+                    }
                 }
-                this.keys.error = ['true', 'false'];
+                if (rawKeys.includes('error')) {
+                    this.keys.error = ['true', 'false'];
+                }
             });
     }
 }
