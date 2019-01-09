@@ -22,17 +22,20 @@ function toTagJson(pbTag) {
     let tagValue = '';
 
     switch (pbTag.type) {
-        case spanProto.Tag.MyvalueCase.VSTR:
+        case spanProto.Tag.TagType.STRING:
             tagValue = pbTag.vstr;
             break;
-        case spanProto.Tag.MyvalueCase.VBOOL:
+        case spanProto.Tag.TagType.DOUBLE:
+            tagValue = pbTag.vdouble;
+            break;
+        case spanProto.Tag.TagType.BOOL:
             tagValue = pbTag.vbool;
             break;
-        case spanProto.Tag.MyvalueCase.VLONG:
+        case spanProto.Tag.TagType.LONG:
             tagValue = pbTag.vlong;
             break;
-        case spanProto.Tag.MyvalueCase.VDOUBLE:
-            tagValue = pbTag.vdouble;
+        case spanProto.Tag.TagType.BYTES:
+            tagValue = pbTag.vbytes;
             break;
         default:
             tagValue = '';
