@@ -21,7 +21,7 @@ const converter = {};
 function toTagJson(pbTag) {
     let tagValue = '';
 
-    switch (pbTag.getMyvalueCase()) {
+    switch (pbTag.type) {
         case spanProto.Tag.MyvalueCase.VSTR:
             tagValue = pbTag.vstr;
             break;
