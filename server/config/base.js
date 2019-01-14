@@ -53,8 +53,12 @@ module.exports = {
         alerts: {
             // name of config connector module to use for fetching anomaly detection data from downstream
             // Options :
+            //  - haystack - Gets data from Haystack adaptive alerting
+            //               you must specify haystack host and port
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
+            //  haystackHost: 'https://<haystack>/alerts',
+            //  haystackPort: 1234,
 
             // frequency of alerts coming in the system
             alertFreqInSec: 300,
