@@ -24,6 +24,9 @@ const servicesConnector = require('../../services/servicesConnector');
 const fetcher = require('../../operations/grpcFetcher');
 const services = require('../../../../static_codegen/anomaly/anomalyReader_grpc_pb');
 const messages = require('../../../../static_codegen/anomaly/anomalyReader_pb');
+const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
+
+const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
 
 const grpcOptions = {
     'grpc.max_receive_message_length': 10485760, // todo: do I need these?
@@ -45,7 +48,7 @@ function fetchOperations(serviceName) {
 }
 
 function parseOperationAlertsResponse(data) {
-    return data.map((anomalyResponse) => {
+    return data.searchanomalyresponseList.map((anomalyResponse) => {
         const labels = anomalyResponse.labels;
 
         const operationName = labels.operationName;
@@ -67,10 +70,7 @@ function parseOperationAlertsResponse(data) {
 function fetchOperationAlerts(serviceName, interval, from) {
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
-        .set('serviceName', serviceName)
-        .set('operationName', '~.*')
-        .set('name', '~.*')
-        .set('stat', '~.*')
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(serviceName))
         .set('interval', interval)
         .set('product', 'haystack')
         .set('mtype', 'gauge');
@@ -79,7 +79,10 @@ function fetchOperationAlerts(serviceName, interval, from) {
 
     return getAnomaliesFetcher
         .fetch(request)
-        .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
+        .then((pbResult) => {
+            console.log(messages.SearchAnomaliesResponse.toObject(false, pbResult));
+            return parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult));
+        });
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
@@ -127,8 +130,8 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
-        .set('serviceName', serviceName)
-        .set('operationName', operationName)
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(serviceName))
+        .set('operationName', metricpointNameEncoder.encodeMetricpointName(operationName))
         .set('name', alertType)
         .set('stat', stat)
         .set('interval', interval)
