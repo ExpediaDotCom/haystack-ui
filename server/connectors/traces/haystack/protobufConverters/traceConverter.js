@@ -14,13 +14,36 @@
  *         limitations under the License.
  */
 const _ = require('lodash');
+const spanProto = require('../../../../../static_codegen/span_pb');
 
 const converter = {};
 
 function toTagJson(pbTag) {
+    let tagValue = '';
+
+    switch (pbTag.type) {
+        case spanProto.Tag.TagType.STRING:
+            tagValue = pbTag.vstr;
+            break;
+        case spanProto.Tag.TagType.DOUBLE:
+            tagValue = pbTag.vdouble;
+            break;
+        case spanProto.Tag.TagType.BOOL:
+            tagValue = pbTag.vbool;
+            break;
+        case spanProto.Tag.TagType.LONG:
+            tagValue = pbTag.vlong;
+            break;
+        case spanProto.Tag.TagType.BYTES:
+            tagValue = pbTag.vbytes;
+            break;
+        default:
+            tagValue = '';
+    }
+
     return {
         key: pbTag.key,
-        value: pbTag.vstr || pbTag.vlong || pbTag.vdouble || pbTag.vbytes || pbTag.vbool
+        value: tagValue
     };
 }
 

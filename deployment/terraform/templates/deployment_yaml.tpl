@@ -27,9 +27,10 @@ spec:
           name: config-volume
         resources:
           limits:
+            cpu: ${cpu_limit}
             memory: ${memory_limit}Mi
           requests:
-            cpu: ${cpu_limit}
+            cpu: ${cpu_request}
             memory: ${memory_limit}Mi
         env:
         - name: "HAYSTACK_OVERRIDES_CONFIG_PATH"

@@ -276,7 +276,7 @@ connector.getTimeline = query => Q.fcall(() => {
     return getRandomValues(granularity, points, parseInt(query.startTime, 10));
 });
 
-connector.getSearchableKeys = () => Q.fcall(() => ['traceId', 'error', 'minDuration', 'guid', 'testid']);
+connector.getSearchableKeys = () => Q.fcall(() => ['serviceName', 'operationName', 'traceId', 'error', 'minDuration', 'guid', 'testid']);
 
 const latencyCost = {
     latencyCost: [{
