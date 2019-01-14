@@ -25,7 +25,7 @@ const router = express.Router();
 
 router.get('/alerts/:serviceName', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC')(
-        () => alertsConnector.getServiceAlerts(req.params.serviceName, req.query)
+        () => alertsConnector.getServiceAlerts(req.params.serviceName, req.query.interval, req.query.from)
     );
 });
 

@@ -55,7 +55,6 @@ export default class AlertSubscriptions extends React.Component {
         this.setState({modalIsOpen: false});
     }
 
-
     handleSuccessfulNewSubscription() {
         this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type, this.props.interval);
         this.setState({

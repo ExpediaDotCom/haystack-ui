@@ -57,8 +57,8 @@ module.exports = {
             //               you must specify haystack host and port
             //  - stub - a stub used during development, will be removed in future
             connectorName: 'stub',
-            //  haystackHost: 'https://<haystack>/alerts',
-            //  haystackPort: 1234,
+            //  haystackHost: 'https://<haystack>/alert-api',
+            //  haystackPort: 8080,
 
             // frequency of alerts coming in the system
             alertFreqInSec: 300,

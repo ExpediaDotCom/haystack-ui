@@ -36,9 +36,10 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
         });
     }
 
-    @action fetchServiceAlerts(serviceName, granularity, preset) {
-        const timeRange = timeWindow.toTimeRange(preset.value);
-        const timeFrameString = `granularity=${granularity}&from=${timeRange.from}&until=${timeRange.until}`;
+    @action fetchServiceAlerts(serviceName, interval, from) {
+        const timeRange = timeWindow.toTimeRange(from);
+        const timeFrameString = `interval=${interval}&from=${timeRange.from}`;
+
         this.promiseState = fromPromise(
             axios
             .get(`/api/alerts/${serviceName}?${timeFrameString}`)

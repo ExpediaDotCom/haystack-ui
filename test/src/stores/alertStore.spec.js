@@ -50,7 +50,7 @@ describe('ServiceAlertsStore', () => {
     it('fetches active alerts from API', (done) => {
         server.onGet(/\/api\/alerts\/\s*/).reply(200, stubAlert);
 
-        store.fetchServiceAlerts(stubService, 300000, stubPreset);
+        store.fetchServiceAlerts(stubService, '5m', stubPreset);
 
         when(
             () => store.alerts.length > 0,

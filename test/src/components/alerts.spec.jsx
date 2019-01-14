@@ -16,14 +16,13 @@
  */
 
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import _ from 'lodash';
 import { MemoryRouter } from 'react-router';
 
 import Alerts from '../../../src/components/alerts/alerts';
-import AlertsView from '../../../src/components/alerts/alertsView';
 import AlertDetails from '../../../src/components/alerts/details/alertDetails';
 import {ServiceAlertsStore} from '../../../src/components/alerts/stores/serviceAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
@@ -52,12 +51,6 @@ const stubHistory = {
     },
     push: (location) => {
         stubLocation.search = location.search;
-    }
-};
-
-const stubMatch = {
-    params: {
-        serviceName: 'abc-service'
     }
 };
 
@@ -256,17 +249,10 @@ function createStubAlertDetailsStore(alertDetails, promise, alertSubscriptions) 
 }
 
 describe('<Alerts />', () => {
-    it('should render the alerts panel', () => {
-        const wrapper = shallow(<Alerts history={stubHistory} match={stubMatch} location={stubLocation} />);
-        expect(wrapper.find('.alerts-panel')).to.have.length(1);
-    });
-});
-
-describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView history={stubHistory} location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -275,7 +261,7 @@ describe('<AlertsView />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView history={stubHistory} location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -285,7 +271,7 @@ describe('<AlertsView />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView history={stubHistory} location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);

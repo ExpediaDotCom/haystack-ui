@@ -30,13 +30,14 @@ export class AlertsTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, ...kv} =  search;
+        const {time, tabId, type, ...kv} = search;
         const keys = Object.keys(kv);
         this.isAvailable = isAlertsEnabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
     fetch() {
-        alertsStore.fetchServiceAlerts(this.search.serviceName, 300000, '12h');
+        // todo: fetch service alerts based on search time frame
+        alertsStore.fetchServiceAlerts(this.search.serviceName, '5m', 60 * 60 * 1000);
         return alertsStore;
     }
 }

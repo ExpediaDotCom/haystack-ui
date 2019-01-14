@@ -89,7 +89,7 @@ export default class AlertsToolbar extends React.Component {
         this.autoRefreshTimerRef = setInterval(
             () => {
                 this.setState({autoRefreshTimer: new Date()});
-                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
+                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, this.state.activeWindow);
             },
             refreshInterval);
         this.countdownTimerRef = setInterval(
@@ -121,7 +121,7 @@ export default class AlertsToolbar extends React.Component {
         const selectedIndex = event.target.value;
         const selectedWindow = this.state.options[selectedIndex];
 
-        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, selectedWindow);
+        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, selectedWindow);
         const query = {
             preset: this.state.options[selectedIndex].shortName
         };

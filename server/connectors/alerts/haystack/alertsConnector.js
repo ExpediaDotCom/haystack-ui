@@ -117,7 +117,7 @@ function getActiveAlertCount(operationAlerts) {
 }
 
 connector.getServiceAlerts = (serviceName, query) => {
-    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, query.interval, Math.trunc(query.from / 1000), Math.trunc(query.until / 1000))])
+    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, query.interval, Math.trunc(query.from / 1000))])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
@@ -146,7 +146,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
+    fetchOperationAlerts(serviceName, '5m', Math.trunc((Date.now() / 1000) - (5 * 60)))
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
