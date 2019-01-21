@@ -1,5 +1,6 @@
 # Logs
 logs
+sample
 *.log
 
 # Mac Trash directories
@@ -11,6 +12,8 @@ node_modules
 #intellij
 .idea/
 *.iml
+*.ipr
+*.iws
 
 # generated scripts/css in public should not be commited
 public/bundles
