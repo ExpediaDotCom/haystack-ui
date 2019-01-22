@@ -27,10 +27,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
     @observable subscriptionsPromiseState = null;
 
 
-    @action fetchAlertHistory(serviceName, operationName, type, from) {
+    @action fetchAlertHistory(serviceName, operationName, type, from, interval) {
         this.historyPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}/history?from=${from}`)
+                .get(`/api/alert/${encodeURIComponent(serviceName)}/${encodeURIComponent(operationName)}/${type}/history?from=${from}&interval=${interval}`)
                 .then((result) => {
                     this.alertHistory = result.data;
                 })
@@ -43,7 +43,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
     @action fetchAlertSubscriptions(serviceName, operationName, alertType, interval) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${alertType}/${interval}/subscriptions`)
+                .get(`/api/alert/${encodeURIComponent(serviceName)}/${encodeURIComponent(operationName)}/${alertType}/${interval}/subscriptions`)
                 .then((result) => {
                     this.alertSubscriptions = result.data;
                 })
@@ -56,7 +56,7 @@ export class AlertDetailsStore extends ErrorHandlingStore {
     @action addNewSubscription(subscription, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .post(`/api/alert/${subscription.serviceName}/${subscription.operationName}/${subscription.type}/subscriptions`, {subscription})
+                .post(`/api/alert/${encodeURIComponent(subscription.expressionTree.serviceName)}/${encodeURIComponent(subscription.expressionTree.operationName)}/${subscription.expressionTree.type}/subscriptions`, {subscription})
                 .then(successCallback)
                 .catch((result) => {
                     errorCallback();

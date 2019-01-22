@@ -84,7 +84,6 @@ export default class AlertSubscriptions extends React.Component {
         } = this.state;
 
         const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
-
         return (
             <section className="subscriptions col-md-6">
                 <h4>Subscriptions</h4>
@@ -97,7 +96,7 @@ export default class AlertSubscriptions extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            alertSubscriptions && alertSubscriptions.length
+                            alertSubscriptions && alertSubscriptions.length > 0
                                 ? alertSubscriptions.map(subscription =>
                                     (<SubscriptionRow
                                         key={subscription.subscriptionId}

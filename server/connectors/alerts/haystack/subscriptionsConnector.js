@@ -77,8 +77,8 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
 
     const request = new messages.SearchSubscriptionRequest();
     request.getLabelsMap()
-        .set('serviceName', serviceName)
-        .set('operationName', operationName)
+        .set('serviceName', decodeURIComponent(serviceName))
+        .set('operationName', decodeURIComponent(operationName))
         .set('name', alertType)
         .set('stat', stat)
         .set('interval', interval)
@@ -87,25 +87,32 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
 
     return searchSubscriptionFetcher
         .fetch(request)
-        .then(result => result.map(pbSubResponse => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSubResponse))));
+        .then((result) => {
+            const pbResult = messages.SearchSubscriptionResponse.toObject(false, result);
+            pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSubResponse)));
+        });
 };
 
 function constructSubscription(subscriptionObj) {
     const subscription = new messages.SubscriptionRequest();
 
     // construct dispatcher list containing type (email or slack) and handle
-    const dispatchers = subscriptionObj.dispatchers;
-    Object.keys(dispatchers).map((inputtedDispatcher) => {
-        const dispatcher = new messages.Dispatcher();
+    const uiDispatchers = subscriptionObj.dispatchers;
 
-        dispatcher.setType(inputtedDispatcher.type);
-        dispatcher.setValue(inputtedDispatcher.value);
-        return dispatcher;
+    const dispatchers = [];
+    uiDispatchers.forEach((inputtedDispatcher) => {
+        const dispatcher = new messages.Dispatcher();
+        const type = inputtedDispatcher.type === 'slack' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
+        dispatcher.setType(type);
+        dispatcher.setEndpoint(inputtedDispatcher.endpoint);
+        dispatchers.push(dispatcher);
     });
+
     subscription.setDispatchersList(dispatchers);
 
     // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
     const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
+
     subscription.setExpressiontree(expressionTree);
     return subscription;
 }

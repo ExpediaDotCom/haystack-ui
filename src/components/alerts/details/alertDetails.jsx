@@ -39,7 +39,7 @@ export default class AlertDetails extends React.Component {
 
     componentDidMount() {
         this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type, this.props.interval);
-        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type, Date.now() - AlertDetails.historyWindow);
+        this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type, Date.now() - AlertDetails.historyWindow, this.props.interval);
     }
 
     render() {

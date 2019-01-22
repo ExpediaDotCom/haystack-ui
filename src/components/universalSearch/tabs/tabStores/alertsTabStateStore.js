@@ -37,7 +37,7 @@ export class AlertsTabStateStore {
 
     fetch() {
         // todo: fetch service alerts based on search time frame
-        alertsStore.fetchServiceAlerts(this.search.serviceName, '5m', 60 * 60 * 1000);
+        alertsStore.fetchServiceAlerts(this.search.serviceName, '5m', 24 * 60 * 60 * 1000);
         return alertsStore;
     }
 }

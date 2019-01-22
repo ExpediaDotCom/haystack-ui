@@ -57,7 +57,6 @@ function parseOperationAlertsResponse(data) {
 
         const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= (Date.now() - alertFreqInSec));
         const timestamp = latestUnhealthy && latestUnhealthy.timestamp;
-
         return {
             operationName,
             alertType,
@@ -70,19 +69,15 @@ function parseOperationAlertsResponse(data) {
 function fetchOperationAlerts(serviceName, interval, from) {
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
-        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(serviceName))
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('interval', interval)
-        .set('product', 'haystack')
         .set('mtype', 'gauge');
     request.setStarttime(from);
     request.setEndtime(Date.now());
 
     return getAnomaliesFetcher
         .fetch(request)
-        .then((pbResult) => {
-            console.log(messages.SearchAnomaliesResponse.toObject(false, pbResult));
-            return parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult));
-        });
+        .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
@@ -94,7 +89,6 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
                 ...operationAlert
             };
         }
-
         return {
             operationName: operation,
             type: alertType,
@@ -116,8 +110,10 @@ function getActiveAlertCount(operationAlerts) {
     return operationAlerts.filter(opAlert => opAlert.isUnhealthy).length;
 }
 
-connector.getServiceAlerts = (serviceName, query) => {
-    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, query.interval, Math.trunc(query.from / 1000))])
+connector.getServiceAlerts = (serviceName, interval) => {
+    // todo: calculate "from" value based on selected interval
+    const oneDayAgo = Math.trunc(Date.now() - (24 * 60 * 60 * 1000));
+    return Q.all([fetchOperations(serviceName), fetchOperationAlerts(decodeURIComponent(serviceName), interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
@@ -130,12 +126,11 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
-        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(serviceName))
-        .set('operationName', metricpointNameEncoder.encodeMetricpointName(operationName))
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
+        .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
         .set('name', alertType)
         .set('stat', stat)
         .set('interval', interval)
-        .set('product', 'haystack')
         .set('mtype', 'gauge');
     request.setStarttime(from);
     request.setEndtime(Date.now());
@@ -146,7 +141,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, '5m', Math.trunc((Date.now() / 1000) - (5 * 60)))
+    fetchOperationAlerts(serviceName, '5m', Math.trunc(Date.now() - (5 * 60 * 1000)))
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;

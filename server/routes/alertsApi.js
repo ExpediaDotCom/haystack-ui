@@ -41,7 +41,8 @@ router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, n
             req.params.serviceName,
             req.params.operationName,
             req.params.alertType,
-            req.query.from
+            req.query.from,
+            req.query.interval
         )
     );
 });
