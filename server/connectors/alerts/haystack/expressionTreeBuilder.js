@@ -17,29 +17,23 @@
 const requestBuilder = {};
 const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
 
-function createSubscriptionOperands(subscription) {
-    const expressionTree = subscription.expressionTree;
-
-    return Object.keys(expressionTree).map((key) => {
-        const op = new messages.Operand();
-
-        const field = new messages.Field();
-        field.setName(key);
-        field.setValue(expressionTree[key]);
-
-        op.setField(field);
-
-        return op;
-    });
-}
 
 requestBuilder.createSubscriptionExpressionTree = (subscription) => {
     const expressionTree = new messages.ExpressionTree();
     expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
+    const uiExpressionTree = subscription.expressionTree;
 
-    const subscriptionOperands = createSubscriptionOperands(subscription);
+    Object.keys(uiExpressionTree).forEach((key, index) => {
+        const op = new messages.Operand();
 
-    expressionTree.setOperandsList([...subscriptionOperands]);
+        const field = new messages.Field();
+        field.setName(key);
+        field.setValue(uiExpressionTree[key]);
+
+        op.setField(field);
+
+        expressionTree.addOperands(op, index);
+    });
 
     return expressionTree;
 };

@@ -42,8 +42,6 @@ const subscriptionDeleter = deleter('deleteSubscription', client);
 const getSubscriptionFetcher = fetcher('getSubscription', client); // get individual subscription
 const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get group of subscriptions
 
-const connector = {};
-
 const converter = {};
 
 converter.toSubscriptionJson = pbSub => ({
@@ -54,6 +52,8 @@ converter.toSubscriptionJson = pbSub => ({
     lastModifiedTime: pbSub.lastmodifiedtime,
     createdTime: pbSub.createdtime
 });
+
+const connector = {};
 
 // Get subscription from subscriptionId. Returns SubscriptionResponse.
 connector.getPBSubscription = (subscriptionId) => {
@@ -99,16 +99,14 @@ function constructSubscription(subscriptionObj) {
     // construct dispatcher list containing type (email or slack) and handle
     const uiDispatchers = subscriptionObj.dispatchers;
 
-    const dispatchers = [];
-    uiDispatchers.forEach((inputtedDispatcher) => {
+    uiDispatchers.forEach((inputtedDispatcher, index) => {
         const dispatcher = new messages.Dispatcher();
         const type = inputtedDispatcher.type === 'slack' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
         dispatcher.setType(type);
         dispatcher.setEndpoint(inputtedDispatcher.endpoint);
-        dispatchers.push(dispatcher);
-    });
 
-    subscription.setDispatchersList(dispatchers);
+        subscription.addDispatchers(dispatcher, index);
+    });
 
     // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
     const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
