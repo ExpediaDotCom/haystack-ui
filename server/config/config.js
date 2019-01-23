@@ -17,12 +17,17 @@
 
  */
 
+const _ = require('lodash');
 const baseConfiguration = require('../config/base');
 
 if (process.env.HAYSTACK_OVERRIDES_CONFIG_PATH) {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const environmentSpecificConfiguration = require(process.env.HAYSTACK_OVERRIDES_CONFIG_PATH);
-    module.exports = environmentSpecificConfiguration;
+  let overridesConfigration = process.env.HAYSTACK_OVERRIDES_CONFIG_PATH;
+  if (!overridesConfigration.startsWith('/')) {
+    overridesConfigration = `${process.cwd()}/${overridesConfigration}`;
+  }
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const environmentSpecificConfiguration = require(overridesConfigration);
+  module.exports = _.extend({}, baseConfiguration, environmentSpecificConfiguration);
 } else {
-    module.exports = baseConfiguration;
+  module.exports = baseConfiguration;
 }

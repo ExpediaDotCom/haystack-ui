@@ -175,14 +175,16 @@
   },
   "nyc": {
     "exclude": [
-      "**/*.spec.js",
+      "**/*.spec.*",
       "build",
       "coverage",
       "haystack-idl",
       "public",
       "static_codegen",
-      "server/stores/trends/stub/*",
-      "server/stores/traces/stub/*"
+      "server/connectors/trends/stub/*",
+      "server/connectors/traces/stub/*",
+      "server/connectors/serviceGraph/stub/*",
+      "server/connectors/alerts/stub/*"
     ]
   }
 }
