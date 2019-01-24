@@ -23,7 +23,7 @@ requestBuilder.createSubscriptionExpressionTree = (subscription) => {
     expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
     const uiExpressionTree = subscription.expressionTree;
 
-    Object.keys(uiExpressionTree).forEach((key, index) => {
+    const operands = Object.keys(uiExpressionTree).map((key) => {
         const op = new messages.Operand();
 
         const field = new messages.Field();
@@ -32,9 +32,10 @@ requestBuilder.createSubscriptionExpressionTree = (subscription) => {
 
         op.setField(field);
 
-        expressionTree.addOperands(op, index);
+        return op;
     });
 
+    expressionTree.setOperandsList(operands);
     return expressionTree;
 };
 

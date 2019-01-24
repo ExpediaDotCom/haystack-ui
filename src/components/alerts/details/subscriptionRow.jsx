@@ -91,7 +91,7 @@ export default class SubscriptionRow extends React.Component {
         return (
             <tr className="non-highlight-row subscription-row">
                 <td>
-                    {subscription.dispatchers.map(dispatcher => (
+                    {subscription.dispatchersList.map(dispatcher => (
                         <div key={Math.random()} className="subscription-dispatcher-row">
                             {SubscriptionRow.getDispatcherType(dispatcher)}:  {dispatcher.endpoint}
                             <br />
@@ -107,7 +107,7 @@ export default class SubscriptionRow extends React.Component {
                     operationName={operationName}
                     type={name}
                     interval={interval}
-                    dispatchers={subscription.dispatchers}
+                    dispatchers={subscription.dispatchersList}
                     submitCallback={this.handleSubmitModifiedSubscription}
                 />
                 <td>

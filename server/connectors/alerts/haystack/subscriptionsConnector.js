@@ -79,7 +79,7 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
     request.getLabelsMap()
         .set('serviceName', decodeURIComponent(serviceName))
         .set('operationName', decodeURIComponent(operationName))
-        .set('label', alertType)
+        .set('type', alertType)
         .set('stat', stat)
         .set('interval', interval)
         .set('product', 'haystack')
@@ -89,7 +89,8 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
         .fetch(request)
         .then((result) => {
             const pbResult = messages.SearchSubscriptionResponse.toObject(false, result);
-            pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSubResponse)));
+            console.log(pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse)));
+            return pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse));
         });
 };
 
@@ -97,17 +98,16 @@ function constructSubscription(subscriptionObj) {
     const subscription = new messages.SubscriptionRequest();
 
     // construct dispatcher list containing type (email or slack) and handle
-    const uiDispatchers = subscriptionObj.dispatchers;
-
-    uiDispatchers.forEach((inputtedDispatcher, index) => {
+    const uiDispatchers =  subscriptionObj.dispatchers.map((inputtedDispatcher) => {
         const dispatcher = new messages.Dispatcher();
         const type = inputtedDispatcher.type === 'slack' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
         dispatcher.setType(type);
         dispatcher.setEndpoint(inputtedDispatcher.endpoint);
 
-        subscription.addDispatchers(dispatcher, index);
+        return dispatcher;
     });
 
+    subscription.setDispatchersList(uiDispatchers);
     // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
     const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
 
