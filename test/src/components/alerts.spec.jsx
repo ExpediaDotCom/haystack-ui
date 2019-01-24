@@ -65,13 +65,13 @@ const stubSubscriptions = [
     {
         subscriptionId: 101,
         user: {userName: 'haystack-team'},
-        dispatchers: [
+        dispatchersList: [
             {
-                type: 'EMAIL',
+                type: 0,
                 endpoint: 'haystack@expedia.com'
             },
             {
-                type: 'SLACK',
+                type: 1,
                 endpoint: '#haystack'
             }
         ],
@@ -88,13 +88,13 @@ const stubSubscriptions = [
     {
         subscriptionId: 102,
         user: {userName: 'haystack-team'},
-        dispatchers: [
+        dispatchersList: [
             {
-                type: 'EMAIL',
+                type: 0,
                 endpoint: 'haystack@opentracing.io'
             },
             {
-                type: 'SLACK',
+                type: 1,
                 endpoint: '#haystack-tracing'
             }
         ],

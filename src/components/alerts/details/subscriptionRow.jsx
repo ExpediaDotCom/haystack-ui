@@ -32,7 +32,7 @@ export default class SubscriptionRow extends React.Component {
 
 
     static getDispatcherType(dispatcher) {
-        if (dispatcher.type.toLowerCase() === 'slack') {
+        if (dispatcher.type === 1) {
             return <div><img src="/images/slack.png" alt="Slack" className="alerts-slack-icon"/> Slack</div>;
         }
         return <div><span className="ti-email"/>  Email</div>;

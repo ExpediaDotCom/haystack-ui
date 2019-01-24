@@ -112,7 +112,7 @@ export default class SubscriptionModal extends React.Component {
                                 <div className="dispatcher-row" key={JSON.stringify(index)}>
                                     <select
                                         className="subscription-select form-control subscription-form"
-                                        value={dispatcher.type.toLowerCase()}
+                                        value={dispatcher.type === 1 ? 'slack' : 'email'}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="type"
                                     >
@@ -121,7 +121,7 @@ export default class SubscriptionModal extends React.Component {
                                     </select>
                                     <input
                                         className="dispatcher-input form-control subscription-form"
-                                        placeholder={dispatcher.type.toLowerCase() === 'slack' ? 'Public Slack Channel' : 'Email Address'}
+                                        placeholder={dispatcher.type === 1 ? 'Public Slack Channel' : 'Email Address'}
                                         value={dispatcher.endpoint}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="endpoint"
