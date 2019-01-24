@@ -79,7 +79,7 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
     request.getLabelsMap()
         .set('serviceName', decodeURIComponent(serviceName))
         .set('operationName', decodeURIComponent(operationName))
-        .set('name', alertType)
+        .set('label', alertType)
         .set('stat', stat)
         .set('interval', interval)
         .set('product', 'haystack')
