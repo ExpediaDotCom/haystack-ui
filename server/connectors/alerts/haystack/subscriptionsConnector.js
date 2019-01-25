@@ -14,7 +14,6 @@
  *         limitations under the License.
  */
 
-const Q = require('q');
 const grpc = require('grpc');
 const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
 const expressionTreeBuilder = require('./expressionTreeBuilder');
@@ -100,7 +99,7 @@ function constructSubscription(subscriptionObj) {
     // construct dispatcher list containing type (email or slack) and handle
     const uiDispatchers =  subscriptionObj.dispatchers.map((inputtedDispatcher) => {
         const dispatcher = new messages.Dispatcher();
-        const type = inputtedDispatcher.type === 'slack' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
+        const type = inputtedDispatcher.type === '1' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
         dispatcher.setType(type);
         dispatcher.setEndpoint(inputtedDispatcher.endpoint);
 
@@ -131,20 +130,23 @@ connector.addSubscription = (userName, subscriptionObj) => {
 };
 
 // Update a subscription. Checks server for changes. If none, replace existing subscription with new SubscriptionRequest
-connector.updateSubscription = (id, clientSubscription) => {
-    Q.fcall(connector.getPBSubscription(id)).then((serverSubscription) => {
-        if (serverSubscription === clientSubscription.old) {
-            const subscription = constructSubscription(clientSubscription.new);
-            const request = new messages.UpdateSubscriptionRequest();
+connector.updateSubscription = (id, clientSubscription) => (
+    connector.getPBSubscription(id)
+        .then((serverSubscription) => {
+            if (serverSubscription.lastModifiedTime === clientSubscription.old.lastModifiedTime) {
+                const subscription = constructSubscription(clientSubscription.modified);
+                const request = new messages.UpdateSubscriptionRequest();
 
-            request.setSubscriptionid(id);
-            request.setSubscriptionrequest(subscription);
-            return subscriptionPutter.put(request)
-                .then(() => {});
-        }
-        return null;
-    });
-};
+                request.setSubscriptionid(id);
+                request.setSubscriptionrequest(subscription);
+                return subscriptionPutter.put(request)
+                    .then(result => result);
+            }
+
+            // todo: let UI know that subscription has been modified
+            return null;
+        })
+);
 
 // Delete a subscription. Returns empty.
 connector.deleteSubscription = (id) => {
