@@ -43,7 +43,7 @@ export default class AlertSubscriptions extends React.Component {
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.submitNewSubscription = this.submitNewSubscription.bind(this);
-        this.handleSuccessfulNewSubscription = this.handleSuccessfulNewSubscription.bind(this);
+        this.handleSubscriptionSuccess = this.handleSubscriptionSuccess.bind(this);
         this.handleSubscriptionError = this.handleSubscriptionError.bind(this);
     }
 
@@ -55,7 +55,7 @@ export default class AlertSubscriptions extends React.Component {
         this.setState({modalIsOpen: false});
     }
 
-    handleSuccessfulNewSubscription() {
+    handleSubscriptionSuccess() {
         this.props.alertDetailsStore.fetchAlertSubscriptions(this.props.serviceName, this.props.operationName, this.props.type, this.props.interval);
         this.setState({
             showNewSubscriptionBox: false,
@@ -73,7 +73,7 @@ export default class AlertSubscriptions extends React.Component {
     submitNewSubscription(subscription) {
         this.props.alertDetailsStore.addNewSubscription(
             subscription,
-            this.handleSuccessfulNewSubscription,
+            this.handleSubscriptionSuccess,
             this.handleSubscriptionError
         );
     }
@@ -102,6 +102,7 @@ export default class AlertSubscriptions extends React.Component {
                                         key={subscription.subscriptionId}
                                         subscription={subscription}
                                         alertDetailsStore={this.props.alertDetailsStore}
+                                        successCallback={this.handleSubscriptionSuccess}
                                         errorCallback={this.handleSubscriptionError}
                                     />))
                                 : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>

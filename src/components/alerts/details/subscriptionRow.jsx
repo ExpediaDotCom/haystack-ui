@@ -27,6 +27,7 @@ export default class SubscriptionRow extends React.Component {
     static propTypes = {
         subscription: PropTypes.object.isRequired,
         alertDetailsStore: PropTypes.object.isRequired,
+        successCallback: PropTypes.func.isRequired,
         errorCallback: PropTypes.func.isRequired
     };
 
@@ -64,6 +65,7 @@ export default class SubscriptionRow extends React.Component {
         const subscriptions = {old: oldSubscription, modified: modifiedSubscription};
         this.props.alertDetailsStore.updateSubscription(
             subscriptions,
+            this.props.successCallback,
             this.props.errorCallback
         );
         this.setState({activeModifyInput: null});
@@ -77,7 +79,8 @@ export default class SubscriptionRow extends React.Component {
 
     render() {
         const subscription = JSON.parse(JSON.stringify(this.props.subscription)); // deep copy, so client side changes don't affect store
-        const {serviceName, operationName, name, interval} = subscription.expressionTree;
+        const {serviceName, operationName, type, interval} = subscription.expressionTree;
+
         const SubscriptionButtons = () => (
             <div className="btn-group btn-group-sm">
                 <button onClick={this.openModal} className="btn btn-default alert-modify">
@@ -105,7 +108,7 @@ export default class SubscriptionRow extends React.Component {
                     closeModal={this.closeModal}
                     serviceName={serviceName}
                     operationName={operationName}
-                    type={name}
+                    type={type}
                     interval={interval}
                     dispatchers={subscription.dispatchersList}
                     submitCallback={this.handleSubmitModifiedSubscription}

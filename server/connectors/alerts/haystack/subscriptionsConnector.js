@@ -43,11 +43,19 @@ const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get 
 
 const converter = {};
 
+converter.pbExpressionTreeToJson = (pbExpressionTree) => {
+    const expressionTree = {};
+    pbExpressionTree.operandsList.forEach((kvPair) => {
+        expressionTree[kvPair.field.name] = kvPair.field.value;
+    });
+    return expressionTree;
+};
+
 converter.toSubscriptionJson = pbSub => ({
     subscriptionId: pbSub.subscriptionid,
     user: pbSub.user,
     dispatchersList: pbSub.dispatchersList,
-    expressionTree: pbSub.expressiontree,
+    expressionTree: converter.pbExpressionTreeToJson(pbSub.expressiontree),
     lastModifiedTime: pbSub.lastmodifiedtime,
     createdTime: pbSub.createdtime
 });
@@ -96,10 +104,12 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
 function constructSubscription(subscriptionObj) {
     const subscription = new messages.SubscriptionRequest();
 
+
     // construct dispatcher list containing type (email or slack) and handle
     const uiDispatchers =  subscriptionObj.dispatchers.map((inputtedDispatcher) => {
         const dispatcher = new messages.Dispatcher();
-        const type = inputtedDispatcher.type === '1' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
+
+        const type = inputtedDispatcher.type.toString() === '1' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
         dispatcher.setType(type);
         dispatcher.setEndpoint(inputtedDispatcher.endpoint);
 
@@ -109,8 +119,8 @@ function constructSubscription(subscriptionObj) {
     subscription.setDispatchersList(uiDispatchers);
     // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
     const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
-
     subscription.setExpressiontree(expressionTree);
+
     return subscription;
 }
 
@@ -143,7 +153,7 @@ connector.updateSubscription = (id, clientSubscription) => (
                     .then(result => result);
             }
 
-            // todo: let UI know that subscription has been modified
+            // todo: let UI know that subscription has already been modified
             return null;
         })
 );

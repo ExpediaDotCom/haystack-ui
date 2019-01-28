@@ -104,7 +104,9 @@ connector.addSubscription = (userName, subscriptionObj) => Q.fcall(() => addSubs
     subscriptionObj)
 );
 
-connector.updateSubscription = (id, subscription) => Q.fcall(() => updateSubscription(id, subscription));
+connector.updateSubscription = (id, subscription) => Q.fcall(() => {
+    updateSubscription(id, subscription);
+});
 
 connector.deleteSubscription = subscriptionId => Q.fcall(() => deleteSubscription(subscriptionId));
 

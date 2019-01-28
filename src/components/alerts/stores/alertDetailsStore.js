@@ -57,7 +57,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         this.subscriptionsPromiseState = fromPromise(
             axios
                 .post(`/api/alert/${encodeURIComponent(subscription.expressionTree.serviceName)}/${encodeURIComponent(subscription.expressionTree.operationName)}/${subscription.expressionTree.type}/subscriptions`, {subscription})
-                .then(successCallback)
+                .then(() => {
+                    this.subscriptionsPromiseState = {case: ({pending}) => pending()}; // Show pending while we wait for refresh
+                    setTimeout(successCallback, 1000); // todo: find a better solution to this
+                })
                 .catch((result) => {
                     errorCallback();
                     AlertDetailsStore.handleError(result);
@@ -65,11 +68,14 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action updateSubscription(subscriptions, errorCallback) {
+    @action updateSubscription(subscriptions, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
                 .put(`/api/alert/subscriptions/${subscriptions.old.subscriptionId}`, {subscriptions})
-                .then(() => {})
+                .then(() => {
+                    this.subscriptionsPromiseState = {case: ({pending}) => pending()}; // Show pending while we wait for refresh
+                    setTimeout(successCallback, 1000); // todo: find a better solution to this
+                })
                 .catch((result) => {
                     errorCallback();
                     AlertDetailsStore.handleError(result);

@@ -57,7 +57,9 @@ export default class SubscriptionModal extends React.Component {
         const value = target.value;
         const name = target.name;
         const dispatchers = this.state.dispatchers;
+
         dispatchers[dispatcherIndex][name] = value;
+
         this.setState({
             dispatchers
         });
@@ -84,6 +86,7 @@ export default class SubscriptionModal extends React.Component {
             return; // prevents multiple empty dispatcher boxes
         }
         dispatchers.push({type: '1', endpoint: ''});
+
         this.setState({
             dispatchers
         });
@@ -93,6 +96,7 @@ export default class SubscriptionModal extends React.Component {
         e.preventDefault();
         const dispatchers = this.state.dispatchers;
         dispatchers.splice(index, 1);
+
         this.setState({
             dispatchers
         });
@@ -113,7 +117,7 @@ export default class SubscriptionModal extends React.Component {
                                 <div className="dispatcher-row" key={JSON.stringify(index)}>
                                     <select
                                         className="subscription-select form-control subscription-form"
-                                        value={dispatcher.type}
+                                        value={dispatcher.type.toString()}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="type"
                                     >
@@ -122,7 +126,7 @@ export default class SubscriptionModal extends React.Component {
                                     </select>
                                     <input
                                         className="dispatcher-input form-control subscription-form"
-                                        placeholder={dispatcher.type === '1' ? 'Public Slack Channel' : 'Email Address'}
+                                        placeholder={dispatcher.type.toString() === '1' ? 'Public Slack Channel' : 'Email Address'}
                                         value={dispatcher.endpoint}
                                         onChange={e => this.editDispatcher(e, index)}
                                         name="endpoint"
