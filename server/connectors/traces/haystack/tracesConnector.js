@@ -28,7 +28,7 @@ const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/grpcFetcher');
 const config = require('../../../config/config');
 
-const trendsConnector = require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require
+const trendsConnector = config.connectors.trends && require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require, global-require
 
 const fieldValueFetcher = fetcher('getFieldValues');
 const fieldNameFetcher = fetcher('getFieldNames');
@@ -170,7 +170,7 @@ connector.getLatencyCost = (traceId) => {
             operationName: e.from.operationName
         }));
 
-        return trendsConnector
+        return trendsConnector && trendsConnector
         .getEdgeLatency(edges)
         .then((trends) => {
             if (trends && trends.length) {
