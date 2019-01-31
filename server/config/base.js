@@ -25,8 +25,12 @@ module.exports = {
     // Google Analytics Tracking ID
     gaTrackingID: 'UA-XXXXXXXX-X',
 
+    // Encoding for trends and alerts
+    // base64 and periodreplacement are supported, default to noop if none provided
+    encoder: 'periodreplacement',
+
     // this list defines subsystems for which UI should be enabled
-    // traces connector must be there in connectors config
+    // traces connector must be present in connectors config
     connectors: {
         traces: {
             // name of config connector module to use for fetching traces data from downstream
@@ -45,7 +49,6 @@ module.exports = {
             //               haystack connector also expects config field specifying metricTankUrl
             //  - stub      - a stub used during development, will be removed in future
             connectorName: 'stub',
-            encoder: 'periodreplacement',
             // Feature switches
             enableServicePerformance: true,
             enableServiceLevelTrends: true

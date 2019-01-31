@@ -26,7 +26,7 @@ const services = require('../../../../static_codegen/anomaly/anomalyReader_grpc_
 const messages = require('../../../../static_codegen/anomaly/anomalyReader_pb');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
-const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
+const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
 const grpcOptions = {
     'grpc.max_receive_message_length': 10485760, // todo: do I need these?
@@ -71,7 +71,8 @@ function fetchOperationAlerts(serviceName, interval, from) {
     request.getLabelsMap()
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('interval', interval)
-        .set('mtype', 'gauge');
+        .set('mtype', 'gauge')
+        .set('product', 'haystack');
     request.setStarttime(from);
     request.setEndtime(Date.now());
 
@@ -113,7 +114,7 @@ function getActiveAlertCount(operationAlerts) {
 connector.getServiceAlerts = (serviceName, interval) => {
     // todo: calculate "from" value based on selected interval
     const oneDayAgo = Math.trunc(Date.now() - (24 * 60 * 60 * 1000));
-    return Q.all([fetchOperations(serviceName), fetchOperationAlerts(decodeURIComponent(serviceName), interval, oneDayAgo)])
+    return Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
@@ -128,6 +129,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
     request.getLabelsMap()
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
+        .set('product', 'haystack')
         .set('name', alertType)
         .set('stat', stat)
         .set('interval', interval)
