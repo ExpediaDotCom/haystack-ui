@@ -24,7 +24,7 @@ const trendsFetcher = fetcher('trends');
 
 const connector = {};
 const metricTankUrl = config.connectors.trends && config.connectors.trends.metricTankUrl;
-const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
+const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
 function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames) {
     return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}')`);

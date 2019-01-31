@@ -20,55 +20,64 @@ import Modal from 'react-modal';
 import colorMapper from '../../utils/serviceColorMapper';
 import './modal.less';
 
-const modalStyles = {
-    overlay: {
-        zIndex: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    },
-    content: {
-        width: '95%',
-        maxWidth: '1240px',
-        top: '10%',
-        bottom: '5%',
-        left: '0',
-        right: '0',
-        marginLeft: 'auto',
-        marginRight: 'auto'
-    }
-};
-
 const ServiceNameTitle = ({serviceName}) => <span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>;
 
 ServiceNameTitle.propTypes = {
     serviceName: PropTypes.string.isRequired
 };
 
-const ModalView = ({serviceName, title, isOpen, closeModal, children, clientServiceName}) => (
-    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'} ariaHideApp={false}>
-        <header className="clearfix">
-            <div className="pull-left">
-                {serviceName &&
-                clientServiceName ?
-                    (<div><ServiceNameTitle serviceName={clientServiceName} /><ServiceNameTitle serviceName={serviceName} /></div>) :
-                    (<div><ServiceNameTitle serviceName={serviceName} /></div>)
-                }
-                <h4>{title}</h4>
-            </div>
-            <button className="close pull-right" onClick={closeModal}>&times;</button>
-        </header>
-        <section>
-            {children}
-        </section>
-    </Modal>
-);
+const serviceTitle = (serviceName, clientServiceName) => {
+    if (serviceName && clientServiceName) {
+        return (<div><ServiceNameTitle serviceName={clientServiceName} /><ServiceNameTitle serviceName={serviceName} /></div>);
+    } else if (serviceName) {
+        return (<div><ServiceNameTitle serviceName={serviceName} /></div>);
+    }
+    return null;
+};
+
+const ModalView = ({serviceName, title, isOpen, closeModal, children, clientServiceName, height, width}) => {
+    const modalStyles = {
+        overlay: {
+            zIndex: 10,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        },
+        content: {
+            width,
+            maxWidth: '1240px',
+            top: '10%',
+            height,
+            left: '0',
+            right: '0',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+        }
+    };
+
+    return (
+        <Modal isOpen={isOpen} onRequestClose={closeModal} style={modalStyles} closeTimeoutMS={200} contentLabel={'Modal'} ariaHideApp={false}>
+            <header className="clearfix">
+                <div className="pull-left">
+                    {serviceTitle(serviceName, clientServiceName)}
+                    <h4>{title}</h4>
+                </div>
+                <button className="close pull-right" onClick={closeModal}>&times;</button>
+            </header>
+            <section>
+                {children}
+            </section>
+        </Modal>
+    );
+};
 
 ModalView.defaultProps = {
     serviceName: '',
-    clientServiceName: null
+    clientServiceName: null,
+    height: '85%',
+    width: '95%'
 };
 
 ModalView.propTypes = {
-    serviceName: PropTypes.string.isRequired,
+    serviceName: PropTypes.string,
     title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
@@ -76,7 +85,9 @@ ModalView.propTypes = {
         PropTypes.array,
         PropTypes.object
     ]).isRequired,
-    clientServiceName: PropTypes.string
+    clientServiceName: PropTypes.string,
+    height: PropTypes.string,
+    width: PropTypes.string
 };
 
 export default ModalView;

@@ -32,7 +32,9 @@ export default class AlertsToolbar extends React.Component {
         serviceName: PropTypes.string.isRequired,
         alertsStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        defaultPreset: PropTypes.object.isRequired
+        defaultPreset: PropTypes.object.isRequired,
+        interval: PropTypes.string.isRequired,
+        updateInterval: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -53,6 +55,7 @@ export default class AlertsToolbar extends React.Component {
         this.startRefresh = this.startRefresh.bind(this);
         this.stopRefresh = this.stopRefresh.bind(this);
         this.toggleAutoRefresh = this.toggleAutoRefresh.bind(this);
+        this.handleIntervalChange = this.handleIntervalChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -86,7 +89,7 @@ export default class AlertsToolbar extends React.Component {
         this.autoRefreshTimerRef = setInterval(
             () => {
                 this.setState({autoRefreshTimer: new Date()});
-                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, this.state.activeWindow);
+                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, this.state.activeWindow);
             },
             refreshInterval);
         this.countdownTimerRef = setInterval(
@@ -118,7 +121,7 @@ export default class AlertsToolbar extends React.Component {
         const selectedIndex = event.target.value;
         const selectedWindow = this.state.options[selectedIndex];
 
-        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, 300000, selectedWindow);
+        this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, selectedWindow);
         const query = {
             preset: this.state.options[selectedIndex].shortName
         };
@@ -127,13 +130,31 @@ export default class AlertsToolbar extends React.Component {
         this.setState({activeWindow: selectedWindow});
     }
 
+    handleIntervalChange(event) {
+        const newInterval = event.target.value;
+        this.props.updateInterval(newInterval);
+    }
+
     render() {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
         return (
             <header className="alerts-toolbar">
                 <div className="pull-right text-right">
                     <div>
-                        <div>
+                        <div className="box-inline">
+                            <span>Alert Interval</span>
+                            <select
+                                value={this.props.interval}
+                                className="form-control alert-interval"
+                                onChange={this.handleIntervalChange}
+                            >
+                                <option value="1m">1m</option>
+                                <option value="5m">5m</option>
+                                <option value="15m">15m</option>
+                                <option value="60m">60m</option>
+                            </select>
+                        </div>
+                        <div className="box-inline">
                             <span>Auto Refresh {this.state.autoRefresh ? `in ${Math.round(countDownMiliSec / 1000)}s` : ''} </span>
                             <span className="btn-group btn-group-sm">
                                 <button

@@ -25,7 +25,7 @@ const router = express.Router();
 
 router.get('/alerts/:serviceName', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC')(
-        () => alertsConnector.getServiceAlerts(req.params.serviceName, req.query)
+        () => alertsConnector.getServiceAlerts(req.params.serviceName, req.query.interval, req.query.from)
     );
 });
 
@@ -37,43 +37,45 @@ router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
 
 router.get('/alert/:serviceName/:operationName/:alertType/history', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_OP_TYPE')(
-        () => alertsConnector.getAlertHistory(
+        () => alertsConnector.getAnomalies(
             req.params.serviceName,
             req.params.operationName,
             req.params.alertType,
-            req.query.from
+            req.query.from,
+            req.query.interval
         )
     );
 });
 
-router.get('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
+router.get('/alert/:serviceName/:operationName/:alertType/:interval/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'getsubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.getAlertSubscriptions(req.params.serviceName, req.params.operationName, req.params.alertType)
+        () => subscriptionsConnector.searchSubscriptions(
+            req.params.serviceName,
+            req.params.operationName,
+            req.params.alertType,
+            req.params.interval
+        )
     );
 });
 
 router.post('/alert/:serviceName/:operationName/:alertType/subscriptions', (req, res, next) => {
     handleResponsePromise(res, next, 'addsubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.addAlertSubscription(
-            req.params.serviceName,
-            req.params.operationName,
-            req.params.alertType,
-            req.body.dispatcherType,    // smtp / slack
-            req.body.dispatcherId)      // emailId / slackId
+        () => subscriptionsConnector.addSubscription(
+            req.body.user || 'Haystack', req.body.subscription)
     );
 });
 
 router.put('/alert/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'updatesubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.updateAlertSubscription(
+        () => subscriptionsConnector.updateSubscription(
             req.params.subscriptionId,
-            req.body.dispatcherId)      // emailId or slackId
+            req.body.subscriptions)
     );
 });
 
 router.delete('/alert/subscriptions/:subscriptionId', (req, res, next) => {
     handleResponsePromise(res, next, 'deletesubscriptions_SVC_OP_TYPE')(
-        () => subscriptionsConnector.deleteAlertSubscription(req.params.subscriptionId)
+        () => subscriptionsConnector.deleteSubscription(req.params.subscriptionId)
     );
 });
 

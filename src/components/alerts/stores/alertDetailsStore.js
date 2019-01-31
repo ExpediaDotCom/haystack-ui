@@ -27,10 +27,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
     @observable subscriptionsPromiseState = null;
 
 
-    @action fetchAlertHistory(serviceName, operationName, type, from) {
+    @action fetchAlertHistory(serviceName, operationName, type, from, interval) {
         this.historyPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}/history?from=${from}`)
+                .get(`/api/alert/${encodeURIComponent(serviceName)}/${encodeURIComponent(operationName)}/${type}/history?from=${from}&interval=${interval}`)
                 .then((result) => {
                     this.alertHistory = result.data;
                 })
@@ -40,10 +40,10 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action fetchAlertSubscriptions(serviceName, operationName, type) {
+    @action fetchAlertSubscriptions(serviceName, operationName, alertType, interval) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .get(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`)
+                .get(`/api/alert/${encodeURIComponent(serviceName)}/${encodeURIComponent(operationName)}/${alertType}/${interval}/subscriptions`)
                 .then((result) => {
                     this.alertSubscriptions = result.data;
                 })
@@ -53,11 +53,14 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action addNewSubscription(serviceName, operationName, type, dispatcherType, dispatcherId, successCallback, errorCallback) {
+    @action addNewSubscription(subscription, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .post(`/api/alert/${serviceName}/${operationName}/${type}/subscriptions`, {dispatcherType, dispatcherId})
-                .then(successCallback)
+                .post(`/api/alert/${encodeURIComponent(subscription.expressionTree.serviceName)}/${encodeURIComponent(subscription.expressionTree.operationName)}/${subscription.expressionTree.type}/subscriptions`, {subscription})
+                .then(() => {
+                    this.subscriptionsPromiseState = {case: ({pending}) => pending()}; // Show pending while we wait for refresh
+                    setTimeout(successCallback, 1000); // todo: find a better solution to this
+                })
                 .catch((result) => {
                     errorCallback();
                     AlertDetailsStore.handleError(result);
@@ -65,13 +68,13 @@ export class AlertDetailsStore extends ErrorHandlingStore {
         );
     }
 
-    @action updateSubscription(subscriptionId, dispatcherId, errorCallback) {
+    @action updateSubscription(subscriptions, successCallback, errorCallback) {
         this.subscriptionsPromiseState = fromPromise(
             axios
-                .put(`/api/alert/subscriptions/${subscriptionId}`, {dispatcherId})
+                .put(`/api/alert/subscriptions/${subscriptions.old.subscriptionId}`, {subscriptions})
                 .then(() => {
-                    const original = this.alertSubscriptions.find(subscription => subscription.subscriptionId === subscriptionId);
-                    original.dispatcherIds[0] = dispatcherId;
+                    this.subscriptionsPromiseState = {case: ({pending}) => pending()}; // Show pending while we wait for refresh
+                    setTimeout(successCallback, 1000); // todo: find a better solution to this
                 })
                 .catch((result) => {
                     errorCallback();

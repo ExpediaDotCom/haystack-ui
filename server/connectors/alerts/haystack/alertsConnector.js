@@ -16,39 +16,47 @@
 
 const Q = require('q');
 const _ = require('lodash');
+const grpc = require('grpc');
 
 const config = require('../../../config/config');
 const servicesConnector = require('../../services/servicesConnector');
+
+const fetcher = require('../../operations/grpcFetcher');
+const services = require('../../../../static_codegen/anomaly/anomalyReader_grpc_pb');
+const messages = require('../../../../static_codegen/anomaly/anomalyReader_pb');
 const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
 
-const fetcher = require('../../operations/restFetcher');
+const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
-const alertHistoryFetcher = fetcher('alertHistory');
-const serviceAlertsFetcher = fetcher('serviceAlerts');
+const grpcOptions = {
+    'grpc.max_receive_message_length': 10485760, // todo: do I need these?
+    ...config.connectors.traces.grpcOptions
+};
 
 const connector = {};
-const metricTankUrl = config.connectors.alerts.metricTankUrl;
-const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends.encoder);
+const client = new services.AnomalyReaderClient(
+    `${config.connectors.alerts.haystackHost}:${config.connectors.alerts.haystackPort}`,
+    grpc.credentials.createInsecure(),
+    grpcOptions); // TODO make client secure
 const alertTypes = ['durationTP99', 'failureCount'];
+const getAnomaliesFetcher = fetcher('getAnomalies', client);
 const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
-const alertMergeBufferTimeInSec = config.connectors.alerts.alertMergeBufferTimeInSec;
 
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
 }
 
-function parseOperationAlertsResponse(data, until) {
-    return data.map((op) => {
-        const tags = op.tags;
+function parseOperationAlertsResponse(data) {
+    return data.searchanomalyresponseList.map((anomalyResponse) => {
+        const labels = anomalyResponse.labels;
 
-        const operationName = tags.operationName;
-        const alertType = metricpointNameEncoder.decodeMetricpointName(tags.alertType);
-        const latestUnhealthy = _.maxBy(op.datapoints.filter(p => p[0]), p => p[1]);
+        const operationName = labels.operationName;
+        const alertType = labels.alertType;
+        const latestUnhealthy = _.maxBy(anomalyResponse.anomalies, anomaly => anomaly.timestamp);
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy[1] >= (until - alertFreqInSec));
-        const timestamp = latestUnhealthy && latestUnhealthy[1] * 1000 * 1000;
-
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= (Date.now() - alertFreqInSec));
+        const timestamp = latestUnhealthy && latestUnhealthy.timestamp;
         return {
             operationName,
             alertType,
@@ -58,12 +66,19 @@ function parseOperationAlertsResponse(data, until) {
     });
 }
 
-function fetchOperationAlerts(serviceName, from, until) {
-    const target = encodeURIComponent(`seriesByTag('name=anomaly','serviceName=${serviceName}','operationName=~.*','alertType=~.*')`);
+function fetchOperationAlerts(serviceName, interval, from) {
+    const request = new messages.SearchAnamoliesRequest();
+    request.getLabelsMap()
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
+        .set('interval', interval)
+        .set('mtype', 'gauge')
+        .set('product', 'haystack');
+    request.setStarttime(from);
+    request.setEndtime(Date.now());
 
-    return serviceAlertsFetcher
-        .fetch(`${metricTankUrl}/render?target=${target}&from=${from}&to=${until}`)
-        .then(result => parseOperationAlertsResponse(result, until));
+    return getAnomaliesFetcher
+        .fetch(request)
+        .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
@@ -75,7 +90,6 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
                 ...operationAlert
             };
         }
-
         return {
             operationName: operation,
             type: alertType,
@@ -85,41 +99,22 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
     })));
 }
 
-function mergeSuccessiveAlertPoints(unhealthyPoints) {
-    const sortedUnhealthyPoints = _.sortBy(unhealthyPoints, alertPoint => alertPoint.startTimestamp);
-    const mergedAlertHistory = [sortedUnhealthyPoints.shift()];  // pop first element
-    _.forEach(sortedUnhealthyPoints, (nextAlertPoint) => {
-        const lastPointOfResult = mergedAlertHistory[mergedAlertHistory.length - 1];
-        if (nextAlertPoint.startTimestamp - lastPointOfResult.endTimestamp <= alertMergeBufferTimeInSec * 1000 * 1000) {
-            mergedAlertHistory[mergedAlertHistory.length - 1].endTimestamp = nextAlertPoint.endTimestamp;
-        } else {
-            mergedAlertHistory.push(nextAlertPoint);
-        }
-    });
-    return mergedAlertHistory;
-}
-
-function parseAlertDetailResponse(data) {
-    if (!data || !data.length) {
+function returnAnomalies(data) {
+    if (!data || !data.length || !data[0].length) {
         return [];
     }
 
-    const unhealthyTimestamps = data[0].datapoints.filter(p => p[0]);
-
-    const unhealthyPoints = unhealthyTimestamps.map(point => ({
-        startTimestamp: point[1] * 1000 * 1000,
-        endTimestamp: (point[1] * 1000 * 1000) + (5 * 60 * 1000 * 1000) // TODO make this based on alert type
-    }));
-
-    return mergeSuccessiveAlertPoints(unhealthyPoints);
+    return data[0].anomalies;
 }
 
 function getActiveAlertCount(operationAlerts) {
     return operationAlerts.filter(opAlert => opAlert.isUnhealthy).length;
 }
 
-connector.getServiceAlerts = (serviceName, query) => {
-    Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, Math.trunc(query.from / 1000), Math.trunc(query.until / 1000))])
+connector.getServiceAlerts = (serviceName, interval) => {
+    // todo: calculate "from" value based on selected interval
+    const oneDayAgo = Math.trunc(Date.now() - (24 * 60 * 60 * 1000));
+    return Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
@@ -127,16 +122,28 @@ connector.getServiceAlerts = (serviceName, query) => {
         );
 };
 
-connector.getAlertHistory = (serviceName, operationName, alertType, from) => {
-    const target = encodeURIComponent(`seriesByTag('name=anomaly','serviceName=${serviceName}','operationName=${metricpointNameEncoder.encodeMetricpointName(operationName)}','alertType=${alertType}')`);
+connector.getAnomalies = (serviceName, operationName, alertType, from, interval) => {
+    const stat = alertType === 'failure-span' ? 'count' : '*_99';
 
-    return alertHistoryFetcher
-        .fetch(`${metricTankUrl}/render?target=${target}&from=${Math.trunc(from / 1000)}&to=${Math.trunc(Date.now() / 1000)}`)
-        .then(result => parseAlertDetailResponse(result));
+    const request = new messages.SearchAnamoliesRequest();
+    request.getLabelsMap()
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
+        .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
+        .set('product', 'haystack')
+        .set('name', alertType)
+        .set('stat', stat)
+        .set('interval', interval)
+        .set('mtype', 'gauge');
+    request.setStarttime(from);
+    request.setEndtime(Date.now());
+
+    return getAnomaliesFetcher
+        .fetch(request)
+        .then(pbResult => returnAnomalies(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, Math.trunc((Date.now() / 1000) - (5 * 60)), Math.trunc(Date.now() / 1000))
+    fetchOperationAlerts(serviceName, '5m', Math.trunc(Date.now() - (5 * 60 * 1000)))
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;
