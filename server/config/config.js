@@ -17,12 +17,26 @@
 
  */
 
+const _ = require('lodash');
 const baseConfiguration = require('../config/base');
+const override = require('./override');
 
+let finalConfiguration =  _.merge({}, baseConfiguration);
+
+// if an override configuration file is provided, extend the base config with
+// the provided one. This is not a recursive merge, just a top level extend with
+// the overriden config
 if (process.env.HAYSTACK_OVERRIDES_CONFIG_PATH) {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const environmentSpecificConfiguration = require(process.env.HAYSTACK_OVERRIDES_CONFIG_PATH);
-    module.exports = environmentSpecificConfiguration;
-} else {
-    module.exports = baseConfiguration;
+  let overridesConfigration = process.env.HAYSTACK_OVERRIDES_CONFIG_PATH;
+  if (!overridesConfigration.startsWith('/')) {
+    overridesConfigration = `${process.cwd()}/${overridesConfigration}`;
+  }
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const environmentSpecificConfiguration = require(overridesConfigration);
+  finalConfiguration = _.extend({}, finalConfiguration, environmentSpecificConfiguration);
 }
+
+// if there are environment variables, read them as objects and merge them
+// into the current configuration
+const overrideObject = override.readOverrides(process.env);
+module.exports = _.merge({}, finalConfiguration, overrideObject);
