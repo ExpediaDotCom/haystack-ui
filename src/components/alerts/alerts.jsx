@@ -1,60 +1,66 @@
 /*
  * Copyright 2018 Expedia Group
  *
- *       Licensed under the Apache License, Version 2.0 (the "License");
- *       you may not use this file except in compliance with the License.
- *       You may obtain a copy of the License at
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
  *
- *           http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
- *       Unless required by applicable law or agreed to in writing, software
- *       distributed under the License is distributed on an "AS IS" BASIS,
- *       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *       See the License for the specific language governing permissions and
- *       limitations under the License.
- *
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 
-import AlertsView from './alertsView';
-import './alerts.less';
-import alertsStore from './stores/serviceAlertsStore';
-import timeWindow from '../../utils/timeWindow';
-import {toQuery} from '../../utils/queryParser';
+import Loading from '../common/loading';
+import AlertTabs from './alertTabs';
+import AlertsToolbar from './alertsToolbar';
+import Error from '../common/error';
 
 @observer
 export default class Alerts extends React.Component {
     static propTypes = {
-        match: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        alertsStore: PropTypes.object.isRequired,
+        serviceName: PropTypes.string.isRequired,
+        history: PropTypes.object.isRequired,
+        defaultPreset: PropTypes.object.isRequired,
+        interval: PropTypes.string.isRequired,
+        updateInterval: PropTypes.func.isRequired
     };
-
-    constructor(props) {
-        super(props);
-        this.state = {serviceName: this.props.match.params.serviceName, defaultPreset: timeWindow.presets[5]};
-    }
-
-    componentDidMount() {
-        const query = toQuery(this.props.location.search);
-        const activeWindowPreset = query.preset ? timeWindow.presets.find(presets => presets.shortName === query.preset) : this.state.defaultPreset;
-        alertsStore.fetchServiceAlerts(this.state.serviceName, 300000, activeWindowPreset);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.match.params.serviceName !== this.state.serviceName) {
-            this.setState({serviceName: nextProps.match.params.serviceName});
-            alertsStore.fetchServiceAlerts(nextProps.match.params.serviceName, 300000, this.state.defaultPreset);
-        }
-    }
 
     render() {
         return (
-            <section className="alerts-panel">
-                <AlertsView defaultPreset={this.state.defaultPreset} serviceName={this.state.serviceName} location={this.props.location} history={this.props.history} alertsStore={alertsStore}/>
+            <section className="alert-results">
+                <AlertsToolbar
+                    defaultPreset={this.props.defaultPreset}
+                    history={this.props.history}
+                    alertsStore={this.props.alertsStore}
+                    location={this.props.location}
+                    serviceName={this.props.serviceName}
+                    interval={this.props.interval}
+                    updateInterval={this.props.updateInterval}
+                />
+                { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
+                    pending: () => <Loading />,
+                    rejected: () => <Error />,
+                    fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
+                        ? <AlertTabs
+                            defaultPreset={this.props.defaultPreset}
+                            history={this.props.history}
+                            alertsStore={this.props.alertsStore}
+                            location={this.props.location}
+                            serviceName={this.props.serviceName}
+                            interval={this.props.interval}
+                        />
+                        : <Error errorMessage="There was a problem displaying alerts. Please try again later."/>)
+                })}
             </section>
         );
     }

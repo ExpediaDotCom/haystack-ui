@@ -40,4 +40,3 @@ if (process.env.HAYSTACK_OVERRIDES_CONFIG_PATH) {
 // into the current configuration
 const overrideObject = override.readOverrides(process.env);
 module.exports = _.merge({}, finalConfiguration, overrideObject);
-

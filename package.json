@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf public/bundles/ && rm -rf static_codegen",
-    "codegen": "mkdir -p static_codegen && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/  ./haystack-idl/proto/span.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/traceReader.proto",
+    "codegen": "mkdir -p static_codegen && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/  ./haystack-idl/proto/span.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/traceReader.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/anomaly/anomalyReader.proto && grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./static_codegen/ --grpc_out=./static_codegen --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` -I ./haystack-idl/proto/api/ -I ./haystack-idl/proto/ ./haystack-idl/proto/api/subscription/subscriptionManagement.proto",
     "coverage": "nyc --extension .jsx npm test && nyc report --reporter=text-lcov | coveralls",
     "eslint": "echo 'Running eslint...' && eslint --ext js,jsx,json --ignore-pattern 'public/*' --ignore-pattern 'haystack-idl/*' --ignore-pattern 'static_codegen/*' --ignore-pattern 'coverage/*' . && echo 'Done' ",
     "test": "npm run eslint && mocha --require ignore-styles --compilers js:babel-register --require ./test/src/test_helper.js \"test/**/*@(.js|.jsx)\" --exit --timeout 10000",
@@ -175,14 +175,16 @@
   },
   "nyc": {
     "exclude": [
-      "**/*.spec.js",
+      "**/*.spec.*",
       "build",
       "coverage",
       "haystack-idl",
       "public",
       "static_codegen",
-      "server/stores/trends/stub/*",
-      "server/stores/traces/stub/*"
+      "server/connectors/trends/stub/*",
+      "server/connectors/traces/stub/*",
+      "server/connectors/serviceGraph/stub/*",
+      "server/connectors/alerts/stub/*"
     ]
   }
 }

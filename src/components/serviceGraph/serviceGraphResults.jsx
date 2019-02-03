@@ -18,11 +18,11 @@ import React from 'react';
 import {PropTypes as MobxPropTypes} from 'mobx-react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Vizceral from 'vizceral-react';
 
 import config from './vizceralConfig';
 import Graph from './util/graph';
 import ConnectionDetails from './connectionDetails';
+import Vizceral from './vizceralExt';
 import './serviceGraph.less';
 import ServiceGraphSearch from './graphSearch';
 import linkBuilder from '../../utils/linkBuilder';

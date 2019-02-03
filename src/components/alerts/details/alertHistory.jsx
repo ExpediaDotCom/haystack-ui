@@ -54,9 +54,9 @@ export default class AlertHistory extends React.Component {
         this.traceLinkCreator = this.traceLinkCreator.bind(this);
     }
 
-    trendLinkCreator(startTimestamp, endTimestamp) {
-        const from = (startTimestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const to = (endTimestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+    trendLinkCreator(timestamp) {
+        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
@@ -68,9 +68,9 @@ export default class AlertHistory extends React.Component {
         });
     }
 
-    traceLinkCreator(startTimestamp, endTimestamp) {
-        const from = startTimestamp / 1000;
-        const to = endTimestamp / 1000;
+    traceLinkCreator(timestamp) {
+        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTracesLink({
             serviceName: this.props.serviceName,
@@ -83,7 +83,7 @@ export default class AlertHistory extends React.Component {
     }
 
     render() {
-        const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.startTimestamp, ['desc']);
+        const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.timestamp, ['desc']);
 
         return (
             <div className="col-md-6 alert-history">
@@ -96,22 +96,24 @@ export default class AlertHistory extends React.Component {
                 <table className="table">
                     <thead>
                     <tr>
-                        <th width="50%">Start Time</th>
-                        <th width="20%" className="text-right">Duration</th>
-                        <th width="30%" className="text-right">See Trends & Traces</th>
+                        <th width="40%">Timestamp</th>
+                        <th width="20%" className="text-right">Observed Value</th>
+                        <th width="20%" className="text-right">Expected Value</th>
+                        <th width="20%" className="text-right">Trends & Traces</th>
                     </tr>
                     </thead>
                     <tbody>
                     {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
                             (<tr className="non-highlight-row" key={Math.random()}>
-                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.startTimestamp)}</span> at {AlertHistory.timestampFormatter(alert.startTimestamp)}</td>
-                                <td className="text-right"><span className="alerts__bold">{AlertHistory.durationColumnFormatter(alert.startTimestamp, alert.endTimestamp)}</span></td>
+                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp)}</span> at {AlertHistory.timestampFormatter(alert.timestamp)}</td>
+                                <td className="text-right"><span className="alerts__bold">{alert.observedValue}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.expectedValue}</span></td>
                                 <td className="text-right">
                                     <div className="btn-group btn-group-sm">
-                                        <Link to={this.trendLinkCreator(alert.startTimestamp, alert.endTimestamp)} target="_blank" className="btn btn-default">
+                                        <Link to={this.trendLinkCreator(alert.timestamp)} target="_blank" className="btn btn-default">
                                             <span className="ti-stats-up"/>
                                         </Link>
-                                        <Link to={this.traceLinkCreator(alert.startTimestamp, alert.endTimestamp)} target="_blank" className="btn btn-sm btn-default">
+                                        <Link to={this.traceLinkCreator(alert.timestamp)} target="_blank" className="btn btn-sm btn-default">
                                             <span className="ti-align-left"/>
                                         </Link>
                                     </div>
