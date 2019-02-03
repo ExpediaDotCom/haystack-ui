@@ -49,7 +49,8 @@ router.get('*', (req, res) => {
         tracesTTL: config.connectors.traces.ttl,
         trendsTTL: config.connectors.trends && config.connectors.trends.ttl,
         relatedTracesOptions: config.relatedTracesOptions,
-        tagValuesTransformMap: config.tagValuesTransformMap
+        tagValuesTransformMap: config.tagValuesTransformMap,
+        usingZipkinConnector: (config.connectors.traces.connectorName === 'zipkin')
     });
 
     onFinished(res, () => {
