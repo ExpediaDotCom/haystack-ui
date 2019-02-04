@@ -29,7 +29,8 @@ html
             tracesTTL: !{JSON.stringify(tracesTTL || -1)},
             trendsTTL: !{JSON.stringify(trendsTTL || -1)},
             relatedTracesOptions: !{JSON.stringify(relatedTracesOptions || [])},
-            tagValuesTransformMap: !{JSON.stringify(tagValuesTransformMap || {})}
+            tagValuesTransformMap: !{JSON.stringify(tagValuesTransformMap || {})},
+            usingZipkinConnector: !{JSON.stringify(usingZipkinConnector || false)},
         }
     script(async, defer, src = bundleCommonsJsPath)
     script(async, defer, src = bundleAppJsPath)

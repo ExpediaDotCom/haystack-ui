@@ -25,6 +25,12 @@ export default () => (
                 <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
                 <span className="usb-logo universal-search-header__title">Haystack</span>
             </Link>
+          { window.haystackUiConfig.usingZipkinConnector ?
+            <Link className="usb-logo navbar-brand universal-search-header__container" to="/">
+              <span className="universal-search-header__subtitle">Tracing powered by</span>
+              <img src="/images/zipkin-logo.jpg" className="logo universal-search-header__logo" alt="Logo"/>
+              <span className="usb-logo universal-search-header__title">Zipkin</span>
+            </Link> : window.haystackUiConfig.usingZipkinConnector }
         </div>
     </header>
 );
