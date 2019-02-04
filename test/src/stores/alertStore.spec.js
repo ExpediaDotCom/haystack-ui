@@ -50,7 +50,7 @@ describe('ServiceAlertsStore', () => {
     it('fetches active alerts from API', (done) => {
         server.onGet(/\/api\/alerts\/\s*/).reply(200, stubAlert);
 
-        store.fetchServiceAlerts(stubService, 300000, stubPreset);
+        store.fetchServiceAlerts(stubService, '5m', stubPreset);
 
         when(
             () => store.alerts.length > 0,
@@ -74,8 +74,8 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert details', (done) => {
-        server.onGet('/api/alert/svc/op/type/history?from=8600000').reply(200, stubDetails);
-        store.fetchAlertHistory('svc', 'op', 'type', 8600000);
+        server.onGet('/api/alert/svc/op/type/history?from=8600000&interval=5m').reply(200, stubDetails);
+        store.fetchAlertHistory('svc', 'op', 'type', 8600000, '5m');
 
         when(
             () => store.alertHistory.length > 0,
@@ -86,8 +86,8 @@ describe('AlertDetailsStore', () => {
     });
 
     it('fetches alert subscriptions', (done) => {
-        server.onGet('/api/alert/svc/op/type/subscriptions').reply(200, stubSubscriptions);
-        store.fetchAlertSubscriptions('svc', 'op', 'type');
+        server.onGet('/api/alert/svc/op/type/interval/subscriptions').reply(200, stubSubscriptions);
+        store.fetchAlertSubscriptions('svc', 'op', 'type', 'interval');
 
         when(
             () => store.alertSubscriptions.length > 0,

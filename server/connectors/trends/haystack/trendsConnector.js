@@ -24,7 +24,7 @@ const trendsFetcher = fetcher('trends');
 
 const connector = {};
 const metricTankUrl = config.connectors.trends && config.connectors.trends.metricTankUrl;
-const metricpointNameEncoder = new MetricpointNameEncoder(config.connectors.trends && config.connectors.trends.encoder);
+const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
 function createServicesOperationsTarget(services, operations, timeWindow, metricStats, metricNames) {
     return encodeURIComponent(`seriesByTag('name=${metricNames}','serviceName=${services}','operationName=${operations}','interval=${timeWindow}','stat=${metricStats}')`);
@@ -283,8 +283,8 @@ function getOperationTrendResults(serviceName, operationName, timeWindow, from, 
 }
 
 function getEdgeLatencyTrendResults(edges, from, until) {
-    const serviceNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.serviceName)).join(',');
-    const operationNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.operationName)).join(',');
+    const serviceNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.serviceName)).join('|');
+    const operationNameRegex = edges.map(e => metricpointNameEncoder.encodeMetricpointName(e.operationName)).join('|');
 
     const target = createServicesOperationsTarget(`~${serviceNameRegex}`, `~${operationNameRegex}`, 'OneHour', '~(mean)|(\\*_99)', 'latency');
 

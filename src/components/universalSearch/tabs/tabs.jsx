@@ -16,12 +16,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { observer } from 'mobx-react';
 
 import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
 import OperationResults from '../../trends/operation/operationResults';
-import AlertsView from '../../alerts/alertsView';
+import Alerts from '../../alerts/alerts';
 import ServiceGraph from './serviceGraph';
 import ServicePerformance from './servicePerformance';
 import tracesTabState from './tabStores/tracesTabStateStore';
@@ -31,6 +32,7 @@ import serviceGraphState from './tabStores/serviceGraphStateStore';
 import servicePerformanceState from './tabStores/servicePerformanceStateStore';
 import AlertCounter from '../../alerts/alertCounter';
 
+@observer
 export default class Tabs extends React.Component {
     static propTypes = {
         search: PropTypes.object.isRequired,
@@ -79,7 +81,11 @@ export default class Tabs extends React.Component {
     constructor(props) {
         super(props);
 
+        // state for interval, used in alert counter and alert tab
+        this.state = {interval: '5m'};
+
         // bindings
+        this.updateInterval = this.updateInterval.bind(this);
         this.TabViewer = this.TabViewer.bind(this);
 
         // init state stores for tabs
@@ -88,6 +94,12 @@ export default class Tabs extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         Tabs.initTabs(nextProps.search);
+    }
+
+    updateInterval(newInterval) {
+        this.setState({
+            interval: newInterval
+        });
     }
 
     TabViewer({tabId, history, location}) {
@@ -101,7 +113,7 @@ export default class Tabs extends React.Component {
             case 'trends':
                 return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} />;
             case 'alerts':
-                return <AlertsView alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} />;
+                return <Alerts alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} updateInterval={this.updateInterval} interval={this.state.interval} />;
             case 'serviceGraph':
                 return <ServiceGraph store={store} search={this.props.search} history={history}/>;
             case 'servicePerformance':

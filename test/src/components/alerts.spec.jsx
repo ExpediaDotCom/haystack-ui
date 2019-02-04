@@ -16,14 +16,13 @@
  */
 
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import _ from 'lodash';
 import { MemoryRouter } from 'react-router';
 
 import Alerts from '../../../src/components/alerts/alerts';
-import AlertsView from '../../../src/components/alerts/alertsView';
 import AlertDetails from '../../../src/components/alerts/details/alertDetails';
 import {ServiceAlertsStore} from '../../../src/components/alerts/stores/serviceAlertsStore';
 import {AlertDetailsStore} from '../../../src/components/alerts/stores/alertDetailsStore';
@@ -41,14 +40,18 @@ const rejectedPromise = {
 const pendingPromise = {
     case: ({pending}) => pending()
 };
-const stubMatch = {
-    params: {
-        serviceName: 'abc-service'
-    }
-};
 
 const stubLocation = {
     search: ''
+};
+
+const stubHistory = {
+    location: {
+        search: '?key1=value&key2=value'
+    },
+    push: (location) => {
+        stubLocation.search = location.search;
+    }
 };
 
 const stubDefaultPreset =
@@ -61,17 +64,49 @@ const stubDefaultPreset =
 const stubSubscriptions = [
     {
         subscriptionId: 101,
-        dispatcherType: 'slack',
-        dispatcherIds: [
-            '#stub-subscription-1'
-        ]
+        user: {userName: 'haystack-team'},
+        dispatchersList: [
+            {
+                type: 0,
+                endpoint: 'haystack@expedia.com'
+            },
+            {
+                type: 1,
+                endpoint: '#haystack'
+            }
+        ],
+        expressionTree: {
+            serviceName: 'test',
+            operationName: 'test',
+            name: 'failureCount',
+            interval: '5m',
+            stat: 'failure-span',
+            mtype: 'gauge',
+            product: 'haystack'
+        }
     },
     {
         subscriptionId: 102,
-        dispatcherType: 'smtp',
-        dispatcherIds: [
-            'stub-subscription@2.com'
-        ]
+        user: {userName: 'haystack-team'},
+        dispatchersList: [
+            {
+                type: 0,
+                endpoint: 'haystack@opentracing.io'
+            },
+            {
+                type: 1,
+                endpoint: '#haystack-tracing'
+            }
+        ],
+        expressionTree: {
+            serviceName: 'test',
+            operationName: 'test',
+            name: 'failureCount',
+            interval: '5m',
+            stat: 'failure-span',
+            mtype: 'gauge',
+            product: 'haystack'
+        }
     }
 ];
 
@@ -214,17 +249,10 @@ function createStubAlertDetailsStore(alertDetails, promise, alertSubscriptions) 
 }
 
 describe('<Alerts />', () => {
-    it('should render the alerts panel', () => {
-        const wrapper = shallow(<Alerts match={stubMatch} location={stubLocation} />);
-        expect(wrapper.find('.alerts-panel')).to.have.length(1);
-    });
-});
-
-describe('<AlertsView />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -233,7 +261,7 @@ describe('<AlertsView />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -243,7 +271,7 @@ describe('<AlertsView />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<AlertsView location={stubLocation}  defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -254,7 +282,7 @@ describe('<AlertsView />', () => {
 describe('<AlertDetails />', () => {
     it('should render error if promise is rejected', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, rejectedPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(2);
         expect(wrapper.find('.loading')).to.have.length(0);
@@ -264,76 +292,40 @@ describe('<AlertDetails />', () => {
 
     it('should render loading if promise is pending', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, pendingPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.loading')).to.have.length(2);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
         expect(wrapper.find('.subscription-row')).to.have.length(0);
         expect(wrapper.find('.alert-history')).to.have.length(0);
     });
+
     it('should render the alert details with successful details promise', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
         expect(wrapper.find('.subscription-row')).to.have.length(2);
         expect(wrapper.find('.alert-history')).to.have.length(1);
     });
-    it('should successfully add a subscription', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
+    it('should successfully bring up the subscription modal and add dispatchers', () => {
+        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+
+        expect(wrapper.find('.subscription-row')).to.have.length(2);
 
         wrapper.find('.btn-success').first().simulate('click');
-        wrapper.find('.alert-details__input').instance().value = '#updated-subscription-1';
-        wrapper.find('.ti-plus').first().simulate('click');
-
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(3);
+        wrapper.find('.btn-info').simulate('click');
+        expect(wrapper.find('.dispatcher-input')).to.have.length(1);
     });
 
-    it('should successfully delete a subscription', () => {
+    it('should load subscription modal with values filled in when subscription modify button is clicked', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
-
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
-
-        wrapper.find('.ti-trash').first().simulate('click');
-
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(1);
-    });
-
-    it('should successfully delete a subscription', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
-
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(2);
-
-        wrapper.find('.ti-trash').first().simulate('click');
-
-        expect(wrapper.find('.alert-subscription-handle')).to.have.length(1);
-    });
-
-    it('should change modify state when subscription modify button is pressed', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         wrapper.find('.alert-modify').first().simulate('click');
-        expect(wrapper.find('.alert-modify-submit')).to.have.length(1);
-
-        wrapper.find('.alert-modify-cancel').simulate('click');
-        expect(wrapper.find('.alert-modify-submit')).to.have.length(0);
-    });
-
-    it('should successfully update a subscription', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
-        wrapper.find('.alert-modify').first().simulate('click');
-        wrapper.find('.alert-modify-submit').simulate('click');
-
-        // Get new value (placeholder) of subscription name
-        const newTarget = wrapper.find('.alert-subscription-handle').first();
-        expect(newTarget.prop('placeholder')).to.equal('#stub-subscription-1');
+        expect(wrapper.find('.dispatcher-input')).to.have.length(2);
     });
 });

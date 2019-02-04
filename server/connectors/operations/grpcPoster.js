@@ -16,7 +16,7 @@
 
 const Q = require('q');
 const errorConverter = require('../utils/errorConverter');
-const logger = require('../../utils/logger').withIdentifier('fetcher.grpc');
+const logger = require('../../utils/logger').withIdentifier('poster.grpc');
 const metrics = require('../../utils/metrics');
 
 
@@ -26,22 +26,22 @@ function generateCallDeadline() {
     return new Date().setMilliseconds(new Date().getMilliseconds() + config.upstreamTimeout);
 }
 
-const fetcher = (fetcherName, client) => ({
-    fetch: (request) => {
+const poster = (posterName, client) => ({
+    post: (request) => {
         const deferred = Q.defer();
-        const timer = metrics.timer(`fetcher_grpc_${fetcherName}`).start();
+        const timer = metrics.timer(`poster_grpc_${posterName}`).start();
 
-        client[fetcherName](request,
+        client[posterName](request,
             {deadline: generateCallDeadline()},
             (error, result) => {
                 timer.end();
                 if (error || !result) {
-                    logger.info(`fetch failed: ${fetcherName}`);
-                    metrics.meter(`fetcher_grpc_failure_${fetcherName}`).mark();
+                    logger.info(`post failed: ${posterName}`);
+                    metrics.meter(`poster_grpc_failure_${posterName}`).mark();
 
                     deferred.reject(errorConverter.fromGrpcError(error));
                 } else {
-                    logger.info(`fetch successful: ${fetcherName}`);
+                    logger.info(`post successful: ${posterName}`);
 
                     deferred.resolve(result);
                 }
@@ -51,4 +51,4 @@ const fetcher = (fetcherName, client) => ({
     }
 });
 
-module.exports = fetcher;
+module.exports = poster;

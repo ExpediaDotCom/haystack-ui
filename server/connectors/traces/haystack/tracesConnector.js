@@ -17,6 +17,8 @@
 
  */
 
+const grpc = require('grpc');
+
 const messages = require('../../../../static_codegen/traceReader_pb');
 const searchResultsTransformer = require('./search/searchResultsTransformer');
 const callGraphResultTransformer = require('./protobufConverters/callGraphConverter');
@@ -30,15 +32,28 @@ const config = require('../../../config/config');
 
 const trendsConnector = config.connectors.trends && require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require, global-require
 
-const fieldValueFetcher = fetcher('getFieldValues');
-const fieldNameFetcher = fetcher('getFieldNames');
-const traceFetcher = fetcher('getTrace');
-const rawTraceFetcher = fetcher('getRawTrace');
-const rawTracesFetcher = fetcher('getRawTraces');
-const rawSpanFetcher = fetcher('getRawSpan');
-const tracesSearchFetcher = fetcher('searchTraces');
-const traceCallGraphFetcher = fetcher('getTraceCallGraph');
-const traceCountsFetcher = fetcher('getTraceCounts');
+const services = require('../../../../static_codegen/traceReader_grpc_pb');
+
+const grpcOptions = {
+    'grpc.max_receive_message_length': 10485760,
+    ...config.connectors.traces.grpcOptions
+};
+
+
+const client = new services.TraceReaderClient(
+    `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`,
+    grpc.credentials.createInsecure(),
+    grpcOptions); // TODO make client secure
+
+const fieldValueFetcher = fetcher('getFieldValues', client);
+const fieldNameFetcher = fetcher('getFieldNames', client);
+const traceFetcher = fetcher('getTrace', client);
+const rawTraceFetcher = fetcher('getRawTrace', client);
+const rawTracesFetcher = fetcher('getRawTraces', client);
+const rawSpanFetcher = fetcher('getRawSpan', client);
+const tracesSearchFetcher = fetcher('searchTraces', client);
+const traceCallGraphFetcher = fetcher('getTraceCallGraph', client);
+const traceCountsFetcher = fetcher('getTraceCounts', client);
 const connector = {};
 
 connector.getServices = () => {

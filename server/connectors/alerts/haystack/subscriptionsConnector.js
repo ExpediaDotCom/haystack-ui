@@ -14,17 +14,157 @@
  *         limitations under the License.
  */
 
-const Q = require('q');
+const grpc = require('grpc');
+const messages = require('../../../../static_codegen/subscription/subscriptionManagement_pb');
+const expressionTreeBuilder = require('./expressionTreeBuilder');
+const config = require('../../../config/config');
+const services = require('../../../../static_codegen/subscription/subscriptionManagement_grpc_pb');
+const fetcher = require('../../operations/grpcFetcher');
+const putter = require('../../operations/grpcPutter');
+const deleter = require('../../operations/grpcDeleter');
+const poster = require('../../operations/grpcPoster');
 
-// NO-OP for now, TODO implement subscription mechanism
+const grpcOptions = {
+    'grpc.max_receive_message_length': 10485760, // todo: do I need these?
+    ...config.connectors.traces.grpcOptions
+};
+
+
+const client = new services.SubscriptionManagementClient(
+    `${config.connectors.alerts.haystackHost}:${config.connectors.alerts.haystackPort}`,
+    grpc.credentials.createInsecure(),
+    grpcOptions); // TODO make client secure
+
+const subscriptionPoster = poster('createSubscription', client);
+const subscriptionPutter = putter('updateSubscription', client);
+const subscriptionDeleter = deleter('deleteSubscription', client);
+const getSubscriptionFetcher = fetcher('getSubscription', client); // get individual subscription
+const searchSubscriptionFetcher = fetcher('searchSubscription', client); // get group of subscriptions
+
+const converter = {};
+
+converter.pbExpressionTreeToJson = (pbExpressionTree) => {
+    const expressionTree = {};
+    pbExpressionTree.operandsList.forEach((kvPair) => {
+        expressionTree[kvPair.field.name] = kvPair.field.value;
+    });
+    return expressionTree;
+};
+
+converter.toSubscriptionJson = pbSub => ({
+    subscriptionId: pbSub.subscriptionid,
+    user: pbSub.user,
+    dispatchersList: pbSub.dispatchersList,
+    expressionTree: converter.pbExpressionTreeToJson(pbSub.expressiontree),
+    lastModifiedTime: pbSub.lastmodifiedtime,
+    createdTime: pbSub.createdtime
+});
+
 const connector = {};
 
-connector.getAlertSubscriptions = () => Q.fcall(() => null);
+// Get subscription from subscriptionId. Returns SubscriptionResponse.
+connector.getPBSubscription = (subscriptionId) => {
+    const request = new messages.GetSubscriptionRequest();
+    request.setSubscriptionid(subscriptionId);
 
-connector.addAlertSubscription = () => Q.fcall(() => null);
+    return getSubscriptionFetcher
+        .fetch(request)
+        .then(result => converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, result)));
+};
 
-connector.updateAlertSubscription = () => Q.fcall(() => null);
+// Get subscription from subscriptionId. Returns JSON Subscription.
+connector.getSubscription = (subscriptionId) => {
+    const pbSub = connector.getPBSubscription(subscriptionId);
+    return converter.toSubscriptionJson(messages.SubscriptionResponse.toObject(false, pbSub));
+};
 
-connector.deleteAlertSubscription = () => Q.fcall(() => null);
+// Search subscriptions given a set of labels. Returns a SearchSubscriptionResponse (array of SubscriptionResponses).
+connector.searchSubscriptions = (serviceName, operationName, alertType, interval) => {
+    const stat = alertType === 'failure-span' ? 'count' : '*_99';
+
+    const request = new messages.SearchSubscriptionRequest();
+    request.getLabelsMap()
+        .set('serviceName', decodeURIComponent(serviceName))
+        .set('operationName', decodeURIComponent(operationName))
+        .set('type', alertType)
+        .set('stat', stat)
+        .set('interval', interval)
+        .set('product', 'haystack')
+        .set('mtype', 'gauge');
+
+    return searchSubscriptionFetcher
+        .fetch(request)
+        .then((result) => {
+            const pbResult = messages.SearchSubscriptionResponse.toObject(false, result);
+            console.log(pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse)));
+            return pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse));
+        });
+};
+
+function constructSubscription(subscriptionObj) {
+    const subscription = new messages.SubscriptionRequest();
+
+
+    // construct dispatcher list containing type (email or slack) and handle
+    const uiDispatchers =  subscriptionObj.dispatchers.map((inputtedDispatcher) => {
+        const dispatcher = new messages.Dispatcher();
+
+        const type = inputtedDispatcher.type.toString() === '1' ? messages.DispatchType.SLACK : messages.DispatchType.EMAIL;
+        dispatcher.setType(type);
+        dispatcher.setEndpoint(inputtedDispatcher.endpoint);
+
+        return dispatcher;
+    });
+
+    subscription.setDispatchersList(uiDispatchers);
+    // construct expression tree from KV pairs in subscription object (e.g. serviceName, operationName, etc)
+    const expressionTree = expressionTreeBuilder.createSubscriptionExpressionTree(subscriptionObj);
+    subscription.setExpressiontree(expressionTree);
+
+    return subscription;
+}
+
+// Create a new subscription. Returns a subscription id.
+connector.addSubscription = (userName, subscriptionObj) => {
+    const user = new messages.User();
+    user.setUsername(userName);
+
+    const subscription = constructSubscription(subscriptionObj);
+
+    const request = new messages.CreateSubscriptionRequest();
+    request.setUser(user);
+    request.setSubscriptionrequest(subscription);
+
+    return subscriptionPoster.post(request)
+        .then(result => result);
+};
+
+// Update a subscription. Checks server for changes. If none, replace existing subscription with new SubscriptionRequest
+connector.updateSubscription = (id, clientSubscription) => (
+    connector.getPBSubscription(id)
+        .then((serverSubscription) => {
+            if (serverSubscription.lastModifiedTime === clientSubscription.old.lastModifiedTime) {
+                const subscription = constructSubscription(clientSubscription.modified);
+                const request = new messages.UpdateSubscriptionRequest();
+
+                request.setSubscriptionid(id);
+                request.setSubscriptionrequest(subscription);
+                return subscriptionPutter.put(request)
+                    .then(result => result);
+            }
+
+            // todo: let UI know that subscription has already been modified
+            return null;
+        })
+);
+
+// Delete a subscription. Returns empty.
+connector.deleteSubscription = (id) => {
+    const request = new messages.DeleteSubscriptionRequest();
+    request.setSubscriptionid(id);
+
+    return subscriptionDeleter.delete(request)
+        .then(() => {});
+};
 
 module.exports = connector;

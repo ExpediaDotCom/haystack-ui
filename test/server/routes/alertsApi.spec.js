@@ -70,7 +70,7 @@ describe('routes.alertsApi', () => {
         request(server)
             .post('/api/alert/service/operation/count/subscriptions')
             .type('form')
-            .send({dispatcherType: 'slack', dispatcherId: '#test'})
+            .send({user: 'haystack', subscription: {}})
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
             .expect(200)
@@ -82,11 +82,11 @@ describe('routes.alertsApi', () => {
             });
     });
 
-    it('returns http 200 for PUT /api/alert/subscriptions:subscriptionId', (done) => {
+    it('returns http 200 for PUT /api/alert/subscriptions/:subscriptionId', (done) => {
         request(server)
             .put('/api/alert/subscriptions/1')
             .type('form')
-            .send({dispatcherId: '#test'})
+            .send({subscriptions: {old: {}, modified: {}}})
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
             .expect(200)
