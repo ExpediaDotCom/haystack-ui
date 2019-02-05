@@ -110,7 +110,7 @@ export default class TraceDetails extends React.Component {
                             <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                                 <a role="button" id="timeline-view" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
                             </li>
-                            { window.haystackUiConfig && window.haystackUiConfig.enableTrends ? (
+                            { window.haystackUiConfig && window.haystackUiConfig.subsystems.includes('trends') ? (
                                 <React.Fragment>
                                     <li className={this.state.tabSelected === 2 ? 'active' : ''}>
                                         <a role="button" id="latency-view" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
