@@ -21,7 +21,7 @@
 const express = require('express');
 const onFinished = require('finished');
 const config = require('../config/config');
-const servicesConnector = require('../connectors/services/servicesConnector');
+const servicesConnector = config.connectors.traces && require('../connectors/services/servicesConnector'); // eslint-disable-line global-require
 const metrics = require('../utils/metrics');
 const assets = require('../../public/assets.json');
 
@@ -37,20 +37,19 @@ router.get('*', (req, res) => {
         subsystems: Object.keys(config.connectors),
         gaTrackingID: config.gaTrackingID,
         usbPrimary: config.usbPrimary,
-        enableTrends: !!config.connectors.trends,
         enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
         enableServiceLevelTrends: config.connectors.trends && config.connectors.trends.enableServiceLevelTrends,
-        services: servicesConnector.getServicesSync(),
+        services: servicesConnector && servicesConnector.getServicesSync(),
         enableSSO: config.enableSSO,
         refreshInterval: config.refreshInterval,
         enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions.enabled,
-        tracesTimePresetOptions: config.connectors.traces.timePresetOptions,
+        tracesTimePresetOptions: config.connectors.traces && config.connectors.traces.timePresetOptions,
         timeWindowPresetOptions: config.timeWindowPresetOptions,
-        tracesTTL: config.connectors.traces.ttl,
+        tracesTTL: config.connectors.traces && config.connectors.traces.ttl,
         trendsTTL: config.connectors.trends && config.connectors.trends.ttl,
         relatedTracesOptions: config.relatedTracesOptions,
         tagValuesTransformMap: config.tagValuesTransformMap,
-        usingZipkinConnector: (config.connectors.traces.connectorName === 'zipkin')
+        usingZipkinConnector: (config.connectors.traces && config.connectors.traces.connectorName === 'zipkin')
     });
 
     onFinished(res, () => {
