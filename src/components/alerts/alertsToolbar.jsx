@@ -148,10 +148,10 @@ export default class AlertsToolbar extends React.Component {
                                 className="form-control alert-interval"
                                 onChange={this.handleIntervalChange}
                             >
-                                <option value="1m">1m</option>
-                                <option value="5m">5m</option>
-                                <option value="15m">15m</option>
-                                <option value="60m">60m</option>
+                                <option value="OneMinute">1m</option>
+                                <option value="FiveMinute">5m</option>
+                                <option value="FifteenMinute">15m</option>
+                                <option value="OneHour">60m</option>
                             </select>
                         </div>
                         <div className="box-inline">

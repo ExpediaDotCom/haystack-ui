@@ -45,7 +45,7 @@ const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make thi
 
 function fetchOperations(serviceName) {
     return servicesConnector.getOperations(serviceName);
-}
+    }
 
 function parseOperationAlertsResponse(data) {
     return data.searchanomalyresponseList.map((anomalyResponse) => {
@@ -74,7 +74,8 @@ function fetchOperationAlerts(serviceName, interval, from) {
         .set('mtype', 'gauge')
         .set('product', 'haystack');
     request.setStarttime(from);
-    request.setEndtime(Date.now());
+    request.setEndtime(Math.trunc(Date.now() / 1000));
+    request.setSize(-1);
 
     return getAnomaliesFetcher
         .fetch(request)
@@ -113,7 +114,7 @@ function getActiveAlertCount(operationAlerts) {
 
 connector.getServiceAlerts = (serviceName, interval) => {
     // todo: calculate "from" value based on selected interval
-    const oneDayAgo = Math.trunc(Date.now() - (24 * 60 * 60 * 1000));
+    const oneDayAgo = Math.trunc((Date.now() - (24 * 60 * 60 * 1000)) / 1000);
     return Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
@@ -135,7 +136,8 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
         .set('interval', interval)
         .set('mtype', 'gauge');
     request.setStarttime(from);
-    request.setEndtime(Date.now());
+    request.setEndtime(Math.trunc(Date.now() / 1000));
+    request.setSize(-1);
 
     return getAnomaliesFetcher
         .fetch(request)
@@ -143,7 +145,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, '5m', Math.trunc(Date.now() - (5 * 60 * 1000)))
+    fetchOperationAlerts(serviceName, 'FiveMinute', Math.trunc((Date.now() - (5 * 60 * 1000))) / 1000)
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;

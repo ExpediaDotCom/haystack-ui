@@ -82,7 +82,7 @@ export default class Tabs extends React.Component {
         super(props);
 
         // state for interval, used in alert counter and alert tab
-        this.state = {interval: '5m'};
+        this.state = {interval: 'FiveMinute'};
 
         // bindings
         this.updateInterval = this.updateInterval.bind(this);
