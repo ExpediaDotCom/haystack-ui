@@ -17,14 +17,14 @@ const config = require('../../config/config');
 const LoaderBackedCache = require('../utils/LoaderBackedCache');
 
 const tracesConnector = config.connectors.traces && require(`../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require, global-require
-
+const refreshIntervalInSecs = config.connectors.traces.serviceRefreshIntervalInSecs;
 const connector = {};
 
-const serviceCache = new LoaderBackedCache(() => tracesConnector.getServices(), 5 * 60 * 1000);
+const serviceCache = new LoaderBackedCache(() => tracesConnector.getServices(), refreshIntervalInSecs * 1000);
 connector.getServices = () => serviceCache.get();
 connector.getServicesSync = () => serviceCache.getCached();
 
-const operationsCache = new LoaderBackedCache(serviceName => tracesConnector.getOperations(serviceName), 5 * 60 * 1000);
+const operationsCache = new LoaderBackedCache(serviceName => tracesConnector.getOperations(serviceName), refreshIntervalInSecs * 1000);
 connector.getOperations = serviceName => operationsCache.get(serviceName);
 connector.getOperationsSync = serviceName => operationsCache.getCached(serviceName);
 
