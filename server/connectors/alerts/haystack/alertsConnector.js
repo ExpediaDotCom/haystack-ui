@@ -19,7 +19,7 @@ const _ = require('lodash');
 const grpc = require('grpc');
 
 const config = require('../../../config/config');
-const servicesConnector = require('../../services/servicesConnector');
+const servicesConnector = config.connectors.traces && require('../../services/servicesConnector'); // eslint-disable-line
 
 const fetcher = require('../../operations/grpcFetcher');
 const services = require('../../../../static_codegen/anomaly/anomalyReader_grpc_pb');
@@ -28,10 +28,7 @@ const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEnco
 
 const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
-const grpcOptions = {
-    'grpc.max_receive_message_length': 10485760, // todo: do I need these?
-    ...config.connectors.traces.grpcOptions
-};
+const grpcOptions = config.grpcOptions || {};
 
 const connector = {};
 const client = new services.AnomalyReaderClient(
@@ -44,25 +41,35 @@ const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make thi
 
 
 function fetchOperations(serviceName) {
-    return servicesConnector.getOperations(serviceName);
+    return servicesConnector && servicesConnector.getOperations(serviceName);
     }
 
 function parseOperationAlertsResponse(data) {
     return data.searchanomalyresponseList.map((anomalyResponse) => {
-        const labels = anomalyResponse.labels;
+        const labels = anomalyResponse.labelsMap;
 
-        const operationName = labels.operationName;
-        const alertType = labels.alertType;
-        const latestUnhealthy = _.maxBy(anomalyResponse.anomalies, anomaly => anomaly.timestamp);
+        const operationName = labels.find(label => label[0] === 'operationName');
+        const stat = labels.find(label => label[0] === 'stat');
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= (Date.now() - alertFreqInSec));
-        const timestamp = latestUnhealthy && latestUnhealthy.timestamp;
-        return {
-            operationName,
-            alertType,
-            isUnhealthy,
-            timestamp
-        };
+        let alertType;
+        if (stat && stat[1] === '*_99') {
+            alertType = 'durationTP99';
+        } else if (stat && stat[1] === 'count') {
+            alertType = 'failureCount';
+        }
+        if (operationName && alertType) {
+            const latestUnhealthy = _.maxBy(anomalyResponse.anomaliesList, anomaly => anomaly.timestamp);
+
+            const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= (Date.now() - alertFreqInSec));
+            const timestamp = latestUnhealthy && latestUnhealthy.timestamp;
+            return {
+                operationName: operationName[1],
+                alertType,
+                isUnhealthy,
+                timestamp
+            };
+        }
+        return null;
     });
 }
 
@@ -73,7 +80,7 @@ function fetchOperationAlerts(serviceName, interval, from) {
         .set('interval', interval)
         .set('mtype', 'gauge')
         .set('product', 'haystack');
-    request.setStarttime(from);
+    request.setStarttime(Math.trunc(from / 1000));
     request.setEndtime(Math.trunc(Date.now() / 1000));
     request.setSize(-1);
 
@@ -83,21 +90,25 @@ function fetchOperationAlerts(serviceName, interval, from) {
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
-    return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
-        const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
+    if (operations) {
+        return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
+            const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
 
-        if (operationAlert !== undefined) {
+            if (operationAlert !== undefined) {
+                return {
+                    ...operationAlert
+                };
+            }
             return {
-                ...operationAlert
+                operationName: operation,
+                type: alertType,
+                isUnhealthy: false,
+                timestamp: null
             };
-        }
-        return {
-            operationName: operation,
-            type: alertType,
-            isUnhealthy: false,
-            timestamp: null
-        };
-    })));
+        })));
+    }
+
+    return alertTypes.map(alertType => (operationAlerts.filter(alert => (alert.alertType === alertType))));
 }
 
 function returnAnomalies(data) {
@@ -114,7 +125,7 @@ function getActiveAlertCount(operationAlerts) {
 
 connector.getServiceAlerts = (serviceName, interval) => {
     // todo: calculate "from" value based on selected interval
-    const oneDayAgo = Math.trunc((Date.now() - (24 * 60 * 60 * 1000)) / 1000);
+    const oneDayAgo = Math.trunc((Date.now() - (24 * 60 * 60 * 1000)));
     return Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
@@ -135,7 +146,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
         .set('stat', stat)
         .set('interval', interval)
         .set('mtype', 'gauge');
-    request.setStarttime(from);
+    request.setStarttime(Math.trunc(from / 1000));
     request.setEndtime(Math.trunc(Date.now() / 1000));
     request.setSize(-1);
 
@@ -145,7 +156,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, 'FiveMinute', Math.trunc((Date.now() - (5 * 60 * 1000))) / 1000)
+    fetchOperationAlerts(serviceName, 'FiveMinute', Math.trunc((Date.now() - (5 * 60 * 1000))))
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;

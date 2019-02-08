@@ -24,10 +24,7 @@ const putter = require('../../operations/grpcPutter');
 const deleter = require('../../operations/grpcDeleter');
 const poster = require('../../operations/grpcPoster');
 
-const grpcOptions = {
-    'grpc.max_receive_message_length': 10485760, // todo: do I need these?
-    ...config.connectors.traces.grpcOptions
-};
+const grpcOptions = config.grpcOptions || {};
 
 
 const client = new services.SubscriptionManagementClient(

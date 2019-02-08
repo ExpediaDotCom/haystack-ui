@@ -27,6 +27,8 @@ import uiState from './stores/searchBarUiStateStore';
 import OperationStore from '../../../stores/operationStore';
 import ServiceStore from '../../../stores/serviceStore';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+
 @observer
 export default class SearchBar extends React.Component {
     static propTypes = {
@@ -45,8 +47,10 @@ export default class SearchBar extends React.Component {
 
     componentDidMount() {
         // TODO move this inside state store's init maybe?
-        SearchableKeysStore.fetchKeys();
-        ServiceStore.fetchServices();
+        if (subsystems.includes('traces')) {
+            SearchableKeysStore.fetchKeys();
+            ServiceStore.fetchServices();
+        }
     }
 
     componentWillReceiveProps(next) {
