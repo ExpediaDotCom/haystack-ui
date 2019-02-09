@@ -15,6 +15,9 @@
  */
 import tracesSearchStore from '../../../traces/stores/tracesSearchStore';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('traces');
+
 function spanLevelFiltersToList(filteredNames, traceSearch) {
     return JSON.stringify(filteredNames.map(name => JSON.stringify(traceSearch[name])));
 }
@@ -31,7 +34,7 @@ export class TracesTabStateStore {
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, type, ...kv} =  search;
-        this.isAvailable = !!Object.keys(kv).length;
+        this.isAvailable = enabled && !!Object.keys(kv).length;
     }
 
     fetch() {

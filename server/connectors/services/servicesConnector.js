@@ -16,7 +16,7 @@
 const config = require('../../config/config');
 const LoaderBackedCache = require('../utils/LoaderBackedCache');
 
-const tracesConnector = require(`../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require
+const tracesConnector = config.connectors.traces && require(`../traces/${config.connectors.traces.connectorName}/tracesConnector`); // eslint-disable-line import/no-dynamic-require, global-require
 
 const connector = {};
 
