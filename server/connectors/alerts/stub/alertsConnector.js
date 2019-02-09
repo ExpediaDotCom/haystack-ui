@@ -24,11 +24,11 @@ function getRandomTimeStamp() {
 function generateAnomaly() {
     const currentTime = ((new Date()).getTime()) * 1000;
     const timestamp = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
-    const expectedValue = Math.floor(Math.random() * 100000);
-    const observedValue = Math.floor(expectedValue * (Math.random() * 100));
+    const expectedvalue = Math.floor(Math.random() * 100000);
+    const observedvalue = Math.floor(expectedvalue * (Math.random() * 100));
     return {
-        observedValue,
-        expectedValue,
+        observedvalue,
+        expectedvalue,
         timestamp
     };
 }

@@ -26,6 +26,7 @@ import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
 
 const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
+const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
 
 export default class TrendDetailsToolbar extends React.Component {
     static propTypes = {
@@ -323,7 +324,7 @@ export default class TrendDetailsToolbar extends React.Component {
                         )
                     }
                     {
-                        this.props.serviceSummary === false && (
+                        (this.props.serviceSummary === false && tracesEnabled) && (
                             <Link
                                 role="button"
                                 className="btn btn-sm btn-default"

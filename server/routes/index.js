@@ -42,7 +42,7 @@ router.get('*', (req, res) => {
         services: servicesConnector && servicesConnector.getServicesSync(),
         enableSSO: config.enableSSO,
         refreshInterval: config.refreshInterval,
-        enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions.enabled,
+        enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions,
         tracesTimePresetOptions: config.connectors.traces && config.connectors.traces.timePresetOptions,
         timeWindowPresetOptions: config.timeWindowPresetOptions,
         tracesTTL: config.connectors.traces && config.connectors.traces.ttl,

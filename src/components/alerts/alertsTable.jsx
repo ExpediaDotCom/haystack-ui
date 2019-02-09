@@ -68,7 +68,7 @@ export default class AlertsTable extends React.Component {
 
     static timestampColumnFormatter(timestamp) {
         if (timestamp) {
-            return `<div class=""><b>${formatters.toTimeago(timestamp)}</b> at ${formatters.toTimestring(timestamp)}</div>`;
+            return `<div class=""><b>${formatters.toTimeago(timestamp * 1000)}</b> at ${formatters.toTimestring(timestamp * 1000)}</div>`;
         }
         return '<div/>';
     }

@@ -42,34 +42,34 @@ const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make thi
 
 function fetchOperations(serviceName) {
     return servicesConnector && servicesConnector.getOperations(serviceName);
-    }
+}
 
 function parseOperationAlertsResponse(data) {
-    return data.searchanomalyresponseList.map((anomalyResponse) => {
+    const filteredAnomalyResponse = _.filter(data.searchanomalyresponseList, (anomalyResponse) => {
+        console.log(anomalyResponse);
         const labels = anomalyResponse.labelsMap;
 
         const operationName = labels.find(label => label[0] === 'operationName');
         const stat = labels.find(label => label[0] === 'stat');
 
-        let alertType;
-        if (stat && stat[1] === '*_99') {
-            alertType = 'durationTP99';
-        } else if (stat && stat[1] === 'count') {
-            alertType = 'failureCount';
-        }
-        if (operationName && alertType) {
-            const latestUnhealthy = _.maxBy(anomalyResponse.anomaliesList, anomaly => anomaly.timestamp);
+        return operationName && (stat && (stat[1] === '*_99' || 'count'));
+    });
 
-            const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= (Date.now() - alertFreqInSec));
-            const timestamp = latestUnhealthy && latestUnhealthy.timestamp;
-            return {
-                operationName: operationName[1],
-                alertType,
-                isUnhealthy,
-                timestamp
-            };
-        }
-        return null;
+    return filteredAnomalyResponse.map((anomalyResponse) => {
+        const operationName = anomalyResponse.labelsMap.find(label => label[0] === 'operationName')[1];
+        const stat = anomalyResponse.labelsMap.find(label => label[0] === 'stat')[1];
+        const type = stat === '*_99' ? 'durationTP99' : 'failureCount';
+        const latestUnhealthy = _.maxBy(anomalyResponse.anomaliesList, anomaly => anomaly.timestamp);
+
+        const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= ((Date.now() / 1000) - alertFreqInSec));
+        const timestamp = latestUnhealthy && latestUnhealthy.timestamp * 1000;
+
+        return {
+            operationName,
+            type,
+            isUnhealthy,
+            timestamp
+        };
     });
 }
 
@@ -90,7 +90,7 @@ function fetchOperationAlerts(serviceName, interval, from) {
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
-    if (operations) {
+    if (operations && operations.length) {
         return _.flatten(operations.map(operation => alertTypes.map((alertType) => {
             const operationAlert = operationAlerts.find(alert => (alert.operationName.toLowerCase() === operation.toLowerCase() && alert.type === alertType));
 
@@ -108,15 +108,16 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
         })));
     }
 
-    return alertTypes.map(alertType => (operationAlerts.filter(alert => (alert.alertType === alertType))));
+    return _.flatten(alertTypes.map(alertType => (_.filter(operationAlerts, alert => (alert.type === alertType)))));
 }
 
 function returnAnomalies(data) {
-    if (!data || !data.length || !data[0].length) {
+    console.log(data);
+    if (!data || !data.length || !data[0].anomaliesList.length) {
         return [];
     }
 
-    return data[0].anomalies;
+    return data[0].anomaliesList;
 }
 
 function getActiveAlertCount(operationAlerts) {
@@ -142,7 +143,6 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
         .set('product', 'haystack')
-        .set('name', alertType)
         .set('stat', stat)
         .set('interval', interval)
         .set('mtype', 'gauge');
@@ -152,7 +152,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
 
     return getAnomaliesFetcher
         .fetch(request)
-        .then(pbResult => returnAnomalies(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
+        .then(pbResult => returnAnomalies(messages.SearchAnomaliesResponse.toObject(false, pbResult).searchanomalyresponseList));
 };
 
 connector.getServiceUnhealthyAlertCount = serviceName =>

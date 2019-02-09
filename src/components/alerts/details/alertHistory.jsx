@@ -24,6 +24,8 @@ import {Link} from 'react-router-dom';
 import formatters from '../../../utils/formatters';
 import linkBuilder from '../../../utils/linkBuilder';
 
+const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
+
 @observer
 export default class AlertHistory extends React.Component {
     static propTypes = {
@@ -34,11 +36,11 @@ export default class AlertHistory extends React.Component {
     };
 
     static timeAgoFormatter(cell) {
-        return formatters.toTimeago(cell);
+        return formatters.toTimeago(cell * 1000);
     }
 
     static timestampFormatter(cell) {
-        return formatters.toTimestring(cell);
+        return formatters.toTimestring(cell * 1000);
     }
 
     static durationColumnFormatter(start, end) {
@@ -99,23 +101,25 @@ export default class AlertHistory extends React.Component {
                         <th width="40%">Timestamp</th>
                         <th width="20%" className="text-right">Observed Value</th>
                         <th width="20%" className="text-right">Expected Value</th>
-                        <th width="20%" className="text-right">Trends & Traces</th>
+                        <th width="20%" className="text-right">{tracesEnabled ? 'Trends & Traces' : 'Trends'}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
                             (<tr className="non-highlight-row" key={Math.random()}>
-                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp)}</span> at {AlertHistory.timestampFormatter(alert.timestamp)}</td>
-                                <td className="text-right"><span className="alerts__bold">{alert.observedValue}</span></td>
-                                <td className="text-right"><span className="alerts__bold">{alert.expectedValue}</span></td>
+                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp * 1000)}</span> at {AlertHistory.timestampFormatter(alert.timestamp * 1000)}</td>
+                                <td className="text-right"><span className="alerts__bold">{alert.observedvalue}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.expectedvalue}</span></td>
                                 <td className="text-right">
                                     <div className="btn-group btn-group-sm">
                                         <Link to={this.trendLinkCreator(alert.timestamp)} target="_blank" className="btn btn-default">
                                             <span className="ti-stats-up"/>
                                         </Link>
-                                        <Link to={this.traceLinkCreator(alert.timestamp)} target="_blank" className="btn btn-sm btn-default">
-                                            <span className="ti-align-left"/>
-                                        </Link>
+                                        {   tracesEnabled &&
+                                            <Link to={this.traceLinkCreator(alert.timestamp)} target="_blank" className="btn btn-sm btn-default">
+                                                <span className="ti-align-left"/>
+                                            </Link>
+                                        }
                                     </div>
                                 </td>
                             </tr>))
