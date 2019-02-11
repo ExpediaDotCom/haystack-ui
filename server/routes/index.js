@@ -21,7 +21,6 @@
 const express = require('express');
 const onFinished = require('finished');
 const config = require('../config/config');
-const servicesConnector = config.connectors.traces && require('../connectors/services/servicesConnector'); // eslint-disable-line global-require
 const metrics = require('../utils/metrics');
 const assets = require('../../public/assets.json');
 
@@ -39,7 +38,6 @@ router.get('*', (req, res) => {
         usbPrimary: config.usbPrimary,
         enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
         enableServiceLevelTrends: config.connectors.trends && config.connectors.trends.enableServiceLevelTrends,
-        services: servicesConnector && servicesConnector.getServicesSync(),
         enableSSO: config.enableSSO,
         refreshInterval: config.refreshInterval,
         enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions.enabled,
