@@ -34,7 +34,7 @@ const subscriptions = (serviceName, operationName, alertType, interval) => (
             expressionTree: {
                 serviceName,
                 operationName,
-                name: alertType,
+                metric_key: alertType,
                 interval,
                 stat: alertType === 'failure-span' ? 'count' : '*_99',
                 mtype: 'gauge',
@@ -57,7 +57,7 @@ const subscriptions = (serviceName, operationName, alertType, interval) => (
             expressionTree: {
                 serviceName,
                 operationName,
-                name: alertType,
+                metric_key: alertType,
                 interval,
                 stat: alertType === 'failure-span' ? 'count' : '*_99',
                 mtype: 'gauge',

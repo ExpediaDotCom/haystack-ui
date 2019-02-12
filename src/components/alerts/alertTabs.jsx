@@ -32,16 +32,16 @@ export default class AlertTabs extends React.Component {
     static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval) {
         switch (tabSelected) {
             case 2:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.durationTP99 || []} alertType="durationTP99" location={location} serviceName={serviceName} interval={interval} />;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.duration || []} alertType="duration" location={location} serviceName={serviceName} interval={interval} />;
             default:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.failureCount || []} alertType="failureCount" location={location} serviceName={serviceName} interval={interval} />;
+                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts['failure-span'] || []} alertType="failure-span" location={location} serviceName={serviceName} interval={interval} />;
         }
     }
 
     constructor(props) {
         super(props);
         const query = toQuery(this.props.location.search);
-        const tabSelected = (query.type === 'durationTP99') ? 2 : 1;
+        const tabSelected = (query.type === 'duration') ? 2 : 1;
 
         this.state = {
             tabSelected
@@ -63,8 +63,8 @@ export default class AlertTabs extends React.Component {
         } = this.props;
 
         const groupedAlerts = _.groupBy(this.props.alertsStore.alerts, _.property('type'));
-        const unhealthyFailureCountAlerts = groupedAlerts.failureCount && groupedAlerts.failureCount.filter(alert => alert.isUnhealthy).length;
-        const unhealthyDurationTP99Alerts = groupedAlerts.durationTP99 && groupedAlerts.durationTP99.filter(alert => alert.isUnhealthy).length;
+        const unhealthyFailureCountAlerts = groupedAlerts['failure-span'] && groupedAlerts['failure-span'].filter(alert => alert.isUnhealthy).length;
+        const unhealthyDurationTP99Alerts = groupedAlerts.duration && groupedAlerts.duration.filter(alert => alert.isUnhealthy).length;
 
         return (
             <section>

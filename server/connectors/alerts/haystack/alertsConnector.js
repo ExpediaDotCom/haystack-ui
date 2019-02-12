@@ -35,7 +35,7 @@ const client = new services.AnomalyReaderClient(
     `${config.connectors.alerts.haystackHost}:${config.connectors.alerts.haystackPort}`,
     grpc.credentials.createInsecure(),
     grpcOptions); // TODO make client secure
-const alertTypes = ['durationTP99', 'failureCount'];
+const alertTypes = ['duration', 'failure-span'];
 const getAnomaliesFetcher = fetcher('getAnomalies', client);
 const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
 
@@ -45,20 +45,11 @@ function fetchOperations(serviceName) {
 }
 
 function parseOperationAlertsResponse(data) {
-    const filteredAnomalyResponse = _.filter(data.searchanomalyresponseList, (anomalyResponse) => {
-        console.log(anomalyResponse);
-        const labels = anomalyResponse.labelsMap;
-
-        const operationName = labels.find(label => label[0] === 'operationName');
-        const stat = labels.find(label => label[0] === 'stat');
-
-        return operationName && (stat && (stat[1] === '*_99' || 'count'));
-    });
+    const filteredAnomalyResponse = _.filter(data.searchanomalyresponseList, a => (a.labelsMap.find(label => label[0] === 'operationName')));
 
     return filteredAnomalyResponse.map((anomalyResponse) => {
         const operationName = anomalyResponse.labelsMap.find(label => label[0] === 'operationName')[1];
-        const stat = anomalyResponse.labelsMap.find(label => label[0] === 'stat')[1];
-        const type = stat === '*_99' ? 'durationTP99' : 'failureCount';
+        const type = anomalyResponse.labelsMap.find(label => label[0] === 'metric_key')[1];
         const latestUnhealthy = _.maxBy(anomalyResponse.anomaliesList, anomaly => anomaly.timestamp);
 
         const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= ((Date.now() / 1000) - alertFreqInSec));
@@ -73,13 +64,15 @@ function parseOperationAlertsResponse(data) {
     });
 }
 
-function fetchOperationAlerts(serviceName, interval, from) {
+function fetchDurationAlerts(serviceName, interval, from) {
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('interval', interval)
         .set('mtype', 'gauge')
-        .set('product', 'haystack');
+        .set('product', 'haystack')
+        .set('stat', '*_99')
+        .set('metric_key', 'duration');
     request.setStarttime(Math.trunc(from / 1000));
     request.setEndtime(Math.trunc(Date.now() / 1000));
     request.setSize(-1);
@@ -87,6 +80,29 @@ function fetchOperationAlerts(serviceName, interval, from) {
     return getAnomaliesFetcher
         .fetch(request)
         .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
+}
+
+function fetchFailureCountAlerts(serviceName, interval, from) {
+    const request = new messages.SearchAnamoliesRequest();
+    request.getLabelsMap()
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
+        .set('interval', interval)
+        .set('mtype', 'gauge')
+        .set('product', 'haystack')
+        .set('stat', 'count')
+        .set('metric_key', 'failure-span');
+    request.setStarttime(Math.trunc(from / 1000));
+    request.setEndtime(Math.trunc(Date.now() / 1000));
+    request.setSize(-1);
+
+    return getAnomaliesFetcher
+        .fetch(request)
+        .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
+}
+
+function fetchOperationAlerts(serviceName, interval, from) {
+    return Q.all([fetchDurationAlerts(serviceName, interval, from), fetchFailureCountAlerts(serviceName, interval, from)])
+        .then(stats => (_.flatten(stats[0], stats[1])));
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
@@ -112,7 +128,6 @@ function mergeOperationsWithAlerts({operationAlerts, operations}) {
 }
 
 function returnAnomalies(data) {
-    console.log(data);
     if (!data || !data.length || !data[0].anomaliesList.length) {
         return [];
     }
@@ -143,6 +158,7 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
         .set('product', 'haystack')
+        .set('metric_key', alertType)
         .set('stat', stat)
         .set('interval', interval)
         .set('mtype', 'gauge');

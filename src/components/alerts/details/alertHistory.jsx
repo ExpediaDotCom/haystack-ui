@@ -57,8 +57,8 @@ export default class AlertHistory extends React.Component {
     }
 
     trendLinkCreator(timestamp) {
-        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
@@ -71,8 +71,8 @@ export default class AlertHistory extends React.Component {
     }
 
     traceLinkCreator(timestamp) {
-        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTracesLink({
             serviceName: this.props.serviceName,
@@ -112,11 +112,11 @@ export default class AlertHistory extends React.Component {
                                 <td className="text-right"><span className="alerts__bold">{alert.expectedvalue}</span></td>
                                 <td className="text-right">
                                     <div className="btn-group btn-group-sm">
-                                        <Link to={this.trendLinkCreator(alert.timestamp)} target="_blank" className="btn btn-default">
+                                        <Link to={this.trendLinkCreator(alert.timestamp * 1000)} target="_blank" className="btn btn-default">
                                             <span className="ti-stats-up"/>
                                         </Link>
                                         {   tracesEnabled &&
-                                            <Link to={this.traceLinkCreator(alert.timestamp)} target="_blank" className="btn btn-sm btn-default">
+                                            <Link to={this.traceLinkCreator(alert.timestamp * 1000)} target="_blank" className="btn btn-sm btn-default">
                                                 <span className="ti-align-left"/>
                                             </Link>
                                         }

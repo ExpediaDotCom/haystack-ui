@@ -113,11 +113,9 @@ export default class AlertsTable extends React.Component {
     }
 
     static toAlertTypeString = (num) => {
-        if (num === 'count') {
-            return 'Total Count';
-        } else if (num === 'durationTP99') {
+        if (num === 'duration') {
             return 'Duration TP99';
-        } else if (num === 'failureCount') {
+        } else if (num === 'failure-span') {
             return 'Failure Count';
         }
 
@@ -125,13 +123,12 @@ export default class AlertsTable extends React.Component {
     };
 
     static toTrendTypeString = (alertType) => {
-        if (alertType === 'count') {
-            return 'count';
-        } else if (alertType === 'durationTP99') {
+        if (alertType === 'duration') {
             return 'tp99Duration';
-        } else if (alertType === 'failureCount') {
+        } else if (alertType === 'failure-span') {
             return 'failureCount';
         }
+
         return null;
     };
 

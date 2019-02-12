@@ -21,8 +21,8 @@ export default function newSubscriptionConstructor(serviceName, operationName, t
         expressionTree: {
             serviceName,
             operationName,
-            type,
-            stat: name === 'failure-span' ? 'count' : '*_99',
+            metric_key: type,
+            stat: type === 'failure-span' ? 'count' : '*_99',
             interval,
             mtype: 'gauge',
             product: 'haystack'

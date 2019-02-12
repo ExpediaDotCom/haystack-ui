@@ -78,9 +78,9 @@ const stubSubscriptions = [
         expressionTree: {
             serviceName: 'test',
             operationName: 'test',
-            name: 'failureCount',
+            metric_key: 'failure-span',
             interval: '5m',
-            stat: 'failure-span',
+            stat: 'count',
             mtype: 'gauge',
             product: 'haystack'
         }
@@ -101,9 +101,9 @@ const stubSubscriptions = [
         expressionTree: {
             serviceName: 'test',
             operationName: 'test',
-            name: 'failureCount',
+            name: 'failure-span',
             interval: '5m',
-            stat: 'failure-span',
+            stat: 'count',
             mtype: 'gauge',
             product: 'haystack'
         }
@@ -134,6 +134,8 @@ const stubAddedSubscription = [
     }
 ];
 
+const fiveMinuteInterval = 'FiveMinute';
+
 function getValue(min, max) {
     return _.round((Math.random() * (max - min)) + min, 0);
 }
@@ -162,28 +164,14 @@ function getAlertHistoryTimestamps() {
 const stubAlerts = [
     {
         operationName: 'test',
-        type: 'durationTP99',
+        type: 'duration',
         isHealthy: false,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
     },
     {
         operationName: 'test',
-        type: 'failureCount',
-        isHealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'test',
-        type: 'count',
-        isHealthy: true,
-        timestamp: getRandomTimeStamp(),
-        trend: getRandomValues()
-    },
-    {
-        operationName: 'test',
-        type: 'AADuration',
+        type: 'failure-span',
         isHealthy: true,
         timestamp: getRandomTimeStamp(),
         trend: getRandomValues()
@@ -252,7 +240,7 @@ describe('<Alerts />', () => {
     it('should render error if promise is rejected', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, rejectedPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} interval={fiveMinuteInterval} updateInterval={() => {}} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('.tr-no-border')).to.have.length(0);
@@ -261,7 +249,7 @@ describe('<Alerts />', () => {
     it('should render loading if promise is pending', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, pendingPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} interval={fiveMinuteInterval} updateInterval={() => {}} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -271,7 +259,7 @@ describe('<Alerts />', () => {
     it('should render the Active Alerts Table', () => {
         const alertsStore = createStubServiceAlertsStore(stubAlerts, fulfilledPromise);
         alertsStore.fetchServiceAlerts();
-        const wrapper = mount(<Alerts history={stubHistory} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
+        const wrapper = mount(<Alerts history={stubHistory} interval={fiveMinuteInterval} updateInterval={() => {}} location={stubLocation} defaultPreset={stubDefaultPreset} alertsStore={alertsStore} serviceName={stubService} />);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -282,7 +270,7 @@ describe('<Alerts />', () => {
 describe('<AlertDetails />', () => {
     it('should render error if promise is rejected', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, rejectedPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.error-message_text')).to.have.length(2);
         expect(wrapper.find('.loading')).to.have.length(0);
@@ -292,7 +280,7 @@ describe('<AlertDetails />', () => {
 
     it('should render loading if promise is pending', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, pendingPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.loading')).to.have.length(2);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -302,7 +290,7 @@ describe('<AlertDetails />', () => {
 
     it('should render the alert details with successful details promise', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.loading')).to.have.length(0);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
@@ -312,7 +300,7 @@ describe('<AlertDetails />', () => {
 
     it('should successfully bring up the subscription modal and add dispatchers', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         expect(wrapper.find('.subscription-row')).to.have.length(2);
 
@@ -323,7 +311,7 @@ describe('<AlertDetails />', () => {
 
     it('should load subscription modal with values filled in when subscription modify button is clicked', () => {
         const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval="5m" alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
+        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
 
         wrapper.find('.alert-modify').first().simulate('click');
         expect(wrapper.find('.dispatcher-input')).to.have.length(2);
