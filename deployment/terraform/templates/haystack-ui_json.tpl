@@ -14,6 +14,7 @@
       "connectorName": "haystack",
       "haystackHost": "${trace_reader_hostname}",
       "haystackPort": ${trace_reader_service_port},
+      "serviceRefreshIntervalInSecs": 60,
       "fieldKeys": [${whitelisted_fields}],
       "grpcOptions": {
         "grpc.max_receive_message_length": 52428800
