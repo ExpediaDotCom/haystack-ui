@@ -46,6 +46,7 @@ export default class AlertSubscriptions extends React.Component {
         this.state = {
             showNewSubscriptionBox: false,
             subscriptionError: false,
+            subscriptionErrorMessage: null,
             selectValue: '1',
             inputValue: ''
         };
@@ -91,14 +92,19 @@ export default class AlertSubscriptions extends React.Component {
         });
     }
 
-    handleSubscriptionError() {
+    handleSubscriptionError(subscriptionErrorMessage) {
         this.setState({
-            subscriptionError: true
+            subscriptionError: true,
+            subscriptionErrorMessage
         });
-        setTimeout(() => this.setState({subscriptionError: false}), 4000);
+        setTimeout(() => this.setState({subscriptionError: false, subscriptionErrorMessage: null}), 4000);
     }
 
     submitNewSubscription() {
+        if (!this.state.inputValue.length) {
+            this.handleSubscriptionError('Dispatcher endpoint cannot be empty.');
+            return;
+        }
         const dispatchers = [{type: this.state.selectValue, endpoint: this.state.inputValue}];
 
         const subscription = newSubscriptionConstructor(
@@ -112,14 +118,15 @@ export default class AlertSubscriptions extends React.Component {
         this.props.alertDetailsStore.addNewSubscription(
             subscription,
             this.handleSubscriptionSuccess,
-            this.handleSubscriptionError
+            this.handleSubscriptionError('Error creating subscription.')
         );
     }
 
     render() {
         const {
             subscriptionError,
-            showNewSubscriptionBox
+            showNewSubscriptionBox,
+            subscriptionErrorMessage
         } = this.state;
 
         const NewSubscription = () => (
@@ -145,7 +152,7 @@ export default class AlertSubscriptions extends React.Component {
                 </td>
                 <td>
                     <div className="btn-group btn-group-sm">
-                        <button className="btn btn-success" onClick={this.handleSubmit}>
+                        <button className="btn btn-success" onClick={this.submitNewSubscription}>
                             <span className="ti-plus"/>
                         </button>
                     </div>
@@ -187,8 +194,7 @@ export default class AlertSubscriptions extends React.Component {
                     }
                 </div>
                 <div className={subscriptionError ? 'subscription-error' : 'hidden'}>
-                    {/* TODO: more verbose errors */}
-                    Could not process subscription. Please try again.
+                    {subscriptionErrorMessage || 'Could not process subscription. Please try again.'}
                 </div>
             </section>
         );

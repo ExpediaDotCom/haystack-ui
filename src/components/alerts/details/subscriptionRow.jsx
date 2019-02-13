@@ -50,6 +50,10 @@ export default class SubscriptionRow extends React.Component {
     handleSubmitModifiedSubscription() {
         const oldSubscription = this.props.subscription;
         const dispatchers = [this.state.dispatcher];
+        if (!dispatchers[0].endpoint.length) {
+            this.props.errorCallback('Dispatcher endpoint cannot be empty.');
+            return;
+        }
         const {serviceName, operationName, type, interval} = this.props.subscription.expressionTree;
 
         const modifiedSubscription = newSubscriptionConstructor(
@@ -63,7 +67,7 @@ export default class SubscriptionRow extends React.Component {
         this.props.alertDetailsStore.updateSubscription(
             subscriptions,
             this.props.successCallback,
-            this.props.errorCallback
+            this.props.errorCallback('Error updating subscription.')
         );
         this.setState({activeModifyInput: null});
     }
