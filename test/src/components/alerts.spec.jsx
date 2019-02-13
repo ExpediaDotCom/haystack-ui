@@ -297,23 +297,4 @@ describe('<AlertDetails />', () => {
         expect(wrapper.find('.subscription-row')).to.have.length(2);
         expect(wrapper.find('.alert-history')).to.have.length(1);
     });
-
-    it('should successfully bring up the subscription modal and add dispatchers', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
-
-        expect(wrapper.find('.subscription-row')).to.have.length(2);
-
-        wrapper.find('.btn-success').first().simulate('click');
-        wrapper.find('.btn-info').simulate('click');
-        expect(wrapper.find('.dispatcher-input')).to.have.length(1);
-    });
-
-    it('should load subscription modal with values filled in when subscription modify button is clicked', () => {
-        const detailsStore = createStubAlertDetailsStore(stubDetails, fulfilledPromise, stubSubscriptions);
-        const wrapper = mount(<MemoryRouter><AlertDetails interval={fiveMinuteInterval} alertDetailsStore={detailsStore} serviceName={stubService} operationName={'op'} type={'count'}/></MemoryRouter>);
-
-        wrapper.find('.alert-modify').first().simulate('click');
-        expect(wrapper.find('.dispatcher-input')).to.have.length(2);
-    });
 });

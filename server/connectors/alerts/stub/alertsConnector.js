@@ -17,13 +17,13 @@
 const Q = require('q');
 
 function getRandomTimeStamp() {
-    const currentTime = ((new Date()).getTime()) * 1000;
-    return (currentTime - Math.floor((Math.random() * 5000 * 60 * 1000)));
+    const currentTime = ((new Date()).getTime());
+    return (currentTime - Math.floor((Math.random() * 5000 * 60)));
 }
 
 function generateAnomaly() {
-    const currentTime = ((new Date()).getTime()) * 1000;
-    const timestamp = (currentTime - Math.floor((Math.random() * 2000000 * 60 * 1000)));
+    const currentTime = ((new Date()).getTime() / 1000);
+    const timestamp = (currentTime - Math.floor((Math.random() * 2000 * 60)));
     const expectedvalue = Math.floor(Math.random() * 100000);
     const observedvalue = Math.floor(expectedvalue * (Math.random() * 100));
     return {
@@ -37,55 +37,48 @@ function getAlerts() {
     return [
         {
             operationName: 'tarley-1',
-            type: 'count',
+            type: 'duration',
             isUnhealthy: true,
             timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tarley-1',
-            type: 'durationTP99',
+            type: 'failure-span',
             isUnhealthy: true,
             timestamp: getRandomTimeStamp()
         },
         {
-            operationName: 'tarley-1',
-            type: 'failureCount',
+            operationName: 'tully-1',
+            type: 'duration',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tully-1',
-            type: 'count',
+            type: 'failure-span',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'tully-1',
-            type: 'durationTP99',
+            type: 'duration',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
-        },
-        {
+        },        {
             operationName: 'tully-1',
-            type: 'failureCount',
+            type: 'failure-span',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'dondarrion-1',
-            type: 'count',
-            isUnhealthy: true,
-            timestamp: getRandomTimeStamp()
-        },
-        {
-            operationName: 'dondarrion-1',
-            type: 'durationTP99',
+            type: 'duration',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
         },
         {
             operationName: 'dondarrion-1',
-            type: 'failureCount',
+            type: 'failure-span',
             isUnhealthy: false,
             timestamp: getRandomTimeStamp()
         }

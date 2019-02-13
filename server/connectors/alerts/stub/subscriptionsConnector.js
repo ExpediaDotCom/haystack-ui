@@ -23,10 +23,6 @@ const subscriptions = (serviceName, operationName, alertType, interval) => (
             user: {userName: 'haystack-team'},
             dispatchersList: [
                 {
-                    type: 0,
-                    endpoint: 'haystack@expedia.com'
-                },
-                {
                     type: 1,
                     endpoint: '#haystack'
                 }
@@ -48,10 +44,6 @@ const subscriptions = (serviceName, operationName, alertType, interval) => (
                 {
                     type: 0,
                     endpoint: 'haystack@opentracing.io'
-                },
-                {
-                    type: 1,
-                    endpoint: '#haystack-tracing'
                 }
             ],
             expressionTree: {

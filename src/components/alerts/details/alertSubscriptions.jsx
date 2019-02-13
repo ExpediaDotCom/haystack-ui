@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
 import SubscriptionRow from './subscriptionRow';
-import SubscriptionModal from './subscriptionModal';
+import newSubscriptionConstructor from '../utils/subscriptionConstructor';
 
 @observer
 export default class AlertSubscriptions extends React.Component {
@@ -32,27 +32,55 @@ export default class AlertSubscriptions extends React.Component {
         interval: PropTypes.string.isRequired
     };
 
+    static handleInputKeypress(e, escapeCallback, enterCallback) {
+        if (e.keyCode === 27) {
+            escapeCallback();
+        } else if (e.keyCode === 13) {
+            enterCallback();
+        }
+    }
+
     constructor(props) {
         super(props);
 
         this.state = {
-            modalIsOpen: false,
-            subscriptionError: false
+            showNewSubscriptionBox: false,
+            subscriptionError: false,
+            selectValue: '1',
+            inputValue: ''
         };
 
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
         this.submitNewSubscription = this.submitNewSubscription.bind(this);
         this.handleSubscriptionSuccess = this.handleSubscriptionSuccess.bind(this);
         this.handleSubscriptionError = this.handleSubscriptionError.bind(this);
+        this.toggleNewSubscriptionBox = this.toggleNewSubscriptionBox.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSelectChange = this.handleSelectChange.bind(this);
     }
 
-    openModal() {
-        this.setState({modalIsOpen: true});
+
+    handleInputChange(e) {
+        this.setState({
+            inputValue: e.target.value
+        });
     }
 
-    closeModal() {
-        this.setState({modalIsOpen: false});
+    handleSelectChange(e) {
+        this.setState({
+            selectValue: e.target.value
+        });
+    }
+
+
+    toggleNewSubscriptionBox() {
+        this.setState(prevState => ({
+            showNewSubscriptionBox: !prevState.showNewSubscriptionBox,
+            subscriptionError: false
+        }));
+        this.setState({
+            inputValue: '',
+            selectValue: '1'
+        });
     }
 
     handleSubscriptionSuccess() {
@@ -70,7 +98,17 @@ export default class AlertSubscriptions extends React.Component {
         setTimeout(() => this.setState({subscriptionError: false}), 4000);
     }
 
-    submitNewSubscription(subscription) {
+    submitNewSubscription() {
+        const dispatchers = [{type: this.state.selectValue, endpoint: this.state.inputValue}];
+
+        const subscription = newSubscriptionConstructor(
+            this.props.serviceName,
+            this.props.operationName,
+            this.props.type,
+            this.props.interval,
+            dispatchers,
+        );
+
         this.props.alertDetailsStore.addNewSubscription(
             subscription,
             this.handleSubscriptionSuccess,
@@ -80,8 +118,40 @@ export default class AlertSubscriptions extends React.Component {
 
     render() {
         const {
-            subscriptionError
+            subscriptionError,
+            showNewSubscriptionBox
         } = this.state;
+
+        const NewSubscription = () => (
+            <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
+                <td>
+                    <select
+                        className="subscription-select form-control subscription-form"
+                        onChange={this.handleSelectChange}
+                        value={this.state.selectValue}
+                        name="type"
+                    >
+                        <option value="1"> Slack</option>
+                        <option value="0"> Email</option>
+                    </select>
+                    <input
+                        className="dispatcher-input form-control subscription-form"
+                        onChange={this.handleInputChange}
+                        value={this.state.inputValue}
+                        onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
+                        placeholder={this.state.selectValue === '1' ? 'Public Slack Channel' : 'Email Address'}
+                        name="endpoint"
+                    />
+                </td>
+                <td>
+                    <div className="btn-group btn-group-sm">
+                        <button className="btn btn-success" onClick={this.handleSubmit}>
+                            <span className="ti-plus"/>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        );
 
         const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
         return (
@@ -107,22 +177,14 @@ export default class AlertSubscriptions extends React.Component {
                                     />))
                                 : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
                         }
-                        <SubscriptionModal
-                            serviceName={this.props.serviceName}
-                            operationName={this.props.operationName}
-                            type={this.props.type}
-                            title="Add Subscription"
-                            isOpen={this.state.modalIsOpen}
-                            closeModal={this.closeModal}
-                            submitCallback={this.submitNewSubscription}
-                            interval={this.props.interval}
-                        />
+                        <NewSubscription/>
                     </tbody>
                 </table>
                 <div className="text-left subscription-button">
-                    <button className="btn btn-sm btn-success" onClick={this.openModal}>
-                        <span className="ti-plus"/> Add Subscription
-                    </button>
+                    {showNewSubscriptionBox ?
+                        <button className="btn btn-sm btn-default" onClick={this.toggleNewSubscriptionBox}><div>Cancel</div></button> :
+                        <button className="btn btn-sm btn-success" onClick={this.toggleNewSubscriptionBox}><span className="ti-plus"/> Add Subscription</button>
+                    }
                 </div>
                 <div className={subscriptionError ? 'subscription-error' : 'hidden'}>
                     {/* TODO: more verbose errors */}

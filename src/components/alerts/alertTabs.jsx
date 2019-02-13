@@ -73,13 +73,17 @@ export default class AlertTabs extends React.Component {
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
                             <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >
                                 <span>Failure Count </span>
-                                <span className="badge">{unhealthyFailureCountAlerts}</span>
+                                <span className="badge">
+                                    {unhealthyFailureCountAlerts > 0 && unhealthyFailureCountAlerts}
+                                </span>
                             </a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
                             <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >
                                 <span>Duration TP99 </span>
-                                <span className="badge">{unhealthyDurationTP99Alerts}</span>
+                                <span className="badge">
+                                    {unhealthyDurationTP99Alerts > 0 && unhealthyDurationTP99Alerts}
+                                </span>
                             </a>
                         </li>
                     </ul>
