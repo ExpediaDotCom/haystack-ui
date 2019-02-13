@@ -46,7 +46,7 @@ export default class AlertSubscriptions extends React.Component {
         this.state = {
             showNewSubscriptionBox: false,
             subscriptionError: false,
-            subscriptionErrorMessage: null,
+            // subscriptionErrorMessage: null,
             selectValue: '1',
             inputValue: ''
         };
@@ -129,37 +129,6 @@ export default class AlertSubscriptions extends React.Component {
             subscriptionErrorMessage
         } = this.state;
 
-        const NewSubscription = () => (
-            <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
-                <td>
-                    <select
-                        className="subscription-select form-control subscription-form"
-                        onChange={this.handleSelectChange}
-                        value={this.state.selectValue}
-                        name="type"
-                    >
-                        <option value="1"> Slack</option>
-                        <option value="0"> Email</option>
-                    </select>
-                    <input
-                        className="dispatcher-input form-control subscription-form"
-                        onChange={this.handleInputChange}
-                        value={this.state.inputValue}
-                        onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
-                        placeholder={this.state.selectValue === '1' ? 'Public Slack Channel' : 'Email Address'}
-                        name="endpoint"
-                    />
-                </td>
-                <td>
-                    <div className="btn-group btn-group-sm">
-                        <button className="btn btn-success" onClick={this.submitNewSubscription}>
-                            <span className="ti-plus"/>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        );
-
         const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
         return (
             <section className="subscriptions col-md-6">
@@ -184,7 +153,34 @@ export default class AlertSubscriptions extends React.Component {
                                     />))
                                 : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
                         }
-                        <NewSubscription/>
+                        <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
+                            <td>
+                                <select
+                                    className="subscription-select form-control subscription-form"
+                                    onChange={this.handleSelectChange}
+                                    value={this.state.selectValue}
+                                    name="type"
+                                >
+                                    <option value="1"> Slack</option>
+                                    <option value="0"> Email</option>
+                                </select>
+                                <input
+                                    className="dispatcher-input form-control subscription-form"
+                                    onChange={this.handleInputChange}
+                                    value={this.state.inputValue}
+                                    onKeyDown={event => AlertSubscriptions.handleInputKeypress(event, this.toggleNewSubscriptionBox, this.handleSubmit)}
+                                    placeholder={this.state.selectValue === '1' ? 'Public Slack Channel' : 'Email Address'}
+                                    name="endpoint"
+                                />
+                            </td>
+                            <td>
+                                <div className="btn-group btn-group-sm">
+                                    <button className="btn btn-success" onClick={this.submitNewSubscription}>
+                                        <span className="ti-plus"/>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <div className="text-left subscription-button">
