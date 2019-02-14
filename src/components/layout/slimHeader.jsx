@@ -26,11 +26,10 @@ export default () => (
                 <span className="usb-logo universal-search-header__title">Haystack</span>
             </Link>
           { window.haystackUiConfig.usingZipkinConnector ?
-            <Link className="usb-logo navbar-brand universal-search-header__container" to="/">
-              <span className="universal-search-header__subtitle">Tracing powered by</span>
-              <img src="/images/zipkin-logo.jpg" className="logo universal-search-header__logo" alt="Logo"/>
-              <span className="usb-logo universal-search-header__title">Zipkin</span>
-            </Link> : window.haystackUiConfig.usingZipkinConnector }
+            <a className="usb-logo navbar-brand universal-search-header__container zipkin--logo-container" href="https://zipkin.io">
+              <span className="universal-search-header__subtitle">Tracing powered by: </span>
+              <img src="/images/zipkin-logo.jpg" className="logo zipkin-logo" alt="Logo"/>
+            </a> : window.haystackUiConfig.usingZipkinConnector }
         </div>
     </header>
 );
