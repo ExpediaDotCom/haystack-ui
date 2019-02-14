@@ -29,7 +29,8 @@ function generateAnomaly() {
     return {
         observedvalue,
         expectedvalue,
-        timestamp
+        timestamp,
+        strength: observedvalue % 2 ? 'STRONG' : 'WEAK'
     };
 }
 

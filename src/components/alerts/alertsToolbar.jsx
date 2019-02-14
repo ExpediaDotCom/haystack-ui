@@ -143,7 +143,7 @@ export default class AlertsToolbar extends React.Component {
                 <div className="pull-right text-right">
                     <div>
                         <div className="box-inline">
-                            <span>Alert Interval</span>
+                            <span>Metric Interval</span>
                             <select
                                 value={this.props.interval}
                                 className="form-control alert-interval"

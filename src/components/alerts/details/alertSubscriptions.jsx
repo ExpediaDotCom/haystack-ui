@@ -101,11 +101,12 @@ export default class AlertSubscriptions extends React.Component {
     }
 
     submitNewSubscription() {
-        if (!this.state.inputValue.length) {
+        const trimmedInput = this.state.inputValue.trim();
+        if (!trimmedInput.length) {
             this.handleSubscriptionError('Dispatcher endpoint cannot be empty.');
             return;
         }
-        const dispatchers = [{type: this.state.selectValue, endpoint: this.state.inputValue}];
+        const dispatchers = [{type: this.state.selectValue, endpoint: trimmedInput}];
 
         const subscription = newSubscriptionConstructor(
             this.props.serviceName,
@@ -131,7 +132,7 @@ export default class AlertSubscriptions extends React.Component {
 
         const alertSubscriptions = this.props.alertDetailsStore.alertSubscriptions;
         return (
-            <section className="subscriptions col-md-6">
+            <section className="subscriptions col-md-5">
                 <h4>Subscriptions</h4>
                 <table className="subscriptions__table table">
                     <thead>
@@ -151,7 +152,7 @@ export default class AlertSubscriptions extends React.Component {
                                         successCallback={this.handleSubscriptionSuccess}
                                         errorCallback={this.handleSubscriptionError}
                                     />))
-                                : <tr className="non-highlight-row"><td /><td>No Subscriptions Found</td></tr>
+                                : <tr className="non-highlight-row"><td>No Subscriptions Found</td><td /></tr>
                         }
                         <tr className={this.state.showNewSubscriptionBox ? 'non-highlight-row subscription-row' : 'hidden'}>
                             <td>

@@ -49,11 +49,14 @@ export default class SubscriptionRow extends React.Component {
 
     handleSubmitModifiedSubscription() {
         const oldSubscription = this.props.subscription;
-        const dispatchers = [this.state.dispatcher];
-        if (!dispatchers[0].endpoint.length) {
-            this.props.errorCallback('Dispatcher endpoint cannot be empty.');
+        const dispatcher = this.state.dispatcher;
+        dispatcher.endpoint = dispatcher.endpoint.trim();
+        if (!dispatcher.endpoint.length) {
+            this.props.errorCallback('Updated endpoint cannot be empty.');
             return;
         }
+        const dispatchers = [dispatcher];
+
         const {serviceName, operationName, type, interval} = this.props.subscription.expressionTree;
 
         const modifiedSubscription = newSubscriptionConstructor(

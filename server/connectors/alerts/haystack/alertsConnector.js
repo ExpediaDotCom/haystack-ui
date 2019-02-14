@@ -44,53 +44,60 @@ function fetchOperations(serviceName) {
     return servicesConnector && servicesConnector.getOperations(serviceName);
 }
 
+function sameOperationAndType(alertToCheck, operationName, type) {
+    if (!alertToCheck) {
+        return false;
+    }
+    const operationToCheck = alertToCheck.labelsMap.find(label => label[0] === 'operationName');
+    const typeToCheck = alertToCheck.labelsMap.find(label => label[0] === 'metric_key');
+    return ((operationToCheck && operationToCheck[1] === operationName) && typeToCheck && typeToCheck[1] === type);
+}
+
 function parseOperationAlertsResponse(data) {
-    const filteredAnomalyResponse = _.filter(data.searchanomalyresponseList, a => (a.labelsMap.find(label => label[0] === 'operationName')));
+    const fullAnomalyList = data.searchanomalyresponseList;
+    console.log(fullAnomalyList);
+    const mappedAndMergedResponse = fullAnomalyList.map((anomalyResponse, baseIterationIndex) => {
+        if (anomalyResponse === null) return null;
+        const operationLabel = anomalyResponse.labelsMap.find(label => label[0] === 'operationName');
+        if (operationLabel) {
+            const operationName = operationLabel[1];
+            const type = anomalyResponse.labelsMap.find(label => label[0] === 'metric_key')[1];
+            let anomaliesList = anomalyResponse.anomaliesList;
 
-    return filteredAnomalyResponse.map((anomalyResponse) => {
-        const operationName = anomalyResponse.labelsMap.find(label => label[0] === 'operationName')[1];
-        const type = anomalyResponse.labelsMap.find(label => label[0] === 'metric_key')[1];
-        const latestUnhealthy = _.maxBy(anomalyResponse.anomaliesList, anomaly => anomaly.timestamp);
+            fullAnomalyList.slice(baseIterationIndex + 1, fullAnomalyList.length).forEach((alertToCheck, checkIndex) => {
+                if (sameOperationAndType(alertToCheck, operationName, type)) {
+                    anomaliesList = _.merge(anomaliesList, alertToCheck.anomaliesList);
+                    fullAnomalyList[baseIterationIndex + checkIndex + 1] = null;
+                }
+            });
 
-        const isUnhealthy = (latestUnhealthy && latestUnhealthy.timestamp >= ((Date.now() / 1000) - alertFreqInSec));
-        const timestamp = latestUnhealthy && latestUnhealthy.timestamp * 1000;
+            const latestUnhealthy = _.maxBy(anomaliesList, anomaly => anomaly.timestamp);
+            const isUnhealthy =  (latestUnhealthy && latestUnhealthy.timestamp >= ((Date.now() / 1000) - alertFreqInSec));
+            const timestamp = latestUnhealthy && latestUnhealthy.timestamp * 1000;
 
-        return {
-            operationName,
-            type,
-            isUnhealthy,
-            timestamp
-        };
+            return {
+                operationName,
+                type,
+                isUnhealthy,
+                timestamp
+            };
+        }
+
+        return null;
     });
+
+    return _.filter(mappedAndMergedResponse, a => a !== null);
 }
 
-function fetchDurationAlerts(serviceName, interval, from) {
+function fetchAlerts(serviceName, interval, from, stat, key) {
     const request = new messages.SearchAnamoliesRequest();
     request.getLabelsMap()
         .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
         .set('interval', interval)
         .set('mtype', 'gauge')
         .set('product', 'haystack')
-        .set('stat', '*_99')
-        .set('metric_key', 'duration');
-    request.setStarttime(Math.trunc(from / 1000));
-    request.setEndtime(Math.trunc(Date.now() / 1000));
-    request.setSize(-1);
-
-    return getAnomaliesFetcher
-        .fetch(request)
-        .then(pbResult => parseOperationAlertsResponse(messages.SearchAnomaliesResponse.toObject(false, pbResult)));
-}
-
-function fetchFailureCountAlerts(serviceName, interval, from) {
-    const request = new messages.SearchAnamoliesRequest();
-    request.getLabelsMap()
-        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
-        .set('interval', interval)
-        .set('mtype', 'gauge')
-        .set('product', 'haystack')
-        .set('stat', 'count')
-        .set('metric_key', 'failure-span');
+        .set('stat', stat)
+        .set('metric_key', key);
     request.setStarttime(Math.trunc(from / 1000));
     request.setEndtime(Math.trunc(Date.now() / 1000));
     request.setSize(-1);
@@ -101,7 +108,7 @@ function fetchFailureCountAlerts(serviceName, interval, from) {
 }
 
 function fetchOperationAlerts(serviceName, interval, from) {
-    return Q.all([fetchDurationAlerts(serviceName, interval, from), fetchFailureCountAlerts(serviceName, interval, from)])
+    return Q.all([fetchAlerts(serviceName, interval, from, 'duration', '*_99'), fetchAlerts(serviceName, interval, from, 'count', 'failure-span')])
         .then(stats => (_.flatten(stats[0], stats[1])));
 }
 
@@ -132,7 +139,10 @@ function returnAnomalies(data) {
         return [];
     }
 
-    return data[0].anomaliesList;
+    return _.flatten(data.map((anomaly) => {
+        const strength = anomaly.labelsMap.find(label => label[0] === 'anomalyLevel')[1];
+        return anomaly.anomaliesList.map(a => ({strength, ...a}));
+    }));
 }
 
 function getActiveAlertCount(operationAlerts) {

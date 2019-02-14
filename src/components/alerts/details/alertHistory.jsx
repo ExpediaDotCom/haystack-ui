@@ -40,7 +40,7 @@ export default class AlertHistory extends React.Component {
     }
 
     static timestampFormatter(cell) {
-        return formatters.toTimestring(cell * 1000);
+        return formatters.toShortTimestring(cell * 1000);
     }
 
     static durationColumnFormatter(start, end) {
@@ -88,26 +88,28 @@ export default class AlertHistory extends React.Component {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.timestamp, ['desc']);
 
         return (
-            <div className="col-md-6 alert-history">
+            <div className="col-md-7 alert-history">
                 <header>
-                    <h4>History
-                        <span className="h6"> ({sortedHistoryResults.length} times unhealthy in last {this.props.historyWindow / 86400000} day)</span>
+                    <h4>Anomaly History
+                        <span className="h6"> ({sortedHistoryResults.length} anomalies in the last {this.props.historyWindow / 86400000} day)</span>
                     </h4>
 
                 </header>
                 <table className="table">
                     <thead>
                     <tr>
-                        <th width="40%">Timestamp</th>
-                        <th width="20%" className="text-right">Observed Value</th>
-                        <th width="20%" className="text-right">Expected Value</th>
-                        <th width="20%" className="text-right">{tracesEnabled ? 'Trends & Traces' : 'Trends'}</th>
+                        <th width="27%">Timestamp</th>
+                        <th width="19%">Anomaly Strength</th>
+                        <th width="18%" className="text-right">Observed Value</th>
+                        <th width="18%" className="text-right">Expected Value</th>
+                        <th width="18%" className="text-right">{tracesEnabled ? 'Trends & Traces' : 'Trends'}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
                             (<tr className="non-highlight-row" key={Math.random()}>
                                 <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp * 1000)}</span> at {AlertHistory.timestampFormatter(alert.timestamp * 1000)}</td>
+                                <td className="text-right"><span className="alerts__bold">{alert.strength}</span></td>
                                 <td className="text-right"><span className="alerts__bold">{alert.observedvalue}</span></td>
                                 <td className="text-right"><span className="alerts__bold">{alert.expectedvalue}</span></td>
                                 <td className="text-right">
