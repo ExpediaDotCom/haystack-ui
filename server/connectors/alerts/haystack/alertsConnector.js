@@ -109,7 +109,7 @@ function fetchAlerts(serviceName, interval, from, stat, key) {
 
 function fetchOperationAlerts(serviceName, interval, from) {
     return Q.all([fetchAlerts(serviceName, interval, from, 'duration', '*_99'), fetchAlerts(serviceName, interval, from, 'count', 'failure-span')])
-        .then(stats => (_.flatten(stats[0], stats[1])));
+        .then(stats => (_.merge(stats[0], stats[1])));
 }
 
 function mergeOperationsWithAlerts({operationAlerts, operations}) {
