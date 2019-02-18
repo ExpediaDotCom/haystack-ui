@@ -37,7 +37,7 @@ const client = new services.AnomalyReaderClient(
     grpcOptions); // TODO make client secure
 const alertTypes = ['duration', 'failure-span'];
 const getAnomaliesFetcher = fetcher('getAnomalies', client);
-const alertFreqInSec = config.connectors.alerts.alertFreqInSec; // TODO make this based on alert type
+const alertFreqInSec = config.connectors.alerts.alertFreqInSec || 300; // TODO make this based on alert type
 
 
 function fetchOperations(serviceName) {
@@ -71,8 +71,8 @@ function parseOperationAlertsResponse(data) {
             });
 
             const latestUnhealthy = _.maxBy(anomaliesList, anomaly => anomaly.timestamp);
-            const isUnhealthy =  (latestUnhealthy && latestUnhealthy.timestamp >= ((Date.now() / 1000) - alertFreqInSec));
             const timestamp = latestUnhealthy && latestUnhealthy.timestamp * 1000;
+            const isUnhealthy =  (timestamp && timestamp >= (Date.now() - (alertFreqInSec * 1000)));
 
             return {
                 operationName,
