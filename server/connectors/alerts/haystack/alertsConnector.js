@@ -55,7 +55,6 @@ function sameOperationAndType(alertToCheck, operationName, type) {
 
 function parseOperationAlertsResponse(data) {
     const fullAnomalyList = data.searchanomalyresponseList;
-    console.log(fullAnomalyList);
     const mappedAndMergedResponse = fullAnomalyList.map((anomalyResponse, baseIterationIndex) => {
         if (anomalyResponse === null) return null;
         const operationLabel = anomalyResponse.labelsMap.find(label => label[0] === 'operationName');
@@ -108,7 +107,7 @@ function fetchAlerts(serviceName, interval, from, stat, key) {
 }
 
 function fetchOperationAlerts(serviceName, interval, from) {
-    return Q.all([fetchAlerts(serviceName, interval, from, 'duration', '*_99'), fetchAlerts(serviceName, interval, from, 'count', 'failure-span')])
+    return Q.all([fetchAlerts(serviceName, interval, from, '*_99', 'duration'), fetchAlerts(serviceName, interval, from, 'count', 'failure-span')])
         .then(stats => (_.merge(stats[0], stats[1])));
 }
 
