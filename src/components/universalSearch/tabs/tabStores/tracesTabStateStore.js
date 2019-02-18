@@ -41,7 +41,7 @@ export class TracesTabStateStore {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
         // eslint-disable-next-line no-unused-vars
-        const { time, tabId, type, serviceName, ...traceSearch } = this.search;
+        const { time, tabId, type, interval, serviceName, ...traceSearch } = this.search;
 
         const filteredNames = Object.keys(traceSearch).filter(name => /nested_[0-9]/.test(name));
 
