@@ -28,11 +28,15 @@ export default class Alerts extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         alertsStore: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired,
         history: PropTypes.object.isRequired,
         defaultPreset: PropTypes.object.isRequired,
-        interval: PropTypes.string.isRequired,
-        updateInterval: PropTypes.func.isRequired
+        serviceName: PropTypes.string.isRequired,
+        interval: PropTypes.string
+    };
+
+    // Default interval to FiveMinute if none specified in search
+    static defaultProps = {
+        interval: 'FiveMinute'
     };
 
     render() {
@@ -45,7 +49,6 @@ export default class Alerts extends React.Component {
                     location={this.props.location}
                     serviceName={this.props.serviceName}
                     interval={this.props.interval}
-                    updateInterval={this.props.updateInterval}
                 />
                 { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
                     pending: () => <Loading />,
