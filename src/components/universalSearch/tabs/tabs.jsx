@@ -128,7 +128,7 @@ export default class Tabs extends React.Component {
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ?
                             <div className="universal-search-bar-tabs__alert-counter">
-                                <AlertCounter serviceName={this.props.search.serviceName} />
+                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>
                             </div>
                             : null}
                     </a>

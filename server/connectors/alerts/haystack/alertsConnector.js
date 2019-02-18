@@ -180,8 +180,8 @@ connector.getAnomalies = (serviceName, operationName, alertType, from, interval)
         .then(pbResult => returnAnomalies(messages.SearchAnomaliesResponse.toObject(false, pbResult).searchanomalyresponseList));
 };
 
-connector.getServiceUnhealthyAlertCount = serviceName =>
-    fetchOperationAlerts(serviceName, 'FiveMinute', Math.trunc((Date.now() - (5 * 60 * 1000))))
+connector.getServiceUnhealthyAlertCount = (serviceName, interval) =>
+    fetchOperationAlerts(serviceName, interval, Math.trunc((Date.now() - (5 * 60 * 1000))))
         .then(result => getActiveAlertCount(result));
 
 module.exports = connector;

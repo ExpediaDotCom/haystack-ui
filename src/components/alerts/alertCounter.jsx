@@ -27,19 +27,24 @@ const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfi
 @observer
 export default class AlertCounter extends React.Component {
     static propTypes = {
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        interval: PropTypes.string
+    };
+
+    static defaultProps = {
+        interval: 'FiveMinute'
     };
 
     componentDidMount() {
-        alertsStore.fetchUnhealthyAlertCount(this.props.serviceName);
+        alertsStore.fetchUnhealthyAlertCount(this.props.serviceName, this.props.interval);
         this.timerID = setInterval(
-            () => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName),
+            () => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName, this.props.interval),
             alertsRefreshInterval
         );
     }
 
     componentWillReceiveProps(nextProp) {
-        alertsStore.fetchUnhealthyAlertCount(nextProp.serviceName);
+        alertsStore.fetchUnhealthyAlertCount(nextProp.serviceName, nextProp.interval);
     }
 
     componentWillUnmount() {

@@ -25,9 +25,9 @@ export class ServiceAlertsStore extends ErrorHandlingStore {
     @observable alerts = [];
     @observable promiseState = null;
 
-    @action fetchUnhealthyAlertCount(serviceName) {
+    @action fetchUnhealthyAlertCount(serviceName, interval) {
         axios
-        .get(`/api/alerts/${encodeURIComponent(serviceName)}/unhealthyCount`)
+        .get(`/api/alerts/${encodeURIComponent(serviceName)}/unhealthyCount?interval=${interval}`)
         .then((result) => {
             this.unhealthyAlertCount = result.data;
         })
