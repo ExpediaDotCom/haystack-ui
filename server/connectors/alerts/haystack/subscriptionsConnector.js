@@ -96,7 +96,6 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
         .fetch(request)
         .then((result) => {
             const pbResult = messages.SearchSubscriptionResponse.toObject(false, result);
-            console.log(pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse)));
             return pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse));
         });
 };

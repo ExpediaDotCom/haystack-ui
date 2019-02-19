@@ -66,6 +66,7 @@ export default class AlertDetails extends React.Component {
                                 fulfilled: () => (<AlertHistory
                                     operationName={this.props.operationName}
                                     serviceName={this.props.serviceName}
+                                    type={this.props.type}
                                     alertDetailsStore={this.props.alertDetailsStore}
                                     historyWindow={AlertDetails.historyWindow}
                                 />)

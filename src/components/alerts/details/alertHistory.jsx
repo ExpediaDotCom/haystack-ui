@@ -32,6 +32,7 @@ export default class AlertHistory extends React.Component {
         alertDetailsStore: PropTypes.object.isRequired,
         operationName: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
         historyWindow: PropTypes.number.isRequired
     };
 
@@ -45,6 +46,13 @@ export default class AlertHistory extends React.Component {
 
     static durationColumnFormatter(start, end) {
         return formatters.toDurationStringInSecAndMin(end - start);
+    }
+
+    static valueFormatter(value, type) {
+        if (type === 'duration') {
+            return formatters.toDurationString(value);
+        }
+        return value.toFixed();
     }
 
     static timeBufferAroundAlert = 10 * 60 * 1000; // 10 mins
@@ -110,8 +118,8 @@ export default class AlertHistory extends React.Component {
                             (<tr className="non-highlight-row" key={Math.random()}>
                                 <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp * 1000)}</span> at {AlertHistory.timestampFormatter(alert.timestamp * 1000)}</td>
                                 <td className="text-right"><span className="alerts__bold">{alert.strength}</span></td>
-                                <td className="text-right"><span className="alerts__bold">{alert.observedvalue}</span></td>
-                                <td className="text-right"><span className="alerts__bold">{alert.expectedvalue}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.observedvalue && AlertHistory.valueFormatter(alert.observedvalue, this.props.type)}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.expectedvalue && AlertHistory.valueFormatter(alert.expectedvalue, this.props.type)}</span></td>
                                 <td className="text-right">
                                     <div className="btn-group btn-group-sm">
                                         <Link to={this.trendLinkCreator(alert.timestamp * 1000)} target="_blank" className="btn btn-default">
