@@ -24,25 +24,35 @@ import {Link} from 'react-router-dom';
 import formatters from '../../../utils/formatters';
 import linkBuilder from '../../../utils/linkBuilder';
 
+const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
+
 @observer
 export default class AlertHistory extends React.Component {
     static propTypes = {
         alertDetailsStore: PropTypes.object.isRequired,
         operationName: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
         historyWindow: PropTypes.number.isRequired
     };
 
     static timeAgoFormatter(cell) {
-        return formatters.toTimeago(cell);
+        return formatters.toTimeago(cell * 1000);
     }
 
     static timestampFormatter(cell) {
-        return formatters.toTimestring(cell);
+        return formatters.toShortTimestring(cell * 1000);
     }
 
     static durationColumnFormatter(start, end) {
         return formatters.toDurationStringInSecAndMin(end - start);
+    }
+
+    static valueFormatter(value, type) {
+        if (type === 'duration') {
+            return formatters.toDurationString(value);
+        }
+        return value.toFixed();
     }
 
     static timeBufferAroundAlert = 10 * 60 * 1000; // 10 mins
@@ -55,8 +65,8 @@ export default class AlertHistory extends React.Component {
     }
 
     trendLinkCreator(timestamp) {
-        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
@@ -69,8 +79,8 @@ export default class AlertHistory extends React.Component {
     }
 
     traceLinkCreator(timestamp) {
-        const from = (timestamp / 1000) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp / 1000) + AlertHistory.timeBufferAroundAlert;
+        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
+        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
 
         return linkBuilder.universalSearchTracesLink({
             serviceName: this.props.serviceName,
@@ -86,36 +96,40 @@ export default class AlertHistory extends React.Component {
         const sortedHistoryResults = _.orderBy(this.props.alertDetailsStore.alertHistory, alert => alert.timestamp, ['desc']);
 
         return (
-            <div className="col-md-6 alert-history">
+            <div className="col-md-7 alert-history">
                 <header>
-                    <h4>History
-                        <span className="h6"> ({sortedHistoryResults.length} times unhealthy in last {this.props.historyWindow / 86400000} day)</span>
+                    <h4>Anomaly History
+                        <span className="h6"> ({sortedHistoryResults.length} anomalies in the last {this.props.historyWindow / 86400000} day)</span>
                     </h4>
 
                 </header>
                 <table className="table">
                     <thead>
                     <tr>
-                        <th width="40%">Timestamp</th>
-                        <th width="20%" className="text-right">Observed Value</th>
-                        <th width="20%" className="text-right">Expected Value</th>
-                        <th width="20%" className="text-right">Trends & Traces</th>
+                        <th width="27%">Timestamp</th>
+                        <th width="19%">Anomaly Strength</th>
+                        <th width="18%" className="text-right">Observed Value</th>
+                        <th width="18%" className="text-right">Expected Value</th>
+                        <th width="18%" className="text-right">{tracesEnabled ? 'Trends & Traces' : 'Trends'}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {sortedHistoryResults.length ? sortedHistoryResults.map(alert =>
                             (<tr className="non-highlight-row" key={Math.random()}>
-                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp)}</span> at {AlertHistory.timestampFormatter(alert.timestamp)}</td>
-                                <td className="text-right"><span className="alerts__bold">{alert.observedValue}</span></td>
-                                <td className="text-right"><span className="alerts__bold">{alert.expectedValue}</span></td>
+                                <td><span className="alerts__bold">{AlertHistory.timeAgoFormatter(alert.timestamp * 1000)}</span> at {AlertHistory.timestampFormatter(alert.timestamp * 1000)}</td>
+                                <td className="text-right"><span className="alerts__bold">{alert.strength}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.observedvalue && AlertHistory.valueFormatter(alert.observedvalue, this.props.type)}</span></td>
+                                <td className="text-right"><span className="alerts__bold">{alert.expectedvalue && AlertHistory.valueFormatter(alert.expectedvalue, this.props.type)}</span></td>
                                 <td className="text-right">
                                     <div className="btn-group btn-group-sm">
-                                        <Link to={this.trendLinkCreator(alert.timestamp)} target="_blank" className="btn btn-default">
+                                        <Link to={this.trendLinkCreator(alert.timestamp * 1000)} target="_blank" className="btn btn-default">
                                             <span className="ti-stats-up"/>
                                         </Link>
-                                        <Link to={this.traceLinkCreator(alert.timestamp)} target="_blank" className="btn btn-sm btn-default">
-                                            <span className="ti-align-left"/>
-                                        </Link>
+                                        {   tracesEnabled &&
+                                            <Link to={this.traceLinkCreator(alert.timestamp * 1000)} target="_blank" className="btn btn-sm btn-default">
+                                                <span className="ti-align-left"/>
+                                            </Link>
+                                        }
                                     </div>
                                 </td>
                             </tr>))

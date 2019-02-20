@@ -20,7 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
-import SubscriptionModal from './subscriptionModal';
+import newSubscriptionConstructor from '../utils/subscriptionConstructor';
 
 @observer
 export default class SubscriptionRow extends React.Component {
@@ -31,44 +31,61 @@ export default class SubscriptionRow extends React.Component {
         errorCallback: PropTypes.func.isRequired
     };
 
-
-    static getDispatcherType(dispatcher) {
-        if (dispatcher.type === 1) {
-            return <div><img src="/images/slack.png" alt="Slack" className="alerts-slack-icon"/> Slack</div>;
-        }
-        return <div><span className="ti-email"/>  Email</div>;
-    }
-
     constructor(props) {
         super(props);
 
         this.state = {
-            modalIsOpen: false
+            modifySubscription: false,
+            dispatcher: JSON.parse(JSON.stringify(this.props.subscription.dispatchersList[0])) // deep copy, so client side changes don't affect store
         };
 
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
         this.handleDeleteSubscription = this.handleDeleteSubscription.bind(this);
         this.handleSubmitModifiedSubscription = this.handleSubmitModifiedSubscription.bind(this);
+        this.handleCancelModifiedSubscription = this.handleCancelModifiedSubscription.bind(this);
+        this.handleModifySubscription = this.handleModifySubscription.bind(this);
+        this.updateDispatcherType = this.updateDispatcherType.bind(this);
+        this.updateDispatcherEndpoint = this.updateDispatcherEndpoint.bind(this);
     }
 
-    openModal() {
-        this.setState({modalIsOpen: true});
-    }
-
-    closeModal() {
-        this.setState({modalIsOpen: false});
-    }
-
-    handleSubmitModifiedSubscription(modifiedSubscription) {
+    handleSubmitModifiedSubscription() {
         const oldSubscription = this.props.subscription;
+        const dispatcher = this.state.dispatcher;
+        dispatcher.endpoint = dispatcher.endpoint.trim();
+        if (!dispatcher.endpoint.length) {
+            this.props.errorCallback('Updated endpoint cannot be empty.');
+            return;
+        }
+        const dispatchers = [dispatcher];
+
+        const {serviceName, operationName, type, interval} = this.props.subscription.expressionTree;
+
+        const modifiedSubscription = newSubscriptionConstructor(
+            serviceName,
+            operationName,
+            type,
+            interval,
+            dispatchers,
+        );
         const subscriptions = {old: oldSubscription, modified: modifiedSubscription};
         this.props.alertDetailsStore.updateSubscription(
             subscriptions,
             this.props.successCallback,
-            this.props.errorCallback
+            this.props.errorCallback('Error updating subscription.')
         );
         this.setState({activeModifyInput: null});
+    }
+
+    handleCancelModifiedSubscription() {
+        this.setState({
+            modifySubscription: false,
+            dispatcher: JSON.parse(JSON.stringify(this.props.subscription.dispatchersList[0]))
+        });
+    }
+
+    handleModifySubscription() {
+        this.setState({
+            modifySubscription: true
+        });
     }
 
     handleDeleteSubscription(subscriptionId) {
@@ -77,44 +94,65 @@ export default class SubscriptionRow extends React.Component {
         );
     }
 
-    render() {
-        const subscription = JSON.parse(JSON.stringify(this.props.subscription)); // deep copy, so client side changes don't affect store
-        const {serviceName, operationName, type, interval} = subscription.expressionTree;
+    updateDispatcherType(e) {
+        this.setState({dispatcher: {type: e.target.value, endpoint: this.state.dispatcher.endpoint}});
+    }
 
-        const SubscriptionButtons = () => (
-            <div className="btn-group btn-group-sm">
-                <button onClick={this.openModal} className="btn btn-default alert-modify">
-                    <span className="ti-pencil"/>
-                </button>
-                <button onClick={() => this.handleDeleteSubscription(subscription.subscriptionId)} className="btn btn-default">
-                    <span className="ti-trash"/>
-                </button>
-            </div>);
+    updateDispatcherEndpoint(e) {
+        this.setState({dispatcher: {type: this.state.dispatcher.type, endpoint: e.target.value}});
+    }
+
+
+    render() {
+        const dispatcher = this.state.dispatcher;
+
+        const HandleSubscriptionModifyButtons = () => (<div className="btn-group btn-group-sm">
+            <button onClick={() => this.handleSubmitModifiedSubscription()} className="btn btn-success alert-modify-submit">
+                <span className="ti-check"/>
+            </button>
+            <button onClick={() => this.handleCancelModifiedSubscription()} className="btn btn-danger alert-modify-cancel">
+                <span className="ti-na"/>
+            </button>
+        </div>);
+
+        const DefaultSubscriptionButtons = () => (<div className="btn-group btn-group-sm">
+            <button onClick={() => this.handleModifySubscription()} className="btn btn-default alert-modify">
+                <span className="ti-pencil"/>
+            </button>
+            <button onClick={() => this.handleDeleteSubscription(this.props.subscription.subscriptionId)} className="btn btn-default">
+                <span className="ti-trash"/>
+            </button>
+        </div>);
 
         return (
             <tr className="non-highlight-row subscription-row">
-                <td>
-                    {subscription.dispatchersList.map(dispatcher => (
-                        <div key={Math.random()} className="subscription-dispatcher-row">
-                            {SubscriptionRow.getDispatcherType(dispatcher)}:  {dispatcher.endpoint}
-                            <br />
-                        </div>
-                        )
-                    )}
+                <td className={!this.state.modifySubscription ? 'default-cursor' : null}>
+                    <div className="subscription-dispatcher-row">
+                        <select
+                            className="subscription-select form-control subscription-form"
+                            value={dispatcher.type.toString()}
+                            name="type"
+                            disabled={!this.state.modifySubscription}
+                            onChange={this.updateDispatcherType}
+                        >
+                            <option value="1"> Slack</option>
+                            <option value="0"> Email</option>
+                        </select>
+                        <input
+                            className="dispatcher-input form-control subscription-form"
+                            placeholder={dispatcher.type.toString() === '1' ? 'Public Slack Channel' : 'Email Address'}
+                            value={dispatcher.endpoint}
+                            name="endpoint"
+                            disabled={!this.state.modifySubscription}
+                            onChange={this.updateDispatcherEndpoint}
+                        />
+                        <br />
+                    </div>
                 </td>
-                <SubscriptionModal
-                    title="Edit Subscription"
-                    isOpen={this.state.modalIsOpen}
-                    closeModal={this.closeModal}
-                    serviceName={serviceName}
-                    operationName={operationName}
-                    type={type}
-                    interval={interval}
-                    dispatchers={subscription.dispatchersList}
-                    submitCallback={this.handleSubmitModifiedSubscription}
-                />
                 <td>
-                    <SubscriptionButtons />
+                    {
+                        this.state.modifySubscription ? <HandleSubscriptionModifyButtons /> : <DefaultSubscriptionButtons />
+                    }
                 </td>
             </tr>
 

@@ -19,9 +19,12 @@ import alertsStore from '../../../alerts/stores/serviceAlertsStore';
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 const isAlertsEnabled = subsystems.includes('alerts');
 
+const oneDayAgo = 24 * 60 * 60 * 1000;
+
 export class AlertsTabStateStore {
     search = null;
     isAvailable = false;
+    interval = null;
 
     init(search) {
         // initialize observables using search object
@@ -30,14 +33,15 @@ export class AlertsTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, ...kv} = search;
+        const {time, tabId, type, interval, ...kv} = search;
+        this.interval = interval || 'FiveMinute';
         const keys = Object.keys(kv);
         this.isAvailable = isAlertsEnabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
 
     fetch() {
         // todo: fetch service alerts based on search time frame
-        alertsStore.fetchServiceAlerts(this.search.serviceName, '5m', 24 * 60 * 60 * 1000);
+        alertsStore.fetchServiceAlerts(this.search.serviceName, this.interval, oneDayAgo);
         return alertsStore;
     }
 }

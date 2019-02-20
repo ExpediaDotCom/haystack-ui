@@ -20,18 +20,22 @@ const granularity = {};
 granularity.options = [
     {
         shortName: '1m',
+        longName: 'OneMinute',
         value: 60 * 1000
     },
     {
         shortName: '5m',
+        longName: 'FiveMinute',
         value: 5 * 60 * 1000
     },
     {
         shortName: '15m',
+        longName: 'FifteenMinute',
         value: 15 * 60 * 1000
     },
     {
         shortName: '1h',
+        longName: 'OneHour',
         value: 60 * 60 * 1000
     }
 ];

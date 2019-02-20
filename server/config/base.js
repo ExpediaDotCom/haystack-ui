@@ -29,6 +29,10 @@ module.exports = {
     // base64 and periodreplacement are supported, default to noop if none provided
     encoder: 'periodreplacement',
 
+    grpcOptions: {
+        'grpc.max_receive_message_length': 10485760
+    },
+
     // this list defines subsystems for which UI should be enabled
     // traces connector must be present in connectors config
     connectors: {

@@ -31,7 +31,7 @@ router.get('/alerts/:serviceName', (req, res, next) => {
 
 router.get('/alerts/:serviceName/unhealthyCount', (req, res, next) => {
     handleResponsePromise(res, next, 'alerts_SVC_unhealthyCount')(
-        () => alertsConnector.getServiceUnhealthyAlertCount(req.params.serviceName)
+        () => alertsConnector.getServiceUnhealthyAlertCount(req.params.serviceName, req.query.interval)
     );
 });
 

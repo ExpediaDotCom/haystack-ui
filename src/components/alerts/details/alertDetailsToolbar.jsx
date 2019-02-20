@@ -23,6 +23,8 @@ import Clipboard from 'react-copy-to-clipboard';
 
 import linkBuilder from '../../../utils/linkBuilder';
 
+const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
+
 @observer
 export default class AlertDetailsToolbar extends React.Component {
     static propTypes = {
@@ -68,13 +70,15 @@ export default class AlertDetailsToolbar extends React.Component {
                     </Link>
                 </div>
                 <div className="btn-group btn-group-sm pull-right">
-                    <Link
-                        to={tracesLink}
-                        className="btn btn-default"
-                        target="_blank"
-                    >
-                        <span className="ti-align-left"/> See Traces
-                    </Link>
+                    {   tracesEnabled &&
+                        <Link
+                            to={tracesLink}
+                            className="btn btn-default"
+                            target="_blank"
+                        >
+                            <span className="ti-align-left"/> See Traces
+                        </Link>
+                    }
                     <Clipboard
                         text={alertsLink}
                         onCopy={this.handleCopy}

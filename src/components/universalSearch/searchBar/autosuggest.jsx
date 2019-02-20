@@ -28,6 +28,9 @@ import SearchSubmit from './searchSubmit';
 
 import './autosuggest.less';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const tracesEnabled = subsystems.includes('traces');
+
 const BACKSPACE = 8;
 const SPACE = 32;
 const TAB = 9;
@@ -126,7 +129,7 @@ export default class Autocomplete extends React.Component {
             });
 
         const serviceName = this.props.uiState.chips.serviceName;
-        if (serviceName) {
+        if (serviceName && tracesEnabled) {
             this.props.operationStore.fetchOperations(serviceName, () => {
                 this.props.options.operationName = this.props.operationStore.operations;
             });
@@ -284,7 +287,7 @@ export default class Autocomplete extends React.Component {
                 const kvPair = splitInput[splitInput.length - 1];
                 const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
                 const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
-                if (chipKey.includes('serviceName')) {
+                if (chipKey.includes('serviceName') && tracesEnabled) {
                     this.props.options.operationName = [];
                     this.props.operationStore.fetchOperations(chipValue, () => {
                         this.props.options.operationName = this.props.operationStore.operations;
@@ -464,7 +467,7 @@ export default class Autocomplete extends React.Component {
                 chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim().replace(/"/g, '');
             }
             this.props.uiState.chips[chipKey] = chipValue;
-            if (chipKey.includes('serviceName')) {
+            if (chipKey.includes('serviceName') && tracesEnabled) {
                 this.props.options.operationName = [];
                 this.props.operationStore.fetchOperations(chipValue, () => {
                     this.props.options.operationName = this.props.operationStore.operations;

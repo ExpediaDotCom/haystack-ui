@@ -24,11 +24,11 @@ const putter = require('../../operations/grpcPutter');
 const deleter = require('../../operations/grpcDeleter');
 const poster = require('../../operations/grpcPoster');
 
-const grpcOptions = {
-    'grpc.max_receive_message_length': 10485760, // todo: do I need these?
-    ...config.connectors.traces.grpcOptions
-};
+const grpcOptions = config.grpcOptions || {};
 
+const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEncoder');
+
+const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
 
 const client = new services.SubscriptionManagementClient(
     `${config.connectors.alerts.haystackHost}:${config.connectors.alerts.haystackPort}`,
@@ -84,9 +84,9 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
 
     const request = new messages.SearchSubscriptionRequest();
     request.getLabelsMap()
-        .set('serviceName', decodeURIComponent(serviceName))
-        .set('operationName', decodeURIComponent(operationName))
-        .set('type', alertType)
+        .set('serviceName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(serviceName)))
+        .set('operationName', metricpointNameEncoder.encodeMetricpointName(decodeURIComponent(operationName)))
+        .set('metric_key', alertType)
         .set('stat', stat)
         .set('interval', interval)
         .set('product', 'haystack')
@@ -96,7 +96,6 @@ connector.searchSubscriptions = (serviceName, operationName, alertType, interval
         .fetch(request)
         .then((result) => {
             const pbResult = messages.SearchSubscriptionResponse.toObject(false, result);
-            console.log(pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse)));
             return pbResult.subscriptionresponseList.map(pbSubResponse => converter.toSubscriptionJson(pbSubResponse));
         });
 };

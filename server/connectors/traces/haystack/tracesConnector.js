@@ -34,10 +34,7 @@ const trendsConnector = config.connectors.trends && require(`../../trends/${conf
 
 const services = require('../../../../static_codegen/traceReader_grpc_pb');
 
-const grpcOptions = {
-    'grpc.max_receive_message_length': 10485760,
-    ...config.connectors.traces.grpcOptions
-};
+const grpcOptions = config.grpcOptions || {};
 
 
 const client = new services.TraceReaderClient(

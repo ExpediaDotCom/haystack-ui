@@ -42,6 +42,13 @@ export default class AlertDetails extends React.Component {
         this.props.alertDetailsStore.fetchAlertHistory(this.props.serviceName, this.props.operationName, this.props.type, Date.now() - AlertDetails.historyWindow, this.props.interval);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.type !== this.props.type) {
+            this.props.alertDetailsStore.fetchAlertSubscriptions(nextProps.serviceName, nextProps.operationName, nextProps.type, nextProps.interval);
+            this.props.alertDetailsStore.fetchAlertHistory(nextProps.serviceName, nextProps.operationName, nextProps.type, Date.now() - AlertDetails.historyWindow, nextProps.interval);
+        }
+    }
+
     render() {
         const enableAlertSubscriptions = window.haystackUiConfig.enableAlertSubscriptions;
 
@@ -59,6 +66,7 @@ export default class AlertDetails extends React.Component {
                                 fulfilled: () => (<AlertHistory
                                     operationName={this.props.operationName}
                                     serviceName={this.props.serviceName}
+                                    type={this.props.type}
                                     alertDetailsStore={this.props.alertDetailsStore}
                                     historyWindow={AlertDetails.historyWindow}
                                 />)

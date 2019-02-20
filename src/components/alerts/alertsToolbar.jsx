@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
 import timeWindow from '../../utils/timeWindow';
+import granularityMetrics from '../trends/utils/metricGranularity';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 import './alerts';
 
@@ -33,8 +34,7 @@ export default class AlertsToolbar extends React.Component {
         alertsStore: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         defaultPreset: PropTypes.object.isRequired,
-        interval: PropTypes.string.isRequired,
-        updateInterval: PropTypes.func.isRequired
+        interval: PropTypes.string.isRequired
     };
 
     constructor(props) {
@@ -43,6 +43,7 @@ export default class AlertsToolbar extends React.Component {
         const query = toQuery(this.props.location.search);
         const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : this.props.defaultPreset;
         this.state = {
+            interval: this.props.interval,
             options: timeWindow.presets,
             activeWindow,
             autoRefreshTimer: new Date(),
@@ -61,7 +62,7 @@ export default class AlertsToolbar extends React.Component {
     componentWillReceiveProps(nextProps) {
         const query = toQuery(nextProps.location.search);
         const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : nextProps.defaultPreset;
-        this.setState({activeWindow, autoRefresh: false});
+        this.setState({activeWindow, autoRefresh: false, interval: nextProps.interval || 'FiveMinute'});
         this.stopRefresh();
     }
 
@@ -131,27 +132,33 @@ export default class AlertsToolbar extends React.Component {
     }
 
     handleIntervalChange(event) {
-        const newInterval = event.target.value;
-        this.props.updateInterval(newInterval);
+        const query = toQuery(this.props.location.search);
+        query.interval = event.target.value;
+
+        const queryUrl = toQueryUrlString(query);
+        if (queryUrl !== this.props.location.search) {
+            this.props.history.push({
+                search: queryUrl
+            });
+        }
     }
 
     render() {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+
         return (
             <header className="alerts-toolbar">
                 <div className="pull-right text-right">
                     <div>
                         <div className="box-inline">
-                            <span>Alert Interval</span>
+                            <span>Metric Interval</span>
                             <select
-                                value={this.props.interval}
+                                value={this.state.interval}
                                 className="form-control alert-interval"
                                 onChange={this.handleIntervalChange}
                             >
-                                <option value="1m">1m</option>
-                                <option value="5m">5m</option>
-                                <option value="15m">15m</option>
-                                <option value="60m">60m</option>
+                                {granularityMetrics.options.map(granularity => (<option key={granularity.longName} value={granularity.longName}>{granularity.shortName}</option>)
+                                )}
                             </select>
                         </div>
                         <div className="box-inline">

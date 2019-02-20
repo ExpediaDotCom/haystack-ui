@@ -81,11 +81,7 @@ export default class Tabs extends React.Component {
     constructor(props) {
         super(props);
 
-        // state for interval, used in alert counter and alert tab
-        this.state = {interval: '5m'};
-
         // bindings
-        this.updateInterval = this.updateInterval.bind(this);
         this.TabViewer = this.TabViewer.bind(this);
 
         // init state stores for tabs
@@ -94,12 +90,6 @@ export default class Tabs extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         Tabs.initTabs(nextProps.search);
-    }
-
-    updateInterval(newInterval) {
-        this.setState({
-            interval: newInterval
-        });
     }
 
     TabViewer({tabId, history, location}) {
@@ -113,7 +103,7 @@ export default class Tabs extends React.Component {
             case 'trends':
                 return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} />;
             case 'alerts':
-                return <Alerts alertsStore={store} history={history} location={location} serviceName={this.props.search.serviceName} defaultPreset={timeWindow.presets[5]} updateInterval={this.updateInterval} interval={this.state.interval} />;
+                return <Alerts alertsStore={store} history={history} location={location} defaultPreset={timeWindow.presets[5]} serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>;
             case 'serviceGraph':
                 return <ServiceGraph store={store} search={this.props.search} history={history}/>;
             case 'servicePerformance':
@@ -138,7 +128,7 @@ export default class Tabs extends React.Component {
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ?
                             <div className="universal-search-bar-tabs__alert-counter">
-                                <AlertCounter serviceName={this.props.search.serviceName} />
+                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>
                             </div>
                             : null}
                     </a>

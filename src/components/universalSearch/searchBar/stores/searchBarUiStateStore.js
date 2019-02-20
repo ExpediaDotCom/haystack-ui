@@ -22,6 +22,7 @@ export class SearchBarUiStateStore {
     @observable operationName = null;
     @observable fieldsKvString = null;
     @observable timeWindow = null;
+    @observable interval = 'FiveMinute';
     @observable chips = [];
     @observable displayErrors = {};
     @observable tabId = null;
@@ -61,7 +62,7 @@ export class SearchBarUiStateStore {
             } else if (key === 'tabId') {
                 this.tabId = search[key];
                 // url query keys that we don't want as chips
-            } else if (key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters') {
+            } else if (key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters' && key !== 'interval') {
                 this.chips[key] = search[key];
             }
         });
