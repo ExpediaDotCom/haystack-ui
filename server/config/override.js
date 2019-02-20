@@ -29,9 +29,9 @@ module.exports = {
   readOverrides: (collection) => {
     const overrideData = {};
     _.each(collection, (value, key) => {
-      if (key.startsWith('HAYSTACK_')) {
+      if (key.startsWith('HAYSTACK_PROP_')) {
         const parts = key.toLowerCase().replace(/__/g, ' ').split('_');
-        parts.shift();
+        parts.splice(0, 2);
 
         let configObject = overrideData;
         let part = parts.shift();
