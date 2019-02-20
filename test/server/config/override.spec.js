@@ -33,8 +33,8 @@ describe('override configuration reader', () => {
 
   it('iterates over environment variables and returns an object split by _', () => {
     const envVariables = {
-      HAYSTACK_CONNECTORS_TRACES_ENABLED: 'true',
-      HAYSTACK_CONNECTORS_TRACES_PROVIDER: 'haystack',
+      HAYSTACK_PROP_CONNECTORS_TRACES_ENABLED: 'true',
+      HAYSTACK_PROP_CONNECTORS_TRACES_PROVIDER: 'haystack',
       TERM: 'xterm-256color'
     };
 
@@ -51,8 +51,8 @@ describe('override configuration reader', () => {
 
   it('iterates over environment variables and returns an object split by _ and camelCase words split by __', () => {
     const envVariables = {
-      HAYSTACK_CONNECTORS_TRENDS_CONNECTOR__NAME: 'haystack',
-      HAYSTACK_CONNECTORS_TRENDS_METRIC__TANK__URL: 'http://localhost:6000',
+      HAYSTACK_PROP_CONNECTORS_TRENDS_CONNECTOR__NAME: 'haystack',
+      HAYSTACK_PROP_CONNECTORS_TRENDS_METRIC__TANK__URL: 'http://localhost:6000',
       TERM: 'xterm-256color'
     };
 
