@@ -55,7 +55,7 @@ export class SearchBarUiStateStore {
 
     @action setStateFromSearch(search) {
         // construct observables from search
-        this.chips = [];
+        this.chips = {};
         Object.keys(search).forEach((key) => {
             if (key === 'time') {
                 this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
@@ -63,7 +63,14 @@ export class SearchBarUiStateStore {
                 this.tabId = search[key];
                 // url query keys that we don't want as chips
             } else if (key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters' && key !== 'interval') {
-                this.chips[key] = search[key];
+                // check for objects that have a period in key, e.g. app.region
+                // todo: come up with more elegant solution
+                if (typeof search[key] === 'object' && !key.includes('nested')) {
+                    const keyInsideObject = Object.keys(search[key])[0];
+                    this.chips[`${key}.${keyInsideObject}`] = search[key][keyInsideObject];
+                } else {
+                    this.chips[key] = search[key];
+                }
             }
         });
         this.serviceName = search.serviceName;
