@@ -69,6 +69,7 @@ export default class AlertDetails extends React.Component {
                                     type={this.props.type}
                                     alertDetailsStore={this.props.alertDetailsStore}
                                     historyWindow={AlertDetails.historyWindow}
+                                    interval={this.props.interval}
                                 />)
                             })
                         }

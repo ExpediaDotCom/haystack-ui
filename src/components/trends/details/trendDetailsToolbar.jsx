@@ -87,8 +87,8 @@ export default class TrendDetailsToolbar extends React.Component {
             activeWindow,
             activeGranularity: granularityFromSearch || timeWindow.getLowerGranularity(activeWindow.value),
             granularityDropdownOpen: false,
-            showCustomTimeRangePicker: false,
             clipboardText: this.setClipboardText(activeWindow),
+            showCustomTimeRangePicker: false,
             autoRefreshEnabled: false,
             autoRefreshTimer: null,
             countdownTimer: null
@@ -111,6 +111,7 @@ export default class TrendDetailsToolbar extends React.Component {
         return linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
             operationName: this.props.opName,
+            interval: this.props.interval,
             time: {
                 from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
                 to: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
