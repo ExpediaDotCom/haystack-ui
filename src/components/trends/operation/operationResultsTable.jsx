@@ -26,7 +26,8 @@ import './operationResultsTable.less';
 export default class OperationResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        operationStore: PropTypes.object.isRequired
+        operationStore: PropTypes.object.isRequired,
+        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
     };
 
     static Header({name}) {
@@ -81,6 +82,7 @@ export default class OperationResultsTable extends React.Component {
                         store={this.props.operationStore}
                         serviceName={this.props.serviceName}
                         opName={row.operationName}
+                        interval={this.props.interval}
             />);
         }
         return null;

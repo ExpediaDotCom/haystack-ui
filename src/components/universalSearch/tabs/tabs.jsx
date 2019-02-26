@@ -101,7 +101,7 @@ export default class Tabs extends React.Component {
             case 'traces':
                 return <TraceResults tracesSearchStore={store} history={history} />;
             case 'trends':
-                return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} />;
+                return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} interval={this.props.search.interval || null} />;
             case 'alerts':
                 return <Alerts alertsStore={store} history={history} location={location} defaultPreset={timeWindow.presets[5]} serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>;
             case 'serviceGraph':

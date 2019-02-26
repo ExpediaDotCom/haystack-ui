@@ -34,7 +34,8 @@ export default class TrendDetailsToolbar extends React.Component {
         trendsStore: PropTypes.object.isRequired,
         opName: PropTypes.string,
         statsType: PropTypes.string,
-        serviceSummary: PropTypes.bool.isRequired
+        serviceSummary: PropTypes.bool.isRequired,
+        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
     };
 
     static defaultProps = {
@@ -80,10 +81,11 @@ export default class TrendDetailsToolbar extends React.Component {
         } = props.trendsStore.statsQuery;
 
         const activeWindow = TrendDetailsToolbar.getActiveTimeWindow(from, until, isCustomTimeRange);
+        const granularityFromSearch = metricGranularity.options.find(option => option.longName === this.props.interval);
 
         this.state = {
             activeWindow,
-            activeGranularity: timeWindow.getLowerGranularity(activeWindow.value),
+            activeGranularity: granularityFromSearch || timeWindow.getLowerGranularity(activeWindow.value),
             granularityDropdownOpen: false,
             showCustomTimeRangePicker: false,
             clipboardText: this.setClipboardText(activeWindow),

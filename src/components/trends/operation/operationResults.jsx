@@ -28,7 +28,8 @@ import Error from '../../common/error';
 export default class operationResults extends React.Component {
     static propTypes = {
         operationStore: PropTypes.object.isRequired,
-        serviceName: PropTypes.string.isRequired
+        serviceName: PropTypes.string.isRequired,
+        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
     };
 
     render() {
@@ -42,6 +43,7 @@ export default class operationResults extends React.Component {
                         ? <OperationResultsTable
                             operationStore={this.props.operationStore}
                             serviceName={this.props.serviceName}
+                            interval={this.props.interval}
                         />
                         : <Error errorMessage="There was a problem displaying operation results. Please try again later." />)
                 })
