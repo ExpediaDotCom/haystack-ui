@@ -203,6 +203,13 @@ describe('<UniversalSearch />', () => {
         // Ensure that chips were updated with the location change
         expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(2);
     });
+
+    it('should allow whitelisted keys with a period in them', () => {
+        const stubQuery = {search: '?test.key=root-service'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQuery} history={stubHistory}/></MemoryRouter>);
+
+        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(1);
+    });
 });
 
 describe('uiState', () => {
