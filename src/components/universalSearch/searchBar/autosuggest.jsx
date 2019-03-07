@@ -72,7 +72,21 @@ export default class Autocomplete extends React.Component {
         } else if (inputString.includes('"')) {
             return ((inputString.match(/"/g) || []).length === 2);
         }
-        return /^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+        return /^([a-zA-Z0-9\s-]+)([=|>|<])([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+    }
+
+    static findIndexOfOperand(inputString) {
+        const match = inputString.match(/([=|>|<])/);
+        return match && match.index;
+    }
+
+    static removeWhiteSpaceAroundInput(inputString) {
+        const operandIndex = Autocomplete.findIndexOfOperand(inputString);
+        if (operandIndex) {
+            const operand = inputString[operandIndex];
+            return inputString.split(operand).map(piece => piece.trim()).join(operand);
+        }
+        return inputString.trim();
     }
 
     constructor(props) {
@@ -94,6 +108,7 @@ export default class Autocomplete extends React.Component {
         }
 
         this.updateFieldKv = this.updateFieldKv.bind(this);
+        this.inputMatchesRangeKey = this.inputMatchesRangeKey.bind(this);
         this.setSuggestions = this.setSuggestions.bind(this);
         this.lowerSuggestion = this.lowerSuggestion.bind(this);
         this.higherSuggestion = this.higherSuggestion.bind(this);
@@ -144,20 +159,20 @@ export default class Autocomplete extends React.Component {
         this.inputRef = node;
     }
 
-    // Takes current active word and searches suggestion options for keys that are valid.
+    // Takes current input value and displays suggestion options.
     setSuggestions(input) {
-        const suggestionArray = [];
-        const rawSplitInput = input.replace(/\s*=\s*/g, '=').replace('(', '').split(' ');
+        let suggestionArray = [];
+        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
-        const equalSplitter = targetInput.indexOf('=');
+        const operandIndex = Autocomplete.findIndexOfOperand(targetInput);
 
         let value;
         let type;
-        if (equalSplitter > 0) {
+        if (operandIndex) {
             type = 'Values';
-            const key = targetInput.substring(0, equalSplitter).trim();
-            value = targetInput.substring(equalSplitter + 1, targetInput.length).trim().replace('"', '');
+            const key = targetInput.substring(0, operandIndex).trim();
+            value = targetInput.substring(operandIndex + 1, targetInput.length).trim().replace('"', '');
             if (this.props.options[key]) {
                 this.props.options[key].forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
@@ -165,6 +180,10 @@ export default class Autocomplete extends React.Component {
                     }
                 });
             }
+        } else if (this.inputMatchesRangeKey(targetInput)) {
+            type = 'Operand';
+            suggestionArray = ['=', '>', '<'];
+            value = '';
         } else {
             type = 'Keys';
             value = targetInput.toLowerCase();
@@ -182,6 +201,14 @@ export default class Autocomplete extends React.Component {
             suggestionIndex: null
         });
         document.addEventListener('mousedown', this.handleOutsideClick);
+    }
+
+    inputMatchesRangeKey(input) {
+        let match = false;
+        Object.keys(this.props.options).forEach((option) => {
+            if (input === option && option.enableRangeQuery === true) match = true;
+        });
+        return match;
     }
 
     // Hides suggestion list by emptying stateful array
@@ -224,17 +251,21 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     fillInputFromDropdownSelection() {
-        const rawSplitInput = this.inputRef.value.replace(/\s*=\s*/g, '=').split(' ');
+        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value).split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
         const isNested = targetInput[0] === '(' ? '(' : '';
-        const equalSplitter = targetInput.indexOf('=');
+        const operandIndex = Autocomplete.findIndexOfOperand(targetInput);
         let fillValue = '';
         let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
         value = Autocomplete.checkForWhitespacedValue(value);
-        if (equalSplitter > 0) {
-            const key = targetInput.substring(0, equalSplitter);
-            fillValue = `${key}=${value}`;
+        if (this.state.suggestedOnType === 'Operand') {
+            const slicedInput = targetInput.replace(/[(>=<)]/, '');
+            fillValue = `${slicedInput}${value}`;
+        } else if (operandIndex) {
+            const operand = targetInput[operandIndex];
+            const key = targetInput.substring(0, operandIndex);
+            fillValue = `${key}${operand}${value}`;
         } else {
             fillValue = `${isNested}${value}`;
         }
@@ -247,9 +278,7 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        const splitInput = this.inputRef.value.replace(/\s*=\s*/g, '=').split(' ');
-        const targetInput = splitInput[splitInput.length - 1];
-        if (targetInput.indexOf('=') < 0 && targetInput.indexOf('"') < 0) {
+        if (!this.inputMatchesRangeKey(this.inputRef.value) && !Autocomplete.findIndexOfOperand(this.inputRef.value)) {
             this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
@@ -277,7 +306,7 @@ export default class Autocomplete extends React.Component {
 
     // Updating operations inside a nested query
     checkServiceAndUpdateOperation(input) {
-        const inputValue = input.trim().replace(/\s*=\s*/g, '=');
+        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(input);
 
         // If serviceName in the same query, trigger request for operations
         if (inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
@@ -412,8 +441,9 @@ export default class Autocomplete extends React.Component {
 
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
-        if (/^(.+)[=](.+)$/g.test(kvPair)) { // Ensure format is a=b
-            const valueKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
+        if (/^(.+)([=><])(.+)$/g.test(kvPair)) { // Ensure format is a=b
+            const indexOfOperand = Autocomplete.findIndexOfOperand(kvPair);
+            const valueKey = kvPair.substring(0, indexOfOperand).trim();
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
                 return true;
@@ -432,7 +462,7 @@ export default class Autocomplete extends React.Component {
     // Adds inputted text chip to client side store
     updateChips() {
         this.handleBlur();
-        const inputValue = this.inputRef.value.trim().replace(/\s*=\s*/g, '=');
+        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value);
         if (!inputValue) return;
         let formattedValue = null;
         if (inputValue.indexOf('(') > -1) {
@@ -458,13 +488,15 @@ export default class Autocomplete extends React.Component {
                 chipValue = {};
                 splitInput.forEach((kvPair) => {
                     const trimmedPair = kvPair.trim();
-                    const key = trimmedPair.substring(0, kvPair.indexOf('='));
-                    chipValue[key] = (trimmedPair.substring(kvPair.indexOf('=') + 1, kvPair.length)).replace(/"/g, '');
+                    const operandIndex = Autocomplete.findIndexOfOperand(kvPair);
+                    const key = trimmedPair.substring(0, operandIndex);
+                    chipValue[key] = (trimmedPair.substring(operandIndex + 1, kvPair.length)).replace(/"/g, '');
                 });
             } else {
                 const kvPair = splitInput[0];
-                chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
-                chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim().replace(/"/g, '');
+                const operandIndex = Autocomplete.findIndexOfOperand(kvPair);
+                chipKey = kvPair.substring(0, operandIndex).trim();
+                chipValue = kvPair.substring(operandIndex + 1, kvPair.length).trim().replace(/"/g, '');
             }
             this.props.uiState.chips[chipKey] = chipValue;
             if (chipKey.includes('serviceName') && tracesEnabled) {
