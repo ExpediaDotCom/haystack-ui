@@ -52,7 +52,8 @@ export default class SubscriptionRow extends React.Component {
         const dispatcher = this.state.dispatcher;
         dispatcher.endpoint = dispatcher.endpoint.trim();
         if (!dispatcher.endpoint.length) {
-            this.props.errorCallback('Updated endpoint cannot be empty.');
+            const endpointName = dispatcher.type.toString() === '1' ? 'Updated Slack channel name' : 'Updated email address';
+            this.props.errorCallback(`${endpointName} cannot be empty.`);
             return;
         }
         const dispatchers = [dispatcher];

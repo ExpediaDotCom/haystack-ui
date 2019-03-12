@@ -103,7 +103,8 @@ export default class AlertSubscriptions extends React.Component {
     submitNewSubscription() {
         const trimmedInput = this.state.inputValue.trim();
         if (!trimmedInput.length) {
-            this.handleSubscriptionError('Dispatcher endpoint cannot be empty.');
+            const endpointName = this.state.selectValue === '1' ? 'Slack channel name' : 'Email address';
+            this.handleSubscriptionError(`${endpointName} cannot be empty.`);
             return;
         }
         const dispatchers = [{type: this.state.selectValue, endpoint: trimmedInput}];
