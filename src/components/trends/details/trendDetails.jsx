@@ -31,7 +31,8 @@ export default class TrendDetails extends React.Component {
         serviceName: PropTypes.string.isRequired,
         serviceSummary: PropTypes.bool,
         opName: PropTypes.string,
-        statsType: PropTypes.string
+        statsType: PropTypes.string,
+        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
     };
 
     static defaultProps = {
@@ -49,6 +50,7 @@ export default class TrendDetails extends React.Component {
                     serviceName={this.props.serviceName}
                     opName={this.props.opName}
                     statsType={this.props.statsType}
+                    interval={this.props.interval}
                 />
                 { this.props.store.trendsPromiseState && this.props.store.trendsPromiseState.case({
                     empty: () => <Loading />,

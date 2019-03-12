@@ -29,7 +29,8 @@ const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
 export default class AlertDetailsToolbar extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        operationName: PropTypes.string.isRequired
+        operationName: PropTypes.string.isRequired,
+        interval: PropTypes.string.isRequired
     };
 
     constructor(props) {
@@ -47,16 +48,17 @@ export default class AlertDetailsToolbar extends React.Component {
     }
 
     render() {
-        const serviceOperation = {
+        const searchConstructor = {
             serviceName: this.props.serviceName,
-            operationName: this.props.operationName
+            operationName: this.props.operationName,
+            interval: this.props.interval
         };
 
-        const trendsLink = linkBuilder.universalSearchTrendsLink(serviceOperation);
+        const trendsLink = linkBuilder.universalSearchTrendsLink(searchConstructor);
 
-        const tracesLink = linkBuilder.universalSearchTracesLink(serviceOperation);
+        const tracesLink = linkBuilder.universalSearchTracesLink(searchConstructor);
 
-        const alertsLink = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchAlertsLink(serviceOperation));
+        const alertsLink = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchAlertsLink(searchConstructor));
 
         return (
             <div>
