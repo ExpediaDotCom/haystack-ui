@@ -20,6 +20,7 @@ const grpc = require('grpc');
 
 const config = require('../../../config/config');
 const servicesConnector = config.connectors.traces && require('../../services/servicesConnector'); // eslint-disable-line
+const trendsConnector = require('../../trends/haystack/trendsConnector');
 
 const fetcher = require('../../operations/grpcFetcher');
 const services = require('../../../../static_codegen/anomaly/anomalyReader_grpc_pb');
@@ -41,7 +42,10 @@ const alertFreqInSec = config.connectors.alerts.alertFreqInSec || 300; // TODO m
 
 
 function fetchOperations(serviceName) {
-    return servicesConnector && servicesConnector.getOperations(serviceName);
+    if (servicesConnector) {
+        servicesConnector.getOperations(serviceName);
+    }
+    return trendsConnector.getOperationNames(serviceName);
 }
 
 function sameOperationAndType(alertToCheck, operationName, type) {
@@ -151,7 +155,7 @@ function getActiveAlertCount(operationAlerts) {
 connector.getServiceAlerts = (serviceName, interval) => {
     // todo: calculate "from" value based on selected interval
     const oneDayAgo = Math.trunc((Date.now() - (24 * 60 * 60 * 1000)));
-    return Q.all([fetchOperations(serviceName), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
+    return Q.all([fetchOperations(decodeURIComponent(serviceName)), fetchOperationAlerts(serviceName, interval, oneDayAgo)])
         .then(stats => mergeOperationsWithAlerts({
                 operations: stats[0],
                 operationAlerts: stats[1]
