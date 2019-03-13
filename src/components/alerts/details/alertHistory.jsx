@@ -33,7 +33,8 @@ export default class AlertHistory extends React.Component {
         operationName: PropTypes.string.isRequired,
         serviceName: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired,
-        historyWindow: PropTypes.number.isRequired
+        historyWindow: PropTypes.number.isRequired,
+        interval: PropTypes.string.isRequired
     };
 
     static timeAgoFormatter(cell) {
@@ -55,7 +56,12 @@ export default class AlertHistory extends React.Component {
         return value.toFixed();
     }
 
-    static timeBufferAroundAlert = 10 * 60 * 1000; // 10 mins
+    static timeBufferAroundAlert = {
+        OneMinute: 10 * 60 * 1000, // 10 minutes
+        FiveMinute: 30 * 60 * 1000, // 30 minutes
+        FifteenMinute: 2 * 60 * 60 * 1000, // 2 hours
+        OneHour: 12 * 60 * 60 * 1000 // 12 hours
+    };
 
     constructor(props) {
         super(props);
@@ -65,8 +71,9 @@ export default class AlertHistory extends React.Component {
     }
 
     trendLinkCreator(timestamp) {
-        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
+        const buffer = AlertHistory.timeBufferAroundAlert[this.props.interval];
+        const from = (timestamp) - buffer;
+        const to = (timestamp) + buffer;
 
         return linkBuilder.universalSearchTrendsLink({
             serviceName: this.props.serviceName,
@@ -74,13 +81,15 @@ export default class AlertHistory extends React.Component {
             time: {
                 from,
                 to
-            }
+            },
+            interval: this.props.interval
         });
     }
 
     traceLinkCreator(timestamp) {
-        const from = (timestamp) - AlertHistory.timeBufferAroundAlert;
-        const to = (timestamp) + AlertHistory.timeBufferAroundAlert;
+        const buffer = AlertHistory.timeBufferAroundAlert[this.props.interval];
+        const from = (timestamp) - buffer;
+        const to = (timestamp) + buffer;
 
         return linkBuilder.universalSearchTracesLink({
             serviceName: this.props.serviceName,

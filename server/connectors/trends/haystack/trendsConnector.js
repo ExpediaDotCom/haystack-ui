@@ -292,6 +292,16 @@ function getEdgeLatencyTrendResults(edges, from, until) {
         .then(trends => trends);
 }
 
+function getOperationNames(serviceName) {
+    const target = createOperationTarget(serviceName, '~.*', 'OneMinute', '~(count)|(\\*_99)', '~(received-span)|(success-span)|(failure-span)|(duration)');
+
+    const from = Math.ceil((Date.now() / 1000) - (60 * 60));
+    const until = Math.ceil(Date.now() / 1000);
+
+    return fetchTrendValues(target, from, until)
+        .then(values => (_.uniq(values.map(val => (val.operationName))))); // return only unique operation names from Metrictank response
+}
+
 // api
 connector.getServicePerfStats = (granularity, from, until) =>
     getServicePerfStatsResults(convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
@@ -309,5 +319,7 @@ connector.getOperationTrends = (serviceName, operationName, granularity, from, u
     getOperationTrendResults(metricpointNameEncoder.encodeMetricpointName(serviceName), metricpointNameEncoder.encodeMetricpointName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
 connector.getEdgeLatency = edges => getEdgeLatencyTrendResults(edges, Math.ceil(Date.now() / 1000) - (60 * 60), Math.ceil(Date.now() / 1000));
+
+connector.getOperationNames = serviceName => getOperationNames(metricpointNameEncoder.encodeMetricpointName(serviceName));
 
 module.exports = connector;
