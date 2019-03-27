@@ -43,17 +43,14 @@ const ESC = 27;
 export default class Autocomplete extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        options: PropTypes.oneOfType([
-            PropTypes.array,
-            PropTypes.object
-        ]),
+        options: PropTypes.object,
         search: PropTypes.func.isRequired,
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        options: []
+        options: {}
     };
 
     static focusInput(event) {
@@ -72,11 +69,11 @@ export default class Autocomplete extends React.Component {
         } else if (inputString.includes('"')) {
             return ((inputString.match(/"/g) || []).length === 2);
         }
-        return /^([a-zA-Z0-9\s-]+)([=|>|<])([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+        return /^([a-zA-Z0-9\s-]+)([=><])([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
     }
 
     static findIndexOfOperand(inputString) {
-        const match = inputString.match(/([=|>|<])/);
+        const match = inputString.match(/([=><])/);
         return match && match.index;
     }
 
@@ -133,20 +130,20 @@ export default class Autocomplete extends React.Component {
     }
 
     componentDidMount() {
-        this.props.options.serviceName = this.props.serviceStore.services;
-        this.props.options.operationName = [];
+        this.props.options.serviceName = {isRangeQuery: false, values: this.props.serviceStore.services};
+        this.props.options.operationName = {isRangeQuery: false, values: []};
 
         // Automatically checks for operations when a user supplies a new serviceName
         when(() => this.props.serviceStore.services.length,
             () => {
-                this.props.options.serviceName = this.props.serviceStore.services;
-                this.props.options.operationName = [];
+                this.props.options.serviceName.values = this.props.serviceStore.services;
+                this.props.options.operationName.values = [];
             });
 
         const serviceName = this.props.uiState.chips.serviceName;
         if (serviceName && tracesEnabled) {
             this.props.operationStore.fetchOperations(serviceName, () => {
-                this.props.options.operationName = this.props.operationStore.operations;
+                this.props.options.operationName.values = this.props.operationStore.operations;
             });
         }
     }
@@ -173,8 +170,8 @@ export default class Autocomplete extends React.Component {
             type = 'Values';
             const key = targetInput.substring(0, operandIndex).trim();
             value = targetInput.substring(operandIndex + 1, targetInput.length).trim().replace('"', '');
-            if (this.props.options[key]) {
-                this.props.options[key].forEach((option) => {
+            if (this.props.options[key].values) {
+                this.props.options[key].values.forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
                         suggestionArray.push(option);
                     }
@@ -206,7 +203,7 @@ export default class Autocomplete extends React.Component {
     inputMatchesRangeKey(input) {
         let match = false;
         Object.keys(this.props.options).forEach((option) => {
-            if (input === option && option.enableRangeQuery === true) match = true;
+            if (input === option && this.props.options[option].isRangeQuery === true) match = true;
         });
         return match;
     }
@@ -226,7 +223,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-    // Changes active suggestion which will cause a rerender for hovered object
+    // Changes active suggestion which will cause a re-render for hovered object
     handleHover(index) {
         this.setState({
             suggestionIndex: index
@@ -317,9 +314,9 @@ export default class Autocomplete extends React.Component {
                 const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
                 const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
                 if (chipKey.includes('serviceName') && tracesEnabled) {
-                    this.props.options.operationName = [];
+                    this.props.options.operationName.values = [];
                     this.props.operationStore.fetchOperations(chipValue, () => {
-                        this.props.options.operationName = this.props.operationStore.operations;
+                        this.props.options.operationName.values = this.props.operationStore.operations;
                     });
                 }
             }
@@ -500,9 +497,9 @@ export default class Autocomplete extends React.Component {
             }
             this.props.uiState.chips[chipKey] = chipValue;
             if (chipKey.includes('serviceName') && tracesEnabled) {
-                this.props.options.operationName = [];
+                this.props.options.operationName.values = [];
                 this.props.operationStore.fetchOperations(chipValue, () => {
-                    this.props.options.operationName = this.props.operationStore.operations;
+                    this.props.options.operationName.values = this.props.operationStore.operations;
                 });
             }
             this.setState({inputError: false});
@@ -522,7 +519,7 @@ export default class Autocomplete extends React.Component {
                     this.setState({
                         serviceName: null
                     });
-                    this.props.options.operationName = [];
+                    this.props.options.operationName.values = [];
                 }
                 const itemIndex = updatedExistingKeys.indexOf(key);
                 updatedExistingKeys.splice(itemIndex, 1);

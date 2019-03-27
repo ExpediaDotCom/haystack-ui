@@ -79,10 +79,22 @@ connector.getSearchableKeys = () => {
     return fieldNameFetcher
         .fetch(request)
         .then((result) => {
-            const keys = result.getNamesList();
+            const fieldNamesWithMetadata = {};
+            const names = result.getNamesList();
+            const metadata = result.getFieldMetadataList();
+
+            // create map with key as whitelisted field name
+            names.forEach((name, index) => {
+                fieldNamesWithMetadata[name] = {isRangeQuery: metadata[index] && metadata[index].getIsrangequery()};
+            });
+
             // additional keys which are not part of Index
-            keys.push('traceId', 'serviceName', 'operationName', 'duration');
-            return keys;
+            fieldNamesWithMetadata.traceId = {isRangeQuery: false};
+            fieldNamesWithMetadata.serviceName = {isRangeQuery: false};
+            fieldNamesWithMetadata.operationName = {isRangeQuery: false};
+            fieldNamesWithMetadata.duration = {isRangeQuery: true};
+
+            return fieldNamesWithMetadata;
         });
 };
 

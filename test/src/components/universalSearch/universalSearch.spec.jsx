@@ -51,7 +51,15 @@ const stubOptions = {
 };
 
 // STUBS FOR BACKEND SERVICE RESPONSES
-const stubSearchableKeys = ['traceId', 'spanId', 'serviceName', 'operationName', 'error'];
+const stubSearchableKeys = {
+    traceId: {isRangeQuery: false},
+    spanId: {isRangeQuery: false},
+    serviceName: {isRangeQuery: false},
+    operationName: {isRangeQuery: false},
+    error: {isRangeQuery: false}
+};
+
+
 const stubServices = [];
 const stubOperations = ['mormont-1', 'seaworth-1', 'bolton-1', 'baelish-1', 'snow-1', 'tully-1', 'dondarrion-1', 'grayjoy-1', 'clegane-1', 'drogo-1', 'tarley-1'];
 // Two traces are neccessary to prevent triggering the trace details api.
