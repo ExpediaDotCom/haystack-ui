@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-const createFilterExpression = require('../expressionTreeBuilder').createFilterExpression;
+const expressionTreeBuilder = require('../expressionTreeBuilder');
 
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
@@ -25,20 +25,14 @@ const DEFAULT_RESULTS_LIMIT = 25;
 function createFieldsList(query) {
     return Object.keys(query)
     .filter(key => query[key] && !reservedField.includes(key))
-    .map((key) => {
-        const field = new messages.Field();
-        field.setName(key);
-        field.setValue(query[key]);
-
-        return field;
-    });
+    .map(key => expressionTreeBuilder(key, query[key]));
 }
 
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
 
     if (query.useExpressionTree) {
-        request.setFilterexpression(createFilterExpression(query));
+        request.setFilterexpression(expressionTreeBuilder.createFilterExpression(query));
     } else {
         request.setFieldsList(createFieldsList(query));
     }

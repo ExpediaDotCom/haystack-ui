@@ -23,7 +23,6 @@ export class ServiceStore extends ErrorHandlingStore {
     @observable services = [];
 
     @action fetchServices() {
-        console.log("wow i'm fetching zervices")
         if (this.services.length) {
             return; // services already available, don't retrigger
         }

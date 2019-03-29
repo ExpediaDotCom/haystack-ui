@@ -45,10 +45,11 @@ const stubHistory = {
 };
 
 const stubOptions = {
-    error: ['true', 'false'],
-    serviceName: ['test-a', 'test-b', 'test-c', 'whitespace test'],
-    operationName: []
+    error: {values: ['true, false'], operator: '='},
+    serviceName: {values: ['test-a', 'test-b', 'test-c', 'whitespace test'], operator: '='},
+    operationName: {values: [], operator: '='}
 };
+
 
 // STUBS FOR BACKEND SERVICE RESPONSES
 const stubSearchableKeys = {
@@ -121,11 +122,16 @@ const stubTraces = [{
     }
 ];
 
-const stubShortChip = {serviceName: 'test'};
+const stubShortChip = [{key: 'serviceName', value: 'test', operator: '='}];
 
-const stubWhitespaceChip = {serviceName: 'whitespace test'};
+const stubWhitespaceChip = [{key: 'serviceName', value: 'whitespace test', operator: '='}];
 
-const stubLongChip = {nested_0: {serviceName: 'test', error: 'true'}};
+const stubLongChip = [{
+    key: 'nested_0',
+    value: [{key: 'serviceName', value: 'test', operator: '='},
+            {key: 'error', value: 'true', operator: '='}],
+    operator: '='
+}];
 
 function createOperationStubStore() {
     const store = new OperationStore();
@@ -141,7 +147,7 @@ function createServiceStubStore() {
     return store;
 }
 
-function createStubUiStateStore(chips = {}, timeWindow = {}) {
+function createStubUiStateStore(chips = [], timeWindow = {}) {
     const store = uiState;
     store.timeWindow = timeWindow;
     store.chips = chips;
@@ -203,33 +209,33 @@ describe('<UniversalSearch />', () => {
         const stubQueryTwo = {search: '?serviceName=new-root-service&error=true&time.preset=4h'};
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQueryOne} history={stubHistory}/></MemoryRouter>);
 
-        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(1);
+        expect(wrapper.find('Autocomplete').first().instance().props.uiState.chips.length).to.equal(1);
         wrapper.setProps({
             children: React.cloneElement(wrapper.props().children, { location: stubQueryTwo })
         });
 
         // Ensure that chips were updated with the location change
-        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(2);
+        expect(wrapper.find('Autocomplete').first().instance().props.uiState.chips.length).to.equal(2);
     });
 
     it('should allow whitelisted keys with a period in them', () => {
         const stubQuery = {search: '?test.key=root-service'};
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQuery} history={stubHistory}/></MemoryRouter>);
 
-        expect(Object.keys(wrapper.find('Autocomplete').first().instance().props.uiState.chips).length).to.equal(1);
+        expect(wrapper.find('Autocomplete').first().instance().props.uiState.chips.length).to.equal(1);
     });
 });
 
 describe('uiState', () => {
     it('should add a custom time frame to search', () => {
-        const UiState = createStubUiStateStore({}, {startTime: 10, endTime: 10});
+        const UiState = createStubUiStateStore([], {startTime: 10, endTime: 10});
         const search = UiState.getCurrentSearch();
 
         expect(search.time.from).to.equal(10);
     });
 
     it('should add a preset time frame to search', () => {
-        const UiState = createStubUiStateStore({}, {timePreset: '1h'});
+        const UiState = createStubUiStateStore([], {timePreset: '1h'});
         const search = UiState.getCurrentSearch();
 
         expect(search.time.preset).to.equal('1h');
@@ -294,7 +300,6 @@ describe('<Autosuggest />', () => {
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onFocus')({target: {value: ''}});
-
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(3);
     });
 
@@ -343,7 +348,6 @@ describe('<Autosuggest />', () => {
 
     it('should change suggestion when input is changed', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
-
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onChange')({target: {value: 'err'}});
@@ -383,7 +387,6 @@ describe('<Autosuggest />', () => {
         const spy = sinon.spy(Autosuggest.prototype, 'modifyChip');
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore(stubShortChip)} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         const input = wrapper.find('.usb-searchbar__input');
-
         expect(spy.callCount).to.equal(0);
         input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}});
 
@@ -451,7 +454,7 @@ describe('<Autosuggest />', () => {
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
         wrapper.find('.usb-submit__button').simulate('click');
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
 
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
@@ -465,7 +468,7 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         wrapper.instance().inputRef.value = '(serviceName=test error=true)';
         input.prop('onKeyDown')({keyCode: 32, preventDefault: () => {}});
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
 
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
@@ -479,7 +482,7 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         wrapper.instance().inputRef.value = 'serviceName=test';
         input.prop('onKeyDown')({keyCode: 32, preventDefault: () => {}});
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
 
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
@@ -493,7 +496,7 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         wrapper.instance().inputRef.value = 'serviceName="whitespace test"';
         input.prop('onKeyDown')({keyCode: 32, preventDefault: () => {}});
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
 
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
@@ -505,7 +508,7 @@ describe('<Autosuggest />', () => {
 
         wrapper.instance().inputRef.value = 'serviceName=';
         wrapper.instance().updateChips();
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
 
         expect(wrapperChips.length).to.equal(0);
         expect(wrapper.instance().state.inputError).to.be.a('string');
@@ -526,7 +529,7 @@ describe('<Autosuggest />', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
 
         wrapper.find('input').simulate('paste', {clipboardData: {getData: () => 'serviceName=asdf error=true (serviceName=abc error=true)'}});
-        const wrapperChips = Object.keys(wrapper.instance().props.uiState.chips);
+        const wrapperChips = wrapper.instance().props.uiState.chips;
         expect(wrapperChips.length).to.equal(3);
     });
 });

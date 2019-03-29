@@ -40,8 +40,6 @@ export default class SearchBar extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        // initialize UI state for searchBar
-        // TODO implement this
         uiState.init(props.search);
     }
 

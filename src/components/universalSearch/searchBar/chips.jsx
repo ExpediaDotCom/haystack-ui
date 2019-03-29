@@ -71,30 +71,30 @@ export default class Chips extends React.Component {
     }
 
     render() {
-        const chips = Object.keys(this.props.uiState.chips).map((chip) => {
-            if (chip.includes('nested_')) {
-                const baseObject = this.props.uiState.chips[chip];
-
+        const chips = this.props.uiState.chips.map((chip, index) => {
+            if (chip.key.includes('nested_')) {
                 return (
                     <div className="usb-chip" key={Math.random()}>
                         {
-                            Object.keys(baseObject).map(key => (
+                            chip.value.map(nestedChip => (
                                 <span key={Math.random()}>
-                                    <span className="usb-chip__key">{key}</span>
-                                    <span className="usb-chip__value">{Chips.truncateLongValues(baseObject[key])}</span>
+                                    <span className="usb-chip__key">{nestedChip.key}</span>
+                                    {nestedChip.operator !== '=' ? <span className="usb-chip__operator">{nestedChip.operator}</span> : null}
+                                    <span className="usb-chip__value">{Chips.truncateLongValues(nestedChip.value)}</span>
                                 </span>
                             ))
                         }
-                        <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
+                        <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
                     </div>
                 );
             }
 
             return (
                 <div className="usb-chip" key={Math.random()}>
-                    <span className="usb-chip__key">{chip}</span>
-                    <span className="usb-chip__value">{Chips.truncateLongValues(this.props.uiState.chips[chip])}</span>
-                    <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(chip)}>x</button>
+                    <span className="usb-chip__key">{chip.key}</span>
+                    {chip.operator !== '=' ? <span className="usb-chip__operator">{chip.operator}</span> : null}
+                    <span className="usb-chip__value">{Chips.truncateLongValues(chip.value)}</span>
+                    <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
                 </div>
             );
         });
