@@ -45,9 +45,9 @@ const stubHistory = {
 };
 
 const stubOptions = {
-    error: {values: ['true, false'], operator: '='},
-    serviceName: {values: ['test-a', 'test-b', 'test-c', 'whitespace test'], operator: '='},
-    operationName: {values: [], operator: '='}
+    error: {values: ['true, false'], isRangeQuery: false},
+    serviceName: {values: ['test-a', 'test-b', 'test-c', 'whitespace test'], isRangeQuery: false},
+    operationName: {values: [], isRangeQuery: false}
 };
 
 
@@ -501,6 +501,30 @@ describe('<Autosuggest />', () => {
         expect(spy.callCount).to.equal(1);
         expect(wrapperChips.length).to.equal(1);
         Autosuggest.prototype.updateChips.restore();
+    });
+
+    it('should be able to add a key and value with periods in them', () => {
+        const customOption = {'http.status.code': {values: [], isRangeQuery: false}};
+        const wrapper = mount(<Autosuggest options={customOption} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.instance().inputRef.value = 'http.status.code=a.b.c.d.e"';
+        wrapper.instance().updateChips();
+        const wrapperChips = wrapper.instance().props.uiState.chips;
+
+        expect(wrapperChips.length).to.equal(1);
+        expect(wrapperChips[0].key).to.equal('http.status.code');
+        expect(wrapperChips[0].value).to.equal('a.b.c.d.e');
+    });
+
+    it('should be able to handle range operators', () => {
+        const customOption = {duration: {values: [], isRangeQuery: true}};
+        const wrapper = mount(<Autosuggest options={customOption} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.instance().inputRef.value = 'duration>10000';
+        wrapper.instance().updateChips();
+        const wrapperChips = wrapper.instance().props.uiState.chips;
+
+        expect(wrapperChips.length).to.equal(1);
+        expect(wrapperChips[0].key).to.equal('duration');
+        expect(wrapperChips[0].operator).to.equal('>');
     });
 
     it('should fail submission with an invalid KV pair', () => {
