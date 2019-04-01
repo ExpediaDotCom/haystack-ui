@@ -23,11 +23,11 @@ expressionTreeBuilder.createFieldFromKeyValue = (key, value) => {
     const field = new messages.Field();
     field.setName(key);
     let fieldValue = value;
-    let operator = messages.Field.operator.EQUAL;
+    let operator = messages.Field.Operator.EQUAL;
 
     // check for custom operator at beginning of value string
     if (value[0] === '>' || value[0] === '<') {
-        operator = value[0] === '>' ? messages.Field.operator.GREATER_THAN : messages.Field.operator.LESS_THAN;
+        operator = value[0] === '>' ? messages.Field.Operator.GREATER_THAN : messages.Field.Operator.LESS_THAN;
         fieldValue = value.substr(1, value.length);
     }
     field.setValue(fieldValue);
