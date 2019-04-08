@@ -179,7 +179,7 @@ export default class Autocomplete extends React.Component {
             }
         } else if (this.inputMatchesRangeKey(targetInput)) {
             type = 'operator';
-            suggestionArray = ['=', '>', '<'];
+            suggestionArray = ['>', '=', '<'];
             value = '';
         } else {
             type = 'Keys';
@@ -275,8 +275,8 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        if (!this.inputMatchesRangeKey(this.inputRef.value) && !Autocomplete.findIndexOfoperator(this.inputRef.value)) {
-            this.inputRef.value = `${this.inputRef.value}=`;
+        if (!Autocomplete.findIndexOfoperator(this.inputRef.value)) {
+            if (!this.inputMatchesRangeKey(this.inputRef.value)) this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
             }, () => {
