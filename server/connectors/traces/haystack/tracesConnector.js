@@ -85,7 +85,7 @@ connector.getSearchableKeys = () => {
 
             // create map with key as whitelisted field name
             names.forEach((name, index) => {
-                fieldNamesWithMetadata[name] = {isRangeQuery: metadata[index] && metadata[index].getIsrangequery()};
+                fieldNamesWithMetadata[name] = {isRangeQuery: metadata[index] ? metadata[index].getIsrangequery() : false};
             });
 
             // additional keys which are not part of Index
