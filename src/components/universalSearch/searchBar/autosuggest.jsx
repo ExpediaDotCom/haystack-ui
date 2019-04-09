@@ -43,17 +43,14 @@ const ESC = 27;
 export default class Autocomplete extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        options: PropTypes.oneOfType([
-            PropTypes.array,
-            PropTypes.object
-        ]),
+        options: PropTypes.object,
         search: PropTypes.func.isRequired,
         serviceStore: PropTypes.object.isRequired,
         operationStore: PropTypes.object.isRequired
     };
 
     static defaultProps = {
-        options: []
+        options: {}
     };
 
     static focusInput(event) {
@@ -72,7 +69,21 @@ export default class Autocomplete extends React.Component {
         } else if (inputString.includes('"')) {
             return ((inputString.match(/"/g) || []).length === 2);
         }
-        return /^([a-zA-Z0-9\s-]+)[=]([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+        return /^([a-zA-Z0-9\s-]+)([=><])([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+    }
+
+    static findIndexOfoperator(inputString) {
+        const match = inputString.match(/([=><])/);
+        return match && match.index;
+    }
+
+    static removeWhiteSpaceAroundInput(inputString) {
+        const operatorIndex = Autocomplete.findIndexOfoperator(inputString);
+        if (operatorIndex) {
+            const operator = inputString[operatorIndex];
+            return inputString.split(operator).map(piece => piece.trim()).join(operator);
+        }
+        return inputString.trim();
     }
 
     constructor(props) {
@@ -94,6 +105,7 @@ export default class Autocomplete extends React.Component {
         }
 
         this.updateFieldKv = this.updateFieldKv.bind(this);
+        this.inputMatchesRangeKey = this.inputMatchesRangeKey.bind(this);
         this.setSuggestions = this.setSuggestions.bind(this);
         this.lowerSuggestion = this.lowerSuggestion.bind(this);
         this.higherSuggestion = this.higherSuggestion.bind(this);
@@ -118,20 +130,20 @@ export default class Autocomplete extends React.Component {
     }
 
     componentDidMount() {
-        this.props.options.serviceName = this.props.serviceStore.services;
-        this.props.options.operationName = [];
+        this.props.options.serviceName = {isRangeQuery: false, values: this.props.serviceStore.services};
+        this.props.options.operationName = {isRangeQuery: false, values: []};
 
         // Automatically checks for operations when a user supplies a new serviceName
         when(() => this.props.serviceStore.services.length,
             () => {
-                this.props.options.serviceName = this.props.serviceStore.services;
-                this.props.options.operationName = [];
+                this.props.options.serviceName.values = this.props.serviceStore.services;
+                this.props.options.operationName.values = [];
             });
 
         const serviceName = this.props.uiState.chips.serviceName;
         if (serviceName && tracesEnabled) {
             this.props.operationStore.fetchOperations(serviceName, () => {
-                this.props.options.operationName = this.props.operationStore.operations;
+                this.props.options.operationName.values = this.props.operationStore.operations;
             });
         }
     }
@@ -144,27 +156,31 @@ export default class Autocomplete extends React.Component {
         this.inputRef = node;
     }
 
-    // Takes current active word and searches suggestion options for keys that are valid.
+    // Takes current input value and displays suggestion options.
     setSuggestions(input) {
-        const suggestionArray = [];
-        const rawSplitInput = input.replace(/\s*=\s*/g, '=').replace('(', '').split(' ');
+        let suggestionArray = [];
+        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
-        const equalSplitter = targetInput.indexOf('=');
+        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
 
         let value;
         let type;
-        if (equalSplitter > 0) {
+        if (operatorIndex) {
             type = 'Values';
-            const key = targetInput.substring(0, equalSplitter).trim();
-            value = targetInput.substring(equalSplitter + 1, targetInput.length).trim().replace('"', '');
-            if (this.props.options[key]) {
-                this.props.options[key].forEach((option) => {
+            const key = targetInput.substring(0, operatorIndex).trim();
+            value = targetInput.substring(operatorIndex + 1, targetInput.length).trim().replace('"', '');
+            if (this.props.options[key] && this.props.options[key].values) {
+                this.props.options[key].values.forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase())) {
                         suggestionArray.push(option);
                     }
                 });
             }
+        } else if (this.inputMatchesRangeKey(targetInput)) {
+            type = 'operator';
+            suggestionArray = ['>', '=', '<'];
+            value = '';
         } else {
             type = 'Keys';
             value = targetInput.toLowerCase();
@@ -184,6 +200,14 @@ export default class Autocomplete extends React.Component {
         document.addEventListener('mousedown', this.handleOutsideClick);
     }
 
+    inputMatchesRangeKey(input) {
+        let match = false;
+        Object.keys(this.props.options).forEach((option) => {
+            if (input === option && this.props.options[option].isRangeQuery === true) match = true;
+        });
+        return match;
+    }
+
     // Hides suggestion list by emptying stateful array
     handleBlur() {
         this.setState({
@@ -199,7 +223,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-    // Changes active suggestion which will cause a rerender for hovered object
+    // Changes active suggestion which will cause a re-render for hovered object
     handleHover(index) {
         this.setState({
             suggestionIndex: index
@@ -224,17 +248,21 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     fillInputFromDropdownSelection() {
-        const rawSplitInput = this.inputRef.value.replace(/\s*=\s*/g, '=').split(' ');
+        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value).split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
         const isNested = targetInput[0] === '(' ? '(' : '';
-        const equalSplitter = targetInput.indexOf('=');
+        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
         let fillValue = '';
         let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
         value = Autocomplete.checkForWhitespacedValue(value);
-        if (equalSplitter > 0) {
-            const key = targetInput.substring(0, equalSplitter);
-            fillValue = `${key}=${value}`;
+        if (this.state.suggestedOnType === 'operator') {
+            const slicedInput = targetInput.replace(/[(>=<)]/, '');
+            fillValue = `${slicedInput}${value}`;
+        } else if (operatorIndex) {
+            const operator = targetInput[operatorIndex];
+            const key = targetInput.substring(0, operatorIndex);
+            fillValue = `${key}${operator}${value}`;
         } else {
             fillValue = `${isNested}${value}`;
         }
@@ -247,10 +275,8 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        const splitInput = this.inputRef.value.replace(/\s*=\s*/g, '=').split(' ');
-        const targetInput = splitInput[splitInput.length - 1];
-        if (targetInput.indexOf('=') < 0 && targetInput.indexOf('"') < 0) {
-            this.inputRef.value = `${this.inputRef.value}=`;
+        if (!Autocomplete.findIndexOfoperator(this.inputRef.value)) {
+            if (!this.inputMatchesRangeKey(this.inputRef.value)) this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
             }, () => {
@@ -277,7 +303,7 @@ export default class Autocomplete extends React.Component {
 
     // Updating operations inside a nested query
     checkServiceAndUpdateOperation(input) {
-        const inputValue = input.trim().replace(/\s*=\s*/g, '=');
+        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(input);
 
         // If serviceName in the same query, trigger request for operations
         if (inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
@@ -288,9 +314,9 @@ export default class Autocomplete extends React.Component {
                 const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
                 const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
                 if (chipKey.includes('serviceName') && tracesEnabled) {
-                    this.props.options.operationName = [];
+                    this.props.options.operationName.values = [];
                     this.props.operationStore.fetchOperations(chipValue, () => {
-                        this.props.options.operationName = this.props.operationStore.operations;
+                        this.props.options.operationName.values = this.props.operationStore.operations;
                     });
                 }
             }
@@ -339,34 +365,30 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleBlur();
         } else if (keyPressed === BACKSPACE) {
-            const chips = Object.keys(this.props.uiState.chips);
+            const chips = this.props.uiState.chips;
             if (!this.inputRef.value && chips.length) {
                 e.preventDefault();
-                this.modifyChip(chips[chips.length - 1]);
+                this.modifyChip();
             }
         }
     }
 
     // Logic for when a user presses backspace to edit a chip
-    modifyChip(chipKey) {
-        const chipValue = this.props.uiState.chips[chipKey];
-        if (typeof chipValue === 'object') { // Check for nested KV pairs
+    modifyChip() {
+        const chip = this.props.uiState.chips[this.props.uiState.chips.length - 1];
+        const chipValue = chip.value;
+        if (chip.key.includes('nested_')) { // Check for nested KV pairs
             let fullString = '';
-            const nestedKeys = Object.keys(chipValue);
-            nestedKeys.forEach((key) => {
-                const value = Autocomplete.checkForWhitespacedValue(chipValue[key]);
-                if (key === nestedKeys[nestedKeys.length - 1]) {
-                    fullString += `${key}=${value}`;
-                } else {
-                    fullString += `${key}=${value} `;
-                }
+            chipValue.forEach((nestedChip) => {
+                const value = Autocomplete.checkForWhitespacedValue(nestedChip.value);
+                fullString += `${nestedChip.key}${nestedChip.operator}${value} `;
             });
             this.inputRef.value = `(${fullString.trim()})`;
         } else {
             const value = Autocomplete.checkForWhitespacedValue(chipValue);
-            this.inputRef.value = `${chipKey}=${value}`;
+            this.inputRef.value = `${chip.key}${chip.operator}${value}`;
         }
-        this.deleteChip(chipKey);
+        this.deleteChip(this.props.uiState.chips.length - 1);
     }
 
     // Updates input field and uiState props value
@@ -412,8 +434,9 @@ export default class Autocomplete extends React.Component {
 
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
-        if (/^(.+)[=](.+)$/g.test(kvPair)) { // Ensure format is a=b
-            const valueKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
+        if (/^(.+)([=><])(.+)$/g.test(kvPair)) { // Ensure format is a=b
+            const indexOfoperator = Autocomplete.findIndexOfoperator(kvPair);
+            const valueKey = kvPair.substring(0, indexOfoperator).trim();
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
                 return true;
@@ -432,7 +455,7 @@ export default class Autocomplete extends React.Component {
     // Adds inputted text chip to client side store
     updateChips() {
         this.handleBlur();
-        const inputValue = this.inputRef.value.trim().replace(/\s*=\s*/g, '=');
+        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value);
         if (!inputValue) return;
         let formattedValue = null;
         if (inputValue.indexOf('(') > -1) {
@@ -451,26 +474,31 @@ export default class Autocomplete extends React.Component {
         if (splitInput && splitInput.every(this.testForValidInputString)) { // Valid input tests
             let chipKey = null;
             let chipValue = null;
+            let operator = '=';
 
             if (splitInput.length > 1) {
                 const chipIndex = Object.keys(this.props.uiState.chips).length; // Create nested object of KV pairs
                 chipKey = `nested_${chipIndex}`;
-                chipValue = {};
+                chipValue = [];
                 splitInput.forEach((kvPair) => {
                     const trimmedPair = kvPair.trim();
-                    const key = trimmedPair.substring(0, kvPair.indexOf('='));
-                    chipValue[key] = (trimmedPair.substring(kvPair.indexOf('=') + 1, kvPair.length)).replace(/"/g, '');
+                    const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                    const key = trimmedPair.substring(0, operatorIndex);
+                    const value = (trimmedPair.substring(operatorIndex + 1, kvPair.length)).replace(/"/g, '');
+                    chipValue.push({key, value, operator: kvPair[operatorIndex]});
                 });
             } else {
                 const kvPair = splitInput[0];
-                chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
-                chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim().replace(/"/g, '');
+                const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                chipKey = kvPair.substring(0, operatorIndex).trim();
+                chipValue = kvPair.substring(operatorIndex + 1, kvPair.length).trim().replace(/"/g, '');
+                operator = kvPair[operatorIndex];
             }
-            this.props.uiState.chips[chipKey] = chipValue;
+            this.props.uiState.chips.push({key: chipKey, value: chipValue, operator});
             if (chipKey.includes('serviceName') && tracesEnabled) {
-                this.props.options.operationName = [];
+                this.props.options.operationName.values = [];
                 this.props.operationStore.fetchOperations(chipValue, () => {
-                    this.props.options.operationName = this.props.operationStore.operations;
+                    this.props.options.operationName.values = this.props.operationStore.operations;
                 });
             }
             this.setState({inputError: false});
@@ -479,25 +507,25 @@ export default class Autocomplete extends React.Component {
     }
 
     // Remove chip from client side store
-    deleteChip(chipKey) {
-        const chipValue = this.props.uiState.chips[chipKey];
-        if (chipValue !== undefined) {
-            const keysToSplice = chipKey.includes('nested_') ? Object.keys(chipKey) : [chipKey];
+    deleteChip(chipIndex) {
+        const targetChip = this.props.uiState.chips[chipIndex];
+        if (targetChip !== undefined) {
+            const chipKey = targetChip.key;
+            const chipsToSplice = chipKey.includes('nested_') ? [targetChip.value] : [targetChip];
             const updatedExistingKeys = this.state.existingKeys;
-
-            keysToSplice.forEach((key) => {
-                if (key === 'serviceName') {
+            chipsToSplice.forEach((chip) => {
+                if (chip.key === 'serviceName') {
                     this.setState({
                         serviceName: null
                     });
-                    this.props.options.operationName = [];
+                    this.props.options.operationName.values = [];
                 }
-                const itemIndex = updatedExistingKeys.indexOf(key);
+                const itemIndex = updatedExistingKeys.indexOf(chip.key);
                 updatedExistingKeys.splice(itemIndex, 1);
             });
 
             this.setState({existingKeys: updatedExistingKeys});
-            delete this.props.uiState.chips[chipKey];
+            this.props.uiState.chips.splice(chipIndex, 1);
         }
     }
 

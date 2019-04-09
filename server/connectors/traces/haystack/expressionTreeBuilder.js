@@ -14,10 +14,27 @@
  *         limitations under the License.
  */
 
-const requestBuilder = {};
+const expressionTreeBuilder = {};
 const messages = require('../../../../static_codegen/traceReader_pb');
 
 const reservedField = ['startTime', 'endTime', 'limit', 'useExpressionTree', 'spanLevelFilters', 'granularity'];
+
+expressionTreeBuilder.createFieldFromKeyValue = (key, value) => {
+    const field = new messages.Field();
+    field.setName(key);
+    let fieldValue = value;
+    let operator = messages.Field.Operator.EQUAL;
+
+    // check for custom operator at beginning of value string
+    if (value[0] === '>' || value[0] === '<') {
+        operator = value[0] === '>' ? messages.Field.Operator.GREATER_THAN : messages.Field.Operator.LESS_THAN;
+        fieldValue = value.substr(1, value.length);
+    }
+    field.setValue(fieldValue);
+    field.setOperator(operator);
+
+    return field;
+};
 
 function createSpanLevelExpression(spanLevelFilters) {
     return spanLevelFilters.map((filterJson) => {
@@ -31,9 +48,7 @@ function createSpanLevelExpression(spanLevelFilters) {
         .map((key) => {
             const op = new messages.Operand();
 
-            const field = new messages.Field();
-            field.setName(key);
-            field.setValue(filter[key]);
+            const field = expressionTreeBuilder.createFieldFromKeyValue(key, filter[key]);
 
             op.setField(field);
 
@@ -53,9 +68,7 @@ function createTraceLevelOperands(query) {
     .map((key) => {
         const operand = new messages.Operand();
 
-        const field = new messages.Field();
-        field.setName(key);
-        field.setValue(query[key]);
+        const field = expressionTreeBuilder.createFieldFromKeyValue(key, query[key]);
 
         operand.setField(field);
 
@@ -64,7 +77,7 @@ function createTraceLevelOperands(query) {
 }
 
 
-requestBuilder.createFilterExpression = (query) => {
+expressionTreeBuilder.createFilterExpression = (query) => {
     const expressionTree = new messages.ExpressionTree();
 
     expressionTree.setOperator(messages.ExpressionTree.Operator.AND);
@@ -81,4 +94,4 @@ requestBuilder.createFilterExpression = (query) => {
     return expressionTree;
 };
 
-module.exports = requestBuilder;
+module.exports = expressionTreeBuilder;

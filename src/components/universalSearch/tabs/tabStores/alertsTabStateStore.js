@@ -33,7 +33,7 @@ export class AlertsTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, ...kv} = search;
+        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
         this.interval = interval || 'FiveMinute';
         const keys = Object.keys(kv);
         this.isAvailable = isAlertsEnabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');

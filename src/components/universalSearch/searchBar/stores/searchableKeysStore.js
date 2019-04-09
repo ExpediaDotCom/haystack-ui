@@ -16,29 +16,27 @@
  */
 import axios from 'axios';
 import {observable, action} from 'mobx';
+import {ErrorHandlingStore} from '../../../../stores/errorHandlingStore';
 
-export class SearchableKeysStore {
+export class SearchableKeysStore extends ErrorHandlingStore  {
     @observable keys = {};
 
     @action fetchKeys() {
-        if (this.keys.length) {
-            return; // services already available, don't retrigger
+        if (Object.keys(this.keys).length > 2) { // serviceName and operationName are default
+            return;                              // don't re-trigger if other keys are available
         }
-        axios({
-            method: 'get',
-            url: '/api/traces/searchableKeys'
-        })
+        axios
+            .get('/api/traces/searchableKeys')
             .then((response) => {
-                const rawKeys = response.data.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                for (let i = 0; i < rawKeys.length; i += 1) {
-                    if (rawKeys[i] !== 'serviceName') {
-                        this.keys[rawKeys[i]] = [];
-                    }
+                this.keys = response.data;
+                if (this.keys.error) {
+                    this.keys.error.values = ['true', 'false'];
                 }
-                if (rawKeys.includes('error')) {
-                    this.keys.error = ['true', 'false'];
-                }
-            });
+            })
+            .catch((result) => {
+                SearchableKeysStore.handleError(result);
+            }
+        );
     }
 }
 
