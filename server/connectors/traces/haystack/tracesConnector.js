@@ -81,7 +81,7 @@ connector.getSearchableKeys = () => {
         .then((result) => {
             const fieldNamesWithMetadata = {};
             const names = result.getNamesList();
-            const metadata = result.getFieldMetadataList();
+            const metadata = result.getFieldmetadataList();
 
             // create map with key as whitelisted field name
             names.forEach((name, index) => {
