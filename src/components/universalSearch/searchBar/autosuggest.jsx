@@ -132,6 +132,7 @@ export default class Autocomplete extends React.Component {
     componentDidMount() {
         this.props.options.serviceName = {isRangeQuery: false, values: this.props.serviceStore.services};
         this.props.options.operationName = {isRangeQuery: false, values: []};
+        this.props.options.traceId = {isRangeQuery: false, values: []};
 
         // Automatically checks for operations when a user supplies a new serviceName
         when(() => this.props.serviceStore.services.length,
