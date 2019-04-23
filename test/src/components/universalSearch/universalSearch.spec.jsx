@@ -47,7 +47,8 @@ const stubHistory = {
 const stubOptions = {
     error: {values: ['true, false'], isRangeQuery: false},
     serviceName: {values: ['test-a', 'test-b', 'test-c', 'whitespace test'], isRangeQuery: false},
-    operationName: {values: [], isRangeQuery: false}
+    operationName: {values: [], isRangeQuery: false},
+    traceId: {values: [], isRangeQuery: false}
 };
 
 
@@ -300,7 +301,7 @@ describe('<Autosuggest />', () => {
         expect(wrapper.instance().state.suggestionStrings.length).to.equal(0);
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onFocus')({target: {value: ''}});
-        expect(wrapper.instance().state.suggestionStrings.length).to.equal(3);
+        expect(wrapper.instance().state.suggestionStrings.length).to.equal(4);
     });
 
     it('update suggestion string index on suggestion mouseover', () => {
@@ -312,7 +313,7 @@ describe('<Autosuggest />', () => {
         const firstSuggestion = wrapper.find('.usb-suggestions__field').last();
         firstSuggestion.simulate('mouseEnter');
 
-        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
+        expect(wrapper.instance().state.suggestionIndex).to.equal(3);
     });
 
     it('update suggestion string index on suggestion mouseover', () => {
@@ -375,7 +376,7 @@ describe('<Autosuggest />', () => {
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(2);
+        expect(wrapper.instance().state.suggestionIndex).to.equal(3);
         expect(wrapper.instance().state.suggestedOnType).to.equal('Keys');
 
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
@@ -429,15 +430,15 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
         input.prop('onFocus')({target: {value: ''}});
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(3);
+        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(2);
         input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(1);
-        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(0);
-        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
-        expect(wrapper.instance().state.suggestionIndex).to.equal(1);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(2);
+        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
+        expect(wrapper.instance().state.suggestionIndex).to.equal(3);
         input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(0);
     });
