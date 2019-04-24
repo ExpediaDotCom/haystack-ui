@@ -130,17 +130,19 @@ export default class Autocomplete extends React.Component {
     }
 
     componentDidMount() {
+        // First-class citizens for searching
         this.props.options.serviceName = {isRangeQuery: false, values: this.props.serviceStore.services};
         this.props.options.operationName = {isRangeQuery: false, values: []};
         this.props.options.traceId = {isRangeQuery: false, values: []};
 
-        // Automatically checks for operations when a user supplies a new serviceName
-        when(() => this.props.serviceStore.services.length,
+        // Populates serviceName list after async request is finished
+        when(() => this.props.serviceStore.services.length > 0,
             () => {
                 this.props.options.serviceName.values = this.props.serviceStore.services;
                 this.props.options.operationName.values = [];
             });
 
+        // Checks for operations when a user supplies a new serviceName
         const serviceName = this.props.uiState.chips.serviceName;
         if (serviceName && tracesEnabled) {
             this.props.operationStore.fetchOperations(serviceName, () => {
