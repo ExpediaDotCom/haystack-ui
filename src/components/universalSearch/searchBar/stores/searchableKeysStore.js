@@ -22,7 +22,7 @@ export class SearchableKeysStore extends ErrorHandlingStore  {
     @observable keys = {};
 
     @action fetchKeys() {
-        if (Object.keys(this.keys).length > 2) { // serviceName and operationName are default
+        if (Object.keys(this.keys).length > 3) { // traceId, serviceName and operationName are default
             return;                              // don't re-trigger if other keys are available
         }
         axios
