@@ -83,6 +83,7 @@ To check code coverage, run ```npm run coverage``` and open the generated index.
 **Note**-
 You may have to install Cairo dependencies separately for tests to work.
 - **OS X Users** : `brew install pkg-config cairo pango libpng jpeg giflib`
+  - *NOTE*: If you run into `Package libffi was not found in the pkg-config search path.` errors while running `npm install`, you will need to addtionally run the following command: ```export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:/usr/local/opt/libffi/lib/pkgconfig"```
 - **Others**: Refer [https://www.npmjs.com/package/canvas#installation](https://www.npmjs.com/package/canvas#installation)
 
 
