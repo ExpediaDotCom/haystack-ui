@@ -63,7 +63,7 @@ function calculateShadowDuration(spans) {
 }
 
 function isSpanError(span) {
-    return findTag(span.tags, 'error') === 'true' || findTag(span.tags, 'error') === true;
+    return findTag(span.tags, 'error') === 'true' || findTag(span.tags, 'error') === true || findTag(span.tags, 'error') === '500';
 }
 
 function createServicesSummary(trace) {
