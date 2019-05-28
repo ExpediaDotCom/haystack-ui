@@ -62,6 +62,10 @@ export default class TraceDetails extends React.Component {
         this.handleCopy = this.handleCopy.bind(this);
     }
 
+    componentDidMount() {
+        rawTraceStore.fetchRawTrace(this.props.traceId);
+    }
+
     openModal() {
         this.setState({modalIsOpen: true});
     }
@@ -84,7 +88,7 @@ export default class TraceDetails extends React.Component {
 
         const search = {traceId}; // TODO add specific time for trace
         const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-
+        const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(rawTraceStore.rawTrace))}`;
 
         return (
             <section className="table-row-details">
@@ -99,6 +103,9 @@ export default class TraceDetails extends React.Component {
                                 </span>
                             ) : null
                           }
+                        <a role="button" className="btn btn-default" href={rawTraceDataLink} download={`${traceId}.json`} tabIndex="-1">
+                            <span className="trace-details-toolbar-option-icon ti-download"/> Download Trace
+                        </a>
                         <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-server"/> Raw Trace</a>
                         <a role="button" className="btn btn-sm btn-default" target="_blank" href={traceUrl}><span className="ti-new-window"/> Open in new tab</a>
                         <Clipboard text={traceUrl} onCopy={this.handleCopy}>
