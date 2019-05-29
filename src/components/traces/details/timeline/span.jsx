@@ -46,7 +46,7 @@ export default class Span extends React.Component {
 
     static getSpanError(span) {
         return !!span.tags.find(
-            tag => (tag.key === 'error' && (tag.value === 'true' || tag.value === true))
+            tag => (tag.key === 'error' && (tag.value === true || (typeof tag.value === 'string' && tag.value !== 'false')))
         );
     }
 
