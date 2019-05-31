@@ -31,12 +31,6 @@ export default class RawTraceModal extends React.Component {
         rawTraceStore: PropTypes.object.isRequired
     };
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen) {
-            this.props.rawTraceStore.fetchRawTrace(this.props.traceId);
-        }
-    }
-
     render() {
         const {isOpen, closeModal, rawTraceStore, traceId} = this.props;
 
