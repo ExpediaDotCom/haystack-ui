@@ -35,7 +35,7 @@ export default class TrendDetailsToolbar extends React.Component {
         opName: PropTypes.string,
         statsType: PropTypes.string,
         serviceSummary: PropTypes.bool.isRequired,
-        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
+        interval: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]).isRequired
     };
 
     static defaultProps = {

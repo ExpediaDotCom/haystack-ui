@@ -17,53 +17,18 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import {mount, shallow} from 'enzyme';
+import {mount} from 'enzyme';
 import {expect} from 'chai';
 import sinon from 'sinon';
 import {MemoryRouter} from 'react-router';
 
-import Trends from '../../../../src/components/trends/trends';
-import TrendsHeader from '../../../../src/components/trends/trendsHeader';
 import OperationResults from '../../../../src/components/trends/operation/operationResults';
 import TrendDetails from '../../../../src/components/trends/details/trendDetails';
 import {OperationStore} from '../../../../src/components/trends/stores/operationStore';
-import {ServiceStore} from '../../../../src/components/trends/stores/serviceStore';
-import ServiceResults from '../../../../src/components/trends/service/serviceResults';
 
 const stubLocation = {
     search: '?key1=value&key2=value'
 };
-
-const stubMatch = {
-    params: {
-        serviceName: 'abc-service'
-    }
-};
-
-
-const stubServiceSummaryResults = [
-    {
-        type: 'Incoming Requests',
-        totalCount: 18800,
-        countPoints: [
-            {value: 180, timestamp: 1508431848839},
-            {value: 82, timestamp: 1508432748839},
-            {value: 950, timestamp: 1508433648839},
-            {value: 53, timestamp: 1508434548839}],
-        avgSuccessPercent: 69.997,
-        successPercentPoints: [
-            {value: 180, timestamp: 1508431848839},
-            {value: 82, timestamp: 1508432748839},
-            {value: 950, timestamp: 1508433648839},
-            {value: 53, timestamp: 1508434548839}],
-        latestTp99Duration: 14530,
-        tp99DurationPoints: [
-            {value: 180, timestamp: 1508431848839},
-            {value: 82, timestamp: 1508432748839},
-            {value: 950, timestamp: 1508433648839},
-            {value: 53, timestamp: 1508434548839}]
-    }
-];
 
 const stubSearchResults = [
     {
@@ -220,30 +185,19 @@ const stubService = 'test-service';
 const stubOperation = 'test-operation-1';
 
 
-function TrendsStubComponent({operationStore, serviceStore, location, serviceName}) {
+function TrendsStubComponent({operationStore, location, serviceName}) {
     return (<section className="trends-panel">
-        <TrendsHeader
-            operationStore={operationStore}
-            serviceStore={serviceStore}
-            serviceName={serviceName}
-            location={location}
-            history={{}}
-        />
-        <ServiceResults
-            serviceStore={serviceStore}
-            serviceName={serviceName}
-            location={location}
-        />
         <OperationResults
             operationStore={operationStore}
             serviceName={serviceName}
             location={location}
+            interval={null}
         />
     </section>);
 }
 
 function TrendsDetailsStubComponent({store, location, serviceName, opName}) {
-    return (<TrendDetails store={store} location={location} serviceName={serviceName} opName={opName} />);
+    return (<TrendDetails store={store} location={location} serviceName={serviceName} opName={opName} interval={null} />);
 }
 
 function createOperationStubStore(statsResults, trendsResults, promise, statsQuery = {}, trendsQuery = {}) {
@@ -261,78 +215,52 @@ function createOperationStubStore(statsResults, trendsResults, promise, statsQue
         store.trendsPromiseState = promise;
     });
 
-    return store;
-}
-
-function createServiceStubStore(statsResults, trendsResults, promise, statsQuery = {}, trendsQuery = {}) {
-    const store = new ServiceStore();
-    store.statsQuery = statsQuery;
-    store.trendsQuery = trendsQuery;
-
-    sinon.stub(store, 'fetchStats', () => {
-        store.statsResults = statsResults;
-        store.statsPromiseState = promise;
-    });
-
-    sinon.stub(store, 'fetchTrends', () => {
-        store.trendsResults = trendsResults;
-        store.trendsPromiseState = promise;
-    });
+    store.fetchTrends();
+    store.fetchStats();
 
     return store;
 }
 
 describe('<Trends />', () => {
-    it('should render the trends panel`', () => {
-        const wrapper = shallow(<Trends location={stubLocation} match={stubMatch} history={{}} />);
-        expect(wrapper.find('.trends-panel')).to.have.length(1);
-    });
-
     it('should trigger Service/Operation fetchStats on mount', () => {
         const operationStore = createOperationStubStore([]);
-        const serviceStore = createServiceStubStore([]);
-        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(wrapper.find('.trends-panel')).to.have.length(1);
-        expect(serviceStore.fetchStats.calledOnce);
         expect(operationStore.fetchStats.calledOnce);
     });
 
     it('should render results after getting search results', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} location={stubLocation} serviceName={stubService}/>);
 
         expect(operationStore.fetchStats.callCount).to.equal(1);
-        expect(wrapper.find('.react-bs-table-container')).to.have.length(2);
-        expect(wrapper.find('tr.tr-no-border')).to.have.length(5);
+        expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
+        expect(wrapper.find('tr.tr-no-border')).to.have.length(4);
     });
 
     it('should render error if promise is rejected', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, rejectedPromise, stubQuery, stubQuery);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, rejectedPromise, stubQuery, stubQuery);
-        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(wrapper.find('.error-message_text')).to.have.length(2);
+        expect(wrapper.find('.error-message_text')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should render loading if promise is pending', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, pendingPromise, stubQuery, stubQuery);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, pendingPromise, stubQuery, stubQuery);
-        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(wrapper.find('.loading')).to.have.length(2);
+        expect(wrapper.find('.loading')).to.have.length(1);
         expect(wrapper.find('.error-message_text')).to.have.length(0);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
     });
 
     it('should render sparklines on each row of search results', () => {
         const operationStore = createOperationStubStore(stubSearchResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const serviceStore = createServiceStubStore(stubServiceSummaryResults, stubOperationResults, fulfilledPromise, stubQuery, stubQuery);
-        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} serviceStore={serviceStore} location={stubLocation} serviceName={stubService}/>);
+        const wrapper = mount(<TrendsStubComponent operationStore={operationStore} location={stubLocation} serviceName={stubService}/>);
 
-        expect(wrapper.find('.sparkline-container')).to.have.length(15);
+        expect(wrapper.find('.sparkline-container')).to.have.length(12);
     });
 
     it('should call operation fetchStats upon expanding a trend', () => {

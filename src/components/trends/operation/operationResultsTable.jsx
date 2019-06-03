@@ -27,7 +27,7 @@ export default class OperationResultsTable extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
         operationStore: PropTypes.object.isRequired,
-        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
+        interval: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]).isRequired
     };
 
     static Header({name}) {

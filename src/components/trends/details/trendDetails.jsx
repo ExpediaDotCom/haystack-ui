@@ -32,7 +32,7 @@ export default class TrendDetails extends React.Component {
         serviceSummary: PropTypes.bool,
         opName: PropTypes.string,
         statsType: PropTypes.string,
-        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
+        interval: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]).isRequired
     };
 
     static defaultProps = {

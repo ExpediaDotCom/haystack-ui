@@ -29,7 +29,7 @@ export default class operationResults extends React.Component {
     static propTypes = {
         operationStore: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        interval: PropTypes.oneOfType([null, PropTypes.string]).isRequired
+        interval: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]).isRequired
     };
 
     render() {
