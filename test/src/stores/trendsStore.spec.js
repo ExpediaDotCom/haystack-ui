@@ -24,13 +24,11 @@ import MockAdapter from 'axios-mock-adapter';
 
 
 import {OperationStore} from '../../../src/components/trends/stores/operationStore';
-import {ServiceStore} from '../../../src/components/trends/stores/serviceStore';
 
 const stubTime = {granularity: 60000, from: 1522000386792, until: 1522003986792};
 const stubQuery = 'granularity=60000&from=1522000386792&until=1522003986792';
 const stubService = 'TestService';
 const stubOperation = 'TestOperation';
-const stubType = 'IncomingRequests';
 const stubTrend = [{
     operationName: 'test-1',
     count: 18800,
@@ -84,41 +82,4 @@ describe('OperationStore', () => {
             });
     });
 });
-describe('ServiceStore', () => {
-    let server = null;
-    const store = new ServiceStore();
 
-    beforeEach(() => {
-        server = new MockAdapter(axios);
-    });
-
-    afterEach(() => {
-        server = null;
-    });
-
-    it('fetches service stats', (done) => {
-        server.onGet(`/api/trends/service/TestService?${stubQuery}`).reply(200, stubTrend);
-
-        store.fetchStats(stubService, stubTime, false);
-
-        when(
-            () => store.statsResults.length > 0,
-            () => {
-                expect(store.statsResults).to.have.length(1);
-                done();
-            });
-    });
-
-    it('fetches service trends', (done) => {
-        server.onGet(`/api/trends/service/TestService/IncomingRequests?${stubQuery}`).reply(200, stubTrend);
-
-        store.fetchTrends(stubService, stubType, stubTime);
-
-        when(
-            () => store.trendsResults.length > 0,
-            () => {
-                expect(store.trendsResults).to.have.length(1);
-                done();
-            });
-    });
-});
