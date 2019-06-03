@@ -18,23 +18,16 @@
 /* eslint-disable react/prop-types, no-unused-expressions */
 
 import React from 'react';
-import {shallow, mount} from 'enzyme';
+import {mount} from 'enzyme';
 import sinon from 'sinon';
 import {expect} from 'chai';
 import { MemoryRouter } from 'react-router-dom';
 import {observable} from 'mobx';
 import ReactGA from 'react-ga';
 
-import Traces from '../../../../src/components/traces/traces';
-import SearchBar from '../../../../src/components/traces/searchBar/searchBar';
 import TraceResults from '../../../../src/components/traces/results/traceResults';
 import {TracesSearchStore} from '../../../../src/components/traces/stores/tracesSearchStore';
-import {SearchableKeysStore} from '../../../../src/components/traces/stores/searchableKeysStore';
 import {TraceDetailsStore} from '../../../../src/components/traces/stores/traceDetailsStore';
-import {SearchBarUiStateStore} from '../../../../src/components/traces/searchBar/searchBarUiStateStore';
-import Autocomplete from '../../../../src/components/traces/utils/autocomplete';
-import {OperationStore} from '../../../../src/stores/operationStore';
-import {ServiceStore} from '../../../../src/stores/serviceStore';
 import TraceDetails from '../../../../src/components/traces/details/traceDetails';
 import TagsTable from '../../../../src/components/traces/details/timeline/tagsTable';
 import RelatedTracesTabContainer from '../../../../src/components/traces/details/relatedTraces/relatedTracesTabContainer';
@@ -60,8 +53,6 @@ const stubMatch = {
         serviceName: 'abc-service'
     }
 };
-
-const stubSearchableKeys = ['traceId', 'spanId', 'serviceName', 'operationName', 'error'];
 
 const fulfilledPromise = {
     case: ({fulfilled}) => fulfilled()
@@ -268,48 +259,8 @@ const stubDetails = [
     }
 ];
 
-function createOperationStubStore() {
-    const store = new OperationStore();
-    store.operations = [];
-    sinon.stub(store, 'fetchOperations', () => {});
-    return store;
-}
-
-function createServiceStubStore() {
-    const store = new ServiceStore();
-    store.services = [];
-    sinon.stub(store, 'fetchServices', () => {});
-    return store;
-}
-
-function createSearchableKeysStore(results) {
-    const store = new SearchableKeysStore();
-    store.keys = observable.array(results);
-    sinon.stub(store, 'fetchKeys', () => []);
-    return store;
-}
-
-function createUIStateStore() {
-    const store = new SearchBarUiStateStore();
-    const query = {
-        serviceName: 'test-service'
-    };
-    store.initUsingQuery(query);
-    return store;
-}
-
-
-function TracesStubComponent({tracesSearchStore, history, location, match}) {
+function TracesStubComponent({tracesSearchStore, history}) {
     return (<section className="traces-panel">
-        <SearchBar
-            tracesSearchStore={tracesSearchStore}
-            searchableKeysStore={createSearchableKeysStore()}
-            serviceStore={createServiceStubStore()}
-            operationStore={createOperationStubStore()}
-            history={history}
-            location={location}
-            match={match}
-        />
         <TraceResults tracesSearchStore={tracesSearchStore} history={history} location={{}}/>
     </section>);
 }
@@ -337,6 +288,7 @@ function createStubStore(results, promise, searchQuery = {}) {
         store.searchQuery = searchQuery;
     });
 
+    store.fetchSearchResults('');
     return store;
 }
 
@@ -361,56 +313,6 @@ before((done) => {
 });
 
 describe('<Traces />', () => {
-    it('should render Traces panel container', () => {
-        const wrapper = shallow(<Traces history={stubHistory} location={stubLocation} match={stubMatch} />);
-        expect(wrapper.find('.traces-panel')).to.have.length(1);
-    });
-
-    it('has custom time range picker functionality', () => {
-        const tracesSearchStore = createStubStore([]);
-        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
-        // Clicking modal
-        expect(wrapper.find('.timerange-picker')).to.have.length(0);
-        wrapper.find('.time-range-picker-toggle').simulate('click');
-        expect(wrapper.find('.timerange-picker')).to.have.length(1);
-
-        // Changing presets
-        wrapper.find('.timerange-picker__preset').first().simulate('click');
-        expect(wrapper.find('.time-range-picker-toggle')).to.have.length(1);
-        expect(wrapper.find('.timerange-picker')).to.have.length(0);
-
-        // Custom time picker
-        wrapper.find('.time-range-picker-toggle').simulate('click');
-        wrapper.find('.datetimerange-picker').first().simulate('click');
-        wrapper.find('.rdtOld').first().simulate('click');
-        wrapper.find('.timerange-picker__presets__listblock').simulate('click');
-        wrapper.find('.custom-timerange-apply').simulate('click');
-        expect(wrapper.find('.timerange-picker')).to.have.length(0);
-
-        // Clicking off hides modal
-        wrapper.find('.time-range-picker-toggle').simulate('click');
-        expect(wrapper.find('.timerange-picker')).to.have.length(1);
-        wrapper.find('.search-bar-headers_fields').simulate('click');
-        expect(wrapper.find('.timerange-picker')).to.have.length(1);
-    });
-
-    it('should trigger fetchSearchResults on mount', () => {
-        const tracesSearchStore = createStubStore([]);
-        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
-        expect(wrapper.find('.traces-panel')).to.have.length(1);
-        expect(tracesSearchStore.fetchSearchResults.calledOnce);
-    });
-
-    it('should render service selection menu when traces are the only subsystem', () => {
-        const tracesSearchStore = createStubStore([]);
-        window.haystackUiConfig.subsystems = ['traces'];
-        const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
-        expect(wrapper.find('.search-bar-headers_service')).to.have.length(1);
-    });
-
     it('should render results after getting search results', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
@@ -461,9 +363,6 @@ describe('<Traces />', () => {
         const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
 
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(2);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(1);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(2);
     });
@@ -494,118 +393,12 @@ describe('<Traces />', () => {
     });
 
     it('should not show search results list on empty results', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
+        const tracesSearchStore = createStubStore([], fulfilledPromise);
         const wrapper = mount(<TracesStubComponent tracesSearchStore={tracesSearchStore} history={stubHistory} location={stubLocation} match={stubMatch}/>);
-
-        tracesSearchStore.fetchSearchResults.restore();
-        sinon.stub(tracesSearchStore, 'fetchSearchResults', () => {
-            tracesSearchStore.searchResults = [];
-        });
-        wrapper.find('.traces-search-button').simulate('click');
 
         expect(tracesSearchStore.fetchSearchResults.callCount).to.equal(1);
         expect(wrapper.find('.react-bs-table-container')).to.have.length(0);
         expect(wrapper.find('tr.tr-no-border')).to.have.length(0);
-    });
-
-    it('should not accept invalid query string parameters', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar
-            tracesSearchStore={tracesSearchStore}
-            searchableKeysStore={createSearchableKeysStore(stubSearchableKeys)}
-            serviceStore={createServiceStubStore()}
-            operationStore={createOperationStubStore()}
-            history={stubHistory}
-            location={stubLocation}
-            match={stubMatch}
-        />);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing no key value'}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'failure'}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'this=is wrong format ='}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'a=b c d=e'}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(1);
-    });
-
-    it('should accept valid query string parameters', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar
-            tracesSearchStore={tracesSearchStore}
-            searchableKeysStore={createSearchableKeysStore(stubSearchableKeys)}
-            serviceStore={createServiceStubStore()}
-            operationStore={createOperationStubStore()}
-            history={stubHistory}
-            location={stubLocation}
-            match={stubMatch}
-        />);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing=key value=pair'}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key value = pair'}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: '   testing   =   key value   =   pair   '}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
-
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'testing = key        value = pair '}});
-        wrapper.find('.traces-search-button').simulate('click');
-
-        expect(wrapper.find('.traces-error-message_item')).to.have.length(0);
-    });
-
-    it('should have an autosuggest feature for keys in traces header search', () => {
-        const tracesSearchStore = createStubStore(stubResults, fulfilledPromise);
-        const wrapper = mount(<SearchBar
-            tracesSearchStore={tracesSearchStore}
-            searchableKeysStore={createSearchableKeysStore(stubSearchableKeys)}
-            serviceStore={createServiceStubStore()}
-            operationStore={createOperationStubStore()}
-            history={stubHistory}
-            location={stubLocation}
-            match={stubMatch}
-        />);
-
-        wrapper.find('.search-bar-text-box').simulate('click');
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
-        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 65});
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: ''}});
-        wrapper.find('.search-bar-text-box').simulate('click');
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(5);
-    });
-
-    it('trace search bar autocomplete should be selectable by keyboard and mouse', () => {
-        const store = createUIStateStore();
-        const options = observable.array(['test-1', 'test-2', 'test-3']);
-        const wrapper = mount(<Autocomplete options={options} uiState={store}/>);
-        wrapper.find('.search-bar-text-box').simulate('change', {target: {value: 'test'}});
-        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
-        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 40});
-        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 38});
-        expect(wrapper.find('.autofill-suggestion')).to.have.length(3);
-        wrapper.find('.search-bar-text-box').simulate('keyDown', {keyCode: 13});
-        expect(wrapper.find('.search-bar-text-box').prop('value')).to.equal('test-3=');
     });
 
     describe('<TraceDetails />', () => {
