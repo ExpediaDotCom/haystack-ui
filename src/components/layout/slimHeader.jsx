@@ -17,19 +17,70 @@
 
 import React from 'react';
 import {Link} from 'react-router-dom';
+import { withRouter} from 'react-router';
+import PropTypes from 'prop-types';
+import { observer } from 'mobx-react';
+import traceDetailsStore from '../traces/stores/traceDetailsStore';
 
-export default () => (
-    <header className="universal-search-header">
-        <div className="container">
-            <Link className="navbar-brand universal-search-header__container" to="/">
-                <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
-                <span className="usb-logo universal-search-header__title">Haystack</span>
-            </Link>
-          { window.haystackUiConfig.usingZipkinConnector ?
-            <a className="usb-logo navbar-brand universal-search-header__container zipkin--logo-container" href="https://zipkin.io">
-              <span className="universal-search-header__subtitle">Tracing powered by: </span>
-              <img src="/images/zipkin-logo.jpg" className="logo zipkin-logo" alt="Logo"/>
-            </a> : window.haystackUiConfig.usingZipkinConnector }
-        </div>
-    </header>
-);
+const fileReader = new FileReader();
+
+@observer
+class Header extends React.Component {
+    static propTypes = {
+        history: PropTypes.object.isRequired
+    };
+
+    constructor(props) {
+        super(props);
+        this.uploadTrace = this.uploadTrace.bind(this);
+        this.setInputRef = this.setInputRef.bind(this);
+        this.handleFileRead = this.handleFileRead.bind(this);
+        this.readJsonFile = this.readJsonFile.bind(this);
+    }
+
+
+    setInputRef(node) {
+        this.uploadInput = node;
+    }
+
+    uploadTrace() {
+        this.uploadInput.click();
+    }
+
+    handleFileRead() {
+        const content = fileReader.result;
+        traceDetailsStore.uploadSpans(JSON.parse(content));
+        this.props.history.push('/upload');
+    }
+
+    readJsonFile(e) {
+        fileReader.onloadend = this.handleFileRead;
+        fileReader.readAsText(e.target.files[0]);
+    }
+
+    render() {
+        return (
+            <header className="universal-search-header">
+                <div className="container">
+                    <Link className="navbar-brand universal-search-header__container" to="/">
+                        <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
+                        <span className="usb-logo universal-search-header__title">Haystack</span>
+                    </Link>
+                  { window.haystackUiConfig.usingZipkinConnector ?
+                    <a className="usb-logo navbar-brand universal-search-header__container zipkin--logo-container" href="https://zipkin.io">
+                      <span className="universal-search-header__subtitle">Tracing powered by: </span>
+                      <img src="/images/zipkin-logo.jpg" className="logo zipkin-logo" alt="Logo"/>
+                    </a> : window.haystackUiConfig.usingZipkinConnector }
+                    {   window.haystackUiConfig.subsystems.includes('traces') ?
+                        <div className="pull-right header-button">
+                            <div role="button" tabIndex="0" className="btn-sm universal-search-header__view-switch" onClick={this.uploadTrace}><span className="ti-layout-cta-left"/> Upload Trace File</div>
+                            <input type="file" id="file" ref={this.setInputRef} accept=".json" onChange={this.readJsonFile} style={{display: 'none'}}/>
+                        </div> : null
+                    }
+                </div>
+            </header>
+        );
+    }
+}
+
+export default withRouter(Header);

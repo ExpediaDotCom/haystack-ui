@@ -123,6 +123,11 @@ export class TraceDetailsStore extends ErrorHandlingStore {
     }
 
     @action
+    uploadSpans(spans) {
+        this.spans = spans;
+    }
+
+    @action
     fetchRelatedTraces(query) {
         const serviceName = decodeURIComponent(query.serviceName);
         const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
