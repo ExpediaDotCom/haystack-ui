@@ -35,27 +35,28 @@ class UploadHeader extends React.Component {
 
     render() {
         const {traceDetailsStore} = this.props;
-        const totalDuration = traceDetailsStore.totalDuration;
-        const traceId = traceDetailsStore.spans[0].traceId;
+        const totalDuration = formatters.toDurationString(traceDetailsStore.totalDuration);
+        const root = traceDetailsStore.spans[0];
+        const traceId = root.traceId;
+        const startTime = formatters.toTimestring(root.startTime * 1000);
         const services = UploadHeader.getServiceCounts(traceDetailsStore.spans);
 
         return (
-            <div className="tabs-nav-container clearfix">
-                <div className="pull-left">
+            <div className="tabs-nav-container upload-large-font clearfix">
+                <div className="pull-left upload-padding-left">
                     <div>
-                        <h5 className="traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
-                    </div>
-                    <div>{Object.keys(services).map(svc => (
-                        <span className={`service-spans label ${colorMapper.toBackgroundClass(svc)}`}>{svc} x{services[svc]}</span>))}
+                        <div className="traces-details-trace-id__name">Trace Id: <span className="traces-details-trace-id__value">{traceId}</span></div>
+                        <div className="traces-details-trace-id__name">Start Time: <span className="traces-details-trace-id__value">{startTime}</span></div>
                     </div>
                 </div>
-                <div className="pull-right upload-padding">
-                    <div className="traces-details-trace-id__name">
-                        Duration: <span className="traces-details-trace-id__value">{formatters.toDurationString(totalDuration)}</span>
-                    </div>
+                <div className="pull-right upload-padding-right">
+                    <div className="traces-details-trace-id__name">Total Duration: <span className="traces-details-trace-id__value">{totalDuration}</span></div>
                     <div className="traces-details-trace-id__name">
                         Span Count: <span className="traces-details-trace-id__value">{traceDetailsStore.spans.length}</span>
                     </div>
+                </div>
+                <div className="upload-inline-block">{Object.keys(services).map(svc => (
+                    <span className={`service-spans label ${colorMapper.toBackgroundClass(svc)}`}>{svc} x{services[svc]}</span>))}
                 </div>
             </div>
         );
