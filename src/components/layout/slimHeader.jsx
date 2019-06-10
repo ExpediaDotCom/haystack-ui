@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import traceDetailsStore from '../traces/stores/traceDetailsStore';
 
-const fileReader = new FileReader();
 
 @observer
 class Header extends React.Component {
@@ -32,6 +31,9 @@ class Header extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.fileReader = new global.window.FileReader();
+
         this.uploadTrace = this.uploadTrace.bind(this);
         this.setInputRef = this.setInputRef.bind(this);
         this.handleFileRead = this.handleFileRead.bind(this);
@@ -48,14 +50,14 @@ class Header extends React.Component {
     }
 
     handleFileRead() {
-        const content = fileReader.result;
+        const content = this.fileReader.result;
         traceDetailsStore.uploadSpans(JSON.parse(content));
         this.props.history.push('/upload');
     }
 
     readJsonFile(e) {
-        fileReader.onloadend = this.handleFileRead;
-        fileReader.readAsText(e.target.files[0]);
+        this.fileReader.onloadend = this.handleFileRead;
+        this.fileReader.readAsText(e.target.files[0]);
     }
 
     render() {
