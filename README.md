@@ -43,7 +43,7 @@ Visualization tools in haystack-ui include -
 It is a expressjs based single page client side app written in ES6 + React and using Mobx for data flow. 
 
 ### Pre-requisites
-Ensure you have `node >= 8.6` and `npm >= 5.3` installed. 
+Ensure you have `node >= 10.0` and `npm >= 6.0` installed. 
 
 Clone the repository including recursive submodules: 
 ```
