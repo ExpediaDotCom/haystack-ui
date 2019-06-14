@@ -71,6 +71,22 @@ $ npm run build              # run tests(with coverage), build client side code 
 $ npm start                  # start node server
 ```
 
+#### Autoformatting in your favorite IDE with Prettier Integration
+
+This projects supports auto-formatting of source code!  Simply find your favorite IDE from the list in the following list: https://prettier.io/docs/en/editors.html
+
+For VSCode support, perform the following steps:
+
+- Launch VS Code Quick Open (Ctrl+P)
+- Paste the following command, and press enter:
+```
+ext install esbenp.prettier-vscode
+```
+
+This projects has a pre-configured `.vscode/settings.json` which enables format on save.  Auto-formatting should execute everytime you save a file.  
+
+Prettier is also configured to run in a pre-commit hook to make enforcing consistency of source code between developers easy.
+
 ## Testing
 
 Haystack-ui utilizes [Mocha](https://github.com/mochajs/mocha) as it's testing framework, with [Chai](https://github.com/chaijs/chai) as the assertation library, [Enzyme](https://github.com/airbnb/enzyme) for utility, and [JSDOM](https://github.com/tmpvar/jsdom) as a headless browser for rendering React components.

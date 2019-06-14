@@ -1,0 +1,9 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    // Prettier
+    "editor.formatOnSave": true,
+    "prettier.eslintIntegration": true,
+    "[less]": {
+        "editor.formatOnSave": true
+    }
+}
