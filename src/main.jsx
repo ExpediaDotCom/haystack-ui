@@ -19,6 +19,7 @@ import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 
 import Login from './components/common/login';
+import UploadContainer from './components/traces/upload/uploadContainer';
 import UniversalSearch from './components/universalSearch/universalSearch';
 import './app.less';
 
@@ -26,6 +27,7 @@ export default () => (
     <Route>
         <Switch>
             <Route exact path="/login" render={props => <Login {...props} />}/>
+            <Route exact path="/upload" component={UploadContainer} />
             <Route path="/" component={UniversalSearch} />
         </Switch>
     </Route>

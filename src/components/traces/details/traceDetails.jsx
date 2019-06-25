@@ -88,7 +88,7 @@ export default class TraceDetails extends React.Component {
 
         const search = {traceId}; // TODO add specific time for trace
         const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-        const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(rawTraceStore.rawTrace))}`;
+        const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
 
         return (
             <section className="table-row-details">
