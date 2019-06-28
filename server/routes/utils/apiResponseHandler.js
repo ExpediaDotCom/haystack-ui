@@ -22,12 +22,15 @@ responseHandler.handleResponsePromise = (response, next, pathName) => (operation
     const timer = metrics.timer(`http_rq_${pathName}`).start();
 
     operation()
-    .then(result => response.json(result), (err) => {
-        metrics.meter(`http_rq_${pathName}_failed`).mark();
-        next(err);
-    })
-    .fin(() => timer.end())
-    .done();
+        .then(
+            (result) => response.json(result),
+            (err) => {
+                metrics.meter(`http_rq_${pathName}_failed`).mark();
+                next(err);
+            }
+        )
+        .fin(() => timer.end())
+        .done();
 };
 
 module.exports = responseHandler;

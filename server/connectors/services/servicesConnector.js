@@ -23,7 +23,7 @@ const connector = {};
 const serviceCache = new LoaderBackedCache(() => tracesConnector.getServices(), refreshIntervalInSecs * 1000);
 connector.getServices = () => serviceCache.get();
 
-const operationsCache = new LoaderBackedCache(serviceName => tracesConnector.getOperations(serviceName), refreshIntervalInSecs * 1000);
-connector.getOperations = serviceName => operationsCache.get(serviceName);
+const operationsCache = new LoaderBackedCache((serviceName) => tracesConnector.getOperations(serviceName), refreshIntervalInSecs * 1000);
+connector.getOperations = (serviceName) => operationsCache.get(serviceName);
 
 module.exports = connector;

@@ -19,11 +19,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ServiceGraphSearch = ({searchString, searchStringChanged}) => (
-        <section className="graph-search__wrapper">
-            <input type="search" className="graph-search__input form-control" onChange={(event) => { searchStringChanged(event.currentTarget.value); }} value={searchString} placeholder="Filter services..."/>
-            <span className="ti-search graph-search__search-icon"/>
-        </section>
-    );
+    <section className="graph-search__wrapper">
+        <input
+            type="search"
+            className="graph-search__input form-control"
+            onChange={(event) => {
+                searchStringChanged(event.currentTarget.value);
+            }}
+            value={searchString}
+            placeholder="Filter services..."
+        />
+        <span className="ti-search graph-search__search-icon" />
+    </section>
+);
 
 ServiceGraphSearch.propTypes = {
     searchStringChanged: PropTypes.func.isRequired,
@@ -31,4 +39,3 @@ ServiceGraphSearch.propTypes = {
 };
 
 export default ServiceGraphSearch;
-

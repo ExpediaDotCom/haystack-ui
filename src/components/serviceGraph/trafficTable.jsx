@@ -40,17 +40,17 @@ export default class TrafficTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { isExpanded: false };
+        this.state = {isExpanded: false};
         this.toggleShowMore = this.toggleShowMore.bind(this);
     }
 
     toggleShowMore() {
-        this.setState({ isExpanded: !this.state.isExpanded});
+        this.setState({isExpanded: !this.state.isExpanded});
     }
 
     render() {
         const {trafficEdges, trafficType, time} = this.props;
-        const { isExpanded } = this.state;
+        const {isExpanded} = this.state;
 
         let trafficEdgesList = trafficEdges.sort((a, b) => b.count - a.count);
 
@@ -60,10 +60,12 @@ export default class TrafficTable extends React.Component {
                 ShowMoreLess = () => (
                     <tr>
                         <td>
-                            <a role="button" tabIndex={-1} onClick={() => this.toggleShowMore()}>Show Less</a>
+                            <a role="button" tabIndex={-1} onClick={() => this.toggleShowMore()}>
+                                Show Less
+                            </a>
                         </td>
-                        <td/>
-                        <td/>
+                        <td />
+                        <td />
                     </tr>
                 );
             } else {
@@ -71,10 +73,12 @@ export default class TrafficTable extends React.Component {
                 ShowMoreLess = () => (
                     <tr>
                         <td>
-                            <a role="button" tabIndex={-1} onClick={() => this.toggleShowMore()}>Show all {trafficEdges.length} Services</a>
+                            <a role="button" tabIndex={-1} onClick={() => this.toggleShowMore()}>
+                                Show all {trafficEdges.length} Services
+                            </a>
                         </td>
-                        <td/>
-                        <td/>
+                        <td />
+                        <td />
                     </tr>
                 );
             }
@@ -84,33 +88,42 @@ export default class TrafficTable extends React.Component {
             ? `(${formatters.toTimeRangeTextFromTimeWindow(time.preset, time.from, time.to)} average)`
             : '(last 1 hour average)';
 
-        return (<section className="col-md-4">
+        return (
+            <section className="col-md-4">
                 <div className="service-graph__info">
-                    <span className="service-graph__info-header">{trafficType} Traffic</span> <span className="service-graph__info-sub">{timeWindowText}</span>
+                    <span className="service-graph__info-header">{trafficType} Traffic</span>{' '}
+                    <span className="service-graph__info-sub">{timeWindowText}</span>
                 </div>
                 <table className="service-graph__info-table">
                     <thead>
-                    <tr>
-                        <th>Service</th>
-                        <th className="text-right">Rq/sec</th>
-                        <th className="text-right">Error %</th>
-                    </tr>
+                        <tr>
+                            <th>Service</th>
+                            <th className="text-right">Rq/sec</th>
+                            <th className="text-right">Error %</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {
-                        trafficEdgesList && trafficEdgesList.length
-                            ? trafficEdgesList.map(edge => (
-                            <tr key={edge.node}>
-                                <td>{edge.node}</td>
-                                <td className="text-right">{edge.count.toFixed(2)}</td>
-                                <td className={`text-right service-graph__info-error-${TrafficTable.getErrorLevel(edge.errorPercent)}`}>{edge.errorPercent.toFixed(2)}%</td>
+                        {trafficEdgesList && trafficEdgesList.length ? (
+                            trafficEdgesList.map((edge) => (
+                                <tr key={edge.node}>
+                                    <td>{edge.node}</td>
+                                    <td className="text-right">{edge.count.toFixed(2)}</td>
+                                    <td className={`text-right service-graph__info-error-${TrafficTable.getErrorLevel(edge.errorPercent)}`}>
+                                        {edge.errorPercent.toFixed(2)}%
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td>NA</td>
+                                <td />
+                                <td />
                             </tr>
-                        ))
-                        : <tr><td>NA</td><td/><td/></tr>
-                    }
-                    <ShowMoreLess/>
+                        )}
+                        <ShowMoreLess />
                     </tbody>
                 </table>
-            </section>);
+            </section>
+        );
     }
 }

@@ -34,18 +34,21 @@ export default class Login extends Component {
         const redirectUrl = this.props.location.search || '?redirectUrl=/';
         const ssoAdfsDomain = window.haystackUiConfig.ssoAdfsDomain;
 
-        return (<div id="particles-js" className="login-cover text-center">
-            <div className="login-box text-center">
-                <div className="login-box_jumbotron">
-                    <div>
-                        <img src="/images/logo.png" alt="Logo" className="login-box_logo"/>
-                        <span className="h1 login-box_title">Haystack</span>
+        return (
+            <div id="particles-js" className="login-cover text-center">
+                <div className="login-box text-center">
+                    <div className="login-box_jumbotron">
+                        <div>
+                            <img src="/images/logo.png" alt="Logo" className="login-box_logo" />
+                            <span className="h1 login-box_title">Haystack</span>
+                        </div>
+                        <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">
+                            Sign in
+                            {ssoAdfsDomain && ` with ${ssoAdfsDomain} credentials`}
+                        </a>
                     </div>
-                    <a href={`/auth/login${redirectUrl}`} className="login-box_btn btn btn-primary btn-lg">Sign in
-                        {ssoAdfsDomain && ` with ${ssoAdfsDomain} credentials`}
-                    </a>
                 </div>
             </div>
-        </div>);
+        );
     }
 }

@@ -19,7 +19,6 @@ const errorConverter = require('../utils/errorConverter');
 const logger = require('../../utils/logger').withIdentifier('putter.grpc');
 const metrics = require('../../utils/metrics');
 
-
 const config = require('../../config/config');
 
 function generateCallDeadline() {
@@ -31,21 +30,19 @@ const putter = (putterName, client) => ({
         const deferred = Q.defer();
         const timer = metrics.timer(`putter_grpc_${putterName}`).start();
 
-        client[putterName](request,
-            {deadline: generateCallDeadline()},
-            (error, result) => {
-                timer.end();
-                if (error || !result) {
-                    logger.info(`put failed: ${putterName}`);
-                    metrics.meter(`putter_grpc_failure_${putterName}`).mark();
+        client[putterName](request, {deadline: generateCallDeadline()}, (error, result) => {
+            timer.end();
+            if (error || !result) {
+                logger.info(`put failed: ${putterName}`);
+                metrics.meter(`putter_grpc_failure_${putterName}`).mark();
 
-                    deferred.reject(errorConverter.fromGrpcError(error));
-                } else {
-                    logger.info(`put successful: ${putterName}`);
+                deferred.reject(errorConverter.fromGrpcError(error));
+            } else {
+                logger.info(`put successful: ${putterName}`);
 
-                    deferred.resolve(result);
-                }
-            });
+                deferred.resolve(result);
+            }
+        });
 
         return deferred.promise;
     }

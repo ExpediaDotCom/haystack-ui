@@ -26,17 +26,7 @@ import './servicePerformance.less';
 
 const colorPercentRanges = [0, 50, 75, 90, 95, 98, 99, 99.9, 100];
 
-const colors = [
-    '#8D2827',
-    '#B34D4B',
-    '#EC8B83',
-    '#F6C6B5',
-    '#f5ffd3',
-    '#D1E6CC',
-    '#A5CEB9',
-    '#76B6A3',
-    '#4B9D93'
-];
+const colors = ['#8D2827', '#B34D4B', '#EC8B83', '#F6C6B5', '#f5ffd3', '#D1E6CC', '#A5CEB9', '#76B6A3', '#4B9D93'];
 
 const colorScale = colors.map((color, index) => `${color} ${colorPercentRanges[index]}%`).join(',');
 
@@ -49,21 +39,20 @@ export default class ServicePerformance extends Component {
     };
 
     static mapToColor(percent) {
-        return colors[
-            colorPercentRanges.indexOf(
-                colorPercentRanges.find(x => x >= percent))];
+        return colors[colorPercentRanges.indexOf(colorPercentRanges.find((x) => x >= percent))];
     }
 
     static createTreemapData(servicePerfStats) {
-        const serviceData = servicePerfStats.map(servicePerf => ({
+        const serviceData = servicePerfStats.map((servicePerf) => ({
             ...servicePerf,
-            title:
-                (<div>
+            title: (
+                <div>
                     <div className="rv-treemap__leaf__title">{servicePerf.serviceName}</div>
-                </div>),
+                </div>
+            ),
             totalCountValue: Math.log(servicePerf.totalCount || 1),
             failureCountValue: Math.log(servicePerf.failureCount || 1),
-            successPercentColor: (servicePerf.successPercent === null) ? '#eee' : ServicePerformance.mapToColor(servicePerf.successPercent)
+            successPercentColor: servicePerf.successPercent === null ? '#eee' : ServicePerformance.mapToColor(servicePerf.successPercent)
         }));
 
         return {children: serviceData, successPercentColor: '#fff'};
@@ -109,7 +98,7 @@ export default class ServicePerformance extends Component {
 
     handleTreemapDataFilter(event) {
         const initData = this.state.initData.children.slice(0, this.state.treemapData.length);
-        const filteredData = initData.filter(serviceData => serviceData.serviceName.toLowerCase().includes(event.target.value.toLowerCase()));
+        const filteredData = initData.filter((serviceData) => serviceData.serviceName.toLowerCase().includes(event.target.value.toLowerCase()));
         if (filteredData.length !== 0) {
             this.setState({
                 treemapData: {children: filteredData, successPercentColor: '#fff'}
@@ -122,14 +111,9 @@ export default class ServicePerformance extends Component {
     }
 
     render() {
-        const areaOptions = [
-            {value: 'failureCount', label: 'Failure Count'},
-            {value: 'totalCount', label: 'Request Count'}
-        ];
+        const areaOptions = [{value: 'failureCount', label: 'Failure Count'}, {value: 'totalCount', label: 'Request Count'}];
 
-        const colorOptions = [
-            {value: 'successPercent', label: 'Success Percent'}
-        ];
+        const colorOptions = [{value: 'successPercent', label: 'Success Percent'}];
 
         const ResponsiveTreemap = makeWidthFlexible(Treemap);
 
@@ -149,47 +133,43 @@ export default class ServicePerformance extends Component {
                     <div className="clearfix col-md-4">
                         <div className="servicePerformance__param-selector pull-right">
                             <div className="text-right">Color </div>
-                            <Select
-                                options={colorOptions}
-                                onChange={this.handleColorParamChange}
-                                value={this.state.color}
-                                clearable={false}
-                            />
+                            <Select options={colorOptions} onChange={this.handleColorParamChange} value={this.state.color} clearable={false} />
                         </div>
                         <div className="servicePerformance__param-selector pull-right">
                             <div className="text-right">Area </div>
-                            <Select
-                                options={areaOptions}
-                                onChange={this.handleAreaParamChange}
-                                clearable={false}
-                                value={this.state.area}
-                            />
+                            <Select options={areaOptions} onChange={this.handleAreaParamChange} clearable={false} value={this.state.area} />
                         </div>
                     </div>
                 </div>
-                { this.props.servicePerfStore.promiseState && this.props.servicePerfStore.promiseState.case({
-                    empty: () => <Loading />,
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.servicePerfStore.promiseState)
-                        ? <ResponsiveTreemap
-                            animation
-                            height={600}
-                            data={this.state.treemapData}
-                            renderMode={'DOM'}
-                            padding={3}
-                            margin={5}
-                            mode={'circlePack'}
-                            colorType={'literal'}
-                            getSize={d => d[`${this.state.area}Value`]}
-                            getColor={d => d[`${this.state.color}Color`]}
-                            sortFunction={(a, b) => b.value - a.value}
-                            onLeafMouseOver={nodeData => nodeData.data.serviceName && this.setState({hoveredNode: nodeData.data.serviceName})}
-                            onLeafMouseOut={() => this.setState({hoveredNode: false})}
-                            onLeafClick={this.handleNodeClick}
-                        />
-                        : <Error errorMessage="There was a problem displaying the service performance graph. Please try again later."/>)
-                })}
+                {this.props.servicePerfStore.promiseState &&
+                    this.props.servicePerfStore.promiseState.case({
+                        empty: () => <Loading />,
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () =>
+                            this.props.servicePerfStore.promiseState ? (
+                                <ResponsiveTreemap
+                                    animation
+                                    height={600}
+                                    data={this.state.treemapData}
+                                    renderMode={'DOM'}
+                                    padding={3}
+                                    margin={5}
+                                    mode={'circlePack'}
+                                    colorType={'literal'}
+                                    getSize={(d) => d[`${this.state.area}Value`]}
+                                    getColor={(d) => d[`${this.state.color}Color`]}
+                                    sortFunction={(a, b) => b.value - a.value}
+                                    onLeafMouseOver={(nodeData) =>
+                                        nodeData.data.serviceName && this.setState({hoveredNode: nodeData.data.serviceName})
+                                    }
+                                    onLeafMouseOut={() => this.setState({hoveredNode: false})}
+                                    onLeafClick={this.handleNodeClick}
+                                />
+                            ) : (
+                                <Error errorMessage="There was a problem displaying the service performance graph. Please try again later." />
+                            )
+                    })}
                 <section>
                     <div className="pull-right clearfix">
                         <div className="pull-left">0%</div>

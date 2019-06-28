@@ -24,7 +24,7 @@ import granularityMetrics from '../trends/utils/metricGranularity';
 import {toQuery, toQueryUrlString} from '../../utils/queryParser';
 import './alerts';
 
-const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
+const refreshInterval = window.haystackUiConfig && window.haystackUiConfig.refreshInterval;
 
 @observer
 export default class AlertsToolbar extends React.Component {
@@ -41,7 +41,7 @@ export default class AlertsToolbar extends React.Component {
         super(props);
 
         const query = toQuery(this.props.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : this.props.defaultPreset;
+        const activeWindow = query.preset ? timeWindow.presets.find((presetItem) => presetItem.shortName === query.preset) : this.props.defaultPreset;
         this.state = {
             interval: this.props.interval,
             options: timeWindow.presets,
@@ -61,7 +61,7 @@ export default class AlertsToolbar extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const query = toQuery(nextProps.location.search);
-        const activeWindow = query.preset ? timeWindow.presets.find(presetItem => presetItem.shortName === query.preset) : nextProps.defaultPreset;
+        const activeWindow = query.preset ? timeWindow.presets.find((presetItem) => presetItem.shortName === query.preset) : nextProps.defaultPreset;
         this.setState({activeWindow, autoRefresh: false, interval: nextProps.interval || 'FiveMinute'});
         this.stopRefresh();
     }
@@ -81,32 +81,24 @@ export default class AlertsToolbar extends React.Component {
     }
 
     startRefresh() {
-        this.setState(
-            {
-                autoRefreshTimer: new Date(),
-                countdownTimer: new Date()
-            }
-        );
-        this.autoRefreshTimerRef = setInterval(
-            () => {
-                this.setState({autoRefreshTimer: new Date()});
-                this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, this.state.activeWindow);
-            },
-            refreshInterval);
-        this.countdownTimerRef = setInterval(
-            () => this.setState({countdownTimer: new Date()}),
-            1000);
+        this.setState({
+            autoRefreshTimer: new Date(),
+            countdownTimer: new Date()
+        });
+        this.autoRefreshTimerRef = setInterval(() => {
+            this.setState({autoRefreshTimer: new Date()});
+            this.props.alertsStore.fetchServiceAlerts(this.props.serviceName, this.props.interval, this.state.activeWindow);
+        }, refreshInterval);
+        this.countdownTimerRef = setInterval(() => this.setState({countdownTimer: new Date()}), 1000);
     }
 
     stopRefresh() {
         clearInterval(this.autoRefreshTimerRef);
         clearInterval(this.countdownTimerRef);
-        this.setState(
-            {
-                autoRefreshTimer: null,
-                countdownTimer: null
-            }
-        );
+        this.setState({
+            autoRefreshTimer: null,
+            countdownTimer: null
+        });
     }
 
     toggleAutoRefresh() {
@@ -144,7 +136,10 @@ export default class AlertsToolbar extends React.Component {
     }
 
     render() {
-        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+        const countDownMiliSec =
+            this.state.countdownTimer &&
+            this.state.autoRefreshTimer &&
+            refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime());
 
         return (
             <header className="alerts-toolbar">
@@ -152,13 +147,12 @@ export default class AlertsToolbar extends React.Component {
                     <div>
                         <div className="box-inline">
                             <span>Metric Interval</span>
-                            <select
-                                value={this.state.interval}
-                                className="form-control alert-interval"
-                                onChange={this.handleIntervalChange}
-                            >
-                                {granularityMetrics.options.map(granularity => (<option key={granularity.longName} value={granularity.longName}>{granularity.shortName}</option>)
-                                )}
+                            <select value={this.state.interval} className="form-control alert-interval" onChange={this.handleIntervalChange}>
+                                {granularityMetrics.options.map((granularity) => (
+                                    <option key={granularity.longName} value={granularity.longName}>
+                                        {granularity.shortName}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="box-inline">
@@ -167,11 +161,15 @@ export default class AlertsToolbar extends React.Component {
                                 <button
                                     className={`btn btn-sm btn-${this.state.autoRefresh ? 'primary' : 'default'}`}
                                     onClick={this.state.autoRefresh ? null : this.toggleAutoRefresh}
-                                >On</button>
+                                >
+                                    On
+                                </button>
                                 <button
                                     className={`btn btn-sm btn-${this.state.autoRefresh ? 'default' : 'primary'}`}
                                     onClick={this.state.autoRefresh ? this.toggleAutoRefresh : null}
-                                >Off</button>
+                                >
+                                    Off
+                                </button>
                             </span>
                         </div>
                     </div>

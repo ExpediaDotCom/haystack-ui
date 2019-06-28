@@ -23,7 +23,7 @@ const gaTrackingID = (window.haystackUiConfig && window.haystackUiConfig.gaTrack
 ReactGA.initialize(gaTrackingID);
 
 const trackPage = (page) => {
-    ReactGA.set({ page });
+    ReactGA.set({page});
     ReactGA.pageview(page);
 };
 

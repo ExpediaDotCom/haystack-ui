@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { withRouter} from 'react-router';
+import {withRouter} from 'react-router';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 
@@ -27,7 +27,7 @@ import Footer from '../layout/footer';
 // universal search view
 import Tabs from './tabs/tabs';
 import SearchBar from './searchBar/searchBar';
-import { convertUrlQueryToSearch } from './utils/urlUtils';
+import {convertUrlQueryToSearch} from './utils/urlUtils';
 import linkBuilder from '../../utils/linkBuilder';
 
 // styling
@@ -58,7 +58,7 @@ class UniversalSearch extends React.Component {
         const search = convertUrlQueryToSearch(urlQuery);
 
         if (!search.time) {
-            search.time = { preset: UniversalSearch.DEFAULT_TIME_WINDOW };
+            search.time = {preset: UniversalSearch.DEFAULT_TIME_WINDOW};
         }
 
         return search;
@@ -91,16 +91,16 @@ class UniversalSearch extends React.Component {
     // on load, render search bar and tabs
     // on updation of query, re-render tabs
     render() {
-        const { history, location } = this.props;
-        const { search } = this.state;
+        const {history, location} = this.props;
+        const {search} = this.state;
 
         return (
             <article className="universal-search-panel">
                 {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
-                <Header/>
+                <Header />
                 <SearchBar search={search} handleSearch={this.handleSearch} />
                 <Tabs search={search} handleTabSelection={this.handleTabSelection} history={history} location={location} />
-                <Footer/>
+                <Footer />
             </article>
         );
     }

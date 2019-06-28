@@ -35,8 +35,8 @@ export default class TrendTimeRangePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-           from: moment(this.props.from),
-           to: moment(this.props.to)
+            from: moment(this.props.from),
+            to: moment(this.props.to)
         };
 
         this.handleApply = this.handleApply.bind(this);
@@ -56,7 +56,7 @@ export default class TrendTimeRangePicker extends React.Component {
     }
 
     handleApply() {
-        this.props.customTimeRangeChangeCallback({ from: this.state.from.valueOf(), to: this.state.to.valueOf() });
+        this.props.customTimeRangeChangeCallback({from: this.state.from.valueOf(), to: this.state.to.valueOf()});
     }
 
     isToValid(current) {
@@ -77,18 +77,9 @@ export default class TrendTimeRangePicker extends React.Component {
                         onChange={this.handleFromChange}
                     />
                     <div>To :</div>
-                    <DateTime
-                        className="custom-timerange-picker__datetime"
-                        isValidDate={this.isToValid}
-                        value={to}
-                        onChange={this.handleToChange}
-                    />
+                    <DateTime className="custom-timerange-picker__datetime" isValidDate={this.isToValid} value={to} onChange={this.handleToChange} />
                 </div>
-                <button
-                    type="button"
-                    className="btn-apply btn btn-primary btn-sm pull-right"
-                    onClick={this.handleApply}
-                >
+                <button type="button" className="btn-apply btn btn-primary btn-sm pull-right" onClick={this.handleApply}>
                     Apply
                 </button>
             </div>

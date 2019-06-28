@@ -31,10 +31,7 @@ import formatters from '../../utils/formatters';
 
 export default class ServiceGraphResults extends React.Component {
     static propTypes = {
-        serviceGraph: PropTypes.oneOfType([
-            MobxPropTypes.observableArray.isRequired,
-            PropTypes.array
-        ]).isRequired,
+        serviceGraph: PropTypes.oneOfType([MobxPropTypes.observableArray.isRequired, PropTypes.array]).isRequired,
         search: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired
     };
@@ -54,21 +51,25 @@ export default class ServiceGraphResults extends React.Component {
         let incomingEdgesList = ['<tr><td>NA</td><td/><td/></tr>'];
 
         if (incomingEdges.length) {
-            incomingEdgesList = incomingEdges.sort((a, b) => b.stats.count - a.stats.count).map((e) => {
-                const errorPercentage = (e.stats.errorCount * 100) / e.stats.count;
-                const level = ServiceGraphResults.getNodeDisplayDetails(errorPercentage);
-                return `
+            incomingEdgesList = incomingEdges
+                .sort((a, b) => b.stats.count - a.stats.count)
+                .map((e) => {
+                    const errorPercentage = (e.stats.errorCount * 100) / e.stats.count;
+                    const level = ServiceGraphResults.getNodeDisplayDetails(errorPercentage);
+                    return `
                     <tr>
                         <td>${e.source.name}</td>
                         <td class="text-right">${e.stats.count.toFixed(2)}</td>
                         <td class="text-right service-graph__info-error-${level.level}">${errorPercentage.toFixed(2)}%</td>
                     </tr>`;
-            });
+                });
         }
 
         let tagsListing = '';
         if (tags && Object.keys(tags).length) {
-            tagsListing = Object.keys(tags).map(t => `<span class="label label-success">${t} = ${tags[t]}</span> `).join(' ');
+            tagsListing = Object.keys(tags)
+                .map((t) => `<span class="label label-success">${t} = ${tags[t]}</span> `)
+                .join(' ');
         }
 
         const timeWindowText = time
@@ -170,14 +171,14 @@ export default class ServiceGraphResults extends React.Component {
     };
 
     handleCheckbox() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             lowCpu: !prevState.lowCpu
         }));
     }
 
     render() {
         const serviceGraph = this.props.serviceGraph;
-        const maxCountEdge = _.maxBy(serviceGraph, e => e.stats.count).stats.count;
+        const maxCountEdge = _.maxBy(serviceGraph, (e) => e.stats.count).stats.count;
         const graph = ServiceGraphResults.buildGraph(serviceGraph);
         const connDetails = this.state.connDetails;
         config.nodes = ServiceGraphResults.createNodes(graph, this.props.search.time);
@@ -236,8 +237,7 @@ export default class ServiceGraphResults extends React.Component {
 
         return (
             <div key={frameRate}>
-                {
-                    !!serviceName &&
+                {!!serviceName && (
                     <NodeDetails
                         serviceName={serviceName}
                         requestRate={graph.requestRateForNode(serviceName)}
@@ -247,7 +247,7 @@ export default class ServiceGraphResults extends React.Component {
                         tags={graph.tagsForNode(serviceName)}
                         time={this.props.search.time}
                     />
-                }
+                )}
                 <article className="serviceGraph__panel">
                     <ServiceGraphSearch searchStringChanged={this.searchStringChanged} searchString={this.state.searchString} />
                     <LowCpuCheckbox />
@@ -262,14 +262,13 @@ export default class ServiceGraphResults extends React.Component {
                         match={this.state.searchString}
                         viewChanged={this.setView}
                     />
-                    {
-                        !!connDetails &&
+                    {!!connDetails && (
                         <ConnectionDetails
                             requestRate={graph.requestRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                             errorPercent={graph.errorRateForConnection(connDetails.split('--')[0], connDetails.split('--')[1])}
                             onClose={this.onConnectionDetailsClose}
                         />
-                    }
+                    )}
                 </article>
             </div>
         );

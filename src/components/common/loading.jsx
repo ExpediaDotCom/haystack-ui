@@ -21,7 +21,7 @@ import './loading.less';
 export default () => (
     <section className="text-center loading">
         <section className="loading_text text-center">
-            <img alt="loading..." className="loading__img" src="/images/loading.gif"/>
+            <img alt="loading..." className="loading__img" src="/images/loading.gif" />
             <h6 className="loading__text">Loading...</h6>
         </section>
     </section>

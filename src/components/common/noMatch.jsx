@@ -23,7 +23,9 @@ export default () => (
         <div className="jumbotron">
             <h1>Sorry!</h1>
             <p>Page not found</p>
-            <p><Link to="/">Return to home</Link></p>
+            <p>
+                <Link to="/">Return to home</Link>
+            </p>
         </div>
     </div>
 );

@@ -17,10 +17,10 @@
 import Vizceral from 'vizceral-react';
 
 class VizceralExt extends Vizceral {
-  componentWillUnmount() {
-    this.vizceral.animate = () => {};
-    delete this.vizceral;
-  }
+    componentWillUnmount() {
+        this.vizceral.animate = () => {};
+        delete this.vizceral;
+    }
 }
 
 export default VizceralExt;

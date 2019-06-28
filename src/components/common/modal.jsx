@@ -20,7 +20,9 @@ import Modal from 'react-modal';
 import colorMapper from '../../utils/serviceColorMapper';
 import './modal.less';
 
-const ServiceNameTitle = ({serviceName}) => <span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>;
+const ServiceNameTitle = ({serviceName}) => (
+    <span className={`service-spans label ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</span>
+);
 
 ServiceNameTitle.propTypes = {
     serviceName: PropTypes.string.isRequired
@@ -28,9 +30,18 @@ ServiceNameTitle.propTypes = {
 
 const serviceTitle = (serviceName, clientServiceName) => {
     if (serviceName && clientServiceName) {
-        return (<div><ServiceNameTitle serviceName={clientServiceName} /><ServiceNameTitle serviceName={serviceName} /></div>);
+        return (
+            <div>
+                <ServiceNameTitle serviceName={clientServiceName} />
+                <ServiceNameTitle serviceName={serviceName} />
+            </div>
+        );
     } else if (serviceName) {
-        return (<div><ServiceNameTitle serviceName={serviceName} /></div>);
+        return (
+            <div>
+                <ServiceNameTitle serviceName={serviceName} />
+            </div>
+        );
     }
     return null;
 };
@@ -60,11 +71,11 @@ const ModalView = ({serviceName, title, isOpen, closeModal, children, clientServ
                     {serviceTitle(serviceName, clientServiceName)}
                     <h4>{title}</h4>
                 </div>
-                <button className="close pull-right" onClick={closeModal}>&times;</button>
+                <button className="close pull-right" onClick={closeModal}>
+                    &times;
+                </button>
             </header>
-            <section>
-                {children}
-            </section>
+            <section>{children}</section>
         </Modal>
     );
 };
@@ -81,10 +92,7 @@ ModalView.propTypes = {
     title: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
-    children: PropTypes.oneOfType([
-        PropTypes.array,
-        PropTypes.object
-    ]).isRequired,
+    children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
     clientServiceName: PropTypes.string,
     height: PropTypes.string,
     width: PropTypes.string

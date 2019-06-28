@@ -21,16 +21,17 @@ import ServiceGraphContainer from './serviceGraphContainer';
 import './serviceGraph.less';
 import serviceGraphStore from './stores/serviceGraphStore';
 
-const ServiceGraph =  ({history}) => {
+const ServiceGraph = ({history}) => {
     const search = {
         serviceName: undefined,
         time: {
             preset: '1h'
         }
     };
-    return (<section className="service-graph-panel container">
-                <ServiceGraphContainer graphStore={serviceGraphStore} history={history} search={search}/>
-            </section>
+    return (
+        <section className="service-graph-panel container">
+            <ServiceGraphContainer graphStore={serviceGraphStore} history={history} search={search} />
+        </section>
     );
 };
 

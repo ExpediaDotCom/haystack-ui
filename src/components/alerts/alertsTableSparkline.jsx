@@ -31,7 +31,8 @@ export default class AlertsTableSparkline extends React.Component {
     };
 
     componentDidMount() {
-        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.granularity, this.props.from, this.props.until)
+        fetcher
+            .fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.granularity, this.props.from, this.props.until)
             .then((result) => {
                 this.setState({trends: result});
             });
@@ -59,7 +60,9 @@ export default class AlertsTableSparkline extends React.Component {
             }
         };
 
-        const metricTrend = this.state && this.state.trends[this.props.trendType].map(point => ({
+        const metricTrend =
+            this.state &&
+            this.state.trends[this.props.trendType].map((point) => ({
                 x: new Date(point.timestamp),
                 y: point.value || 0
             }));
@@ -73,7 +76,8 @@ export default class AlertsTableSparkline extends React.Component {
                     borderWidth: 1,
                     pointRadius: 0,
                     pointHoverRadius: 0
-                }]
+                }
+            ]
         };
 
         if (!trends) {
@@ -84,7 +88,7 @@ export default class AlertsTableSparkline extends React.Component {
             return <span className="alert-table_sparkline-loading table__secondary">No trend points</span>;
         }
 
-        if (metricTrend.every(t => t.y === 0)) {
+        if (metricTrend.every((t) => t.y === 0)) {
             chartData.datasets.push({
                 data: [{...metricTrend[0], y: 1}],
                 backgroundColor: [['rgb(255, 255, 255']],
@@ -97,14 +101,8 @@ export default class AlertsTableSparkline extends React.Component {
 
         return (
             <div className="alert-table_sparkline">
-                <Line
-                    data={chartData}
-                    options={alertsTableSparklineOptions}
-                    type="line"
-                    height={50}
-                    legend={{display: false}}
-                />
-            </div>);
+                <Line data={chartData} options={alertsTableSparklineOptions} type="line" height={50} legend={{display: false}} />
+            </div>
+        );
     }
 }
-

@@ -19,7 +19,6 @@ const errorConverter = require('../utils/errorConverter');
 const logger = require('../../utils/logger').withIdentifier('fetcher.grpc');
 const metrics = require('../../utils/metrics');
 
-
 const config = require('../../config/config');
 
 function generateCallDeadline() {
@@ -31,21 +30,19 @@ const fetcher = (fetcherName, client) => ({
         const deferred = Q.defer();
         const timer = metrics.timer(`fetcher_grpc_${fetcherName}`).start();
 
-        client[fetcherName](request,
-            {deadline: generateCallDeadline()},
-            (error, result) => {
-                timer.end();
-                if (error || !result) {
-                    logger.info(`fetch failed: ${fetcherName}`);
-                    metrics.meter(`fetcher_grpc_failure_${fetcherName}`).mark();
+        client[fetcherName](request, {deadline: generateCallDeadline()}, (error, result) => {
+            timer.end();
+            if (error || !result) {
+                logger.info(`fetch failed: ${fetcherName}`);
+                metrics.meter(`fetcher_grpc_failure_${fetcherName}`).mark();
 
-                    deferred.reject(errorConverter.fromGrpcError(error));
-                } else {
-                    logger.info(`fetch successful: ${fetcherName}`);
+                deferred.reject(errorConverter.fromGrpcError(error));
+            } else {
+                logger.info(`fetch successful: ${fetcherName}`);
 
-                    deferred.resolve(result);
-                }
-            });
+                deferred.resolve(result);
+            }
+        });
 
         return deferred.promise;
     }

@@ -19,7 +19,6 @@ const errorConverter = require('../utils/errorConverter');
 const logger = require('../../utils/logger').withIdentifier('deleter.grpc');
 const metrics = require('../../utils/metrics');
 
-
 const config = require('../../config/config');
 
 function generateCallDeadline() {
@@ -31,21 +30,19 @@ const deleter = (deleterName, client) => ({
         const deferred = Q.defer();
         const timer = metrics.timer(`deleter_grpc_${deleterName}`).start();
 
-        client[deleterName](request,
-            {deadline: generateCallDeadline()},
-            (error, result) => {
-                timer.end();
-                if (error || !result) {
-                    logger.info(`delete failed: ${deleterName}`);
-                    metrics.meter(`deleter_grpc_failure_${deleterName}`).mark();
+        client[deleterName](request, {deadline: generateCallDeadline()}, (error, result) => {
+            timer.end();
+            if (error || !result) {
+                logger.info(`delete failed: ${deleterName}`);
+                metrics.meter(`deleter_grpc_failure_${deleterName}`).mark();
 
-                    deferred.reject(errorConverter.fromGrpcError(error));
-                } else {
-                    logger.info(`delete successful: ${deleterName}`);
+                deferred.reject(errorConverter.fromGrpcError(error));
+            } else {
+                logger.info(`delete successful: ${deleterName}`);
 
-                    deferred.resolve(result);
-                }
-            });
+                deferred.resolve(result);
+            }
+        });
 
         return deferred.promise;
     }
