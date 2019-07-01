@@ -19,7 +19,6 @@ const errorConverter = require('../utils/errorConverter');
 const logger = require('../../utils/logger').withIdentifier('poster.grpc');
 const metrics = require('../../utils/metrics');
 
-
 const config = require('../../config/config');
 
 function generateCallDeadline() {
@@ -31,21 +30,19 @@ const poster = (posterName, client) => ({
         const deferred = Q.defer();
         const timer = metrics.timer(`poster_grpc_${posterName}`).start();
 
-        client[posterName](request,
-            {deadline: generateCallDeadline()},
-            (error, result) => {
-                timer.end();
-                if (error || !result) {
-                    logger.info(`post failed: ${posterName}`);
-                    metrics.meter(`poster_grpc_failure_${posterName}`).mark();
+        client[posterName](request, {deadline: generateCallDeadline()}, (error, result) => {
+            timer.end();
+            if (error || !result) {
+                logger.info(`post failed: ${posterName}`);
+                metrics.meter(`poster_grpc_failure_${posterName}`).mark();
 
-                    deferred.reject(errorConverter.fromGrpcError(error));
-                } else {
-                    logger.info(`post successful: ${posterName}`);
+                deferred.reject(errorConverter.fromGrpcError(error));
+            } else {
+                logger.info(`post successful: ${posterName}`);
 
-                    deferred.resolve(result);
-                }
-            });
+                deferred.resolve(result);
+            }
+        });
 
         return deferred.promise;
     }

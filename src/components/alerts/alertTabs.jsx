@@ -32,16 +32,34 @@ export default class AlertTabs extends React.Component {
     static tabViewer(tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval) {
         switch (tabSelected) {
             case 2:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts.duration || []} alertType="duration" location={location} serviceName={serviceName} interval={interval} />;
+                return (
+                    <AlertsTable
+                        defaultPreset={defaultPreset}
+                        alerts={groupedAlerts.duration || []}
+                        alertType="duration"
+                        location={location}
+                        serviceName={serviceName}
+                        interval={interval}
+                    />
+                );
             default:
-                return <AlertsTable defaultPreset={defaultPreset} alerts={groupedAlerts['failure-span'] || []} alertType="failure-span" location={location} serviceName={serviceName} interval={interval} />;
+                return (
+                    <AlertsTable
+                        defaultPreset={defaultPreset}
+                        alerts={groupedAlerts['failure-span'] || []}
+                        alertType="failure-span"
+                        location={location}
+                        serviceName={serviceName}
+                        interval={interval}
+                    />
+                );
         }
     }
 
     constructor(props) {
         super(props);
         const query = toQuery(this.props.location.search);
-        const tabSelected = (query.type === 'duration') ? 2 : 1;
+        const tabSelected = query.type === 'duration' ? 2 : 1;
 
         this.state = {
             tabSelected
@@ -55,42 +73,32 @@ export default class AlertTabs extends React.Component {
     }
 
     render() {
-        const {
-            serviceName,
-            location,
-            defaultPreset,
-            interval
-        } = this.props;
+        const {serviceName, location, defaultPreset, interval} = this.props;
 
         const groupedAlerts = _.groupBy(this.props.alertsStore.alerts, _.property('type'));
-        const unhealthyFailureCountAlerts = groupedAlerts['failure-span'] && groupedAlerts['failure-span'].filter(alert => alert.isUnhealthy).length;
-        const unhealthyDurationTP99Alerts = groupedAlerts.duration && groupedAlerts.duration.filter(alert => alert.isUnhealthy).length;
+        const unhealthyFailureCountAlerts =
+            groupedAlerts['failure-span'] && groupedAlerts['failure-span'].filter((alert) => alert.isUnhealthy).length;
+        const unhealthyDurationTP99Alerts = groupedAlerts.duration && groupedAlerts.duration.filter((alert) => alert.isUnhealthy).length;
 
         return (
             <section>
                 <div className="alert-tabs pull-left">
                     <ul className="nav nav-tabs">
                         <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                            <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(1)} >
+                            <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(1)}>
                                 <span>Failure Count </span>
-                                <span className="badge">
-                                    {unhealthyFailureCountAlerts > 0 && unhealthyFailureCountAlerts}
-                                </span>
+                                <span className="badge">{unhealthyFailureCountAlerts > 0 && unhealthyFailureCountAlerts}</span>
                             </a>
                         </li>
                         <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                            <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)} >
+                            <a className="alert-tabs_tab" role="button" tabIndex="-1" onClick={() => this.toggleTab(2)}>
                                 <span>Duration TP99 </span>
-                                <span className="badge">
-                                    {unhealthyDurationTP99Alerts > 0 && unhealthyDurationTP99Alerts}
-                                </span>
+                                <span className="badge">{unhealthyDurationTP99Alerts > 0 && unhealthyDurationTP99Alerts}</span>
                             </a>
                         </li>
                     </ul>
                 </div>
-                <section>
-                    {AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval)}
-                </section>
+                <section>{AlertTabs.tabViewer(this.state.tabSelected, groupedAlerts, serviceName, location, defaultPreset, interval)}</section>
             </section>
         );
     }

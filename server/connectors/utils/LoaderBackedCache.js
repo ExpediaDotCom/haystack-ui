@@ -39,14 +39,13 @@ class LoaderBackedCache {
             const isExpired = cachedItem.expiryTimestamp < Date.now();
 
             if (isExpired) {
-                this.loader(key).then(result => this.populateIfPresent(result, key));
+                this.loader(key).then((result) => this.populateIfPresent(result, key));
             }
 
             return Q.fcall(() => cachedItem.item);
         }
 
-        return this.loader(key)
-        .then((result) => {
+        return this.loader(key).then((result) => {
             this.populateIfPresent(result, key);
             return result;
         });
@@ -59,13 +58,13 @@ class LoaderBackedCache {
             const isExpired = cachedItem.expiryTimestamp < Date.now();
 
             if (isExpired) {
-                this.loader(key).then(result => this.populateIfPresent(result, key));
+                this.loader(key).then((result) => this.populateIfPresent(result, key));
             }
 
             return cachedItem.item;
         }
 
-        this.loader(key).then(result => this.populateIfPresent(result, key));
+        this.loader(key).then((result) => this.populateIfPresent(result, key));
         return null;
     }
 

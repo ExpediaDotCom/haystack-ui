@@ -20,28 +20,29 @@ const errorConverter = require('../utils/errorConverter');
 const logger = require('../../utils/logger').withIdentifier('fetcher.rest');
 const metrics = require('../../utils/metrics');
 
-const fetcher = fetcherName => ({
-        fetch: (url, headers = {}) => {
-            const deferred = Q.defer();
-            const timer = metrics.timer(`fetcher_rest_${fetcherName}`).start();
+const fetcher = (fetcherName) => ({
+    fetch: (url, headers = {}) => {
+        const deferred = Q.defer();
+        const timer = metrics.timer(`fetcher_rest_${fetcherName}`).start();
 
-            axios
-            .get(url, { headers })
-            .then((response) => {
+        axios.get(url, {headers}).then(
+            (response) => {
                 timer.end();
                 logger.info(`fetch successful: ${url}`);
 
                 deferred.resolve(response.data);
-            }, (error) => {
+            },
+            (error) => {
                 timer.end();
                 metrics.meter(`fetcher_rest_failure_${fetcherName}`).mark();
                 logger.error(`fetch failed: ${url}`);
 
                 deferred.reject(errorConverter.fromAxiosError(error));
-            });
+            }
+        );
 
-            return deferred.promise;
-        }
-    });
+        return deferred.promise;
+    }
+});
 
 module.exports = fetcher;

@@ -22,7 +22,7 @@ import {observer} from 'mobx-react';
 import './alerts.less';
 import alertsStore from './stores/serviceAlertsStore';
 
-const alertsRefreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
+const alertsRefreshInterval = window.haystackUiConfig && window.haystackUiConfig.refreshInterval;
 
 @observer
 export default class AlertCounter extends React.Component {
@@ -37,10 +37,7 @@ export default class AlertCounter extends React.Component {
 
     componentDidMount() {
         alertsStore.fetchUnhealthyAlertCount(this.props.serviceName, this.props.interval);
-        this.timerID = setInterval(
-            () => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName, this.props.interval),
-            alertsRefreshInterval
-        );
+        this.timerID = setInterval(() => alertsStore.fetchUnhealthyAlertCount(this.props.serviceName, this.props.interval), alertsRefreshInterval);
     }
 
     componentWillReceiveProps(nextProp) {
@@ -53,9 +50,7 @@ export default class AlertCounter extends React.Component {
 
     render() {
         if (alertsStore.unhealthyAlertCount && typeof alertsStore.unhealthyAlertCount === 'number') {
-            return (
-                <span className="badge alert-counter">{alertsStore.unhealthyAlertCount}</span>
-            );
+            return <span className="badge alert-counter">{alertsStore.unhealthyAlertCount}</span>;
         }
         return null;
     }

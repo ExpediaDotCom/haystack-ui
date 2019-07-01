@@ -16,8 +16,8 @@
 
 const converter = {};
 
-converter.fromAxiosError = error => new Error(`${error} ${JSON.stringify(error.config)}`);
+converter.fromAxiosError = (error) => new Error(`${error} ${JSON.stringify(error.config)}`);
 
-converter.fromGrpcError = error => new Error(`${JSON.stringify(error)}`);
+converter.fromGrpcError = (error) => new Error(`${JSON.stringify(error)}`);
 
 module.exports = converter;

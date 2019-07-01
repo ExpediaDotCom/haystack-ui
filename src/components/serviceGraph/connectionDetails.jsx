@@ -49,11 +49,9 @@ const ConnectionDetails = ({requestRate, errorPercent, onClose}) => {
     );
 };
 
-ConnectionDetails.propTypes =
-    {
-        requestRate: PropTypes.string.isRequired,
-        errorPercent: PropTypes.string.isRequired,
-        onClose: PropTypes.func.isRequired
-    };
+ConnectionDetails.propTypes = {
+    requestRate: PropTypes.string.isRequired,
+    errorPercent: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired
+};
 export default ConnectionDetails;
-

@@ -14,14 +14,12 @@
  *         limitations under the License.
  */
 
-
 import React from 'react';
 import {Link} from 'react-router-dom';
-import { withRouter} from 'react-router';
+import {withRouter} from 'react-router';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import traceDetailsStore from '../traces/stores/traceDetailsStore';
-
 
 @observer
 class Header extends React.Component {
@@ -39,7 +37,6 @@ class Header extends React.Component {
         this.handleFileRead = this.handleFileRead.bind(this);
         this.readJsonFile = this.readJsonFile.bind(this);
     }
-
 
     setInputRef(node) {
         this.uploadInput = node;
@@ -65,20 +62,32 @@ class Header extends React.Component {
             <header className="universal-search-header">
                 <div className="container">
                     <Link className="navbar-brand universal-search-header__container" to="/">
-                        <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo"/>
+                        <img src="/images/logo-white.png" className="logo universal-search-header__logo" alt="Logo" />
                         <span className="usb-logo universal-search-header__title">Haystack</span>
                     </Link>
-                  { window.haystackUiConfig.usingZipkinConnector ?
-                    <a className="usb-logo navbar-brand universal-search-header__container zipkin--logo-container" href="https://zipkin.io">
-                      <span className="universal-search-header__subtitle">Tracing powered by: </span>
-                      <img src="/images/zipkin-logo.jpg" className="logo zipkin-logo" alt="Logo"/>
-                    </a> : window.haystackUiConfig.usingZipkinConnector }
-                    {   window.haystackUiConfig.subsystems.includes('traces') ?
+                    {window.haystackUiConfig.usingZipkinConnector ? (
+                        <a className="usb-logo navbar-brand universal-search-header__container zipkin--logo-container" href="https://zipkin.io">
+                            <span className="universal-search-header__subtitle">Tracing powered by: </span>
+                            <img src="/images/zipkin-logo.jpg" className="logo zipkin-logo" alt="Logo" />
+                        </a>
+                    ) : (
+                        window.haystackUiConfig.usingZipkinConnector
+                    )}
+                    {window.haystackUiConfig.subsystems.includes('traces') ? (
                         <div className="pull-right header-button">
-                            <div role="button" tabIndex="0" className="btn-sm universal-search-header__view-switch" onClick={this.uploadTrace}><span className="ti-layout-cta-left"/> Upload Trace File</div>
-                            <input type="file" id="file" ref={this.setInputRef} accept=".json" onChange={this.readJsonFile} style={{display: 'none'}}/>
-                        </div> : null
-                    }
+                            <div role="button" tabIndex="0" className="btn-sm universal-search-header__view-switch" onClick={this.uploadTrace}>
+                                <span className="ti-layout-cta-left" /> Upload Trace File
+                            </div>
+                            <input
+                                type="file"
+                                id="file"
+                                ref={this.setInputRef}
+                                accept=".json"
+                                onChange={this.readJsonFile}
+                                style={{display: 'none'}}
+                            />
+                        </div>
+                    ) : null}
                 </div>
             </header>
         );

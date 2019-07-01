@@ -35,7 +35,7 @@ export default class ServiceGraphContainer extends React.Component {
 
     static defaultProps = {
         serviceName: undefined
-    }
+    };
 
     static timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
 
@@ -47,7 +47,7 @@ export default class ServiceGraphContainer extends React.Component {
      * list we will pick the node with the largest outgoing traffic.ser
      */
     static findRootNode(graph) {
-        const dest = _.map(graph, edge => edge.destination.name);
+        const dest = _.map(graph, (edge) => edge.destination.name);
         let rootNodes = [];
         _.forEach(graph, (edge) => {
             if (!_.includes(dest, edge.source.name)) {
@@ -61,7 +61,7 @@ export default class ServiceGraphContainer extends React.Component {
 
         const uniqRoots = _.uniq(rootNodes);
         const sortedRoots = _.sortBy(uniqRoots, (node) => {
-            const outgoingEdges = _.filter(graph, edge => edge.source.name === node);
+            const outgoingEdges = _.filter(graph, (edge) => edge.source.name === node);
             return _.reduce(outgoingEdges, (result, val) => val.stats.count + result, 0);
         });
         return _.last(sortedRoots);
@@ -93,7 +93,10 @@ export default class ServiceGraphContainer extends React.Component {
         if (isCustomTimeRange) {
             activeWindow = timeWindow.toCustomTimeRange(time.from, time.to);
         } else {
-            activeWindow =  (time && time.preset) ? ServiceGraphContainer.timePresetOptions.find(preset => preset.shortName === time.preset) : timeWindow.defaultPreset;
+            activeWindow =
+                time && time.preset
+                    ? ServiceGraphContainer.timePresetOptions.find((preset) => preset.shortName === time.preset)
+                    : timeWindow.defaultPreset;
         }
 
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
@@ -108,52 +111,54 @@ export default class ServiceGraphContainer extends React.Component {
         return (
             <section>
                 <div className="clearfix" id="service-graph">
-                    {!this.props.search.serviceName && this.props.graphStore.graphs &&
-                    <div className="serviceGraph__tabs pull-right">
-                        <ul className="nav nav-tabs">
-                            {
-                                this.props.graphStore.graphs.map(
-                                    (graph, index) => (
-                                        <li className={this.state.tabSelected === (index + 1) ? 'active ' : ''} key={index.toString()}>
-                                            <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)}>{ServiceGraphContainer.findRootNode(graph)}</a>
-                                        </li>
-                                    )
-                                )
-                            }
-                        </ul>
-                    </div>
-                    }
+                    {!this.props.search.serviceName && this.props.graphStore.graphs && (
+                        <div className="serviceGraph__tabs pull-right">
+                            <ul className="nav nav-tabs">
+                                {this.props.graphStore.graphs.map((graph, index) => (
+                                    <li className={this.state.tabSelected === index + 1 ? 'active ' : ''} key={index.toString()}>
+                                        <a role="button" className="serviceGraph__tab-link" tabIndex="-1" onClick={() => this.toggleTab(index + 1)}>
+                                            {ServiceGraphContainer.findRootNode(graph)}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
                 <div>
-                    {this.props.graphStore.promiseState && this.props.graphStore.promiseState.case({
-                        pending: () => <Loading className="serviceGraph__loading"/>,
-                        rejected: () => <Error/>,
-                        fulfilled: () => ((this.props.graphStore.graphs && this.props.graphStore.graphs.length)
-                            ? <FilteredServiceGraphResults
-                                     graphs={this.props.graphStore.graphs}
-                                     serviceName={this.props.search.serviceName}
-                                     tabSelected={this.state.tabSelected}
-                                     history={this.props.history}
-                                     search={this.props.search}
-                            />
-                            : <Error errorMessage="No edges found"/>)
-                    })
-                    }
+                    {this.props.graphStore.promiseState &&
+                        this.props.graphStore.promiseState.case({
+                            pending: () => <Loading className="serviceGraph__loading" />,
+                            rejected: () => <Error />,
+                            fulfilled: () =>
+                                this.props.graphStore.graphs && this.props.graphStore.graphs.length ? (
+                                    <FilteredServiceGraphResults
+                                        graphs={this.props.graphStore.graphs}
+                                        serviceName={this.props.search.serviceName}
+                                        tabSelected={this.state.tabSelected}
+                                        history={this.props.history}
+                                        search={this.props.search}
+                                    />
+                                ) : (
+                                    <Error errorMessage="No edges found" />
+                                )
+                        })}
                 </div>
-            </section>);
+            </section>
+        );
     }
 }
 
 function FilteredServiceGraphResults(props) {
     if (!props.serviceName) {
-        return (<ServiceGraphResults serviceGraph={props.graphs[props.tabSelected - 1]} history={props.history} search={props.search} />);
+        return <ServiceGraphResults serviceGraph={props.graphs[props.tabSelected - 1]} history={props.history} search={props.search} />;
     }
-    const result = _.find(props.graphs, g => _.includes(Graph.buildGraph(g).allNodes(), props.serviceName));
+    const result = _.find(props.graphs, (g) => _.includes(Graph.buildGraph(g).allNodes(), props.serviceName));
     if (typeof result !== 'undefined') {
-        const filtered = _.filter(result, edge => edge.source.name === props.serviceName || edge.destination.name === props.serviceName);
-        return (<ServiceGraphResults serviceGraph={filtered} history={props.history} search={props.search}/>);
+        const filtered = _.filter(result, (edge) => edge.source.name === props.serviceName || edge.destination.name === props.serviceName);
+        return <ServiceGraphResults serviceGraph={filtered} history={props.history} search={props.search} />;
     }
-    return (<Error errorMessage="Service Graph data not found for the given time frame."/>);
+    return <Error errorMessage="Service Graph data not found for the given time frame." />;
 }
 
 FilteredServiceGraphResults.propTypes = {

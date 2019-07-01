@@ -20,19 +20,17 @@ import PropTypes from 'prop-types';
 import TrafficTable from './trafficTable';
 
 const NodeDetails = ({incomingEdges, outgoingEdges, tags, time}) => {
-    const incomingTrafficEdges = incomingEdges.map(e => (
-        {
-            node: e.source.name,
-            count: e.stats.count,
-            errorPercent: (e.stats.errorCount * 100) / e.stats.count
-        }));
+    const incomingTrafficEdges = incomingEdges.map((e) => ({
+        node: e.source.name,
+        count: e.stats.count,
+        errorPercent: (e.stats.errorCount * 100) / e.stats.count
+    }));
 
-    const outgoingTrafficEdges = outgoingEdges.map(e => (
-        {
-            node: e.destination.name,
-            count: e.stats.count,
-            errorPercent: (e.stats.errorCount * 100) / e.stats.count
-        }));
+    const outgoingTrafficEdges = outgoingEdges.map((e) => ({
+        node: e.destination.name,
+        count: e.stats.count,
+        errorPercent: (e.stats.errorCount * 100) / e.stats.count
+    }));
 
     return (
         <article>
@@ -43,27 +41,30 @@ const NodeDetails = ({incomingEdges, outgoingEdges, tags, time}) => {
                     </div>
                     <table className="service-graph__info-table">
                         <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Value</th>
-                        </tr>
+                            <tr>
+                                <th>Name</th>
+                                <th>Value</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {
-                            Object.keys(tags).length
-                                ? Object.keys(tags).map(tagKey => (
+                            {Object.keys(tags).length ? (
+                                Object.keys(tags).map((tagKey) => (
                                     <tr>
                                         <td>{tagKey}</td>
                                         <td>{tags[tagKey]}</td>
                                     </tr>
                                 ))
-                                : <tr><td>NA</td><td/></tr>
-                        }
+                            ) : (
+                                <tr>
+                                    <td>NA</td>
+                                    <td />
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </section>
-                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming" time={time}/>
-                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing" time={time}/>
+                <TrafficTable trafficEdges={incomingTrafficEdges} trafficType="Incoming" time={time} />
+                <TrafficTable trafficEdges={outgoingTrafficEdges} trafficType="Outgoing" time={time} />
             </div>
         </article>
     );
@@ -80,4 +81,3 @@ NodeDetails.propTypes = {
     time: PropTypes.object.isRequired
 };
 export default NodeDetails;
-

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 
 import Loading from '../common/loading';
 import AlertTabs from './alertTabs';
@@ -50,20 +50,24 @@ export default class Alerts extends React.Component {
                     serviceName={this.props.serviceName}
                     interval={this.props.interval}
                 />
-                { this.props.alertsStore.promiseState && this.props.alertsStore.promiseState.case({
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.alertsStore.alerts && this.props.alertsStore.alerts.length)
-                        ? <AlertTabs
-                            defaultPreset={this.props.defaultPreset}
-                            history={this.props.history}
-                            alertsStore={this.props.alertsStore}
-                            location={this.props.location}
-                            serviceName={this.props.serviceName}
-                            interval={this.props.interval}
-                        />
-                        : <Error errorMessage="There was a problem displaying alerts. Please try again later."/>)
-                })}
+                {this.props.alertsStore.promiseState &&
+                    this.props.alertsStore.promiseState.case({
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () =>
+                            this.props.alertsStore.alerts && this.props.alertsStore.alerts.length ? (
+                                <AlertTabs
+                                    defaultPreset={this.props.defaultPreset}
+                                    history={this.props.history}
+                                    alertsStore={this.props.alertsStore}
+                                    location={this.props.location}
+                                    serviceName={this.props.serviceName}
+                                    interval={this.props.interval}
+                                />
+                            ) : (
+                                <Error errorMessage="There was a problem displaying alerts. Please try again later." />
+                            )
+                    })}
             </section>
         );
     }
