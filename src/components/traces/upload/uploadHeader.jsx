@@ -38,7 +38,7 @@ class UploadHeader extends React.Component {
         const totalDuration = formatters.toDurationString(traceDetailsStore.totalDuration);
         const root = traceDetailsStore.spans[0];
         const traceId = root.traceId;
-        const startTime = formatters.toTimestring(root.startTime * 1000);
+        const startTime = formatters.toTimestring(root.startTime);
         const services = UploadHeader.getServiceCounts(traceDetailsStore.spans);
 
         return (
