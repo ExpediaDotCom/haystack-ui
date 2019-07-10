@@ -25,13 +25,6 @@ export default class Chips extends React.Component {
         deleteChip: PropTypes.func.isRequired
     };
 
-    static truncateLongValues(chipValue) {
-        if (chipValue.length > 12) {
-            return `${chipValue.substring(0, 12)}...`;
-        }
-        return chipValue;
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -80,7 +73,7 @@ export default class Chips extends React.Component {
                                 <span key={Math.random()}>
                                     <span className="usb-chip__key">{nestedChip.key}</span>
                                     {nestedChip.operator !== '=' ? <span className="usb-chip__operator">{nestedChip.operator}</span> : null}
-                                    <span className="usb-chip__value">{Chips.truncateLongValues(nestedChip.value)}</span>
+                                    <span className="usb-chip__value">{nestedChip.value}</span>
                                 </span>
                             ))
                         }
@@ -93,7 +86,7 @@ export default class Chips extends React.Component {
                 <div className="usb-chip" key={Math.random()}>
                     <span className="usb-chip__key">{chip.key}</span>
                     {chip.operator !== '=' ? <span className="usb-chip__operator">{chip.operator}</span> : null}
-                    <span className="usb-chip__value">{Chips.truncateLongValues(chip.value)}</span>
+                    <span className="usb-chip__value">{chip.value}</span>
                     <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
                 </div>
             );
