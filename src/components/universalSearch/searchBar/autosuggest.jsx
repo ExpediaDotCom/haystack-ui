@@ -175,7 +175,7 @@ export default class Autocomplete extends React.Component {
             value = targetInput.substring(operatorIndex + 1, targetInput.length).trim().replace('"', '');
             if (this.props.options[key] && this.props.options[key].values) {
                 this.props.options[key].values.forEach((option) => {
-                    if (option.toLowerCase().includes(value.toLowerCase())) {
+                    if (option.toLowerCase().includes(value.toLowerCase()) && option !== value) {
                         suggestionArray.push(option);
                     }
                 });
@@ -188,7 +188,7 @@ export default class Autocomplete extends React.Component {
             type = 'Keys';
             value = targetInput.toLowerCase();
             Object.keys(this.props.options).forEach((option) => {
-                if (option.toLowerCase().includes(value)) {
+                if (option.toLowerCase().includes(value) && option !== value) {
                     suggestionArray.push(option);
                 }
             });
@@ -342,8 +342,10 @@ export default class Autocomplete extends React.Component {
         const keyPressed = e.keyCode || e.which;
         if ((keyPressed === ENTER || keyPressed === TAB) && this.state.suggestionStrings.length) {
             e.preventDefault();
-            this.handleDropdownSelection();
-            this.handleBlur();
+            if (this.state.suggestionIndex !== null || this.state.suggestionStrings.length === 1) {
+                this.handleDropdownSelection();
+                this.handleBlur();
+            }
         } else if (keyPressed === ENTER) {
             e.preventDefault();
             this.updateChips();
@@ -372,6 +374,7 @@ export default class Autocomplete extends React.Component {
             if (!this.inputRef.value && chips.length) {
                 e.preventDefault();
                 this.modifyChip();
+                this.updateFieldKv(e);
             }
         }
     }
