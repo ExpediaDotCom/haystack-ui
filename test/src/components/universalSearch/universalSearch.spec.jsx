@@ -175,7 +175,7 @@ describe('<UniversalSearch />', () => {
     after(() => {
         server = null;
     });
-    
+
     it('should render the universalSearch panel', () => {
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubLocation} history={stubHistory}/></MemoryRouter>);
         expect(wrapper.find('.universal-search-panel')).to.have.length(1);
@@ -389,7 +389,7 @@ describe('<Autosuggest />', () => {
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore(stubShortChip)} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         const input = wrapper.find('.usb-searchbar__input');
         expect(spy.callCount).to.equal(0);
-        input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}});
+        input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}, target: {value: ''}});
 
         expect(spy.callCount).to.equal(1);
         Autosuggest.prototype.modifyChip.restore();
@@ -401,7 +401,7 @@ describe('<Autosuggest />', () => {
         const input = wrapper.find('.usb-searchbar__input');
 
         expect(spy.callCount).to.equal(0);
-        input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}});
+        input.prop('onKeyDown')({keyCode: 8, preventDefault: () => {}, target: {value: ''}});
 
         expect(spy.callCount).to.equal(1);
         expect(wrapper.instance().inputRef.value).to.equal('(serviceName=test error=true)');
