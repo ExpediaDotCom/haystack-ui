@@ -26,6 +26,8 @@ const assets = require('../../public/assets.json');
 
 const router = express.Router();
 
+const subsystems = Object.keys(config.connectors).filter(connector => (config.connectors[connector].connectorName !== 'disabled'));
+
 router.get('*', (req, res) => {
     const timer = metrics.timer('index').start();
 
@@ -33,7 +35,7 @@ router.get('*', (req, res) => {
         bundleAppJsPath: assets.app.js,
         bundleAppCssPath: assets.app.css,
         bundleCommonsJsPath: assets.commons.js,
-        subsystems: Object.keys(config.connectors),
+        subsystems,
         gaTrackingID: config.gaTrackingID,
         usbPrimary: config.usbPrimary,
         enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
