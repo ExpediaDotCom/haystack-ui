@@ -16,7 +16,7 @@
 
 /* eslint-disable class-methods-use-this */
 
-const enabled = window.haystackUiConfig && window.haystackUiConfig.enableServicePerformance;
+const enabled = window.haystackUiConfig && window.haystackUiConfig.subsystems.includes('trends') && window.haystackUiConfig.enableServicePerformance;
 
 export class ServicePerformanceStateStore {
     search = null;
