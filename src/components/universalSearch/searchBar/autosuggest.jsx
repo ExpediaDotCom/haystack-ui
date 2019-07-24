@@ -392,13 +392,15 @@ export default class Autocomplete extends React.Component {
         if (chip.key.includes('nested_')) { // Check for nested KV pairs
             let fullString = '';
             chipValue.forEach((nestedChip) => {
+                const operator = nestedChip.operator === '!' ? '!=' : nestedChip.operator;
                 const value = Autocomplete.checkForWhitespacedValue(nestedChip.value);
-                fullString += `${nestedChip.key}${nestedChip.operator}${value} `;
+                fullString += `${nestedChip.key}${operator}${value} `;
             });
             this.inputRef.value = `(${fullString.trim()})`;
         } else {
+            const operator = chip.operator === '!' ? '!=' : chip.operator;
             const value = Autocomplete.checkForWhitespacedValue(chipValue);
-            this.inputRef.value = `${chip.key}${chip.operator}${value}`;
+            this.inputRef.value = `${chip.key}${operator}${value}`;
         }
         this.deleteChip(this.props.uiState.chips.length - 1);
     }
