@@ -33,8 +33,8 @@ export class SearchBarUiStateStore {
     }
 
     static setOperatorFromValue(value) {
-        // operator set from the first character of the value of a KV pair, there is likely a cleaner solution than this
-        return value[0] === '>' || value[0] === '<' ? value[0] : '=';
+        // operator set from the first character of the value of a KV pair, there may be a cleaner solution than this
+        return value[0] === '>' || value[0] === '<' || value[0] === '!' ? value[0] : '=';
     }
 
     static checkKeyForPeriods(key, value) {

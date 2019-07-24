@@ -69,16 +69,20 @@ export default class Autocomplete extends React.Component {
         } else if (inputString.includes('"')) {
             return ((inputString.match(/"/g) || []).length === 2);
         }
-        return /^([a-zA-Z0-9\s-]+)([=><])([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
+        return /^([a-zA-Z0-9\s-]+)([>=<]|!=)([a-zA-Z0-9,\s-:/_".#$+!%@^&?<>]+)$/g.test(inputString);
     }
 
-    static findIndexOfoperator(inputString) {
-        const match = inputString.match(/([=><])/);
+    static findIndexOfOperator(inputString) {
+        const match = inputString.match(/([=><]|!=)/);
         return match && match.index;
     }
 
+    static ignoreExclamationInOperatorSuggestion(option) {
+        return option && option[option.length - 1] === '!' ? option.substr(0, option.length - 1) : option;
+    }
+
     static removeWhiteSpaceAroundInput(inputString) {
-        const operatorIndex = Autocomplete.findIndexOfoperator(inputString);
+        const operatorIndex = Autocomplete.findIndexOfOperator(inputString);
         if (operatorIndex) {
             const operator = inputString[operatorIndex];
             return inputString.split(operator).map(piece => piece.trim()).join(operator);
@@ -162,32 +166,41 @@ export default class Autocomplete extends React.Component {
     // Takes current input value and displays suggestion options.
     setSuggestions(input) {
         let suggestionArray = [];
+        const options = this.props.options;
         const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
-        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
+        const operatorIndex = Autocomplete.findIndexOfOperator(targetInput);
 
         let value;
         let type;
         if (operatorIndex) {
             type = 'Values';
             const key = targetInput.substring(0, operatorIndex).trim();
-            value = targetInput.substring(operatorIndex + 1, targetInput.length).trim().replace('"', '');
-            if (this.props.options[key] && this.props.options[key].values) {
-                this.props.options[key].values.forEach((option) => {
+            const valueStartIndex = targetInput[operatorIndex] === '!' ? operatorIndex + 2 : operatorIndex + 1;
+            value = targetInput.substring(valueStartIndex, targetInput.length).trim().replace('"', '');
+            if (options[key] && options[key].values) {
+                options[key].values.forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase()) && option !== value) {
                         suggestionArray.push(option);
                     }
                 });
             }
-        } else if (this.inputMatchesRangeKey(targetInput)) {
-            type = 'operator';
-            suggestionArray = ['>', '=', '<'];
+        } else if (Object.keys(options).some((option) => (Autocomplete.ignoreExclamationInOperatorSuggestion(input) === option))) {
+            type = 'Operator';
+            if (this.inputMatchesRangeKey(targetInput)) {
+                suggestionArray = ['>', '=', '!=', '<'];
+            } else if (input[input.length - 1] !== '!') {
+                suggestionArray = ['=', '!='];
+            } else {
+                suggestionArray = ['!='];
+            }
+
             value = '';
         } else {
             type = 'Keys';
             value = targetInput.toLowerCase();
-            Object.keys(this.props.options).forEach((option) => {
+            Object.keys(options).forEach((option) => {
                 if (option.toLowerCase().includes(value) && option !== value) {
                     suggestionArray.push(option);
                 }
@@ -204,11 +217,7 @@ export default class Autocomplete extends React.Component {
     }
 
     inputMatchesRangeKey(input) {
-        let match = false;
-        Object.keys(this.props.options).forEach((option) => {
-            if (input === option && this.props.options[option].isRangeQuery === true) match = true;
-        });
-        return match;
+        return Object.keys(this.props.options).some((option) => (input === option && this.props.options[option].isRangeQuery === true));
     }
 
     // Hides suggestion list by emptying stateful array
@@ -255,15 +264,15 @@ export default class Autocomplete extends React.Component {
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
         const isNested = targetInput[0] === '(' ? '(' : '';
-        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
+        const operatorIndex = Autocomplete.findIndexOfOperator(targetInput);
         let fillValue = '';
         let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
         value = Autocomplete.checkForWhitespacedValue(value);
-        if (this.state.suggestedOnType === 'operator') {
-            const slicedInput = targetInput.replace(/[(>=<)]/, '');
+        if (this.state.suggestedOnType === 'Operator') {
+            const slicedInput = targetInput.replace(/([>=<]|!=)/, '');
             fillValue = `${slicedInput}${value}`;
         } else if (operatorIndex) {
-            const operator = targetInput[operatorIndex];
+            const operator = targetInput[operatorIndex] === '!' ? '!=' : targetInput[operatorIndex];
             const key = targetInput.substring(0, operatorIndex);
             fillValue = `${key}${operator}${value}`;
         } else {
@@ -278,8 +287,7 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        if (!Autocomplete.findIndexOfoperator(this.inputRef.value)) {
-            if (!this.inputMatchesRangeKey(this.inputRef.value)) this.inputRef.value = `${this.inputRef.value}=`;
+        if (!Autocomplete.findIndexOfOperator(this.inputRef.value)) {
             this.setState({
                 suggestionStrings: []
             }, () => {
@@ -441,7 +449,7 @@ export default class Autocomplete extends React.Component {
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
         if (/^(.+)([=><])(.+)$/g.test(kvPair)) { // Ensure format is a=b
-            const indexOfoperator = Autocomplete.findIndexOfoperator(kvPair);
+            const indexOfoperator = Autocomplete.findIndexOfOperator(kvPair);
             const valueKey = kvPair.substring(0, indexOfoperator).trim();
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
@@ -488,17 +496,20 @@ export default class Autocomplete extends React.Component {
                 chipValue = [];
                 splitInput.forEach((kvPair) => {
                     const trimmedPair = kvPair.trim();
-                    const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                    const operatorIndex = Autocomplete.findIndexOfOperator(kvPair);
                     const key = trimmedPair.substring(0, operatorIndex);
-                    const value = (trimmedPair.substring(operatorIndex + 1, kvPair.length)).replace(/"/g, '');
-                    chipValue.push({key, value, operator: kvPair[operatorIndex]});
+                    const kvOperator = kvPair[operatorIndex];
+                    const valueStartIndex = kvOperator !== '!' ? operatorIndex + 1 : operatorIndex + 2;
+                    const value = (trimmedPair.substring(valueStartIndex, kvPair.length)).replace(/"/g, '');
+                    chipValue.push({key, value, operator: kvOperator});
                 });
             } else {
                 const kvPair = splitInput[0];
-                const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                const operatorIndex = Autocomplete.findIndexOfOperator(kvPair);
                 chipKey = kvPair.substring(0, operatorIndex).trim();
-                chipValue = kvPair.substring(operatorIndex + 1, kvPair.length).trim().replace(/"/g, '');
-                operator = kvPair[operatorIndex];
+                operator =  kvPair[operatorIndex];
+                const valueStartIndex = operator !== '!' ? operatorIndex + 1 : operatorIndex + 2;
+                chipValue = kvPair.substring(valueStartIndex, kvPair.length).trim().replace(/"/g, '');
             }
             this.props.uiState.chips.push({key: chipKey, value: chipValue, operator});
             if (chipKey.includes('serviceName') && tracesEnabled) {

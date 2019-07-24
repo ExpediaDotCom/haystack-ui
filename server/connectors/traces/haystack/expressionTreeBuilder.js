@@ -22,14 +22,29 @@ const reservedField = ['startTime', 'endTime', 'limit', 'useExpressionTree', 'sp
 expressionTreeBuilder.createFieldFromKeyValue = (key, value) => {
     const field = new messages.Field();
     field.setName(key);
-    let fieldValue = value;
-    let operator = messages.Field.Operator.EQUAL;
+    let fieldValue;
+    let operator;
 
     // check for custom operator at beginning of value string
-    if (value[0] === '>' || value[0] === '<') {
-        operator = value[0] === '>' ? messages.Field.Operator.GREATER_THAN : messages.Field.Operator.LESS_THAN;
-        fieldValue = value.substr(1, value.length);
+    switch (value[0]) {
+        case '!':
+            operator = messages.Field.Operator.NOT_EQUAL;
+            fieldValue = value.substr(1, value.length);
+            break;
+        case '>':
+            operator = messages.Field.Operator.GREATER_THAN;
+            fieldValue = value.substr(1, value.length);
+            break;
+        case '<':
+            operator = messages.Field.Operator.LESS_THAN;
+            fieldValue = value.substr(1, value.length);
+            break;
+        default:
+            operator = messages.Field.Operator.EQUAL;
+            fieldValue = value;
     }
+
+
     field.setValue(fieldValue);
     field.setOperator(operator);
 
