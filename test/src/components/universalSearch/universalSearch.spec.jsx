@@ -381,7 +381,7 @@ describe('<Autosuggest />', () => {
 
         input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
         expect(wrapper.instance().state.suggestionIndex).to.equal(null);
-        expect(wrapper.instance().state.suggestedOnType).to.equal('Values');
+        expect(wrapper.instance().state.suggestedOnType).to.equal('Operator');
     });
 
     it('should be able to modify a short existing chip', () => {
@@ -447,13 +447,7 @@ describe('<Autosuggest />', () => {
         const spy = sinon.spy(Autosuggest.prototype, 'updateChips');
         const wrapper = mount(<Autosuggest options={stubOptions} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
         expect(spy.callCount).to.equal(0);
-        const input = wrapper.find('.usb-searchbar__input');
-        input.prop('onFocus')({target: {value: ''}});
-        input.prop('onKeyDown')({keyCode: 38, preventDefault: () => {}});
-        input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
-        input.prop('onFocus')({target: {value: ''}});
-        input.prop('onKeyDown')({keyCode: 40, preventDefault: () => {}});
-        input.prop('onKeyDown')({keyCode: 13, preventDefault: () => {}});
+        wrapper.instance().inputRef.value = 'error=true';
         wrapper.find('.usb-submit__button').simulate('click');
         const wrapperChips = wrapper.instance().props.uiState.chips;
 
@@ -556,5 +550,28 @@ describe('<Autosuggest />', () => {
         wrapper.find('input').simulate('paste', {clipboardData: {getData: () => 'serviceName=asdf error=true (serviceName=abc error=true)'}});
         const wrapperChips = wrapper.instance().props.uiState.chips;
         expect(wrapperChips.length).to.equal(3);
+    });
+
+    it('should be able to handle not operators', () => {
+        const customOption = {test: {values: [], isRangeQuery: false}};
+        const wrapper = mount(<Autosuggest options={customOption} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.instance().inputRef.value = 'test!=true';
+        wrapper.instance().updateChips();
+        const wrapperChips = wrapper.instance().props.uiState.chips;
+
+        expect(wrapperChips.length).to.equal(1);
+        expect(wrapperChips[0].key).to.equal('test');
+        expect(wrapperChips[0].operator).to.equal('!');
+    });
+
+    it('should be able to handle not operators in a nested query', () => {
+        const customOption = {testOne: {values: [], isRangeQuery: false}, testTwo: {values: [], isRangeQuery: true}};
+        const wrapper = mount(<Autosuggest options={customOption} uiState={createStubUiStateStore()} search={() => {}} serviceStore={createServiceStubStore()} operationStore={createOperationStubStore()}/>);
+        wrapper.instance().inputRef.value = '(testOne!=true testTwo!=false)';
+        wrapper.instance().updateChips();
+        const wrapperChips = wrapper.instance().props.uiState.chips;
+
+        expect(wrapperChips.length).to.equal(1);
+        expect(wrapperChips[0].key).to.equal('nested_0');
     });
 });

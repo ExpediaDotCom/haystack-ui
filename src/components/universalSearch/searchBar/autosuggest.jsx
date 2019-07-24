@@ -287,13 +287,11 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        if (!Autocomplete.findIndexOfOperator(this.inputRef.value)) {
-            this.setState({
-                suggestionStrings: []
-            }, () => {
-                this.setSuggestions(this.inputRef.value);
-            });
-        }
+        this.setState({
+            suggestionStrings: []
+        }, () => {
+            this.setSuggestions(this.inputRef.value);
+        });
     }
 
     // Recursively checks split input for values that might be enclosed in quotations
