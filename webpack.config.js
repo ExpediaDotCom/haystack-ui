@@ -74,12 +74,19 @@ module.exports = {
                     },
                     'less-loader'
                 ]
+            },
+            {
+                test: /\.svg$/,
+                loader: 'svg-url-loader?encoding=base64'
             }
         ]
     },
     plugins: [
-        new MiniCssExtractPlugin({ filename: cssBundleFilename}),
-        new LodashModuleReplacementPlugin(),
+        new MiniCssExtractPlugin({filename: cssBundleFilename}),
+        new LodashModuleReplacementPlugin({
+            shorthands: true,
+            collections: true
+        }),
         new ProgressBarPlugin(Object.assign({}, progressBarOptions)),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
