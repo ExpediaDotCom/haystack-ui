@@ -24,7 +24,6 @@ import {shallow} from 'enzyme';
 import timeWindow from '../../../../src/utils/timeWindow';
 
 import ServiceInsights from '../../../../src/components/serviceInsights/serviceInsights';
-import Error from '../../../../src/components/common/error';
 
 function createStoreStub(promiseState, data = {}) {
     return {
@@ -118,7 +117,7 @@ describe('<ServiceInsights/>', () => {
             sinon.assert.calledWith(timeWindow.toTimeRange, '888');
         });
 
-        it('shoudl render an error message when no traces found', () => {
+        it('should render an error message when no traces found', () => {
             const search = {
                 serviceName: 'web-ui',
                 time: {
@@ -136,9 +135,9 @@ describe('<ServiceInsights/>', () => {
             const store = createStoreStub('fulfilled', {
                 nodes: []
             });
-            let wrapper = shallow(<ServiceInsights search={search} store={store} />);
+            const wrapper = shallow(<ServiceInsights search={search} store={store} />);
 
-            expect(wrapper.find(Error)).to.have.length(1);
+            expect(wrapper.find('Error')).to.have.length(1);
         });
     });
 });
