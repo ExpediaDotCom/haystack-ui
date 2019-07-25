@@ -31,6 +31,7 @@ export class ServiceInsightsStore extends ErrorHandlingStore {
                 .then((result) => {
                     this.filterQuery = filterQuery;
                     this.serviceInsights = result.data;
+                    return result;
                 })
                 .catch((result) => {
                     ServiceInsightsStore.handleError(result);

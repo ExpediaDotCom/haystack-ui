@@ -26,11 +26,7 @@ export default class ServiceInsights extends React.Component {
         store: PropTypes.object.isRequired
     };
 
-    constructor(props) {
-        super(props);
-
-        this.state = {};
-    }
+    state = {};
 
     componentDidMount() {
         import(/* webpackChunkName: "ServiceInsights", webpackPreload: true */ '../../serviceInsights/serviceInsights').then((mod) => {

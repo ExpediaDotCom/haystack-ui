@@ -93,5 +93,25 @@ describe('<Tooltip/>', () => {
             expect(wrapper.find('.tip-grid.debug').text()).to.contain(data.id);
             window.location = oldLocation;
         });
+
+        it('should render `null` if no visible prop present', () => {
+            const data = {
+                type: 'uninstrumented',
+                operations: {}
+            };
+            const wrapper = shallow(<Tooltip x={1} y={1} type="node" data={data} />);
+
+            expect(wrapper.getElement()).to.equal(null);
+        });
+
+        it('should render invalid cycle detected', () => {
+            const data = {
+                type: 'service',
+                operations: {},
+                invalidCycleDetected: true
+            };
+            const wrapper = shallow(<Tooltip x={1} y={1} visible type="line" data={data} />);
+            expect(/Invalid cycle detected/.test(wrapper.find('[data-issue]').text())).to.equal(true);
+        });
     });
 });

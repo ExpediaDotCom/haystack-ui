@@ -96,5 +96,9 @@ describe('<DragGroup/>', () => {
 
         expect(wrapper.state('isDragging')).to.equal(false);
         expect(wrapper.state('last')).to.deep.equal({x: 8, y: 9});
+
+        // ensure mouse movement doesn't update `coords` state when finished dragging
+        wrapper.find('.drag-target').simulate('mousemove', {clientX: 12, clientY: 14});
+        expect(wrapper.state('coords')).to.deep.equal({x: 8, y: 9});
     });
 });

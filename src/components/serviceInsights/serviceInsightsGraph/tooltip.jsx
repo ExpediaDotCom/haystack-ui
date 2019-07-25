@@ -32,7 +32,9 @@ function lineToolTip(x, y, data) {
                     {hasIssues && (
                         <Fragment>
                             <div className="tip-grid_label">Issues:</div>
-                            <div className="tip-grid_value">{data.invalidCycleDetected && <div>{'⚠️Invalid cycle detected'}</div>}</div>
+                            <div className="tip-grid_value" data-issue>
+                                {data.invalidCycleDetected && <div>{'⚠️Invalid cycle detected'}</div>}
+                            </div>
                         </Fragment>
                     )}
                 </div>

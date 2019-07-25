@@ -18,18 +18,29 @@
 import React from 'react';
 import {expect} from 'chai';
 import sinon from 'sinon';
-import {shallow} from 'enzyme';
+import {shallow, mount} from 'enzyme';
 
 import Nodes from '../../../../../src/components/serviceInsights/serviceInsightsGraph/nodes';
 
 describe('<Nodes/>', () => {
-    it('should render the expected elements', () => {
-        const nodes = [{x: 10, y: 20, data: {}}];
+    it('should render a default service node', () => {
+        const nodes = [{x: 10, y: 20, data: {id: 'foo'}}];
         const wrapper = shallow(<Nodes nodes={nodes} onHover={() => {}} onLeave={() => {}} />);
 
         expect(wrapper.find('.nodes')).to.have.lengthOf(1);
         expect(wrapper.find('.node')).to.have.lengthOf(1);
         expect(wrapper.find('circle')).to.have.lengthOf(1);
+        expect(wrapper.find('circle').prop('r')).to.equal(7);
+    });
+
+    it('should render a mesh node', () => {
+        const nodes = [{x: 10, y: 20, data: {type: 'mesh'}}];
+        const wrapper = shallow(<Nodes nodes={nodes} onHover={() => {}} onLeave={() => {}} />);
+
+        expect(wrapper.find('.nodes')).to.have.lengthOf(1);
+        expect(wrapper.find('.node')).to.have.lengthOf(1);
+        expect(wrapper.find('circle')).to.have.lengthOf(1);
+        expect(wrapper.find('circle').prop('r')).to.equal(4);
     });
 
     it('should render node transformation', () => {
@@ -65,6 +76,13 @@ describe('<Nodes/>', () => {
         expect(wrapper.find('.node.icon-base')).to.have.lengthOf(4);
         expect(wrapper.find('image')).to.have.lengthOf(4);
         expect(wrapper.find('circle')).to.have.lengthOf(0);
+    });
+
+    it('should build map of node element references based on `id` property', () => {
+        const nodes = [{x: 10, y: 20, data: {id: 'foo'}}];
+        const wrapper = mount(<Nodes nodes={nodes} onHover={() => {}} onLeave={() => {}} />);
+        const instance = wrapper.instance();
+        expect(Object.keys(instance.nodeRefs)[0]).to.equal('foo');
     });
 
     it('should call onHover event with x, y, and node data', () => {

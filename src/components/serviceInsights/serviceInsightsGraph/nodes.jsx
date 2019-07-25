@@ -37,10 +37,7 @@ export default class Nodes extends Component {
         onLeave: PropTypes.func.isRequired
     };
 
-    constructor(props) {
-        super(props);
-        this.nodeRefs = {};
-    }
+    nodeRefs = {};
 
     // Get node position, including transforms, and call the onHover prop
     handleHover(data) {

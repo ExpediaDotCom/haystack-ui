@@ -56,6 +56,12 @@ describe('<Lines/>', () => {
         expect(wrapper.find('.line').prop('strokeOpacity')).to.equal(0.2);
     });
 
+    it('should render with a default opacity of `0.2` on edges with no tps', () => {
+        const edges = [{link: {}}];
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} />);
+        expect(wrapper.find('.line').prop('strokeOpacity')).to.equal(0.2);
+    });
+
     it('should render path element with curve data', () => {
         const edges = [
             {

@@ -28,7 +28,7 @@ export class ServiceInsightsTabStateStore {
         this.search = search;
 
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = subsystems && enableServiceInsights && search.serviceName;
+        this.isAvailable = !!(subsystems && enableServiceInsights && search.serviceName);
     }
 
     fetch() {
