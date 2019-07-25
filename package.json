@@ -136,7 +136,8 @@
     "wait-on": "^2.1.0",
     "webpack": "^4.17.1",
     "webpack-bundle-analyzer": "^2.13.1",
-    "webpack-command": "^0.4.1"
+    "webpack-command": "^0.4.1",
+    "whatwg-url": "^7.0.0"
   },
   "nyc": {
     "exclude": [
