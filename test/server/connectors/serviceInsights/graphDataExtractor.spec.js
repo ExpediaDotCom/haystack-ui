@@ -16,7 +16,70 @@
  */
 
 import {expect} from 'chai';
-import {extractNodesAndLinks} from '../../../../server/connectors/serviceInsights/graphDataExtractor';
+import proxyquire from 'proxyquire';
+
+const {extractNodesAndLinks} = proxyquire('../../../../server/connectors/serviceInsights/graphDataExtractor', {
+    '../../config/config': {
+        connectors: {
+            serviceInsights: {
+                // serviceInsights uses traces.connectorName
+                // Service Insights is beta, so disabled by default
+                enableServiceInsights: false,
+                // functions to generate nodes from different types of spans
+                // customize these to match tech stack, available span tags, and how you want nodes displayed
+                spanTypes: {
+                    edge: {
+                        isType: (span) => span.serviceName === 'edge',
+                        nodeId: (span) => {
+                            const route = span.tags.find((tag) => tag.key === 'edge.route');
+                            return route ? route.value : span.serviceName;
+                        },
+                        nodeName: (span) => {
+                            const route = span.tags.find((tag) => tag.key === 'edge.route');
+                            return route ? route.value : span.serviceName;
+                        }
+                    },
+                    gateway: {
+                        isType: (span) => span.serviceName === 'gateway',
+                        nodeId: (span) => {
+                            const destination = span.tags.find((tag) => tag.key === 'gateway.destination');
+                            return destination ? destination.value : span.serviceName;
+                        },
+                        nodeName: (span) => {
+                            const datacenter = span.tags.find((tag) => tag.key === 'app.datacenter');
+                            return datacenter ? datacenter.value : span.serviceName;
+                        }
+                    },
+                    mesh: {
+                        isType: (span) => span.serviceName === 'service-mesh',
+                        nodeId: (span) => span.operationName,
+                        nodeName: (span) => span.operationName
+                    },
+                    database: {
+                        isType: (span) => span.tags.some((tag) => tag.key === 'db.type'),
+                        nodeId: (span) => span.operationName,
+                        nodeName: (span) => span.operationName,
+                        databaseType: (span) => span.tags.find((tag) => tag.key === 'db.type').value
+                    },
+                    outbound: {
+                        isType: (span) => {
+                            const hasMergedTag = span.tags.some((tag) => tag.key === 'X-HAYSTACK-IS-MERGED-SPAN' && tag.value === true);
+                            const hasClientTag = span.tags.some((tag) => tag.key === 'span.kind' && tag.value === 'client');
+                            return hasMergedTag ? false : hasClientTag;
+                        },
+                        nodeId: (span) => span.operationName,
+                        nodeName: (span) => span.operationName
+                    },
+                    service: {
+                        // isType implicitly true when none of the above
+                        nodeId: (span) => span.serviceName,
+                        nodeName: (span) => span.serviceName
+                    }
+                }
+            }
+        }
+    }
+});
 
 /* eslint-disable no-unused-expressions */
 describe('graphDataExtractor.extractNodesAndLinks', () => {

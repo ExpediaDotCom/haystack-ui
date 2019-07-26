@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 module.exports = {
     // app port
     port: 8080,
