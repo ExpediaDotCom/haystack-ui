@@ -53,4 +53,88 @@ describe('routes.tracesApi', () => {
                 return done();
             });
     });
+
+    it('returns http 200 for /api/traces/raw', (done) => {
+        request(server)
+            .get('/api/traces/raw')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /api/traces/raw/:traceId', (done) => {
+        request(server)
+            .get('/api/traces/raw/100')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trace/raw/:traceId', (done) => {
+        request(server)
+            .get('/api/trace/raw/100')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trace/raw/:traceId/:spanId', (done) => {
+        request(server)
+            .get('/api/trace/raw/100/100')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trace/:traceId/latencyCost', (done) => {
+        request(server)
+            .get('/api/trace/100/latencyCost')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /api/traces/timeline', (done) => {
+        request(server)
+            .get('/api/traces/timeline')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /api/traces/searchableKeys', (done) => {
+        request(server)
+            .get('/api/traces/searchableKeys')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
 });

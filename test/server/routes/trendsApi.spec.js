@@ -41,4 +41,52 @@ describe('routes.trendsApi', () => {
                 return done();
             });
     });
+
+    it('returns http 200 for /trends/service/:serviceName/:type', (done) => {
+        request(server)
+            .get('/api/trends/service/foo/type')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trends/service/:serviceName', (done) => {
+        request(server)
+            .get('/api/trends/service/foo')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trends/operation/:serviceName/:operationName', (done) => {
+        request(server)
+            .get('/api/trends/operation/foo/bar')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
+    it('returns http 200 for /trends/operation/:serviceName', (done) => {
+        request(server)
+            .get('/api/trends/operation/foo')
+            .expect(200)
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
 });
