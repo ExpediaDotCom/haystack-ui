@@ -76,7 +76,7 @@ export default class Tabs extends React.Component {
         },
         {
             tabId: 'serviceInsights',
-            displayName: 'Service Insights',
+            displayName: 'Service Insights (beta)',
             icon: 'ti-pie-chart',
             store: serviceInsightsTabStateStore
         }

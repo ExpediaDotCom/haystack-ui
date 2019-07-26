@@ -104,6 +104,7 @@ module.exports = {
         },
         serviceInsights: {
             // serviceInsights uses traces.connectorName
+            // Service Insights is beta, so disabled by default
             enableServiceInsights: false,
             // functions to generate nodes from different types of spans
             // customize these to match tech stack, available span tags, and how you want nodes displayed
