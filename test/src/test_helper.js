@@ -15,19 +15,19 @@
  *
  */
 
-const { JSDOM } = require('jsdom');
+const {JSDOM} = require('jsdom');
 const Enzyme = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
-Enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({adapter: new Adapter()});
 
 const jsdom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
-const { window } = jsdom;
+const {window} = jsdom;
 
 function copyProps(src, target) {
     const props = Object.getOwnPropertyNames(src)
-        .filter(prop => typeof target[prop] === 'undefined')
-        .map(prop => Object.getOwnPropertyDescriptor(src, prop));
+        .filter((prop) => typeof target[prop] === 'undefined')
+        .map((prop) => Object.getOwnPropertyDescriptor(src, prop));
     Object.defineProperties(target, props);
 }
 
@@ -35,6 +35,13 @@ function copyProps(src, target) {
 window.cancelAnimationFrame = () => {};
 
 global.window = window;
+
+// Polyfill `global.URLSearchParams` in cases where older nodeJS runtimes are being used
+// TODO: remove when Docker image has been upgraded to nodeJS >= 10.x
+if (!global.URLSearchParams) {
+    global.URLSearchParams = require('whatwg-url').URLSearchParams; // eslint-disable-line
+}
+
 global.document = window.document;
 global.navigator = {
     userAgent: 'node.js'
@@ -48,7 +55,8 @@ global.window.haystackUiConfig = {
         {shortName: '4h', value: 4 * 60 * 60 * 1000},
         {shortName: '12h', value: 12 * 60 * 60 * 1000},
         {shortName: '24h', value: 24 * 60 * 60 * 1000},
-        {shortName: '3d', value: 3 * 24 * 60 * 60 * 1000}],
+        {shortName: '3d', value: 3 * 24 * 60 * 60 * 1000}
+    ],
     timeWindowPresetOptions: [
         {shortName: '5m', longName: '5 minutes', value: 5 * 60 * 1000},
         {shortName: '15m', longName: '15 minutes', value: 15 * 60 * 1000},
