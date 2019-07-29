@@ -251,11 +251,11 @@ function buildNodes(spans) {
             node.type = type.gateway;
         } else if (mesh && mesh.isType(span)) {
             node.type = type.mesh;
-        } else if (outbound && outbound.isType(span)) {
-            node.type = type.outbound;
         } else if (database && database.isType(span)) {
             node.type = type.database;
             node.databaseType = database.databaseType(span);
+        } else if (outbound && outbound.isType(span)) {
+            node.type = type.outbound;
         } else {
             node.type = type.service;
         }

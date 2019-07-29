@@ -146,7 +146,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
 
     function databaseSpan() {
         // some-backend-server's span from its nosql database client query
-        return span('some-backend-server', 'SELECT *', [{key: 'db.type', value: 'nosql'}]);
+        return span('some-backend-server', 'SELECT *', [{key: 'db.type', value: 'nosql'}, {key: 'span.kind', value: 'client'}]);
     }
 
     function mergedSpan() {
