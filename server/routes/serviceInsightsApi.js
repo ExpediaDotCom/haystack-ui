@@ -23,11 +23,7 @@ const router = express.Router();
 
 router.get('/serviceInsights', (req, res, next) => {
     handleResponsePromise(res, next, 'svc_insights_SVC')(() => {
-        const millis = Date.now();
-        const startTime = req.query.from ? req.query.from : (millis - 60 * 60 * 1000) * 1000; // μs
-        const endTime = req.query.to ? req.query.to : millis * 1000;
-        const serviceName = req.query.service;
-
+        const {serviceName, startTime, endTime} = req.query;
         return serviceInsightsConnector.getServiceInsightsForService(serviceName, startTime, endTime);
     });
 });
