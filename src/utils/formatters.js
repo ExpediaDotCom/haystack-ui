@@ -20,11 +20,11 @@ import { toPresetDisplayText } from '../components/traces/utils/presets';
 
 const formatters = {};
 
-formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss, DD MMM YY');
+formatters.toTimestring = startTime => moment(Math.floor(startTime / 1000)).format('HH:mm:ss, DD MMM YY');
 
-formatters.toShortTimestring = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss');
+formatters.toShortTimestring = startTime => moment(Math.floor(startTime / 1000)).format('HH:mm:ss');
 
-formatters.toTimestringWithMs = startTime => moment(Math.floor(startTime / 1000)).format('kk:mm:ss.SSS, DD MMM YY');
+formatters.toTimestringWithMs = startTime => moment(Math.floor(startTime / 1000)).format('HH:mm:ss.SSS, DD MMM YY');
 
 formatters.toTimeago = startTime => timeago().format(Math.floor(startTime / 1000));
 
