@@ -27,15 +27,20 @@ const fetcher = (fetcherName) => ({
         const deferred = Q.defer();
         const timer = metrics.timer(`fetcher_${fetcherName}`).start();
 
+        const micro = (milli) => milli * 1000;
+        const startTime = micro(from).toString();
+        const endTime = micro(to).toString();
         tracesConnector
             .findTraces({
+                useExpressionTree: 'true',
                 serviceName,
-                from,
-                to
+                startTime,
+                endTime,
+                spanLevelFilters: '[]'
             })
             .then((traces) => {
                 if (traces && traces.length > 0) {
-                    tracesConnector.getRawTraces(traces.map((trace) => trace.traceId)).then((rawTraces) => {
+                    tracesConnector.getRawTraces(JSON.stringify(traces.map((trace) => trace.traceId))).then((rawTraces) => {
                         timer.end();
                         logger.info(`fetch successful: ${fetcherName}`);
                         deferred.resolve({
