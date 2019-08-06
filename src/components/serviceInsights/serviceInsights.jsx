@@ -57,14 +57,16 @@ export default class ServiceInsights extends Component {
 
         const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
 
-        const queryParams = {
-            service: search.serviceName,
-            from: activeWindowTimeRange.from,
-            to: activeWindowTimeRange.until
-        };
+        const micro = (milli) => milli * 1000;
+        const startTime = micro(activeWindowTimeRange.from);
+        const endTime = micro(activeWindowTimeRange.until);
 
         // Get service insights
-        this.props.store.fetchServiceInsights(queryParams);
+        this.props.store.fetchServiceInsights({
+            serviceName: search.serviceName,
+            startTime,
+            endTime
+        });
     };
 
     render() {

@@ -75,9 +75,9 @@ describe('<ServiceInsights/>', () => {
             shallow(<ServiceInsights search={search} store={store} />);
 
             const queryParams = store.fetchServiceInsights.getCall(0).args[0];
-            expect(queryParams.service).to.equal(search.serviceName);
-            expect(queryParams.to).to.exist;
-            expect(queryParams.from).to.exist;
+            expect(queryParams.serviceName).to.equal(search.serviceName);
+            expect(queryParams.startTime).to.exist;
+            expect(queryParams.endTime).to.exist;
         });
 
         it('should call toCustomTimeRange when search includes timeframe', () => {

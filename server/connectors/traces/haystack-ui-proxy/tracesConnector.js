@@ -73,7 +73,8 @@ connector.getRawSpan = () =>
         throw new Error('Unsupported by haystack-ui-proxy connector.');
     });
 
-connector.getRawTraces = (traceIds) => {
+connector.getRawTraces = (traceIdsString) => {
+    const traceIds = JSON.parse(traceIdsString);
     const promisedSpans = [];
     traceIds.forEach((traceId) => {
         promisedSpans.push(
@@ -85,16 +86,10 @@ connector.getRawTraces = (traceIds) => {
     return Q.all(promisedSpans).then((spans) => [].concat(...spans));
 };
 
-connector.findTraces = (query) =>
-    Q.fcall(() => {
-        const micro = (milli) => milli * 1000;
-
-        // Traces and Service Insights have different conventions
-        const startTime = query.startTime || micro(query.from);
-        const endTime = query.endTime || micro(query.to);
-
-        return fetcher('findTraces')
-            .fetch(`${baseUrl}/api/traces?serviceName=${query.serviceName}&startTime=${startTime}&endTime=${endTime}`, {
+connector.findTraces = ({serviceName, startTime, endTime}) =>
+    Q.fcall(() =>
+        fetcher('findTraces')
+            .fetch(`${baseUrl}/api/traces?useExpressionTree=true&serviceName=${serviceName}&startTime=${startTime}&endTime=${endTime}`, {
                 Cookie: `${cookieName}=${cookieValue}`
             })
             .then((traces) => {
@@ -104,7 +99,7 @@ connector.findTraces = (query) =>
                     );
                 }
                 return traces;
-            });
-    });
+            })
+    );
 
 module.exports = connector;

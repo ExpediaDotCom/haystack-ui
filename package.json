@@ -13,7 +13,7 @@
     "build": "npm run clean && npm run codegen && npm run coverage && webpack --mode=production",
     "start": "node server/start.js",
     "start:dev": "npm run clean && npm run codegen && npm run test && concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
-    "start:dev:fast": "concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
+    "start:dev:fast": "npm run clean && npm run codegen && concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
     "start:devserver": "NODE_ENV=development nodemon --inspect --ignore 'public/*' server/start.js",
     "watch": "NODE_ENV=development webpack -w --mode=development"
   },

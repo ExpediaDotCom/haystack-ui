@@ -52,7 +52,7 @@ const {ServiceInsightsStore} = proxyquire('../../../../../src/components/service
 
 describe('serviceInsightsStore', () => {
     let store = null;
-    let handleErrorSpy = spy(ServiceInsightsStore, 'handleError');
+    const handleErrorSpy = spy(ServiceInsightsStore, 'handleError');
 
     before(() => {
         store = new ServiceInsightsStore();
@@ -62,15 +62,15 @@ describe('serviceInsightsStore', () => {
     it('should fetch a list of service insights', (done) => {
         // given, when
         store.fetchServiceInsights({
-            service: 'node-web-ui',
-            from: 1000,
-            to: 2000
+            serviceName: 'node-web-ui',
+            startTime: 1000,
+            endTime: 2000
         });
         observe(store.promiseState, () => {
             store.promiseState.case({
                 fulfilled: (result) => {
                     // then
-                    expect(mockAxiosSpy.calledWith('/api/serviceInsights?service=node-web-ui&from=1000&to=2000')).to.equal(true);
+                    expect(mockAxiosSpy.calledWith('/api/serviceInsights?serviceName=node-web-ui&startTime=1000&endTime=2000')).to.equal(true);
                     expect(result.data.summary.violations).to.equal(1);
                     done();
                 },
@@ -85,14 +85,14 @@ describe('serviceInsightsStore', () => {
     it('should handle errors', (done) => {
         // given, when
         store.fetchServiceInsights({
-            service: 'node-web-ui-errors',
-            from: 1000,
-            to: 2000
+            serviceName: 'node-web-ui-errors',
+            startTime: 1000,
+            endTime: 2000
         });
         observe(store.promiseState, () => {
             store.promiseState.case({
                 fulfilled: (result) => {
-                    expect.fail('should have not succeeded');
+                    expect.fail(`should have not succeeded with result: ${result}`);
                 },
                 rejected: (result) => {
                     // then
