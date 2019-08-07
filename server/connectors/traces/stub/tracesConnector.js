@@ -51,10 +51,11 @@ const trace = () => {
             startTime: 1504784384000,
             duration: 3525000,
             logs: [],
-            tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
+            tags: [
+                {
+                    key: 'url',
+                    value: 'http://trace.io/blah'
+                },
                 {
                     key: 'url2',
                     value: 'some:data'
@@ -62,7 +63,16 @@ const trace = () => {
                 {
                     key: 'error',
                     value: false
-                }]
+                },
+                {
+                    key: 'request-blob',
+                    value: 'test-blob-client_message_4d35d44f-719e-4196-a784-7b4d506db6de_response_77b56acc-91d6-48fd-96ce-5f66de8fc7e7'
+                },
+                {
+                    key: 'response-blob',
+                    value: 'test-blob-client_message_4d35d44f-719e-4196-a784-7b4d506db6de_response_77b56acc-91d6-48fd-96ce-5f66de8fc7e7'
+                }
+            ]
         },
         {
             traceId,
@@ -73,10 +83,11 @@ const trace = () => {
             startTime: 1504784384000 + 250000,
             duration: 1505000,
             logs: [],
-            tags: [{
-                key: 'url',
-                value: 'http://trace.io/blah'
-            },
+            tags: [
+                {
+                    key: 'url',
+                    value: 'http://trace.io/blah'
+                },
                 {
                     key: 'error',
                     value: true
@@ -84,6 +95,14 @@ const trace = () => {
                 {
                     key: 'url2',
                     value: 'some:data'
+                },
+                {
+                    key: 'request-blob',
+                    value: 'test-blob-client_message_4d35d44f-719e-4196-a784-7b4d506db6de_response_77b56acc-91d6-48fd-96ce-5f66de8fc7e7'
+                },
+                {
+                    key: 'response-blob',
+                    value: 'test-blob-client_message_4d35d44f-719e-4196-a784-7b4d506db6de_response_77b56acc-91d6-48fd-96ce-5f66de8fc7e7'
                 },
                 {
                     key: 'url3',
@@ -108,7 +127,8 @@ const trace = () => {
                 {
                     key: 'url8',
                     value: 'some:data'
-                }]
+                }
+            ]
         },
         {
             traceId,
@@ -119,7 +139,16 @@ const trace = () => {
             startTime: 1504784384000 + 250000 + 120000,
             duration: 605000,
             logs: [],
-            tags: []
+            tags: [
+                {
+                    key: 'blob-request',
+                    value: '/getBlob/tyrell-service/tully-1_9ff6c0cf-03ba-4675-991f-5dfbbf45af03'
+                },
+                {
+                    key: 'blob-response',
+                    value: '/getBlob/tyrell-service/tully-1_9ff6c0cf-03ba-4675-991f-5dfbbf45af03'
+                }
+            ]
         },
         {
             traceId,
@@ -240,71 +269,78 @@ const trace = () => {
 
 const connector = {};
 
-connector.getServices = () => Q.fcall(() => ['root-service',
-    'lannister-service',
-    'stark-service',
-    'tyrell-service',
-    'targaryen-service',
-    'baratheon-service',
-    'dragon-service',
-    'westeros-service'
-]);
+connector.getServices = () =>
+    Q.fcall(() => [
+        'root-service',
+        'lannister-service',
+        'stark-service',
+        'tyrell-service',
+        'targaryen-service',
+        'baratheon-service',
+        'dragon-service',
+        'westeros-service'
+    ]);
 
-connector.getOperations = () => Q.fcall(() => ['mormont-1',
-    'seaworth-1',
-    'bolton-1',
-    'baelish-1',
-    'snow-1',
-    'tully-1',
-    'dondarrion-1',
-    'grayjoy-1',
-    'clegane-1',
-    'drogo-1',
-    'tarley-1'
-]);
+connector.getOperations = () =>
+    Q.fcall(() => [
+        'mormont-1',
+        'seaworth-1',
+        'bolton-1',
+        'baelish-1',
+        'snow-1',
+        'tully-1',
+        'dondarrion-1',
+        'grayjoy-1',
+        'clegane-1',
+        'drogo-1',
+        'tarley-1'
+    ]);
 
 function getValue(min, max) {
-    return _.round((Math.random() * (max - min)) + min, 0);
+    return _.round(Math.random() * (max - min) + min, 0);
 }
 
 function getRandomValues(granularity, dataPoints, from) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({x: ((from) + (i * granularity)), y: getValue(0, 3000)}));
+    _.range(dataPoints).forEach((i) => valuesArr.push({x: from + i * granularity, y: getValue(0, 3000)}));
     return valuesArr;
 }
 
-connector.getTimeline = query => Q.fcall(() => {
-    const granularity = (query.endTime - query.startTime) / 15;
-    const range = (query.endTime - query.startTime);
-    const points = range / granularity;
+connector.getTimeline = (query) =>
+    Q.fcall(() => {
+        const granularity = (query.endTime - query.startTime) / 15;
+        const range = query.endTime - query.startTime;
+        const points = range / granularity;
 
-    return getRandomValues(granularity, points, parseInt(query.startTime, 10));
-});
+        return getRandomValues(granularity, points, parseInt(query.startTime, 10));
+    });
 
-connector.getSearchableKeys = () => Q.fcall(() => ({
-    serviceName: {isRangeQuery: false},
-    operationName: {isRangeQuery: false},
-    traceId: {isRangeQuery: false},
-    error: {isRangeQuery: false, values: ['true', 'false']},
-    duration: {isRangeQuery: true},
-    guid: {isRangeQuery: false},
-    testid: {isRangeQuery: false}
-}));
+connector.getSearchableKeys = () =>
+    Q.fcall(() => ({
+        serviceName: {isRangeQuery: false},
+        operationName: {isRangeQuery: false},
+        traceId: {isRangeQuery: false},
+        error: {isRangeQuery: false, values: ['true', 'false']},
+        duration: {isRangeQuery: true},
+        guid: {isRangeQuery: false},
+        testid: {isRangeQuery: false}
+    }));
 
 const latencyCost = {
-    latencyCost: [{
-        from: {
-            serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+    latencyCost: [
+        {
+            from: {
+                serviceName: 'stark-service',
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'westeros-service',
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
+            },
+            networkDelta: 65
         },
-        to: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        networkDelta: 65
-    },
         {
             from: {
                 serviceName: 'westeros-service',
@@ -434,21 +470,23 @@ const latencyCost = {
                 infrastructureLocation: 'us-west-3'
             },
             networkDelta: 98
-        }],
-    latencyCostTrends: [{
-        from: {
-            serviceName: 'stark-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
+        }
+    ],
+    latencyCostTrends: [
+        {
+            from: {
+                serviceName: 'stark-service',
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
+            },
+            to: {
+                serviceName: 'westeros-service',
+                infrastructureProvider: 'aws',
+                infrastructureLocation: 'us-west-2'
+            },
+            tp99NetworkDelta: 333,
+            meanNetworkDelta: 21
         },
-        to: {
-            serviceName: 'westeros-service',
-            infrastructureProvider: 'aws',
-            infrastructureLocation: 'us-west-2'
-        },
-        tp99NetworkDelta: 333,
-        meanNetworkDelta: 21
-    },
         {
             from: {
                 serviceName: 'westeros-service',
@@ -532,7 +570,8 @@ const latencyCost = {
             },
             tp99NetworkDelta: 46,
             meanNetworkDelta: 45
-        }]
+        }
+    ]
 };
 
 connector.getLatencyCost = () => Q.fcall(() => latencyCost);
@@ -545,15 +584,153 @@ connector.getRawSpan = () => Q.fcall(() => trace()[0]);
 
 connector.getRawTraces = () => Q.fcall(() => [...trace(), ...trace()]);
 
-connector.findTraces = query => Q.fcall(() => {
-    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+connector.findTraces = (query) =>
+    Q.fcall(() => {
+        const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
-    if (traceId) {
+        if (traceId) {
+            return [
+                {
+                    traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
+                    spanCount: 12,
+                    errorSpanCount: 2,
+                    services: [
+                        {
+                            name: 'stark-service',
+                            spanCount: 1
+                        },
+                        {
+                            name: 'tyrell-service',
+                            spanCount: 29
+                        }
+                    ],
+                    root: {
+                        url: '/stark/endpoint',
+                        serviceName: 'stark-service',
+                        operationName: 'snow-1',
+                        duration: 3404000,
+                        error: false
+                    },
+                    queriedService: {
+                        duration: 31000,
+                        durationPercent: 64,
+                        error: true
+                    },
+                    queriedOperation: {
+                        duration: 1,
+                        durationPercent: 0,
+                        error: false
+                    },
+                    startTime: new Date().getTime() * 1000,
+                    duration: 390000
+                }
+            ];
+        }
         return [
             {
-                traceId: '380965e5-e0c4-4c37-91a7-da79def7597b',
-                spanCount: 12,
+                traceId: 'x00245a5-g0c4-4c37-55a7-da83def7127a',
+                spanCount: 34,
                 errorSpanCount: 2,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 16
+                    },
+                    {
+                        name: 'targaryen-service',
+                        spanCount: 18
+                    }
+                ],
+                root: {
+                    url: '/stark/endpoint',
+                    serviceName: 'stark-service',
+                    operationName: 'snow-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 23000,
+                    durationPercent: 99,
+                    error: false
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 10 * 1000 * 1000,
+                duration: 240000
+            },
+            {
+                traceId: 'a40165e5-e0c4-4c51-11x7-bb79def7597a',
+                spanCount: 34,
+                errorSpanCount: 2,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'rob-service',
+                        spanCount: 8
+                    }
+                ],
+                root: {
+                    url: '/rob/endpoint',
+                    serviceName: 'rob-service',
+                    operationName: 'mormont-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 590000,
+                    durationPercent: 64,
+                    error: false
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 15 * 1000 * 1000,
+                duration: 850000
+            },
+            {
+                traceId: 'a80921e5-e0c4-4c37-91a7-da79def7597a',
+                spanCount: 44,
+                services: [
+                    {
+                        name: 'tyrell-service',
+                        spanCount: 22
+                    },
+                    {
+                        name: 'renly-service',
+                        spanCount: 22
+                    }
+                ],
+                root: {
+                    url: '/baratheon/endpoint',
+                    serviceName: 'gendry-service',
+                    operationName: 'dondarrion-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 5990000,
+                    durationPercent: 64,
+                    error: true
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 18 * 1000 * 1000,
+                duration: 3500000
+            },
+            {
+                traceId: 'a55965e5-e0c4-4a37-91a7-da79def7597a',
+                spanCount: 30,
                 services: [
                     {
                         name: 'stark-service',
@@ -567,12 +744,12 @@ connector.findTraces = query => Q.fcall(() => {
                 root: {
                     url: '/stark/endpoint',
                     serviceName: 'stark-service',
-                    operationName: 'snow-1',
+                    operationName: 'clegane-1',
                     duration: 3404000,
                     error: false
                 },
                 queriedService: {
-                    duration: 31000,
+                    duration: 120000,
                     durationPercent: 64,
                     error: true
                 },
@@ -581,307 +758,175 @@ connector.findTraces = query => Q.fcall(() => {
                     durationPercent: 0,
                     error: false
                 },
-                startTime: new Date().getTime() * 1000,
-                duration: 390000
+                startTime: new Date().getTime() * 1000 - 18 * 1000 * 1000,
+                duration: 126000
+            },
+            {
+                traceId: 'wb651a1b-146x-4c37-91a7-6r61v513r1v11',
+                spanCount: 30,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'jon-service',
+                        spanCount: 29
+                    }
+                ],
+                root: {
+                    url: '/east/endpoint',
+                    serviceName: 'stark-service',
+                    operationName: 'grayjoy-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 5990000,
+                    durationPercent: 88,
+                    error: true
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 30 * 1000 * 1000,
+                duration: 3500000
+            },
+            {
+                traceId: 'b44165e5-xx14-4c37-91a7-da79def7597b',
+                spanCount: 25,
+                services: [
+                    {
+                        name: 'randall-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'stark-service',
+                        spanCount: 29
+                    }
+                ],
+                root: {
+                    url: '/tarley/endpoint',
+                    serviceName: 'randall-service',
+                    operationName: 'tarley-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 2450000,
+                    durationPercent: 94,
+                    error: true
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 44 * 1000 * 1000,
+                duration: 2450000
+            },
+            {
+                traceId: 'c80965e5-e0c4-4c37-91a7-da79def7597b',
+                spanCount: 19,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'tyrell-service',
+                        spanCount: 29
+                    }
+                ],
+                root: {
+                    url: '/targaryen/endpoint',
+                    serviceName: 'targaryen-service',
+                    operationName: 'drogo-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 5990000,
+                    durationPercent: 76,
+                    error: false
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 56 * 1000 * 1000,
+                duration: 3500000
+            },
+            {
+                traceId: 'd80965e5-e0c4-4c37-91a7-da79def7597b',
+                spanCount: 88,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'tyrell-service',
+                        spanCount: 29
+                    }
+                ],
+                root: {
+                    url: '/stark/endpoint',
+                    serviceName: 'stark-service',
+                    operationName: 'tully-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 5990000,
+                    durationPercent: 64,
+                    error: true
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 90 * 1000 * 1000,
+                duration: 3500000
+            },
+            {
+                traceId: 'e80965e5-e0c4-4c37-91a7-da79def7597b',
+                spanCount: 12,
+                services: [
+                    {
+                        name: 'stark-service',
+                        spanCount: 1
+                    },
+                    {
+                        name: 'westeros-service',
+                        spanCount: 5
+                    }
+                ],
+                root: {
+                    url: '/stark/endpoint',
+                    serviceName: 'stark-service',
+                    operationName: 'snow-1',
+                    duration: 3404000,
+                    error: false
+                },
+                queriedService: {
+                    duration: 1260000,
+                    durationPercent: 64,
+                    error: true
+                },
+                queriedOperation: {
+                    duration: 1,
+                    durationPercent: 0,
+                    error: false
+                },
+                startTime: new Date().getTime() * 1000 - 2 * 1000 * 1000,
+                duration: 3545000
             }
         ];
-    }
-    return [
-        {
-            traceId: 'x00245a5-g0c4-4c37-55a7-da83def7127a',
-            spanCount: 34,
-            errorSpanCount: 2,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 16
-                },
-                {
-                    name: 'targaryen-service',
-                    spanCount: 18
-                }
-            ],
-            root: {
-                url: '/stark/endpoint',
-                serviceName: 'stark-service',
-                operationName: 'snow-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 23000,
-                durationPercent: 99,
-                error: false
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (10 * 1000 * 1000),
-            duration: 240000
-        }, {
-            traceId: 'a40165e5-e0c4-4c51-11x7-bb79def7597a',
-            spanCount: 34,
-            errorSpanCount: 2,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'rob-service',
-                    spanCount: 8
-                }
-            ],
-            root: {
-                url: '/rob/endpoint',
-                serviceName: 'rob-service',
-                operationName: 'mormont-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 590000,
-                durationPercent: 64,
-                error: false
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (15 * 1000 * 1000),
-            duration: 850000
-        }, {
-            traceId: 'a80921e5-e0c4-4c37-91a7-da79def7597a',
-            spanCount: 44,
-            services: [
-                {
-                    name: 'tyrell-service',
-                    spanCount: 22
-                },
-                {
-                    name: 'renly-service',
-                    spanCount: 22
-                }
-            ],
-            root: {
-                url: '/baratheon/endpoint',
-                serviceName: 'gendry-service',
-                operationName: 'dondarrion-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 5990000,
-                durationPercent: 64,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
-            duration: 3500000
-        }, {
-            traceId: 'a55965e5-e0c4-4a37-91a7-da79def7597a',
-            spanCount: 30,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'tyrell-service',
-                    spanCount: 29
-                }
-            ],
-            root: {
-                url: '/stark/endpoint',
-                serviceName: 'stark-service',
-                operationName: 'clegane-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 120000,
-                durationPercent: 64,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (18 * 1000 * 1000),
-            duration: 126000
-        }, {
-            traceId: 'wb651a1b-146x-4c37-91a7-6r61v513r1v11',
-            spanCount: 30,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'jon-service',
-                    spanCount: 29
-                }
-            ],
-            root: {
-                url: '/east/endpoint',
-                serviceName: 'stark-service',
-                operationName: 'grayjoy-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 5990000,
-                durationPercent: 88,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (30 * 1000 * 1000),
-            duration: 3500000
-        },
-        {
-            traceId: 'b44165e5-xx14-4c37-91a7-da79def7597b',
-            spanCount: 25,
-            services: [
-                {
-                    name: 'randall-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'stark-service',
-                    spanCount: 29
-                }
-            ],
-            root: {
-                url: '/tarley/endpoint',
-                serviceName: 'randall-service',
-                operationName: 'tarley-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 2450000,
-                durationPercent: 94,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (44 * 1000 * 1000),
-            duration: 2450000
-        },
-        {
-            traceId: 'c80965e5-e0c4-4c37-91a7-da79def7597b',
-            spanCount: 19,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'tyrell-service',
-                    spanCount: 29
-                }
-            ],
-            root: {
-                url: '/targaryen/endpoint',
-                serviceName: 'targaryen-service',
-                operationName: 'drogo-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 5990000,
-                durationPercent: 76,
-                error: false
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (56 * 1000 * 1000),
-            duration: 3500000
-        },
-        {
-            traceId: 'd80965e5-e0c4-4c37-91a7-da79def7597b',
-            spanCount: 88,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'tyrell-service',
-                    spanCount: 29
-                }
-            ],
-            root: {
-                url: '/stark/endpoint',
-                serviceName: 'stark-service',
-                operationName: 'tully-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 5990000,
-                durationPercent: 64,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (90 * 1000 * 1000),
-            duration: 3500000
-        }, {
-            traceId: 'e80965e5-e0c4-4c37-91a7-da79def7597b',
-            spanCount: 12,
-            services: [
-                {
-                    name: 'stark-service',
-                    spanCount: 1
-                },
-                {
-                    name: 'westeros-service',
-                    spanCount: 5
-                }
-            ],
-            root: {
-                url: '/stark/endpoint',
-                serviceName: 'stark-service',
-                operationName: 'snow-1',
-                duration: 3404000,
-                error: false
-            },
-            queriedService: {
-                duration: 1260000,
-                durationPercent: 64,
-                error: true
-            },
-            queriedOperation: {
-                duration: 1,
-                durationPercent: 0,
-                error: false
-            },
-            startTime: (new Date().getTime() * 1000) - (2 * 1000 * 1000),
-            duration: 3545000
-        }
-    ];
-});
+    });
 
 module.exports = connector;
