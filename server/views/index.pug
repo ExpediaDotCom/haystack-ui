@@ -31,6 +31,8 @@ html
             relatedTracesOptions: !{JSON.stringify(relatedTracesOptions || [])},
             tagValuesTransformMap: !{JSON.stringify(tagValuesTransformMap || {})},
             usingZipkinConnector: !{JSON.stringify(usingZipkinConnector || false)},
+            enableBlobs: !{JSON.stringify(enableBlobs || false)},
+            blobsUrl: !{JSON.stringify(blobsUrl || '')},
         }
     script(async, defer, src = bundleCommonsJsPath)
     script(async, defer, src = bundleAppJsPath)
