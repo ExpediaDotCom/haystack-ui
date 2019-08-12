@@ -14,9 +14,7 @@
  *         limitations under the License.
  */
 
-// enums
-
-// type enums
+// Service Insights node types
 const type = {
     edge: 'edge', // the network edge, which should be a source
     mesh: 'mesh', // a mesh network node, which is uniquely identified by its operation

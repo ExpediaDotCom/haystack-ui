@@ -15,7 +15,7 @@
  *         limitations under the License.
  */
 
-const {type} = require('./enums');
+const {type} = require('../../../universal/enums');
 const {detectCycles} = require('./detectCycles');
 const {edge, gateway, mesh, database, outbound, service} = require('../../config/config').connectors.serviceInsights.spanTypes;
 

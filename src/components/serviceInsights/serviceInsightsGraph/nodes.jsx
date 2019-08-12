@@ -18,16 +18,18 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import {type} from '../../../../universal/enums';
+
 import databaseIcon from './icons/db.svg';
 import gatewayIcon from './icons/gateway.svg';
 import outboundIcon from './icons/outbound.svg';
 import uninstrumentedIcon from './icons/uninstrumented.svg';
 
 const iconMap = {
-    database: databaseIcon,
-    gateway: gatewayIcon,
-    outbound: outboundIcon,
-    uninstrumented: uninstrumentedIcon
+    [type.database]: databaseIcon,
+    [type.gateway]: gatewayIcon,
+    [type.outbound]: outboundIcon,
+    [type.uninstrumented]: uninstrumentedIcon
 };
 
 export default class Nodes extends Component {
@@ -65,7 +67,7 @@ export default class Nodes extends Component {
                     const violationClass = data.invalidCycleDetected ? 'violation' : '';
 
                     // Icon nodes
-                    if (data.type && data.type.match(/gateway|database|uninstrumented|outbound/)) {
+                    if (iconMap[data.type]) {
                         return (
                             <g className={`graph-icon ${violationClass}`} {...commonProps}>
                                 <rect width="20" height="20" x="-10" y="-10" className="node icon-base" />
@@ -75,7 +77,7 @@ export default class Nodes extends Component {
                     }
 
                     // Circle nodes
-                    const r = data.type === 'mesh' ? 4 : 7;
+                    const r = data.type === type.mesh ? 4 : 7;
                     const className = data.isCentral ? 'primary' : data.type;
                     return <circle r={r} className={`node ${className} ${violationClass}`} {...commonProps} />;
                 })}
