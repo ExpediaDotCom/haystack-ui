@@ -120,12 +120,11 @@ function getNodeIdFromSpan(span) {
 /**
  * processNodesAndLinks()
  * Process nodes and links
- * @param {string} serviceName - Name of central dependency
  * @param {Map} nodes - Map of nodes
  * @param {Map} links - Map of links
  * @returns {object}
  */
-function processNodesAndLinks(serviceName, nodes, links) {
+function processNodesAndLinks(nodes, links) {
     // Marks nodes and links with invalid DAG cyces
     const cyclesFound = detectCycles({nodes, links});
 
@@ -137,7 +136,6 @@ function processNodesAndLinks(serviceName, nodes, links) {
 
     // Process Links
     links.forEach((link) => {
-        // NOTE: here source means source side of the link, not necessarily source end of the graph
         const source = nodes.get(link.source);
         const target = nodes.get(link.target);
 
@@ -153,11 +151,6 @@ function processNodesAndLinks(serviceName, nodes, links) {
 
     // Process nodes
     nodes.forEach((node) => {
-        // Process Central Node
-        if (node.serviceName === serviceName && node.type !== type.outbound) {
-            node.isCentral = true;
-        }
-
         // Detect unique traces
         node.traceIds.forEach((traceId) => {
             uniqueTraces.add(traceId);
@@ -225,57 +218,79 @@ function processNodesAndLinks(serviceName, nodes, links) {
 }
 
 /**
+ * createNodeFromSpan()
+ * @param {string} nodeId
+ * @param {object} span
+ * @param {string} serviceName indicates which service is central to this graph
+ */
+function createNodeFromSpan(nodeId, span, serviceName) {
+    const nodeName = getNodeNameFromSpan(span);
+
+    const node = createNode({
+        id: nodeId,
+        name: nodeName,
+        serviceName: span.serviceName,
+        duration: span.duration,
+        operations: {[`${span.operationName}`]: 1},
+        traceIds: [span.traceId]
+    });
+
+    if (edge && edge.isType(span)) {
+        node.type = type.edge;
+    } else if (gateway && gateway.isType(span)) {
+        node.type = type.gateway;
+    } else if (mesh && mesh.isType(span)) {
+        node.type = type.mesh;
+    } else if (database && database.isType(span)) {
+        node.type = type.database;
+        node.databaseType = database.databaseType(span);
+    } else if (outbound && outbound.isType(span)) {
+        node.type = type.outbound;
+    } else {
+        node.type = type.service;
+    }
+
+    if (node.serviceName === serviceName && node.type !== type.outbound) {
+        node.isCentral = true;
+    }
+
+    return node;
+}
+
+/**
+ * updateNodeFromSpan()
+ * @param {object} node
+ * @param {object} span
+ */
+function updateNodeFromSpan(node, span) {
+    node.operations[span.operationName] = node.operations[span.operationName] ? node.operations[span.operationName] + 1 : 1;
+    node.count++;
+    node.duration += span.duration;
+    node.avgDuration = `${Math.floor(node.duration / node.count / 1000)} ms`;
+    node.traceIds.push(span.traceId);
+}
+
+/**
  * buildNodes()
  * Builds a map of nodes.
  * @param {Array<span>} spans - Array of fully hydrated Haystack spans
+ * @param {string} serviceName - Name of central dependency
  */
-function buildNodes(spans) {
+function buildNodes(spans, serviceName) {
     const nodes = new Map();
 
     spans.forEach((span) => {
         const nodeId = getNodeIdFromSpan(span);
-        const nodeName = getNodeNameFromSpan(span);
+        const existingNode = nodes.get(nodeId);
 
-        const node = createNode({
-            id: nodeId,
-            name: nodeName,
-            serviceName: span.serviceName,
-            duration: span.duration,
-            operations: {[`${span.operationName}`]: 1},
-            traceIds: [span.traceId]
-        });
-
-        if (edge && edge.isType(span)) {
-            node.type = type.edge;
-        } else if (gateway && gateway.isType(span)) {
-            node.type = type.gateway;
-        } else if (mesh && mesh.isType(span)) {
-            node.type = type.mesh;
-        } else if (database && database.isType(span)) {
-            node.type = type.database;
-            node.databaseType = database.databaseType(span);
-        } else if (outbound && outbound.isType(span)) {
-            node.type = type.outbound;
+        if (!existingNode) {
+            const newNode = createNodeFromSpan(nodeId, span, serviceName);
+            nodes.set(nodeId, newNode);
         } else {
-            node.type = type.service;
-        }
-
-        const currentNode = nodes.get(nodeId);
-
-        // If new node, set
-        if (!currentNode) {
-            nodes.set(node.id, node);
-        } else {
-            // Else, update operation
-            currentNode.operations[span.operationName] = currentNode.operations[span.operationName]
-                ? currentNode.operations[span.operationName] + 1
-                : 1;
-            currentNode.count++;
-            currentNode.duration += span.duration;
-            currentNode.avgDuration = `${Math.floor(currentNode.duration / currentNode.count / 1000)} ms`;
-            currentNode.traceIds.push(span.traceId);
+            updateNodeFromSpan(existingNode, span);
         }
     });
+
     return nodes;
 }
 
@@ -299,8 +314,8 @@ function buildLinks(spans) {
             if (parentSpan) {
                 const parentNodeId = getNodeIdFromSpan(parentSpan);
                 const childNodeId = getNodeIdFromSpan(span);
-                const linkId = `${parentNodeId}→${childNodeId}`;
                 if (parentNodeId !== childNodeId) {
+                    const linkId = `${parentNodeId}→${childNodeId}`;
                     const currentLink = linkMap.get(linkId);
                     // If link does not exist in map, create it
                     if (!currentLink) {
@@ -332,13 +347,13 @@ function buildLinks(spans) {
  */
 const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}) => {
     // build map of nodes
-    const nodes = buildNodes(spans);
+    const nodes = buildNodes(spans, serviceName);
 
     // build map of links
     const links = buildLinks(spans);
 
     // Process nodes and links for consumption of graphing library
-    const summary = processNodesAndLinks(serviceName, nodes, links);
+    const summary = processNodesAndLinks(nodes, links);
     summary.traceLimitReached = traceLimitReached;
 
     return {
