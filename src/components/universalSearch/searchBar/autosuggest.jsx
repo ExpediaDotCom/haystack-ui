@@ -169,7 +169,7 @@ export default class Autocomplete extends React.Component {
         const options = this.props.options;
         const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
-        const targetInput = splitInput[splitInput.length - 1];
+        const targetInput = input[0] === '(' && input[input.length - 1] === ' ' ? '' : splitInput[splitInput.length - 1];
         const operatorIndex = Autocomplete.findIndexOfOperator(targetInput);
 
         let value;
@@ -186,11 +186,11 @@ export default class Autocomplete extends React.Component {
                     }
                 });
             }
-        } else if (Object.keys(options).some((option) => (Autocomplete.ignoreExclamationInOperatorSuggestion(input) === option))) {
+        } else if (Object.keys(options).some((option) => (Autocomplete.ignoreExclamationInOperatorSuggestion(targetInput) === option))) {
             type = 'Operator';
             if (this.inputMatchesRangeKey(targetInput)) {
                 suggestionArray = ['>', '=', '!=', '<'];
-            } else if (input[input.length - 1] !== '!') {
+            } else if (targetInput[targetInput.length - 1] !== '!') {
                 suggestionArray = ['=', '!='];
             } else {
                 suggestionArray = ['!='];
@@ -216,8 +216,9 @@ export default class Autocomplete extends React.Component {
         document.addEventListener('mousedown', this.handleOutsideClick);
     }
 
-    inputMatchesRangeKey(input) {
-        return Object.keys(this.props.options).some((option) => (input === option && this.props.options[option].isRangeQuery === true));
+    inputMatchesRangeKey(rawInput) {
+        const inputValue = rawInput[0] === '(' ? rawInput.substr(1, rawInput.length - 1) : rawInput;
+        return Object.keys(this.props.options).some((option) => (inputValue === option && this.props.options[option].isRangeQuery === true));
     }
 
     // Hides suggestion list by emptying stateful array
