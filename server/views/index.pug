@@ -18,6 +18,7 @@ html
             gaTrackingID: !{JSON.stringify(gaTrackingID || '')},
             enableServicePerformance: !{JSON.stringify(enableServicePerformance || false)},
             enableServiceLevelTrends: !{JSON.stringify(enableServiceLevelTrends || false)},
+            enableServiceInsights: !{JSON.stringify(enableServiceInsights || false)},
             services: !{JSON.stringify(services || null)},
             enableSSO: !{JSON.stringify(enableSSO || false)},
             ssoAdfsDomain: !{JSON.stringify(ssoAdfsDomain || '')},
@@ -30,6 +31,8 @@ html
             relatedTracesOptions: !{JSON.stringify(relatedTracesOptions || [])},
             tagValuesTransformMap: !{JSON.stringify(tagValuesTransformMap || {})},
             usingZipkinConnector: !{JSON.stringify(usingZipkinConnector || false)},
+            enableBlobs: !{JSON.stringify(enableBlobs || false)},
+            blobsUrl: !{JSON.stringify(blobsUrl || '')},
         }
     script(async, defer, src = bundleCommonsJsPath)
     script(async, defer, src = bundleAppJsPath)

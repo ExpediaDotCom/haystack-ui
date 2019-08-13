@@ -1,4 +1,3 @@
-
 /*
 
   *  Copyright 2018 Expedia Group
@@ -26,7 +25,7 @@ const assets = require('../../public/assets.json');
 
 const router = express.Router();
 
-const subsystems = Object.keys(config.connectors).filter(connector => (config.connectors[connector].connectorName !== 'disabled'));
+const subsystems = Object.keys(config.connectors).filter((connector) => config.connectors[connector].connectorName !== 'disabled');
 
 router.get('*', (req, res) => {
     const timer = metrics.timer('index').start();
@@ -40,6 +39,7 @@ router.get('*', (req, res) => {
         usbPrimary: config.usbPrimary,
         enableServicePerformance: config.connectors.trends && config.connectors.trends.enableServicePerformance,
         enableServiceLevelTrends: config.connectors.trends && config.connectors.trends.enableServiceLevelTrends,
+        enableServiceInsights: config.connectors.serviceInsights && config.connectors.serviceInsights.enableServiceInsights,
         enableSSO: config.enableSSO,
         refreshInterval: config.refreshInterval,
         enableAlertSubscriptions: config.connectors.alerts && config.connectors.alerts.subscriptions,
@@ -49,7 +49,9 @@ router.get('*', (req, res) => {
         trendsTTL: config.connectors.trends && config.connectors.trends.ttl,
         relatedTracesOptions: config.relatedTracesOptions,
         tagValuesTransformMap: config.tagValuesTransformMap,
-        usingZipkinConnector: (config.connectors.traces && config.connectors.traces.connectorName === 'zipkin')
+        usingZipkinConnector: config.connectors.traces && config.connectors.traces.connectorName === 'zipkin',
+        enableBlobs: config.connectors.blobs && config.connectors.blobs.enableBlobs,
+        blobsUrl: config.connectors.blobs && config.connectors.blobs.blobsUrl
     });
 
     onFinished(res, () => {

@@ -52,13 +52,13 @@ app.use(compression());
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
 if (process.env.NODE_ENV === 'development') {
     // dont browser cache if in dev mode
-    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
+    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), {maxAge: 0}));
 } else {
     // browser cache aggresively for no-dev environment
-    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: '60d' }));
+    app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), {maxAge: '60d'}));
 }
-app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), { maxAge: 0 }));
-app.use(express.static(path.join(__dirname, '../public'), { maxAge: '7d' }));
+app.use('/bundles', express.static(path.join(__dirname, '../public/bundles'), {maxAge: 0}));
+app.use(express.static(path.join(__dirname, '../public'), {maxAge: '7d'}));
 app.use(logger.REQUEST_LOGGER);
 app.use(logger.ERROR_LOGGER);
 app.use(metricsMiddleware.httpMetrics);
@@ -69,11 +69,13 @@ if (config.enableSSO) {
     const passport = require('passport');
     const cookieSession = require('cookie-session');
 
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieSession({
-        secret: config.sessionSecret,
-        maxAge: config.sessionTimeout
-    }));
+    app.use(bodyParser.urlencoded({extended: false}));
+    app.use(
+        cookieSession({
+            secret: config.sessionSecret,
+            maxAge: config.sessionTimeout
+        })
+    );
 
     app.use(passport.initialize());
     app.use(passport.session());
@@ -86,7 +88,6 @@ if (config.enableSSO) {
 
 // API ROUTING
 
-
 const apis = [];
 if (config.connectors.traces && config.connectors.traces.connectorName !== 'disabled') apis.push(require('./routes/servicesApi'));
 if (config.connectors.traces && config.connectors.traces.connectorName !== 'disabled') apis.push(require('./routes/tracesApi'));
@@ -94,6 +95,7 @@ if (config.connectors.trends && config.connectors.trends.connectorName !== 'disa
 if (config.connectors.trends && config.connectors.trends.connectorName !== 'disabled') apis.push(require('./routes/servicesPerfApi'));
 if (config.connectors.alerts && config.connectors.alerts.connectorName !== 'disabled') apis.push(require('./routes/alertsApi'));
 if (config.connectors.serviceGraph && config.connectors.serviceGraph.connectorName !== 'disabled') apis.push(require('./routes/serviceGraphApi'));
+if (config.connectors.serviceInsights && config.connectors.serviceInsights.enableServiceInsights) apis.push(require('./routes/serviceInsightsApi'));
 
 app.use('/api', ...apis);
 
@@ -107,7 +109,8 @@ if (config.enableSSO) {
 app.use('/', indexRoute);
 
 // ERROR-HANDLING
-app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+app.use((err, req, res, next) => {
+    // eslint-disable-line no-unused-vars
     errorLogger.error(err);
     next(err);
 });

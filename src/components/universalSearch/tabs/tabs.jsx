@@ -16,7 +16,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 
 import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
@@ -25,11 +25,13 @@ import OperationResults from '../../trends/operation/operationResults';
 import Alerts from '../../alerts/alerts';
 import ServiceGraph from './serviceGraph';
 import ServicePerformance from './servicePerformance';
+import ServiceInsights from './serviceInsights';
 import tracesTabState from './tabStores/tracesTabStateStore';
 import trendsTabState from './tabStores/trendsTabStateStore';
 import alertsTabState from './tabStores/alertsTabStateStore';
 import serviceGraphState from './tabStores/serviceGraphStateStore';
 import servicePerformanceState from './tabStores/servicePerformanceStateStore';
+import serviceInsightsTabStateStore from './tabStores/serviceInsightsTabStateStore';
 import AlertCounter from '../../alerts/alertCounter';
 
 @observer
@@ -71,11 +73,17 @@ export default class Tabs extends React.Component {
             displayName: 'Service Performance',
             icon: 'ti-pie-chart',
             store: servicePerformanceState
+        },
+        {
+            tabId: 'serviceInsights',
+            displayName: 'Service Insights (beta)',
+            icon: 'ti-pie-chart',
+            store: serviceInsightsTabStateStore
         }
     ];
 
     static initTabs(search) {
-        Tabs.tabs.forEach(tab => tab.store && tab.store.init(search));
+        Tabs.tabs.forEach((tab) => tab.store && tab.store.init(search));
     }
 
     constructor(props) {
@@ -95,52 +103,70 @@ export default class Tabs extends React.Component {
     TabViewer({tabId, history, location}) {
         // trigger fetch request on store for the tab
         // TODO getting a nested store used by original non-usb components, instead pass results object
-        const store = Tabs.tabs.find(tab => tab.tabId === tabId).store.fetch();
+        const store = Tabs.tabs.find((tab) => tab.tabId === tabId).store.fetch();
 
         switch (tabId) {
             case 'traces':
                 return <TraceResults tracesSearchStore={store} history={history} />;
             case 'trends':
-                return <OperationResults operationStore={store} history={history} serviceName={this.props.search.serviceName} interval={this.props.search.interval || null} />;
+                return (
+                    <OperationResults
+                        operationStore={store}
+                        history={history}
+                        serviceName={this.props.search.serviceName}
+                        interval={this.props.search.interval || null}
+                    />
+                );
             case 'alerts':
-                return <Alerts alertsStore={store} history={history} location={location} defaultPreset={timeWindow.presets[5]} serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>;
+                return (
+                    <Alerts
+                        alertsStore={store}
+                        history={history}
+                        location={location}
+                        defaultPreset={timeWindow.presets[5]}
+                        serviceName={this.props.search.serviceName}
+                        interval={this.props.search.interval}
+                    />
+                );
             case 'serviceGraph':
-                return <ServiceGraph store={store} search={this.props.search} history={history}/>;
+                return <ServiceGraph store={store} search={this.props.search} history={history} />;
             case 'servicePerformance':
-                return <ServicePerformance store={store} history={history}/>;
+                return <ServicePerformance store={store} history={history} />;
+            case 'serviceInsights':
+                return <ServiceInsights store={store} search={this.props.search} history={history} />;
             default:
                 return null;
         }
     }
 
     render() {
-        const { search, history, location, handleTabSelection } = this.props;
-        const availableTabs = Tabs.tabs.filter(t => t.store.isAvailable);
+        const {search, history, location, handleTabSelection} = this.props;
+        const availableTabs = Tabs.tabs.filter((t) => t.store.isAvailable);
         const tabId = search.tabId || (availableTabs.length && availableTabs[0].tabId); // pick traces as default
         const noTabAvailable = !availableTabs.length;
 
         // tab selectors for navigation between tabs
-        const TabSelector = tab => (tab.store.isAvailable ?
-            (
+        // eslint-disable-next-line no-confusing-arrow
+        const TabSelector = (tab) =>
+            tab.store.isAvailable ? (
                 <li key={tab.tabId} className={tab.tabId === tabId ? 'active' : ''}>
                     <a role="button" className="universal-search-bar-tabs__nav-text" tabIndex="-1" onClick={() => handleTabSelection(tab.tabId)}>
-                        <span className={`usb-tab-icon ${tab.icon}`}/>
+                        <span className={`usb-tab-icon ${tab.icon}`} />
                         <span>{tab.displayName}</span>
-                        {tab.tabId === 'alerts' ?
+                        {tab.tabId === 'alerts' ? (
                             <div className="universal-search-bar-tabs__alert-counter">
-                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval}/>
+                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval} />
                             </div>
-                            : null}
+                        ) : null}
                     </a>
                 </li>
-            )
-            : null);
+            ) : null;
 
         const TabsContainer = () => (
             <article>
                 <section className="container">
                     <nav>
-                        <ul className="nav nav-tabs">{ Tabs.tabs.map(tab => TabSelector(tab)) }</ul>
+                        <ul className="nav nav-tabs">{Tabs.tabs.map((tab) => TabSelector(tab))}</ul>
                     </nav>
                 </section>
                 <section className="universal-search-tab__content">
@@ -151,6 +177,6 @@ export default class Tabs extends React.Component {
             </article>
         );
 
-        return noTabAvailable ? <EmptyTab/> : <TabsContainer/>;
+        return noTabAvailable ? <EmptyTab /> : <TabsContainer />;
     }
 }
