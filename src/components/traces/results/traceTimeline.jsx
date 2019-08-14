@@ -73,7 +73,7 @@ export default class TraceTimeline extends React.Component {
         const labels = [];
         const data = [];
         timelineResults.forEach((item) => {
-            labels.push(new Date(item.x / 1000));
+            labels.push(new Date((item.x + granularity / 2) / 1000)); // small hack to correctly position bar in middle of "from" and "to" times
             data.push(item.y);
         });
 
@@ -104,6 +104,7 @@ export default class TraceTimeline extends React.Component {
             scales: {
                 xAxes: [{
                     barPercentage: 0.90,
+                    barThickness: 'flex',
                     type: 'time',
                     time: {
                         min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
@@ -121,8 +122,8 @@ export default class TraceTimeline extends React.Component {
                 callbacks: {
                     title: (tooltipItem) => {
                         const date = new Date(tooltipItem[0].xLabel).getTime();
-                        const from = moment(date);
-                        const to = moment(date + (granularity / 1000));
+                        const from = moment(date - (granularity / 1000 / 2));
+                        const to = moment(date + (granularity / 1000 / 2));
 
                         return `${from.format('MM/DD/YY hh:mm:ss a')} to ${to.format('MM/DD/YY hh:mm:ss a')}`;
                     }
