@@ -50,8 +50,14 @@ timeWindow.getLowerGranularity = (timeInMs) => {
 };
 
 timeWindow.getHigherGranularity = (timeInMs) => {
-    const maxNumberOfPoints = 15;
-    return metricGranularity.getMaxGranularity(timeInMs / maxNumberOfPoints);
+    if (timeInMs <= 60 * 60 * 1000) {
+        // lte 60min
+        return 1 * 60 * 1000; // then 1min
+    } else if (timeInMs <= 5 * 60 * 60 * 1000) {
+        // lte 5hrs
+        return 5 * 60 * 1000; // then 5min
+    }
+    return 1 * 60 * 60 * 1000; // else 1hr
 };
 
 timeWindow.isAfterTTL = (current, ttlKey) => {

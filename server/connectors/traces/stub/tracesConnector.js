@@ -308,7 +308,7 @@ function getRandomValues(granularity, dataPoints, from) {
 
 connector.getTimeline = (query) =>
     Q.fcall(() => {
-        const granularity = (query.endTime - query.startTime) / 15;
+        const granularity = query.granularity || (query.endTime - query.startTime) / 15;
         const range = query.endTime - query.startTime;
         const points = range / granularity;
 

@@ -18,6 +18,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import {Bar} from 'react-chartjs-2';
 import { convertSearchToUrlQuery } from '../../universalSearch/utils/urlUtils';
 
@@ -68,9 +69,10 @@ export default class TraceTimeline extends React.Component {
     }
 
     render() {
+        const {granularity, timelineResults, apiQuery} = this.props.store;
         const labels = [];
         const data = [];
-        this.props.store.timelineResults.forEach((item) => {
+        timelineResults.forEach((item) => {
             labels.push(new Date(item.x / 1000));
             data.push(item.y);
         });
@@ -89,6 +91,7 @@ export default class TraceTimeline extends React.Component {
                 }
             ]
         };
+
         const options = {
             maintainAspectRatio: false,
             barThickness: 1,
@@ -100,25 +103,30 @@ export default class TraceTimeline extends React.Component {
             },
             scales: {
                 xAxes: [{
-                    barPercentage: 0.95,
+                    barPercentage: 0.90,
                     type: 'time',
-                    ticks: {
-                        source: 'data'
-                    },
                     time: {
-                        min: new Date(parseInt(this.props.store.apiQuery.startTime, 10) / 1000),
-                        max: new Date(parseInt(this.props.store.apiQuery.endTime, 10) / 1000)
+                        min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
+                        max: new Date(parseInt(apiQuery.endTime, 10) / 1000)
                     },
-                    categoryPercentage: 1,
-                    gridLines: {
-                        offsetGridLines: true
-                    }
+                    categoryPercentage: 1
                 }],
                 yAxes: [{
                     ticks: {
                         beginAtZero: true
                     }
                 }]
+            },
+            tooltips: {
+                callbacks: {
+                    title: (tooltipItem) => {
+                        const date = new Date(tooltipItem[0].xLabel).getTime();
+                        const from = moment(date);
+                        const to = moment(date + (granularity / 1000));
+
+                        return `${from.format('MM/DD/YY hh:mm:ss a')} to ${to.format('MM/DD/YY hh:mm:ss a')}`;
+                    }
+                }
             }
         };
 
