@@ -74,7 +74,7 @@ export default class Chips extends React.Component {
                                     <span className="usb-chip__key">{nestedChip.key}</span>
                                     <span className="usb-chip__value">
                                         {nestedChip.operator !== '=' ? nestedChip.operator : null}
-                                        {nestedChip.value}{nestedChip.key === 'duration' ? <sub>ms</sub> : null}
+                                        {nestedChip.value}{nestedChip.key === 'duration' ? <sub>μs</sub> : null}
                                     </span>
                                 </span>
                             ))
@@ -89,7 +89,7 @@ export default class Chips extends React.Component {
                     <span className="usb-chip__key">{chip.key}</span>
                     <span className="usb-chip__value">
                         {chip.operator !== '=' ? chip.operator : null}
-                        {chip.value}{chip.key === 'duration' ? <sub>ms</sub> : null}
+                        {chip.value}{chip.key === 'duration' ? <sub>μs</sub> : null}
                     </span>
                     <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
                 </div>
