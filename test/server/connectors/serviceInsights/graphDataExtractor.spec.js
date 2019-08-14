@@ -102,7 +102,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         return spans;
     }
 
-    function span(serviceName, operationName, tags = []) {
+    function span(serviceName, operationName = 'unknown operation', tags = []) {
         const spanId = randomId();
         return {
             spanId,
@@ -283,7 +283,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         spans[0].parentSpanId = spans[2].spanId; // nice little loop
 
         // when
-        const {links, summary} = extractNodesAndLinks({spans, serviceName: 'some-service', traceLimitReached: false});
+        const {links, summary} = extractNodesAndLinks({spans, serviceName: 'server B', traceLimitReached: false});
 
         // then
         expect(summary).to.have.property('hasViolations', true);
@@ -292,5 +292,35 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         links.forEach((link) => {
             expect(link).to.have.property('invalidCycleDetected', true);
         });
+    });
+
+    it('finds relationships between nodes', () => {
+        // given
+        const spans = [
+            ...trace(span('frontend-1'), span('main-service'), span('backend-1')),
+            ...trace(span('frontend-2'), span('main-service'), span('backend-2')),
+            span('other-service'),
+            span('unknown-service')
+        ];
+
+        // other-service is a sibling of main-service in the first trace
+        spans[6].traceId = spans[1].traceId;
+        spans[6].parentSpanId = spans[1].parentSpanId;
+
+        // unknown-service is in the second trace without a known parent
+        spans[7].traceId = spans[5].traceId;
+        spans[7].parentSpanId = undefined;
+
+        // when
+        const {nodes} = extractNodesAndLinks({spans, serviceName: 'main-service'});
+
+        // then
+        expect(nodes.find((n) => n.serviceName === 'frontend-1')).to.have.property('relationship', 'upstream');
+        expect(nodes.find((n) => n.serviceName === 'frontend-2')).to.have.property('relationship', 'upstream');
+        expect(nodes.find((n) => n.serviceName === 'main-service')).to.have.property('relationship', 'central');
+        expect(nodes.find((n) => n.serviceName === 'backend-1')).to.have.property('relationship', 'downstream');
+        expect(nodes.find((n) => n.serviceName === 'backend-2')).to.have.property('relationship', 'downstream');
+        expect(nodes.find((n) => n.serviceName === 'other-service')).to.have.property('relationship', 'distributary');
+        expect(nodes.find((n) => n.serviceName === 'unknown-service')).to.have.property('relationship', 'unknown');
     });
 });

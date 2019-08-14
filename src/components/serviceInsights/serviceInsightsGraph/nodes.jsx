@@ -78,8 +78,7 @@ export default class Nodes extends Component {
 
                     // Circle nodes
                     const r = data.type === type.mesh ? 4 : 7;
-                    const className = data.isCentral ? 'primary' : data.type;
-                    return <circle r={r} className={`node ${className} ${violationClass}`} {...commonProps} />;
+                    return <circle r={r} className={`node ${data.relationship} ${data.type} ${violationClass}`} {...commonProps} />;
                 })}
             </g>
         );

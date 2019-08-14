@@ -15,7 +15,7 @@
  *         limitations under the License.
  */
 
-const {type} = require('../../../universal/enums');
+const {type, relationship} = require('../../../universal/enums');
 const {detectCycles} = require('./detectCycles');
 const {edge, gateway, mesh, database, outbound, service} = require('../../config/config').connectors.serviceInsights.spanTypes;
 
@@ -34,7 +34,10 @@ function createNode(data) {
     });
     return {
         count: 1,
-        ...data
+        ...data,
+        // temporary references to upstream and downstream nodes for efficient traversal
+        upstream: [],
+        downstream: []
     };
 }
 
@@ -118,6 +121,36 @@ function getNodeIdFromSpan(span) {
 }
 
 /**
+ * traverseDownstream()
+ * Traverse downstream nodes and set their relationship if not already set.
+ * @param {object} startingNode - traverse nodes downstream from this one; this node itself is unmodified
+ * @param {boolean} distributary - set the relationship to distributary, otherwise downstream
+ */
+function traverseDownstream(startingNode, distributary = false) {
+    startingNode.downstream.forEach((downstreamNode) => {
+        if (!downstreamNode.relationship) {
+            downstreamNode.relationship = distributary ? relationship.distributary : relationship.downstream;
+            traverseDownstream(downstreamNode, distributary);
+        }
+    });
+}
+
+/**
+ * traverseUpstream()
+ * Traverse upstream nodes and set their relationship to upstream if not already set.
+ * @param {object} startingNode - traverse nodes upstream from this one; this node itself is unmodified
+ */
+function traverseUpstream(startingNode) {
+    startingNode.upstream.forEach((upstreamNode) => {
+        if (!upstreamNode.relationship) {
+            upstreamNode.relationship = relationship.upstream;
+            traverseUpstream(upstreamNode);
+            traverseDownstream(upstreamNode, true);
+        }
+    });
+}
+
+/**
  * processNodesAndLinks()
  * Process nodes and links
  * @param {Map} nodes - Map of nodes
@@ -139,15 +172,21 @@ function processNodesAndLinks(nodes, links) {
         const source = nodes.get(link.source);
         const target = nodes.get(link.target);
 
+        // Simplify traversal by setting upstream and downstream nodes
+        source.downstream.push(target);
+        target.upstream.push(source);
+
         // Process invalid DAG cycle
         if (source.invalidCycleDetected === true && target.invalidCycleDetected === true) {
             link.invalidCycleDetected = true;
             link.invalidCyclePath = source.invalidCyclePath;
         }
-
-        // Node on the source side of the link is not a leaf
-        source.isLeaf = false;
     });
+
+    // Traverse nodes upstream and downstream of the central node and set their relationship
+    const centralNode = [...nodes.values()].find((node) => node.relationship === relationship.central);
+    traverseDownstream(centralNode);
+    traverseUpstream(centralNode);
 
     // Process nodes
     nodes.forEach((node) => {
@@ -156,43 +195,49 @@ function processNodesAndLinks(nodes, links) {
             uniqueTraces.add(traceId);
         });
 
-        // Nodes not explicitly not a leaf (see above) are leaves
-        if (!(node.isLeaf === false)) {
-            node.isLeaf = true;
+        // Nodes not previously traversed have an unknown relationship
+        if (!node.relationship) {
+            node.relationship = relationship.unknown;
         }
 
-        // Check if un-instrumented
-        if (node.isLeaf && node.type === type.mesh) {
-            uninstrumentedCount++;
+        // Check if un-instrumented mesh or client span
+        if (node.downstream.length === 0) {
+            if (node.type === type.mesh) {
+                uninstrumentedCount++;
 
-            // Create uninstrumented node and add it to the map
-            const uninstrumentedNode = createNode({
-                ...node,
-                id: `${node.id}-missing-trace`,
-                name: 'Uninstrumented Service',
-                serviceName: 'unknown',
-                type: type.uninstrumented
-            });
-            nodes.set(uninstrumentedNode.id, uninstrumentedNode);
+                // Create uninstrumented node and add it to the map
+                const uninstrumentedNode = createNode({
+                    ...node,
+                    id: `${node.id}-missing-trace`,
+                    name: 'Uninstrumented Service',
+                    serviceName: 'unknown',
+                    type: type.uninstrumented,
+                    relationship: node.relationship
+                });
+                nodes.set(uninstrumentedNode.id, uninstrumentedNode);
 
-            // Create link to uninstrumented node
-            const linkId = `${node.id}→${uninstrumentedNode.id}`;
-            links.set(
-                linkId,
-                createLink({
-                    source: node.id,
-                    target: uninstrumentedNode.id,
-                    isUninstrumented: true
-                })
-            );
+                // Create link to uninstrumented node
+                const linkId = `${node.id}→${uninstrumentedNode.id}`;
+                links.set(
+                    linkId,
+                    createLink({
+                        source: node.id,
+                        target: uninstrumentedNode.id,
+                        isUninstrumented: true
+                    })
+                );
+            } else if (node.type === type.outbound) {
+                uninstrumentedCount++;
+                node.type = type.uninstrumented;
+            }
         }
 
-        // Check if uninstrumented client span
-        if (node.isLeaf && node.type === type.outbound) {
-            node.type = type.uninstrumented;
-            uninstrumentedCount++;
-        }
+        // Remove upstream and downstream properties before serializing
+        delete node.upstream;
+        delete node.downstream;
     });
+
+    // TODO: filter out distributary and unknown nodes, also their links
 
     // Define map of violations
     const violations = {};
@@ -251,7 +296,7 @@ function createNodeFromSpan(nodeId, span, serviceName) {
     }
 
     if (node.serviceName === serviceName && node.type !== type.outbound) {
-        node.isCentral = true;
+        node.relationship = relationship.central;
     }
 
     return node;

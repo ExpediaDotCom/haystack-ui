@@ -25,6 +25,17 @@ const type = {
     uninstrumented: 'uninstrumented' // node that is not instrumented with open tracing
 };
 
+// Service Insights node relationships, using river terms (equivalent family terms in parentheses)
+const relationship = {
+    central: 'central', // other relationships are relative to this node (self)
+    upstream: 'upstream', // directly upstream of the central node (ancestors)
+    distributary: 'distributary', // distributary of an upstream node (siblings, aunts, uncles, cousins)
+    downstream: 'downstream', // directly downstream of the central node (descendants)
+    // tributaries of downstream nodes are not supported (other parents of your children, other grandparents of your grandchildren, etc…)
+    unknown: 'unknown' // unknown relationship to central node, due to missing spans
+};
+
 module.exports = {
-    type
+    type,
+    relationship
 };

@@ -81,6 +81,8 @@ function nodeToolTip(x, y, data) {
                         <div className="tip-grid debug">
                             <div className="tip-grid_label">id:</div>
                             <div className="tip-grid_value">{data.id}</div>
+                            <div className="tip-grid_label">relationship:</div>
+                            <div className="tip-grid_value">{data.relationship}</div>
                         </div>
                     </Fragment>
                 )}
