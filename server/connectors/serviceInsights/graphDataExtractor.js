@@ -161,6 +161,49 @@ function traverseUpstream(startingNode) {
 }
 
 /**
+ * findViolations()
+ * Find violations in the given nodes and links
+ * @param {Map} nodes - Map of nodes
+ * @param {Map} links - Map of links
+ * @returns {object}
+ */
+function findViolations(nodes, links) {
+    // Define map of violations
+    const violations = {};
+
+    // Marks nodes and links with invalid DAG cyces
+    const cyclesFound = detectCycles({nodes, links});
+
+    // Process invalid DAG cycle
+    links.forEach((link) => {
+        const source = nodes.get(link.source);
+        const target = nodes.get(link.target);
+
+        if (source.invalidCycleDetected === true && target.invalidCycleDetected === true) {
+            link.invalidCycleDetected = true;
+            link.invalidCyclePath = source.invalidCyclePath;
+        }
+    });
+
+    // Summarize cycle violations
+    if (cyclesFound > 0) {
+        violations.cycles = cyclesFound;
+    }
+
+    // Store count of uninstrumented
+    const uninstrumentedCount = [...nodes.values()]
+        .map((node) => (node.type === type.uninstrumented ? 1 : 0))
+        .reduce((count, current) => count + current);
+
+    // Summarize unique count of uninstrumented dependencies
+    if (uninstrumentedCount > 0) {
+        violations.uninstrumented = uninstrumentedCount;
+    }
+
+    return violations;
+}
+
+/**
  * processNodesAndLinks()
  * Process nodes and links
  * @param {Map} nodes - Map of nodes
@@ -260,37 +303,8 @@ function processNodesAndLinks(nodes, links, relationshipFilter) {
         delete node.links;
     });
 
-    // Define map of violations
-    const violations = {};
-
-    // Marks nodes and links with invalid DAG cyces
-    const cyclesFound = detectCycles({nodes, links});
-
-    // Process invalid DAG cycle
-    links.forEach((link) => {
-        const source = nodes.get(link.source);
-        const target = nodes.get(link.target);
-
-        if (source.invalidCycleDetected === true && target.invalidCycleDetected === true) {
-            link.invalidCycleDetected = true;
-            link.invalidCyclePath = source.invalidCyclePath;
-        }
-    });
-
-    // Summarize cycle violations
-    if (cyclesFound > 0) {
-        violations.cycles = cyclesFound;
-    }
-
-    // Store count of uninstrumented
-    const uninstrumentedCount = [...nodes.values()]
-        .map((node) => (node.type === type.uninstrumented ? 1 : 0))
-        .reduce((count, current) => count + current);
-
-    // Summarize unique count of uninstrumented dependencies
-    if (uninstrumentedCount > 0) {
-        violations.uninstrumented = uninstrumentedCount;
-    }
+    // Find violations
+    const violations = findViolations(nodes, links);
 
     // Summarize if any types of violations found
     const hasViolations = Object.keys(violations).length > 0;
