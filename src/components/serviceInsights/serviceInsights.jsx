@@ -91,9 +91,10 @@ export default class ServiceInsights extends Component {
                 <div className="service-insights__filter">
                     <span>View:</span>
                     <select value={this.props.search.relationship} onChange={this.handleSelectViewFilter}>
-                        <option value="downstream,upstream">Upstream & Downstream Dependencies</option>
+                        <option value="downstream,upstream">Only Downstream & Upstream Dependencies</option>
                         <option value="downstream">Only Downstream Dependencies</option>
                         <option value="upstream">Only Upstream Dependencies</option>
+                        <option value="all">All Dependencies</option>
                     </select>
                 </div>
 
