@@ -28,6 +28,7 @@ import './serviceInsights.less';
 @observer
 export default class ServiceInsights extends Component {
     static propTypes = {
+        history: PropTypes.object.isRequired,
         search: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired
     };
@@ -70,6 +71,12 @@ export default class ServiceInsights extends Component {
         });
     };
 
+    handleSelectViewFilter = (ev) => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('relationship', ev.target.value);
+        this.props.history.push(decodeURIComponent(`${location.pathname}?${params}`));
+    };
+
     render() {
         const {store} = this.props;
 
@@ -80,6 +87,15 @@ export default class ServiceInsights extends Component {
                         Please search for a serviceName in the global search bar to render a service insight (such as serviceName=example-service).
                     </p>
                 )}
+
+                <div className="service-insights__filter">
+                    <span>View:</span>
+                    <select value={this.props.search.relationship} onChange={this.handleSelectViewFilter}>
+                        <option value="downstream,upstream">Upstream & Downstream Dependencies</option>
+                        <option value="downstream">Only Downstream Dependencies</option>
+                        <option value="upstream">Only Upstream Dependencies</option>
+                    </select>
+                </div>
 
                 {this.hasValidSearchProps() &&
                     store.promiseState &&
