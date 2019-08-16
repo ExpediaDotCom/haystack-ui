@@ -139,5 +139,36 @@ describe('<ServiceInsights/>', () => {
 
             expect(wrapper.find('Error')).to.have.length(1);
         });
+
+        it('hasValidSearchProps() returns true or false if valid URL is found', () => {
+            const mockStore = {
+                fetchServiceInsights: sinon.spy()
+            };
+            const instance = shallow(<ServiceInsights search={{}} store={mockStore} history={{}} />).instance();
+            expect(instance.hasValidSearchProps()).to.equal(false);
+            const instance2 = shallow(<ServiceInsights search={{serviceName: 'mock-ui'}} store={mockStore} history={{}} />).instance();
+            expect(instance2.hasValidSearchProps()).to.equal(true);
+        });
+
+        it('handles select view filter', () => {
+            const mockStore = {
+                fetchServiceInsights: sinon.spy()
+            };
+            const mockHistory = {
+                push: sinon.spy(),
+                location: {
+                    pathname: '/search',
+                    search: '?serviceName=web-ui&tabId=serviceInsights'
+                }
+            };
+            const expectedUrl = '/search?serviceName=web-ui&tabId=serviceInsights&relationship=upstream';
+            const instance = shallow(<ServiceInsights search={{}} store={mockStore} history={mockHistory} />).instance();
+            instance.handleSelectViewFilter({
+                target: {
+                    value: 'upstream'
+                }
+            });
+            expect(mockHistory.push.calledWith(expectedUrl)).to.equal(true);
+        });
     });
 });

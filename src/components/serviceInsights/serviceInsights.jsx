@@ -39,7 +39,7 @@ export default class ServiceInsights extends Component {
         }
     }
 
-    hasValidSearchProps = () => this.props.search.serviceName;
+    hasValidSearchProps = () => !!this.props.search.serviceName;
 
     getServiceInsight = () => {
         const search = this.props.search;
@@ -72,9 +72,9 @@ export default class ServiceInsights extends Component {
     };
 
     handleSelectViewFilter = (ev) => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(this.props.history.location.search);
         params.set('relationship', ev.target.value);
-        this.props.history.push(decodeURIComponent(`${location.pathname}?${params}`));
+        this.props.history.push(decodeURIComponent(`${this.props.history.location.pathname}?${params}`));
     };
 
     render() {
