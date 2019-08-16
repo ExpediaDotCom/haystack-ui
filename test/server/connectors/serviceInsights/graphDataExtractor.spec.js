@@ -192,16 +192,37 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = [
             ...trace(uiAppSpan(), serverSpan()), // ok
             ...trace(uiAppSpan(), mergedSpan()), // ok
-            ...trace(uiAppSpan(), clientSpan()), // uninstrumented
-            ...trace(uiAppSpan(), meshSpan()) // uninstrumented
+            ...trace(uiAppSpan(), clientSpan()), // uninstrumented (downstream)
+            ...trace(uiAppSpan(), meshSpan()) // uninstrumented (downstream)
         ];
+        const serviceName = 'some-ui-app';
+        const filter = ['downstream'];
 
         // when
-        const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
+        const {summary} = extractNodesAndLinks({spans, serviceName, traceLimitReached: false}, filter);
 
         // then
         expect(summary).to.have.property('hasViolations', true);
         expect(summary).to.have.nested.property('violations.uninstrumented', 2);
+    });
+
+    it('should not find uninstrumented nodes when those nodes are filtered out', () => {
+        // given
+        const spans = [
+            ...trace(uiAppSpan(), serverSpan()), // ok
+            ...trace(uiAppSpan(), mergedSpan()), // ok
+            ...trace(uiAppSpan(), clientSpan()), // uninstrumented (downstream)
+            ...trace(uiAppSpan(), meshSpan()) // uninstrumented (downstream)
+        ];
+        const serviceName = 'some-ui-app';
+        const filter = ['upstream'];
+
+        // when
+        const {summary} = extractNodesAndLinks({spans, serviceName}, filter);
+
+        // then
+        expect(summary).to.have.property('hasViolations', false);
+        expect(summary).to.not.have.nested.property('violations.uninstrumented');
     });
 
     it('should return some links', () => {
