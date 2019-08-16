@@ -32,7 +32,8 @@ const relationship = {
     distributary: 'distributary', // distributary of an upstream node (siblings, aunts, uncles, cousins)
     downstream: 'downstream', // directly downstream of the central node (descendants)
     // tributaries of downstream nodes are not supported (other parents of your children, other grandparents of your grandchildren, etc…)
-    unknown: 'unknown' // unknown relationship to central node, due to missing spans
+    unknown: 'unknown', // unknown relationship to central node, due to missing spans
+    all: 'all' // convenience value for all relationships
 };
 
 module.exports = {

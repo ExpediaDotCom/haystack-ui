@@ -65,7 +65,8 @@ export default class ServiceInsights extends Component {
         this.props.store.fetchServiceInsights({
             serviceName: search.serviceName,
             startTime,
-            endTime
+            endTime,
+            relationship: search.relationship
         });
     };
 

@@ -34,11 +34,19 @@ function createNode(data) {
     });
     return {
         count: 1,
-        ...data,
-        // temporary references to upstream and downstream nodes for efficient traversal
-        upstream: [],
-        downstream: []
+        ...data
     };
+}
+
+/**
+ * getIdForLink()
+ * Generate an id for a link from source to target, idempotent
+ * @param {string} source
+ * @param {string} target
+ * @returns {string}
+ */
+function getIdForLink(source, target) {
+    return `${source}→${target}`;
 }
 
 /**
@@ -54,7 +62,9 @@ function createLink(data) {
             throw new Error(`Missing required property ${requiredProperty} when calling createLink()`);
         }
     });
+    const id = getIdForLink(data.source, data.target);
     return {
+        id,
         isUninstrumented: false,
         count: 1,
         tps: 1,
@@ -157,7 +167,7 @@ function traverseUpstream(startingNode) {
  * @param {Map} links - Map of links
  * @returns {object}
  */
-function processNodesAndLinks(nodes, links) {
+function processNodesAndLinks(nodes, links, relationshipFilter) {
     // Marks nodes and links with invalid DAG cyces
     const cyclesFound = detectCycles({nodes, links});
 
@@ -167,6 +177,13 @@ function processNodesAndLinks(nodes, links) {
     // Store count of uninstrumented
     let uninstrumentedCount = 0;
 
+    // Temporary references to simplify processing
+    nodes.forEach((node) => {
+        node.upstream = [];
+        node.downstream = [];
+        node.links = [];
+    });
+
     // Process Links
     links.forEach((link) => {
         const source = nodes.get(link.source);
@@ -174,7 +191,9 @@ function processNodesAndLinks(nodes, links) {
 
         // Simplify traversal by setting upstream and downstream nodes
         source.downstream.push(target);
+        source.links.push(link);
         target.upstream.push(source);
+        target.links.push(link);
 
         // Process invalid DAG cycle
         if (source.invalidCycleDetected === true && target.invalidCycleDetected === true) {
@@ -217,27 +236,44 @@ function processNodesAndLinks(nodes, links) {
                 nodes.set(uninstrumentedNode.id, uninstrumentedNode);
 
                 // Create link to uninstrumented node
-                const linkId = `${node.id}→${uninstrumentedNode.id}`;
-                links.set(
-                    linkId,
-                    createLink({
-                        source: node.id,
-                        target: uninstrumentedNode.id,
-                        isUninstrumented: true
-                    })
-                );
+                const uninstrumentedLink = createLink({
+                    source: node.id,
+                    target: uninstrumentedNode.id,
+                    isUninstrumented: true
+                });
+                node.links.push(uninstrumentedLink);
+                uninstrumentedNode.links.push(uninstrumentedLink);
+                links.set(uninstrumentedLink.id, uninstrumentedLink);
             } else if (node.type === type.outbound) {
                 uninstrumentedCount++;
                 node.type = type.uninstrumented;
             }
         }
-
-        // Remove upstream and downstream properties before serializing
-        delete node.upstream;
-        delete node.downstream;
     });
 
-    // TODO: filter out distributary and unknown nodes, also their links
+    // Construct a filter
+    const filter = [relationship.central]; // always include the central node
+    if (relationshipFilter && relationshipFilter.length) {
+        filter.push(...relationshipFilter); // use the relationship filter param if provided
+    } else {
+        filter.push(relationship.upstream, relationship.downstream); // otherwise default to upstream and downstream
+    }
+
+    // Process nodes again, now with destructive operations
+    nodes.forEach((node) => {
+        // Filter out nodes not directly upstream or downstream, and their links
+        if (!filter.some((r) => r === relationship.all || r === node.relationship)) {
+            nodes.delete(node.id);
+            node.links.forEach((link) => {
+                links.delete(link.id);
+            });
+        }
+
+        // Remove temporary properties before serializing
+        delete node.upstream;
+        delete node.downstream;
+        delete node.links;
+    });
 
     // Define map of violations
     const violations = {};
@@ -360,7 +396,7 @@ function buildLinks(spans) {
                 const parentNodeId = getNodeIdFromSpan(parentSpan);
                 const childNodeId = getNodeIdFromSpan(span);
                 if (parentNodeId !== childNodeId) {
-                    const linkId = `${parentNodeId}→${childNodeId}`;
+                    const linkId = getIdForLink(parentNodeId, childNodeId);
                     const currentLink = linkMap.get(linkId);
                     // If link does not exist in map, create it
                     if (!currentLink) {
@@ -389,16 +425,16 @@ function buildLinks(spans) {
  * Given an array of spans and a service name, perform transform to build a nodes + links structure from multiple traces
  * @param {*} spans - Array of fully hydrated span objects related to multiple traces
  * @param {*} serviceName - Service name to search for
+ * @param {Array.<String>} relationshipFilter - Nodes and links to filter for, by relationship, or empty for the default filter
  */
-const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}) => {
+const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}, relationshipFilter = []) => {
     // build map of nodes
     const nodes = buildNodes(spans, serviceName);
 
     // build map of links
     const links = buildLinks(spans);
 
-    // Process nodes and links for consumption of graphing library
-    const summary = processNodesAndLinks(nodes, links);
+    const summary = processNodesAndLinks(nodes, links, relationshipFilter);
     summary.traceLimitReached = traceLimitReached;
 
     return {

@@ -312,7 +312,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         spans[7].parentSpanId = undefined;
 
         // when
-        const {nodes} = extractNodesAndLinks({spans, serviceName: 'main-service'});
+        const {nodes} = extractNodesAndLinks({spans, serviceName: 'main-service'}, ['all']);
 
         // then
         expect(nodes.find((n) => n.serviceName === 'frontend-1')).to.have.property('relationship', 'upstream');
@@ -322,5 +322,39 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         expect(nodes.find((n) => n.serviceName === 'backend-2')).to.have.property('relationship', 'downstream');
         expect(nodes.find((n) => n.serviceName === 'other-service')).to.have.property('relationship', 'distributary');
         expect(nodes.find((n) => n.serviceName === 'unknown-service')).to.have.property('relationship', 'unknown');
+    });
+
+    it('filters by relationship', () => {
+        // given
+        const spans = [
+            ...trace(span('frontend-1'), span('main-service'), span('backend-1')),
+            ...trace(span('frontend-2'), span('main-service'), span('backend-2')),
+            span('other-service'),
+            span('unknown-service')
+        ];
+
+        // other-service is a sibling of main-service in the first trace
+        spans[6].traceId = spans[1].traceId;
+        spans[6].parentSpanId = spans[1].parentSpanId;
+
+        // unknown-service is in the second trace without a known parent
+        spans[7].traceId = spans[5].traceId;
+        spans[7].parentSpanId = undefined;
+
+        // when
+        const all = extractNodesAndLinks({spans, serviceName: 'main-service'}, ['all']);
+        const unfiltered = extractNodesAndLinks({spans, serviceName: 'main-service'}, []);
+        const upstream = extractNodesAndLinks({spans, serviceName: 'main-service'}, ['upstream']);
+
+        // then
+        expect(all.nodes)
+            .to.be.an('array')
+            .with.lengthOf(7);
+        expect(unfiltered.nodes)
+            .to.be.an('array')
+            .with.lengthOf(5);
+        expect(upstream.nodes)
+            .to.be.an('array')
+            .with.lengthOf(3);
     });
 });
