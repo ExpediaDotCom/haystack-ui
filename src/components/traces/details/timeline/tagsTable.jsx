@@ -17,29 +17,41 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import blobUtil from '../../../../utils/blobUtil';
 import transform from '../../../../utils/tagValuesTransformer';
 
 const TagsTable = ({tags}) => {
-    const unique = _.uniqBy(tags, tag => tag.key.toLowerCase());
-    const sortedTags = _.sortBy(unique, [tag => tag.key.toLowerCase()]);
+    const unique = _.uniqBy(tags, (tag) => tag.key.toLowerCase());
+    const sortedTags = _.sortBy(unique, [(tag) => tag.key.toLowerCase()]);
+    const blobsUrl = window.haystackUiConfig && window.haystackUiConfig.blobsUrl;
 
     if (sortedTags.length) {
-        return (<table className="table table-striped">
-            <thead>
-                <tr>
-                    <th width={30}>Key</th>
-                    <th width={70}>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-            {sortedTags.map(tag =>
-                (<tr  className="non-highlight-row" key={Math.random()}>
-                    <td>{ tag.key }</td>
-                    <td>{ transform(tag) }</td>
-                </tr>)
-            )}
-            </tbody>
-        </table>);
+        return (
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th width={30}>Key</th>
+                        <th width={70}>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sortedTags.map((tag) => (
+                        <tr className="non-highlight-row" key={Math.random()}>
+                            <td>{tag.key}</td>
+                            <td>
+                                {blobUtil.isBlobUrlTag(tag.key) && (window.haystackUiConfig && window.haystackUiConfig.enableBlobs) ? (
+                                    <a href={blobUtil.formatBlobTagValue(tag.value, blobsUrl)} target="_blank">
+                                        <span className="ti-new-window" /> <span>{blobUtil.formatBlobTagValue(tag.value, blobsUrl)}</span>
+                                    </a>
+                                ) : (
+                                    <span>{transform(tag)}</span>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
     }
 
     return <h6>No tags associated with span</h6>;

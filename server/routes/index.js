@@ -49,7 +49,9 @@ router.get('*', (req, res) => {
         trendsTTL: config.connectors.trends && config.connectors.trends.ttl,
         relatedTracesOptions: config.relatedTracesOptions,
         tagValuesTransformMap: config.tagValuesTransformMap,
-        usingZipkinConnector: config.connectors.traces && config.connectors.traces.connectorName === 'zipkin'
+        usingZipkinConnector: config.connectors.traces && config.connectors.traces.connectorName === 'zipkin',
+        enableBlobs: config.connectors.blobs && config.connectors.blobs.enableBlobs,
+        blobsUrl: config.connectors.blobs && config.connectors.blobs.blobsUrl
     });
 
     onFinished(res, () => {

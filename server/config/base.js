@@ -160,6 +160,12 @@ module.exports = {
                     nodeName: (span) => span.serviceName
                 }
             }
+        },
+        blobs: {
+            // to enable/disable blobs decorator
+            // Blobs Service endpoint (optional) can be passed with blobsUrl key to redirect blobs request
+            // e.g. blobsUrl : 'https://haystack-blob-example-server:9090'
+            enableBlobs: false
         }
     },
     timeWindowPresetOptions: [
