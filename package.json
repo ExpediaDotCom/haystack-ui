@@ -14,6 +14,7 @@
     "start": "node server/start.js",
     "start:dev": "npm run clean && npm run codegen && npm run test && concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
     "start:dev:fast": "npm run clean && npm run codegen && concurrently -r \"npm run watch\" \"wait-on public/bundles/report.html && npm run start:devserver\"",
+    "start:dev:insights": "HAYSTACK_PROP_CONNECTORS_SERVICE__INSIGHTS_ENABLE__SERVICE__INSIGHTS=true HAYSTACK_PROP_CONNECTORS_TRACES_CONNECTOR__NAME=mock npm run start:dev:fast",
     "start:devserver": "NODE_ENV=development nodemon --inspect --ignore 'public/*' server/start.js",
     "watch": "NODE_ENV=development webpack -w --mode=development"
   },
