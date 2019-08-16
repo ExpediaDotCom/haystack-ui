@@ -21,7 +21,9 @@ import PropTypes from 'prop-types';
 function Summary({data}) {
     return (
         <div className="header-summary">
-            <div>Traces considered: {data.tracesConsidered}</div>
+            <div>
+                Traces considered: {data.tracesConsidered} {data.traceLimitReached ? '(limit reached)' : ''}
+            </div>
             {data.hasViolations && (
                 <div className="violation-grid">
                     <div className="violation-title">Violations found: </div>

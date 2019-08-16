@@ -22,7 +22,8 @@ export default class Lines extends Component {
     static propTypes = {
         edges: PropTypes.array.isRequired,
         onHover: PropTypes.func.isRequired,
-        onLeave: PropTypes.func.isRequired
+        onLeave: PropTypes.func.isRequired,
+        tracesConsidered: PropTypes.number.isRequired
     };
 
     // Get the midpoint between 2 points
@@ -70,11 +71,11 @@ export default class Lines extends Component {
         return '';
     };
 
-    // Helper function for calculating line opacity based on TPS
-    computeOpacity = (link) => {
-        const adjustedTps = link.tps ? link.tps - 15 : 0;
-        // Sigmoid function
-        return Math.max(adjustedTps / (1 + Math.abs(adjustedTps)), 0.2);
+    // Helper function for calculating line opacity based on count of traces for the link
+    computeOpacity = (link, tracesCount) => {
+        const adjustedCount = link.count || 0;
+
+        return Math.max(adjustedCount / tracesCount, 0.2);
     };
 
     // Capture mouse x,y values and call the onHover prop
@@ -85,7 +86,7 @@ export default class Lines extends Component {
     }
 
     render() {
-        const {edges, onLeave} = this.props;
+        const {edges, onLeave, tracesConsidered} = this.props;
 
         return (
             <g className="lines">
@@ -100,7 +101,7 @@ export default class Lines extends Component {
                             key={pathData.toString().replace(/\s/g, '')}
                             className={`line ${violationClass}`}
                             d={pathData}
-                            strokeOpacity={this.computeOpacity(edge.link)}
+                            strokeOpacity={this.computeOpacity(edge.link, tracesConsidered)}
                             onMouseOver={this.handleHover(edge.link)}
                             onMouseOut={onLeave}
                             onFocus={this.handleHover(edge.link)}
