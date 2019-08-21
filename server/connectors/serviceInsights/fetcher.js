@@ -22,10 +22,13 @@ const tracesConnector = require(`../../connectors/traces/${config.connectors.tra
 const logger = require('../../utils/logger').withIdentifier('fetcher.serviceInsights');
 const metrics = require('../../utils/metrics');
 
+const TRACE_LIMIT = config.connectors.serviceInsights.traceLimit;
+
 const fetcher = (fetcherName) => ({
-    fetch(serviceName, startTime, endTime) {
+    fetch(serviceName, startTime, endTime, limit) {
         const deferred = Q.defer();
         const timer = metrics.timer(`fetcher_${fetcherName}`).start();
+        limit = limit || TRACE_LIMIT;
 
         tracesConnector
             .findTraces({
@@ -33,6 +36,7 @@ const fetcher = (fetcherName) => ({
                 serviceName,
                 startTime,
                 endTime,
+                limit,
                 spanLevelFilters: '[]'
             })
             .then((traces) => {
@@ -42,13 +46,14 @@ const fetcher = (fetcherName) => ({
                         logger.info(`fetch successful: ${fetcherName}`);
                         deferred.resolve({
                             serviceName,
-                            spans: rawTraces
+                            spans: rawTraces,
+                            traceLimitReached: !!(traces.length === limit)
                         });
                     });
                 } else {
                     logger.info(`fetch successful with no traces: ${fetcherName}`);
                     timer.end();
-                    deferred.resolve({serviceName, spans: []});
+                    deferred.resolve({serviceName, spans: [], traceLimitReached: false});
                 }
             });
 
