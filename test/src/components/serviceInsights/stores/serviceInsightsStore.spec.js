@@ -28,6 +28,7 @@ const mockAxios = {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 if (mockError) {
+                    // eslint-disable-next-line prefer-promise-reject-errors
                     return reject({});
                 }
                 return resolve({
@@ -71,6 +72,32 @@ describe('serviceInsightsStore', () => {
                 fulfilled: (result) => {
                     // then
                     expect(mockAxiosSpy.calledWith('/api/serviceInsights?serviceName=node-web-ui&startTime=1000&endTime=2000')).to.equal(true);
+                    expect(result.data.summary.violations).to.equal(1);
+                    done();
+                },
+                rejected: () => {
+                    expect.fail('mobx action failed.');
+                    done();
+                }
+            });
+        });
+    });
+
+    it('should support an optional relationship parameter', (done) => {
+        // given, when
+        store.fetchServiceInsights({
+            serviceName: 'node-web-ui',
+            startTime: 1000,
+            endTime: 2000,
+            relationship: 'all'
+        });
+        observe(store.promiseState, () => {
+            store.promiseState.case({
+                fulfilled: (result) => {
+                    // then
+                    expect(
+                        mockAxiosSpy.calledWith('/api/serviceInsights?serviceName=node-web-ui&startTime=1000&endTime=2000&relationship=all')
+                    ).to.equal(true);
                     expect(result.data.summary.violations).to.equal(1);
                     done();
                 },

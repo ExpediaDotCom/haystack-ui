@@ -57,11 +57,11 @@ describe('<Nodes/>', () => {
         expect(wrapper.find('.violation')).to.have.lengthOf(1);
     });
 
-    it('should render node with primary class if its the central node', () => {
-        const nodes = [{x: 10, y: 20, data: {isCentral: true}}];
+    it('should render node with central class if its the central node', () => {
+        const nodes = [{x: 10, y: 20, data: {relationship: 'central'}}];
         const wrapper = shallow(<Nodes nodes={nodes} onHover={() => {}} onLeave={() => {}} />);
 
-        expect(wrapper.find('.primary')).to.have.lengthOf(1);
+        expect(wrapper.find('.central')).to.have.lengthOf(1);
     });
 
     it('should render a graph-icon for specific node types', () => {
