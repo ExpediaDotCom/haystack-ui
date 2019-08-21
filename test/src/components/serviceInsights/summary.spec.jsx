@@ -23,7 +23,7 @@ import Summary from '../../../../src/components/serviceInsights/summary';
 
 describe('<Summary/>', () => {
     it('should render the expected elements', () => {
-        const data = {tracesConsidered: 5};
+        const data = {tracesConsidered: 5, traceLimitReached: false};
         const wrapper = shallow(<Summary data={data} />);
 
         expect(wrapper.find('.header-summary')).to.have.lengthOf(1);
@@ -34,6 +34,7 @@ describe('<Summary/>', () => {
         const data = {
             tracesConsidered: 5,
             hasViolations: true,
+            traceLimitReached: false,
             violations: {
                 'Uninstrumented services': 2
             }
@@ -42,5 +43,15 @@ describe('<Summary/>', () => {
 
         expect(wrapper.find('.violation-grid')).to.have.lengthOf(1);
         expect(wrapper.find('.violation-grid').text()).to.contain('Uninstrumented services (2)');
+    });
+
+    it('should render trace limit reached', () => {
+        const data = {
+            tracesConsidered: 5,
+            traceLimitReached: true
+        };
+        const wrapper = shallow(<Summary data={data} />);
+
+        expect(wrapper.find('.header-summary').text()).to.contain('(limit reached)');
     });
 });

@@ -21,12 +21,13 @@ const extractor = require('./graphDataExtractor');
 
 const connector = {};
 
-function fetchServiceInsights(serviceName, startTime, endTime) {
+function fetchServiceInsights(serviceName, startTime, endTime, limit) {
     return fetcher(serviceName)
-        .fetch(serviceName, startTime, endTime)
+        .fetch(serviceName, startTime, endTime, limit)
         .then((data) => extractor.extractNodesAndLinks(data));
 }
 
-connector.getServiceInsightsForService = (serviceName, startTime, endTime) => Q.fcall(() => fetchServiceInsights(serviceName, startTime, endTime));
+connector.getServiceInsightsForService = (serviceName, startTime, endTime, limit) =>
+    Q.fcall(() => fetchServiceInsights(serviceName, startTime, endTime, limit));
 
 module.exports = connector;

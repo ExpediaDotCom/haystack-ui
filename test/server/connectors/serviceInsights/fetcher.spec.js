@@ -16,6 +16,7 @@
  */
 
 import {expect} from 'chai';
+
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 
@@ -29,15 +30,9 @@ const logger = sinon.spy();
 
 // Create mock metrics
 const metrics = {
-    timer: () => {
-        return metrics;
-    },
-    start: () => {
-        return metrics;
-    },
-    end: () => {
-        return metrics;
-    }
+    timer: () => metrics,
+    start: () => metrics,
+    end: () => metrics
 };
 
 const metricsTimerSpy = sinon.spy(metrics, 'timer');
@@ -46,16 +41,14 @@ const metricsStopSpy = sinon.spy(metrics, 'end');
 
 // Create mock tracesConnector
 const tracesConnector = {
-    findTraces: () => {
-        return new Promise((resolve) => {
+    findTraces: () =>
+        new Promise((resolve) => {
             resolve(mockTraces);
-        });
-    },
-    getRawTraces: () => {
-        return new Promise((resolve) => {
+        }),
+    getRawTraces: () =>
+        new Promise((resolve) => {
             resolve(mockRawTraces);
-        });
-    }
+        })
 };
 
 const fetcher = proxyquire('../../../../server/connectors/serviceInsights/fetcher', {
@@ -63,6 +56,9 @@ const fetcher = proxyquire('../../../../server/connectors/serviceInsights/fetche
         connectors: {
             traces: {
                 connectorName: 'stub'
+            },
+            serviceInsights: {
+                traceLimit: 1000
             }
         }
     },
@@ -83,7 +79,7 @@ describe('fetcher.fetch', () => {
 
     it('should return 0 spans given 0 traces', (done) => {
         // given
-        let {fetch} = fetcher('service_insights');
+        const {fetch} = fetcher('service_insights');
 
         // when
         fetch('mock-service', '1000', '2000')
@@ -92,6 +88,7 @@ describe('fetcher.fetch', () => {
                 expect(result.serviceName).to.equal('mock-service');
                 expect(metricsTimerSpy.calledWith('fetcher_service_insights')).to.equal(true);
                 expect(result.spans).to.be.empty;
+                expect(result.traceLimitReached).to.be.false;
                 done();
             })
             .done();
@@ -100,7 +97,7 @@ describe('fetcher.fetch', () => {
     it('should return 0 spans given null traces', (done) => {
         // given
         mockTraces = false;
-        let {fetch} = fetcher('service_insights');
+        const {fetch} = fetcher('service_insights');
 
         // when
         fetch('mock-service', '1000', '2000')
@@ -127,14 +124,15 @@ describe('fetcher.fetch', () => {
                 spanId: 1
             }
         ];
-        let {fetch} = fetcher('service insights');
+        const {fetch} = fetcher('service insights');
 
         // when
-        fetch('mock-service', '1000', '2000')
+        fetch('mock-service', '1000', '2000', 1)
             .then((result) => {
                 // then
                 expect(result.serviceName).to.equal('mock-service');
                 expect(result.spans.length).to.equal(1);
+                expect(result.traceLimitReached).to.be.true;
                 done();
             })
             .done();

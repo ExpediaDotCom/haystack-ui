@@ -26,7 +26,7 @@ import ServiceInsightsGraph from '../../../../../src/components/serviceInsights/
 
 describe('<ServiceInsightsGraph/>', () => {
     it('should render the expected elements', () => {
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const wrapper = shallow(<ServiceInsightsGraph graphData={graphData} />);
 
         expect(wrapper.find('.service-insights-graph')).to.have.lengthOf(1);
@@ -40,7 +40,7 @@ describe('<ServiceInsightsGraph/>', () => {
 
     it("should set the svg's width and height", () => {
         dataLayout.computeGraphSize = sinon.stub().returns({width: 640, height: 480});
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const wrapper = shallow(<ServiceInsightsGraph graphData={graphData} />);
 
         expect(wrapper.find('.service-insights-graph_svg').prop('width')).to.equal(840);
@@ -49,7 +49,7 @@ describe('<ServiceInsightsGraph/>', () => {
 
     it("should set the svg's height to no less than minimum", () => {
         dataLayout.computeGraphSize = sinon.stub().returns({width: 640, height: 200});
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const wrapper = shallow(<ServiceInsightsGraph graphData={graphData} />);
 
         expect(wrapper.find('.service-insights-graph_svg').prop('height')).to.equal(360);
@@ -57,7 +57,7 @@ describe('<ServiceInsightsGraph/>', () => {
 
     it("should set the DragGroup's offsets based on graphPosition values", () => {
         dataLayout.computeGraphPosition = sinon.stub().returns({x: 100, y: 80});
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const wrapper = shallow(<ServiceInsightsGraph graphData={graphData} />);
 
         expect(wrapper.find('DragGroup').prop('offsetX')).to.equal(100);
@@ -65,7 +65,7 @@ describe('<ServiceInsightsGraph/>', () => {
     });
 
     it("should set the Tooltip's props based on state values", () => {
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const wrapper = shallow(<ServiceInsightsGraph graphData={graphData} />);
 
         wrapper.setState({
@@ -83,7 +83,7 @@ describe('<ServiceInsightsGraph/>', () => {
     });
 
     it('should set state values when onNodeHover is called', () => {
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const instance = shallow(<ServiceInsightsGraph graphData={graphData} />).instance();
 
         instance.handleNodeHover({}, 7, 8, {foo: 'bar'});
@@ -95,7 +95,7 @@ describe('<ServiceInsightsGraph/>', () => {
     });
 
     it('should set state values when handleLineHover is called', () => {
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const instance = shallow(<ServiceInsightsGraph graphData={graphData} />).instance();
 
         instance.handleLineHover({}, 9, 10, {bar: 'baz'});
@@ -107,7 +107,7 @@ describe('<ServiceInsightsGraph/>', () => {
     });
 
     it('should set tipVisible to false when handleLeave is called', () => {
-        const graphData = {nodes: [], links: []};
+        const graphData = {nodes: [], links: [], summary: {tracesConsidered: 0, traceLimitReached: false}};
         const instance = shallow(<ServiceInsightsGraph graphData={graphData} />).instance();
 
         instance.state.tipVisible = true;

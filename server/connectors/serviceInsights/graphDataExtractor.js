@@ -330,7 +330,7 @@ function buildLinks(spans) {
  * @param {*} spans - Array of fully hydrated span objects related to multiple traces
  * @param {*} serviceName - Service name to search for
  */
-const extractNodesAndLinks = ({spans, serviceName}) => {
+const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}) => {
     // build map of nodes
     const nodes = buildNodes(spans);
 
@@ -339,6 +339,7 @@ const extractNodesAndLinks = ({spans, serviceName}) => {
 
     // Process nodes and links for consumption of graphing library
     const summary = processNodesAndLinks(serviceName, nodes, links);
+    summary.traceLimitReached = traceLimitReached;
 
     return {
         summary,

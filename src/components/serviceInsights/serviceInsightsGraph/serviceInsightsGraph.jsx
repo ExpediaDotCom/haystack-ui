@@ -67,6 +67,9 @@ export default class ServiceInsightsGraph extends Component {
     };
 
     render() {
+        const {
+            summary: {tracesConsidered}
+        } = this.props.graphData;
         const {nodes, edges} = buildGraphLayout(this.props.graphData);
         const graphSize = computeGraphSize(nodes);
         this.graphPos = computeGraphPosition(graphSize);
@@ -83,7 +86,7 @@ export default class ServiceInsightsGraph extends Component {
                     height={Math.max(graphSize.height + paddingBtm, minHeight)}
                 >
                     <DragGroup offsetX={this.graphPos.x} offsetY={this.graphPos.y}>
-                        <Lines edges={edges} onHover={this.handleLineHover} onLeave={this.handleLeave} />
+                        <Lines edges={edges} onHover={this.handleLineHover} onLeave={this.handleLeave} tracesConsidered={tracesConsidered} />
                         <Nodes nodes={nodes} onHover={this.handleNodeHover} onLeave={this.handleLeave} />
                         <Labels nodes={nodes} />
                     </DragGroup>

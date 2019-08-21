@@ -25,6 +25,8 @@ const {extractNodesAndLinks} = proxyquire('../../../../server/connectors/service
                 // serviceInsights uses traces.connectorName
                 // Service Insights is beta, so disabled by default
                 enableServiceInsights: false,
+                // max number of traces to retrieve
+                traceLimit: 10,
                 // functions to generate nodes from different types of spans
                 // customize these to match tech stack, available span tags, and how you want nodes displayed
                 spanTypes: {
@@ -164,11 +166,12 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = [...trace(uiAppSpan(), serverSpan()), ...trace(uiAppSpan(), serverSpan(), databaseSpan())];
 
         // when
-        const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: true});
 
         // then
         expect(summary).to.have.property('tracesConsidered', 2);
         expect(summary).to.have.property('hasViolations', false);
+        expect(summary).to.have.property('traceLimitReached', true);
     });
 
     it('should return some nodes', () => {
@@ -176,7 +179,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = [...trace(edgeSpan(), uiAppSpan(), mergedSpan()), ...trace(uiAppSpan(), meshSpan(), serverSpan(), databaseSpan())];
 
         // when
-        const {nodes} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {nodes} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(nodes)
@@ -194,7 +197,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         ];
 
         // when
-        const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(summary).to.have.property('hasViolations', true);
@@ -206,7 +209,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = trace(edgeSpan(), gatewaySpan(), uiAppSpan(), serverSpan(), databaseSpan());
 
         // when
-        const {links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(links)
@@ -219,7 +222,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = trace(uiAppSpan(), serverSpan());
 
         // when
-        const {links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(links).to.have.lengthOf(1);
@@ -232,7 +235,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = [...trace(edgeSpan(), uiAppSpan()), ...trace(edgeSpan(), uiAppSpan(), databaseSpan())];
 
         // when
-        const {nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(nodes.find((n) => n.type === 'edge')).to.have.property('count', 2);
@@ -247,7 +250,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         spans[0].parentSpanId = randomId(); // missing parent span
 
         // when
-        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(summary).to.have.property('hasViolations', false);
@@ -262,7 +265,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         const spans = trace(uiAppSpan(), meshSpan(), meshSpan(), serverSpan()); // mesh spans will become one node
 
         // when
-        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app'});
+        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
 
         // then
         expect(summary).to.have.property('hasViolations', false);
@@ -280,7 +283,7 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         spans[0].parentSpanId = spans[2].spanId; // nice little loop
 
         // when
-        const {links, summary} = extractNodesAndLinks({spans, serviceName: 'some-service'});
+        const {links, summary} = extractNodesAndLinks({spans, serviceName: 'some-service', traceLimitReached: false});
 
         // then
         expect(summary).to.have.property('hasViolations', true);

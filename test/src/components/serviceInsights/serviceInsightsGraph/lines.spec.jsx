@@ -45,20 +45,20 @@ describe('<Lines/>', () => {
     });
 
     it('should render with high opacity on edges with high tps', () => {
-        const edges = [{link: {tps: 100}}];
-        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} />);
+        const edges = [{link: {count: 100}}];
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} tracesConsidered={100} />);
         expect(wrapper.find('.line').prop('strokeOpacity')).to.greaterThan(0.9);
     });
 
     it('should render with low opacity on edges with low tps', () => {
-        const edges = [{link: {tps: 1}}];
-        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} />);
+        const edges = [{link: {count: 1}}];
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} tracesConsidered={100} />);
         expect(wrapper.find('.line').prop('strokeOpacity')).to.equal(0.2);
     });
 
     it('should render with a default opacity of `0.2` on edges with no tps', () => {
         const edges = [{link: {}}];
-        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} />);
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} tracesConsidered={100} />);
         expect(wrapper.find('.line').prop('strokeOpacity')).to.equal(0.2);
     });
 
@@ -69,7 +69,7 @@ describe('<Lines/>', () => {
                 link: {tps: 20}
             }
         ];
-        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} />);
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={() => {}} tracesConsidered={100} />);
         expect(
             wrapper
                 .find('.line')
@@ -82,7 +82,7 @@ describe('<Lines/>', () => {
     it('should call onHover event with x, y, and link data', () => {
         const hoverStub = sinon.stub();
         const edges = [{link: {tps: 1}}];
-        const wrapper = shallow(<Lines edges={edges} onHover={hoverStub} onLeave={() => {}} />);
+        const wrapper = shallow(<Lines edges={edges} onHover={hoverStub} onLeave={() => {}} tracesConsidered={100} />);
 
         wrapper.find('.line').simulate('mouseover', {clientX: 4, clientY: 5});
 
@@ -92,7 +92,7 @@ describe('<Lines/>', () => {
     it('should call onLeave event', () => {
         const leaveStub = sinon.stub();
         const edges = [{link: {tps: 1}}];
-        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={leaveStub} />);
+        const wrapper = shallow(<Lines edges={edges} onHover={() => {}} onLeave={leaveStub} tracesConsidered={100} />);
 
         wrapper.find('.line').simulate('mouseout');
 
