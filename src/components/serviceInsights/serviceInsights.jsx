@@ -28,6 +28,7 @@ import './serviceInsights.less';
 @observer
 export default class ServiceInsights extends Component {
     static propTypes = {
+        history: PropTypes.object.isRequired,
         search: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired
     };
@@ -38,7 +39,7 @@ export default class ServiceInsights extends Component {
         }
     }
 
-    hasValidSearchProps = () => this.props.search.serviceName;
+    hasValidSearchProps = () => !!this.props.search.serviceName;
 
     getServiceInsight = () => {
         const search = this.props.search;
@@ -65,8 +66,15 @@ export default class ServiceInsights extends Component {
         this.props.store.fetchServiceInsights({
             serviceName: search.serviceName,
             startTime,
-            endTime
+            endTime,
+            relationship: search.relationship
         });
+    };
+
+    handleSelectViewFilter = (ev) => {
+        const params = new URLSearchParams(this.props.history.location.search);
+        params.set('relationship', ev.target.value);
+        this.props.history.push(decodeURIComponent(`${this.props.history.location.pathname}?${params}`));
     };
 
     render() {
@@ -79,6 +87,16 @@ export default class ServiceInsights extends Component {
                         Please search for a serviceName in the global search bar to render a service insight (such as serviceName=example-service).
                     </p>
                 )}
+
+                <div className="service-insights__filter">
+                    <span>View:</span>
+                    <select value={this.props.search.relationship} onChange={this.handleSelectViewFilter}>
+                        <option value="downstream,upstream">Only Downstream & Upstream Dependencies</option>
+                        <option value="downstream">Only Downstream Dependencies</option>
+                        <option value="upstream">Only Upstream Dependencies</option>
+                        <option value="all">All Dependencies</option>
+                    </select>
+                </div>
 
                 {this.hasValidSearchProps() &&
                     store.promiseState &&

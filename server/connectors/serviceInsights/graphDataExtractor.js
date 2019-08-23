@@ -15,7 +15,7 @@
  *         limitations under the License.
  */
 
-const {type} = require('./enums');
+const {type, relationship} = require('../../../universal/enums');
 const {detectCycles} = require('./detectCycles');
 const {edge, gateway, mesh, database, outbound, service} = require('../../config/config').connectors.serviceInsights.spanTypes;
 
@@ -39,6 +39,17 @@ function createNode(data) {
 }
 
 /**
+ * getIdForLink()
+ * Generate an id for a link from source to target, idempotent
+ * @param {string} source
+ * @param {string} target
+ * @returns {string}
+ */
+function getIdForLink(source, target) {
+    return `${source}→${target}`;
+}
+
+/**
  * createLink()
  * Function to create a graph edge and enforce data schema for creating a edge
  * @param {object} data
@@ -51,7 +62,9 @@ function createLink(data) {
             throw new Error(`Missing required property ${requiredProperty} when calling createLink()`);
         }
     });
+    const id = getIdForLink(data.source, data.target);
     return {
+        id,
         isUninstrumented: false,
         count: 1,
         tps: 1,
@@ -118,101 +131,180 @@ function getNodeIdFromSpan(span) {
 }
 
 /**
- * processNodesAndLinks()
- * Process nodes and links
- * @param {string} serviceName - Name of central dependency
+ * traverseDownstream()
+ * Traverse downstream nodes and set their relationship if not already set.
+ * @param {object} startingNode - traverse nodes downstream from this one; this node itself is unmodified
+ * @param {boolean} distributary - set the relationship to distributary, otherwise downstream
+ */
+function traverseDownstream(startingNode, distributary = false) {
+    startingNode.downstream.forEach((downstreamNode) => {
+        if (!downstreamNode.relationship) {
+            downstreamNode.relationship = distributary ? relationship.distributary : relationship.downstream;
+            traverseDownstream(downstreamNode, distributary);
+        }
+    });
+}
+
+/**
+ * traverseUpstream()
+ * Traverse upstream nodes and set their relationship to upstream if not already set.
+ * @param {object} startingNode - traverse nodes upstream from this one; this node itself is unmodified
+ */
+function traverseUpstream(startingNode) {
+    startingNode.upstream.forEach((upstreamNode) => {
+        if (!upstreamNode.relationship) {
+            upstreamNode.relationship = relationship.upstream;
+            traverseUpstream(upstreamNode);
+            traverseDownstream(upstreamNode, true);
+        }
+    });
+}
+
+/**
+ * findViolations()
+ * Find violations in the given nodes and links
  * @param {Map} nodes - Map of nodes
  * @param {Map} links - Map of links
  * @returns {object}
  */
-function processNodesAndLinks(serviceName, nodes, links) {
+function findViolations(nodes, links) {
+    // Define map of violations
+    const violations = {};
+
     // Marks nodes and links with invalid DAG cyces
     const cyclesFound = detectCycles({nodes, links});
 
-    // Store unique traces to calculate how many traces were considered
-    const uniqueTraces = new Set();
-
-    // Store count of uninstrumented
-    let uninstrumentedCount = 0;
-
-    // Process Links
+    // Process invalid DAG cycle
     links.forEach((link) => {
-        // NOTE: here source means source side of the link, not necessarily source end of the graph
         const source = nodes.get(link.source);
         const target = nodes.get(link.target);
 
-        // Process invalid DAG cycle
         if (source.invalidCycleDetected === true && target.invalidCycleDetected === true) {
             link.invalidCycleDetected = true;
             link.invalidCyclePath = source.invalidCyclePath;
         }
-
-        // Node on the source side of the link is not a leaf
-        source.isLeaf = false;
     });
-
-    // Process nodes
-    nodes.forEach((node) => {
-        // Process Central Node
-        if (node.serviceName === serviceName && node.type !== type.outbound) {
-            node.isCentral = true;
-        }
-
-        // Detect unique traces
-        node.traceIds.forEach((traceId) => {
-            uniqueTraces.add(traceId);
-        });
-
-        // Nodes not explicitly not a leaf (see above) are leaves
-        if (!(node.isLeaf === false)) {
-            node.isLeaf = true;
-        }
-
-        // Check if un-instrumented
-        if (node.isLeaf && node.type === type.mesh) {
-            uninstrumentedCount++;
-
-            // Create uninstrumented node and add it to the map
-            const uninstrumentedNode = createNode({
-                ...node,
-                id: `${node.id}-missing-trace`,
-                name: 'Uninstrumented Service',
-                serviceName: 'unknown',
-                type: type.uninstrumented
-            });
-            nodes.set(uninstrumentedNode.id, uninstrumentedNode);
-
-            // Create link to uninstrumented node
-            const linkId = `${node.id}→${uninstrumentedNode.id}`;
-            links.set(
-                linkId,
-                createLink({
-                    source: node.id,
-                    target: uninstrumentedNode.id,
-                    isUninstrumented: true
-                })
-            );
-        }
-
-        // Check if uninstrumented client span
-        if (node.isLeaf && node.type === type.outbound) {
-            node.type = type.uninstrumented;
-            uninstrumentedCount++;
-        }
-    });
-
-    // Define map of violations
-    const violations = {};
 
     // Summarize cycle violations
     if (cyclesFound > 0) {
         violations.cycles = cyclesFound;
     }
 
+    // Store count of uninstrumented
+    const uninstrumentedCount = [...nodes.values()]
+        .map((node) => (node.type === type.uninstrumented ? 1 : 0))
+        .reduce((count, current) => count + current);
+
     // Summarize unique count of uninstrumented dependencies
     if (uninstrumentedCount > 0) {
         violations.uninstrumented = uninstrumentedCount;
     }
+
+    return violations;
+}
+
+/**
+ * processNodesAndLinks()
+ * Process nodes and links
+ * @param {Map} nodes - Map of nodes
+ * @param {Map} links - Map of links
+ * @returns {object}
+ */
+function processNodesAndLinks(nodes, links, relationshipFilter) {
+    // Store unique traces to calculate how many traces were considered
+    const uniqueTraces = new Set();
+
+    // Temporary references to simplify processing
+    nodes.forEach((node) => {
+        node.upstream = [];
+        node.downstream = [];
+        node.links = [];
+    });
+
+    // Process Links
+    links.forEach((link) => {
+        const source = nodes.get(link.source);
+        const target = nodes.get(link.target);
+
+        // Simplify traversal by setting upstream and downstream nodes
+        source.downstream.push(target);
+        source.links.push(link);
+        target.upstream.push(source);
+        target.links.push(link);
+    });
+
+    // Traverse nodes upstream and downstream of the central node and set their relationship
+    const centralNode = [...nodes.values()].find((node) => node.relationship === relationship.central);
+    traverseDownstream(centralNode);
+    traverseUpstream(centralNode);
+
+    // Process nodes
+    nodes.forEach((node) => {
+        // Detect unique traces
+        node.traceIds.forEach((traceId) => {
+            uniqueTraces.add(traceId);
+        });
+
+        // Nodes not previously traversed have an unknown relationship
+        if (!node.relationship) {
+            node.relationship = relationship.unknown;
+        }
+
+        // Check if un-instrumented mesh or client span
+        if (node.downstream.length === 0) {
+            if (node.type === type.mesh) {
+                // Create uninstrumented node and add it to the map
+                const uninstrumentedNode = createNode({
+                    ...node,
+                    id: `${node.id}-missing-trace`,
+                    name: 'Uninstrumented Service',
+                    serviceName: 'unknown',
+                    type: type.uninstrumented,
+                    relationship: node.relationship
+                });
+                nodes.set(uninstrumentedNode.id, uninstrumentedNode);
+
+                // Create link to uninstrumented node
+                const uninstrumentedLink = createLink({
+                    source: node.id,
+                    target: uninstrumentedNode.id,
+                    isUninstrumented: true
+                });
+                node.links.push(uninstrumentedLink);
+                uninstrumentedNode.links.push(uninstrumentedLink);
+                links.set(uninstrumentedLink.id, uninstrumentedLink);
+            } else if (node.type === type.outbound) {
+                node.type = type.uninstrumented;
+            }
+        }
+    });
+
+    // Construct a filter
+    const filter = [relationship.central]; // always include the central node
+    if (relationshipFilter && relationshipFilter.length) {
+        filter.push(...relationshipFilter); // use the relationship filter param if provided
+    } else {
+        filter.push(relationship.upstream, relationship.downstream); // otherwise default to upstream and downstream
+    }
+
+    // Process nodes again, now with destructive operations
+    nodes.forEach((node) => {
+        // Filter out nodes not directly upstream or downstream, and their links
+        if (!filter.some((r) => r === relationship.all || r === node.relationship)) {
+            nodes.delete(node.id);
+            node.links.forEach((link) => {
+                links.delete(link.id);
+            });
+        }
+
+        // Remove temporary properties before serializing
+        delete node.upstream;
+        delete node.downstream;
+        delete node.links;
+    });
+
+    // Find violations
+    const violations = findViolations(nodes, links);
 
     // Summarize if any types of violations found
     const hasViolations = Object.keys(violations).length > 0;
@@ -225,57 +317,79 @@ function processNodesAndLinks(serviceName, nodes, links) {
 }
 
 /**
+ * createNodeFromSpan()
+ * @param {string} nodeId
+ * @param {object} span
+ * @param {string} serviceName indicates which service is central to this graph
+ */
+function createNodeFromSpan(nodeId, span, serviceName) {
+    const nodeName = getNodeNameFromSpan(span);
+
+    const node = createNode({
+        id: nodeId,
+        name: nodeName,
+        serviceName: span.serviceName,
+        duration: span.duration,
+        operations: {[`${span.operationName}`]: 1},
+        traceIds: [span.traceId]
+    });
+
+    if (edge && edge.isType(span)) {
+        node.type = type.edge;
+    } else if (gateway && gateway.isType(span)) {
+        node.type = type.gateway;
+    } else if (mesh && mesh.isType(span)) {
+        node.type = type.mesh;
+    } else if (database && database.isType(span)) {
+        node.type = type.database;
+        node.databaseType = database.databaseType(span);
+    } else if (outbound && outbound.isType(span)) {
+        node.type = type.outbound;
+    } else {
+        node.type = type.service;
+    }
+
+    if (node.serviceName === serviceName && node.type !== type.outbound) {
+        node.relationship = relationship.central;
+    }
+
+    return node;
+}
+
+/**
+ * updateNodeFromSpan()
+ * @param {object} node
+ * @param {object} span
+ */
+function updateNodeFromSpan(node, span) {
+    node.operations[span.operationName] = node.operations[span.operationName] ? node.operations[span.operationName] + 1 : 1;
+    node.count++;
+    node.duration += span.duration;
+    node.avgDuration = `${Math.floor(node.duration / node.count / 1000)} ms`;
+    node.traceIds.push(span.traceId);
+}
+
+/**
  * buildNodes()
  * Builds a map of nodes.
  * @param {Array<span>} spans - Array of fully hydrated Haystack spans
+ * @param {string} serviceName - Name of central dependency
  */
-function buildNodes(spans) {
+function buildNodes(spans, serviceName) {
     const nodes = new Map();
 
     spans.forEach((span) => {
         const nodeId = getNodeIdFromSpan(span);
-        const nodeName = getNodeNameFromSpan(span);
+        const existingNode = nodes.get(nodeId);
 
-        const node = createNode({
-            id: nodeId,
-            name: nodeName,
-            serviceName: span.serviceName,
-            duration: span.duration,
-            operations: {[`${span.operationName}`]: 1},
-            traceIds: [span.traceId]
-        });
-
-        if (edge && edge.isType(span)) {
-            node.type = type.edge;
-        } else if (gateway && gateway.isType(span)) {
-            node.type = type.gateway;
-        } else if (mesh && mesh.isType(span)) {
-            node.type = type.mesh;
-        } else if (database && database.isType(span)) {
-            node.type = type.database;
-            node.databaseType = database.databaseType(span);
-        } else if (outbound && outbound.isType(span)) {
-            node.type = type.outbound;
+        if (!existingNode) {
+            const newNode = createNodeFromSpan(nodeId, span, serviceName);
+            nodes.set(nodeId, newNode);
         } else {
-            node.type = type.service;
-        }
-
-        const currentNode = nodes.get(nodeId);
-
-        // If new node, set
-        if (!currentNode) {
-            nodes.set(node.id, node);
-        } else {
-            // Else, update operation
-            currentNode.operations[span.operationName] = currentNode.operations[span.operationName]
-                ? currentNode.operations[span.operationName] + 1
-                : 1;
-            currentNode.count++;
-            currentNode.duration += span.duration;
-            currentNode.avgDuration = `${Math.floor(currentNode.duration / currentNode.count / 1000)} ms`;
-            currentNode.traceIds.push(span.traceId);
+            updateNodeFromSpan(existingNode, span);
         }
     });
+
     return nodes;
 }
 
@@ -299,8 +413,8 @@ function buildLinks(spans) {
             if (parentSpan) {
                 const parentNodeId = getNodeIdFromSpan(parentSpan);
                 const childNodeId = getNodeIdFromSpan(span);
-                const linkId = `${parentNodeId}→${childNodeId}`;
                 if (parentNodeId !== childNodeId) {
+                    const linkId = getIdForLink(parentNodeId, childNodeId);
                     const currentLink = linkMap.get(linkId);
                     // If link does not exist in map, create it
                     if (!currentLink) {
@@ -329,16 +443,16 @@ function buildLinks(spans) {
  * Given an array of spans and a service name, perform transform to build a nodes + links structure from multiple traces
  * @param {*} spans - Array of fully hydrated span objects related to multiple traces
  * @param {*} serviceName - Service name to search for
+ * @param {Array.<String>} relationshipFilter - Nodes and links to filter for, by relationship, or empty for the default filter
  */
-const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}) => {
+const extractNodesAndLinks = ({spans, serviceName, traceLimitReached}, relationshipFilter = []) => {
     // build map of nodes
-    const nodes = buildNodes(spans);
+    const nodes = buildNodes(spans, serviceName);
 
     // build map of links
     const links = buildLinks(spans);
 
-    // Process nodes and links for consumption of graphing library
-    const summary = processNodesAndLinks(serviceName, nodes, links);
+    const summary = processNodesAndLinks(nodes, links, relationshipFilter);
     summary.traceLimitReached = traceLimitReached;
 
     return {

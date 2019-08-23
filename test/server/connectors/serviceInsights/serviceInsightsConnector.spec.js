@@ -16,29 +16,35 @@
  */
 
 import {expect} from 'chai';
+
 const proxyquire = require('proxyquire');
 
 const connector = proxyquire('../../../../server/connectors/serviceInsights/serviceInsightsConnector', {
-    './fetcher': (serviceName) => {
-        return {
-            fetch: () => {
-                return new Promise((resolve) => {
-                    return resolve({
-                        serviceName,
-                        spans: [
-                            {
-                                spanId: 1,
-                                parentSpanId: 1,
-                                serviceName,
-                                operationName: 'operation',
-                                tags: []
-                            }
-                        ]
-                    });
-                });
-            }
-        };
-    }
+    './fetcher': (serviceName) => ({
+        fetch: () =>
+            new Promise((resolve) =>
+                resolve({
+                    serviceName,
+                    spans: [
+                        {
+                            traceId: 100,
+                            spanId: 1,
+                            serviceName,
+                            operationName: 'operation',
+                            tags: []
+                        },
+                        {
+                            traceId: 100,
+                            spanId: 2,
+                            parentSpanId: 1,
+                            serviceName: 'mock-downstream-service',
+                            operationName: 'operation',
+                            tags: []
+                        }
+                    ]
+                })
+            )
+    })
 });
 
 describe('serviceInsightsConnector.getServiceInsightsForService', () => {
@@ -48,8 +54,24 @@ describe('serviceInsightsConnector.getServiceInsightsForService', () => {
             .getServiceInsightsForService('mock-service', 1000, 2000)
             .then((result) => {
                 // then
-                expect(result.summary.tracesConsidered).to.equal(1);
-                expect(result.nodes.length).to.equal(1);
+                expect(result).to.have.nested.property('summary.tracesConsidered', 1);
+                expect(result)
+                    .to.have.property('nodes')
+                    .with.lengthOf(2);
+                done();
+            })
+            .done();
+    });
+
+    it('should support relationships to filter', (done) => {
+        // given, when
+        connector
+            .getServiceInsightsForService('mock-service', 1000, 2000, 10, 'upstream')
+            .then((result) => {
+                // then
+                expect(result)
+                    .to.have.property('nodes')
+                    .with.lengthOf(1); // downstream filtered out
                 done();
             })
             .done();
