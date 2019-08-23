@@ -47,6 +47,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @observable searchResults = [];
     @observable timelineResults = {};
     @observable totalCount = 0;
+    @observable granularity = null;
 
     @action fetchSearchResults(query) {
         const serviceName = decodeURIComponent(query.serviceName);
@@ -70,6 +71,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
         this.fetchTimeline(queryUrlString, granularity);
         this.searchQuery = query;
         this.apiQuery = apiQuery;
+        this.granularity = granularity;
     }
 
     @action fetchTraceResults(queryUrlString) {
