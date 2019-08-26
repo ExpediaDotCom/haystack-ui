@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2018 Expedia Group
  *
@@ -74,8 +73,7 @@ export class SearchBarUiStateStore {
                 value = {};
                 chip.value.forEach((nestedChip) => {
                     // prepend value with operator in case of range query operator
-                    value[nestedChip.key] =
-                        nestedChip.operator !== '=' ? `${nestedChip.operator}${nestedChip.value}` : nestedChip.value;
+                    value[nestedChip.key] = nestedChip.operator !== '=' ? `${nestedChip.operator}${nestedChip.value}` : nestedChip.value;
                 });
             } else {
                 value = chip.operator !== '=' ? `${chip.operator}${chip.value}` : chip.value;
@@ -90,7 +88,7 @@ export class SearchBarUiStateStore {
         // construct current search object using observables
         const search = SearchBarUiStateStore.turnChipsIntoSearch(this.chips);
 
-        const showAllTabs = Object.keys(search).every(key => key === 'serviceName' || key === 'operationName');
+        const showAllTabs = Object.keys(search).every((key) => key === 'serviceName' || key === 'operationName');
         if (this.tabId && showAllTabs) {
             search.tabId = this.tabId;
         }
@@ -109,6 +107,8 @@ export class SearchBarUiStateStore {
     }
 
     @action setStateFromSearch(search) {
+        // url query keys that we don't want as chips
+        const noChips = new Set(['type', 'useExpressionTree', 'spanLevelFilters', 'interval', 'relationship', 'debug']);
         // construct observables from search
         this.chips = [];
         this.serviceName = search.serviceName;
@@ -118,9 +118,9 @@ export class SearchBarUiStateStore {
                 this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
             } else if (key === 'tabId') {
                 this.tabId = search[key];
-                // url query keys that we don't want as chips
-            } else if (key !== 'type' && key !== 'useExpressionTree' && key !== 'spanLevelFilters' && key !== 'interval') {
-                if (key.includes('nested_')) { // construct nested chips, checking for service and operation names
+            } else if (!noChips.has(key)) {
+                if (key.includes('nested_')) {
+                    // construct nested chips, checking for service and operation names
                     const value = Object.keys(search[key]).map((nestedKey) => {
                         const chip = SearchBarUiStateStore.createChip(nestedKey, search[key][nestedKey]);
                         if (chip.key === 'serviceName') this.serviceName = chip.value;
