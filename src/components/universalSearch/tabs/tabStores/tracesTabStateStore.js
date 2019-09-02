@@ -43,7 +43,7 @@ export class TracesTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const { time, tabId, type, interval, serviceName, ...traceSearch } = this.search;
 
-        const filteredNames = Object.keys(traceSearch).filter(name => /nested_[0-9]/.test(name));
+        const filteredNames = Object.keys(traceSearch).filter(name => /query_[0-9]/.test(name));
 
         traceSearch.useExpressionTree = true;
         traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);

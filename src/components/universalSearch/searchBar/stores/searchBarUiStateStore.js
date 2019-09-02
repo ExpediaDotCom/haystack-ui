@@ -31,6 +31,10 @@ export class SearchBarUiStateStore {
         this.setStateFromSearch(search);
     }
 
+    static getQueryNumberFromKey(key) {
+        return key.substring(key.indexOf('_') + 1, key.length);
+    }
+
     static setOperatorFromValue(value) {
         // operator set from the first character of the value of a KV pair, there is likely a cleaner solution than this
         return value[0] === '>' || value[0] === '<' ? value[0] : '=';
@@ -60,7 +64,6 @@ export class SearchBarUiStateStore {
         let checkedValue = SearchBarUiStateStore.checkValueForPeriods(value);
         const operator = SearchBarUiStateStore.setOperatorFromValue(value);
         checkedValue = operator === '=' ? checkedValue : value.substr(1, checkedValue.length);
-
         return {key: checkedKey, value: checkedValue, operator};
     }
 
@@ -68,18 +71,11 @@ export class SearchBarUiStateStore {
         const search = {};
         chips.forEach((chip) => {
             const key = chip.key;
-            let value;
-            if (key.includes('nested_')) {
-                value = {};
-                chip.value.forEach((nestedChip) => {
-                    // prepend value with operator in case of range query operator
-                    value[nestedChip.key] = nestedChip.operator !== '=' ? `${nestedChip.operator}${nestedChip.value}` : nestedChip.value;
-                });
-            } else {
-                value = chip.operator !== '=' ? `${chip.operator}${chip.value}` : chip.value;
+            const value = chip.operator !== '=' ? `${chip.operator}${chip.value}` : chip.value;
+            if (!search[`query_${chip.query}`]) {
+                search[`query_${chip.query}`] = {};
             }
-
-            search[key] = value;
+            search[`query_${chip.query}`][key] = value;
         });
         return search;
     }
@@ -119,18 +115,13 @@ export class SearchBarUiStateStore {
             } else if (key === 'tabId') {
                 this.tabId = search[key];
             } else if (!noChips.has(key)) {
-                if (key.includes('nested_')) {
-                    // construct nested chips, checking for service and operation names
-                    const value = Object.keys(search[key]).map((nestedKey) => {
-                        const chip = SearchBarUiStateStore.createChip(nestedKey, search[key][nestedKey]);
-                        if (chip.key === 'serviceName') this.serviceName = chip.value;
-                        if (chip.key === 'operationName') this.operationName = chip.value;
-                        return chip;
-                    });
-                    this.chips.push({key, value, operator: '='});
-                } else {
-                    this.chips.push(SearchBarUiStateStore.createChip(key, search[key]));
-                }
+                // construct nested chips, checking for service and operation names
+                Object.keys(search[key]).forEach((nestedKey) => {
+                    const chip = SearchBarUiStateStore.createChip(nestedKey, search[key][nestedKey]);
+                    if (chip.key === 'serviceName') this.serviceName = chip.value;
+                    if (chip.key === 'operationName') this.operationName = chip.value;
+                    this.chips.push({key: nestedKey, value: search[key][nestedKey], operator: '=', query: SearchBarUiStateStore.getQueryNumberFromKey(key)});
+                });
             }
         });
     }

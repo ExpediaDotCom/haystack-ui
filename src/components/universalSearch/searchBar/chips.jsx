@@ -65,22 +65,6 @@ export default class Chips extends React.Component {
 
     render() {
         const chips = this.props.uiState.chips.map((chip, index) => {
-            if (chip.key.includes('nested_')) {
-                return (
-                    <div className="usb-chip" key={Math.random()}>
-                        {
-                            chip.value.map(nestedChip => (
-                                <span key={Math.random()}>
-                                    <span className="usb-chip__key">{nestedChip.key}</span>
-                                    {nestedChip.operator !== '=' ? <span className="usb-chip__operator">{nestedChip.operator}</span> : null}
-                                    <span className="usb-chip__value">{nestedChip.value}</span>
-                                </span>
-                            ))
-                        }
-                        <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
-                    </div>
-                );
-            }
 
             return (
                 <div className="usb-chip" key={Math.random()}>
