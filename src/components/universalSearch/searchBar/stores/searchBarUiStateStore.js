@@ -22,7 +22,8 @@ export class SearchBarUiStateStore {
     @observable fieldsKvString = null;
     @observable timeWindow = null;
     @observable interval = 'FiveMinute';
-    @observable chips = [];
+    @observable pendingQuery = [];
+    @observable queries = [];
     @observable displayErrors = {};
     @observable tabId = null;
 
@@ -31,12 +32,8 @@ export class SearchBarUiStateStore {
         this.setStateFromSearch(search);
     }
 
-    static getQueryNumberFromKey(key) {
-        return key.substring(key.indexOf('_') + 1, key.length);
-    }
-
     static setOperatorFromValue(value) {
-        // operator set from the first character of the value of a KV pair, there is likely a cleaner solution than this
+        // operator set from the first character of the value of a KV pair, todo: there is likely a cleaner solution than this
         return value[0] === '>' || value[0] === '<' ? value[0] : '=';
     }
 
@@ -67,22 +64,29 @@ export class SearchBarUiStateStore {
         return {key: checkedKey, value: checkedValue, operator};
     }
 
-    static turnChipsIntoSearch(chips) {
-        const search = {};
-        chips.forEach((chip) => {
-            const key = chip.key;
-            const value = chip.operator !== '=' ? `${chip.operator}${chip.value}` : chip.value;
-            if (!search[`query_${chip.query}`]) {
-                search[`query_${chip.query}`] = {};
-            }
-            search[`query_${chip.query}`][key] = value;
+
+    static turnChipsIntoSearch(queryKeyValues) {
+        const searchObject = {};
+        queryKeyValues.forEach((kv) => {
+            const key = kv.key;
+            searchObject[key] = kv.operator !== '=' ? `${kv.operator}${kv.value}` : kv.value;
         });
+        return searchObject;
+    }
+
+    static createSearchFromQueriesAndPendingChips(queries, pendingQuery) {
+        const search = {};
+        queries.forEach((query, index) => {
+            search[`query_${index + 1}`] = SearchBarUiStateStore.turnChipsIntoSearch(query);
+        });
+        if (pendingQuery) search[`query_${queries.length + 1}`] = SearchBarUiStateStore.turnChipsIntoSearch(pendingQuery);
         return search;
     }
 
     getCurrentSearch() {
         // construct current search object using observables
-        const search = SearchBarUiStateStore.turnChipsIntoSearch(this.chips);
+        const search = SearchBarUiStateStore.createSearchFromQueriesAndPendingChips(this.queries, this.pendingQuery);
+        this.pendingQuery = [];
 
         const showAllTabs = Object.keys(search).every((key) => key === 'serviceName' || key === 'operationName');
         if (this.tabId && showAllTabs) {
@@ -103,10 +107,8 @@ export class SearchBarUiStateStore {
     }
 
     @action setStateFromSearch(search) {
-        // url query keys that we don't want as chips
-        const noChips = new Set(['type', 'useExpressionTree', 'spanLevelFilters', 'interval', 'relationship', 'debug']);
         // construct observables from search
-        this.chips = [];
+        this.queries = [];
         this.serviceName = search.serviceName;
         this.operationName = search.operationName;
         Object.keys(search).forEach((key) => {
@@ -114,14 +116,16 @@ export class SearchBarUiStateStore {
                 this.timeWindow = {startTime: search[key].from, endTime: search[key].to, timePreset: search[key].preset};
             } else if (key === 'tabId') {
                 this.tabId = search[key];
-            } else if (!noChips.has(key)) {
-                // construct nested chips, checking for service and operation names
-                Object.keys(search[key]).forEach((nestedKey) => {
+            } else if (key.includes('query_')) {
+                // add query objects to query bank
+                const query = Object.keys(search[key]).map((nestedKey) => {
                     const chip = SearchBarUiStateStore.createChip(nestedKey, search[key][nestedKey]);
                     if (chip.key === 'serviceName') this.serviceName = chip.value;
                     if (chip.key === 'operationName') this.operationName = chip.value;
-                    this.chips.push({key: nestedKey, value: search[key][nestedKey], operator: '=', query: SearchBarUiStateStore.getQueryNumberFromKey(key)});
+                    return chip;
                 });
+
+                this.queries.push(query);
             }
         });
     }

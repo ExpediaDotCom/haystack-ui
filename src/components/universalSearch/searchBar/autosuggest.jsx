@@ -22,6 +22,7 @@ import {when} from 'mobx';
 
 import TimeWindowPicker from './timeWindowPicker';
 import Chips from './chips';
+import QueryBank from './queryBank';
 import Guide from './guide';
 import Suggestions from './suggestions';
 import SearchSubmit from './searchSubmit';
@@ -92,7 +93,6 @@ export default class Autocomplete extends React.Component {
             suggestionIndex: null,
             existingKeys: [],
             inputError: false,
-            query: 1
         };
 
         if (!this.props.uiState.timeWindow) {
@@ -321,7 +321,7 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.handleBlur();
         } else if (keyPressed === BACKSPACE) {
-            const chips = this.props.uiState.chips;
+            const chips = this.props.uiState.pendingQuery;
             if (!this.inputRef.value && chips.length) {
                 e.preventDefault();
                 this.modifyChip();
@@ -332,10 +332,10 @@ export default class Autocomplete extends React.Component {
 
     // Logic for when a user presses backspace to edit a chip
     modifyChip() {
-        const chip = this.props.uiState.chips[this.props.uiState.chips.length - 1];
+        const chip = this.props.uiState.pendingQuery[this.props.uiState.pendingQuery.length - 1];
         const value = Autocomplete.checkForWhitespacedValue(chip.value);
         this.inputRef.value = `${chip.key}${chip.operator}${value}`;
-        this.deleteChip(this.props.uiState.chips.length - 1);
+        this.deleteChip(this.props.uiState.pendingQuery.length - 1);
     }
 
     // Updates input field and uiState props value
@@ -410,7 +410,7 @@ export default class Autocomplete extends React.Component {
             const chipKey = kvPair.substring(0, operatorIndex).trim();
             const chipValue = kvPair.substring(operatorIndex + 1, kvPair.length).trim().replace(/"/g, '');
             const operator = kvPair[operatorIndex];
-            this.props.uiState.chips.push({query: this.state.query, key: chipKey, value: chipValue, operator});
+            this.props.uiState.pendingQuery.push({query: this.state.query, key: chipKey, value: chipValue, operator});
             if (chipKey.includes('serviceName') && tracesEnabled) {
                 this.props.uiState.serviceName = chipValue;
                 this.props.options.operationName.values = [];
@@ -425,7 +425,7 @@ export default class Autocomplete extends React.Component {
 
     // Remove chip from client side store
     deleteChip(chipIndex) {
-        const targetChip = this.props.uiState.chips[chipIndex];
+        const targetChip = this.props.uiState.pendingQuery[chipIndex];
         if (targetChip !== undefined) {
             const updatedExistingKeys = this.state.existingKeys;
             if (targetChip.key === 'serviceName') {
@@ -438,7 +438,7 @@ export default class Autocomplete extends React.Component {
             updatedExistingKeys.splice(itemIndex, 1);
 
             this.setState({existingKeys: updatedExistingKeys});
-            this.props.uiState.chips.splice(chipIndex, 1);
+            this.props.uiState.pendingQuery.splice(chipIndex, 1);
         }
     }
 
@@ -460,7 +460,7 @@ export default class Autocomplete extends React.Component {
                             onChange={this.updateFieldKv}
                             ref={this.setInputRef}
                             onFocus={this.handleFocus}
-                            placeholder={uiState.chips.length ? '' : 'Search tags and services...'}
+                            placeholder={uiState.pendingQuery.length ? '' : 'Search tags and services...'}
                         />
                     </div>
                     <TimeWindowPicker uiState={uiState} />
@@ -479,6 +479,7 @@ export default class Autocomplete extends React.Component {
                         <Guide/>
                     </div>
                 </div>
+                <QueryBank uiState={uiState} deleteChip={this.deleteChip} />
                 <ErrorMessaging inputError={this.state.inputError}/>
             </article>
         );

@@ -64,17 +64,14 @@ export default class Chips extends React.Component {
     }
 
     render() {
-        const chips = this.props.uiState.chips.map((chip, index) => {
-
-            return (
-                <div className="usb-chip" key={Math.random()}>
+        const chips = this.props.uiState.pendingQuery.map((chip, index) => (
+                <div className={`usb-chip query-${this.props.uiState.queries.length + 1}`} key={Math.random()}>
                     <span className="usb-chip__key">{chip.key}</span>
                     {chip.operator !== '=' ? <span className="usb-chip__operator">{chip.operator}</span> : null}
                     <span className="usb-chip__value">{chip.value}</span>
                     <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
                 </div>
-            );
-        });
+            ));
 
         if (chips.length > 3) {
             const surplus = chips.length - 3;
