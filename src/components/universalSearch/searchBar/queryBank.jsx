@@ -22,36 +22,27 @@ import PropTypes from 'prop-types';
 export default class QueryBank extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
-        deleteChip: PropTypes.func.isRequired
+        deleteQuery: PropTypes.func.isRequired,
+        modifyQuery: PropTypes.func.isRequired
     };
 
-    constructor(props) {
-        super(props);
-
-        this.setWrapperRef = this.setWrapperRef.bind(this);
-    }
-
-    setWrapperRef(node) {
-        this.wrapperRef = node;
-    }
-
     render() {
-        const queries = this.props.uiState.queries.map((query, index) => {
-            return (
+        const queries = this.props.uiState.queries.map((query, index) => (
                 <div className={`usb-chip query-${index + 1}`} key={Math.random()}>
-                    {
-                        query.map(nestedChip => (
-                            <span key={Math.random()}>
-                                <span className="usb-chip__key">{nestedChip.key}</span>
-                                {nestedChip.operator !== '=' ? <span className="usb-chip__operator">{nestedChip.operator}</span> : null}
-                                <span className="usb-chip__value">{nestedChip.value}</span>
+                    <span role="button" tabIndex="-1" onClick={() => this.props.modifyQuery(index)}>
+                        {
+                            query.map(nestedChip => (
+                                <span key={Math.random()}>
+                                    <span className="usb-chip__key">{nestedChip.key}</span>
+                                    {nestedChip.operator !== '=' ? <span className="usb-chip__operator">{nestedChip.operator}</span> : null}
+                                    <span className="usb-chip__value">{nestedChip.value}</span>
                                 </span>
-                        ))
-                    }
-                    <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteChip(index)}>x</button>
+                            ))
+                        }
+                    </span>
+                    <button type="button" className="usb-chip__delete" onClick={() => this.props.deleteQuery(index, true)}>x</button>
                 </div>
-            );
-        });
+            ));
 
         return (
             <div className="usb-queries">

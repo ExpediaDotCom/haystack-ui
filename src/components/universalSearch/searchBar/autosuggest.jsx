@@ -92,7 +92,7 @@ export default class Autocomplete extends React.Component {
             suggestionStrings: [],
             suggestionIndex: null,
             existingKeys: [],
-            inputError: false,
+            inputError: false
         };
 
         if (!this.props.uiState.timeWindow) {
@@ -122,7 +122,9 @@ export default class Autocomplete extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.updateChips = this.updateChips.bind(this);
         this.modifyChip = this.modifyChip.bind(this);
+        this.modifyQuery = this.modifyQuery.bind(this);
         this.deleteChip = this.deleteChip.bind(this);
+        this.deleteQuery = this.deleteQuery.bind(this);
         this.testForValidInputString = this.testForValidInputString.bind(this);
     }
 
@@ -338,6 +340,14 @@ export default class Autocomplete extends React.Component {
         this.deleteChip(this.props.uiState.pendingQuery.length - 1);
     }
 
+    // Logic for pressing on a query object below the search bar
+    modifyQuery(index) {
+        this.props.uiState.pendingQuery = this.props.uiState.queries[index];
+        this.inputRef.value = '';
+        this.deleteQuery(index, false);
+        this.inputRef.focus();
+    }
+
     // Updates input field and uiState props value
     updateFieldKv(event) {
         this.props.uiState.setFieldsUsingKvString(event.target.value);
@@ -423,7 +433,7 @@ export default class Autocomplete extends React.Component {
         }
     }
 
-    // Remove chip from client side store
+    // Remove pending chip from client side store
     deleteChip(chipIndex) {
         const targetChip = this.props.uiState.pendingQuery[chipIndex];
         if (targetChip !== undefined) {
@@ -439,6 +449,28 @@ export default class Autocomplete extends React.Component {
 
             this.setState({existingKeys: updatedExistingKeys});
             this.props.uiState.pendingQuery.splice(chipIndex, 1);
+        }
+    }
+
+    // Remove query from client side store
+    deleteQuery(queryIndex, searchAfterDelete) {
+        const targetQuery = this.props.uiState.queries[queryIndex];
+        if (targetQuery !== undefined) {
+            const updatedExistingKeys = this.state.existingKeys;
+            if (targetQuery.some(kv => kv.key === 'serviceName')) {
+                this.setState({
+                    serviceName: null
+                });
+                this.props.options.operationName.values = [];
+            }
+            const itemIndex = updatedExistingKeys.indexOf(targetQuery.key);
+            updatedExistingKeys.splice(itemIndex, 1);
+
+            this.setState({existingKeys: updatedExistingKeys});
+            this.props.uiState.queries.splice(queryIndex, 1);
+        }
+        if (searchAfterDelete) {
+            this.handleSearch();
         }
     }
 
@@ -479,7 +511,7 @@ export default class Autocomplete extends React.Component {
                         <Guide/>
                     </div>
                 </div>
-                <QueryBank uiState={uiState} deleteChip={this.deleteChip} />
+                <QueryBank uiState={uiState} modifyQuery={this.modifyQuery} deleteQuery={this.deleteQuery} />
                 <ErrorMessaging inputError={this.state.inputError}/>
             </article>
         );
