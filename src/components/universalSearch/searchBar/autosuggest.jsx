@@ -279,6 +279,7 @@ export default class Autocomplete extends React.Component {
                 this.setSuggestions(this.inputRef.value);
             });
         }
+        if (this.state.suggestedOnType === 'Values') this.updateChips();
     }
 
     // Logic for when the user pastes into search bar
@@ -303,8 +304,11 @@ export default class Autocomplete extends React.Component {
             }
         } else if (keyPressed === ENTER) {
             e.preventDefault();
-            this.updateChips();
-            this.props.search();
+            if (this.inputRef.value.trim().length) {
+                this.updateChips();
+            } else {
+                this.props.search();
+            }
         } else if (keyPressed === TAB && this.inputRef.value) {
             e.preventDefault();
             this.updateChips();
