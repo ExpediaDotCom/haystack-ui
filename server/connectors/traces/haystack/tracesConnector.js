@@ -113,6 +113,21 @@ connector.getOperations = (serviceName) => {
     .then(result => result.getValuesList());
 };
 
+connector.getShowValueFields = (serviceName, fieldName) => {
+    const service = new messages.Field();
+    service.setName('serviceName');
+    service.setValue(serviceName);
+
+    const request = new messages.FieldValuesRequest();
+    request.setFiltersList(new messages.Field());
+    request.setFiltersList([service]);
+    request.setFieldname(fieldName);
+
+    return fieldValueFetcher
+        .fetch(request)
+        .then(result => result.getValuesList());
+};
+
 connector.getTrace = (traceId) => {
     const request = new messages.TraceRequest();
     request.setTraceid(traceId);

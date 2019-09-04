@@ -326,6 +326,25 @@ export default class Autocomplete extends React.Component {
         }
     }
 
+    // Updating fieldValues inside a nested query
+    checkServiceAndUpdateFieldValues(input) {
+        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(input);
+
+        const splitInput = inputValue.replace('(', '').split(' ');
+
+        if (splitInput.every(this.testForValidInputString)) { // Valid input tests
+            const kvPair = splitInput[splitInput.length - 1];
+            const chipKey = kvPair.substring(0, kvPair.indexOf('=')).trim();
+            const chipValue = kvPair.substring(kvPair.indexOf('=') + 1, kvPair.length).trim();
+            if (chipKey.includes('serviceName') && tracesEnabled) {
+                this.props.options.operationName.values = [];
+                this.props.operationStore.fetchOperations(chipValue, () => {
+                    this.props.options.operationName.values = this.props.operationStore.operations;
+                });
+            }
+        }
+    }
+
     // Logic for when the user pastes into search bar
     handlePaste(e) {
         e.preventDefault();
