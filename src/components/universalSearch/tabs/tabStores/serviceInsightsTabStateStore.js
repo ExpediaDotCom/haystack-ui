@@ -27,8 +27,14 @@ export class ServiceInsightsTabStateStore {
     init(search) {
         this.search = search;
 
+        // eslint-disable-next-line no-unused-vars
+        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
+
+        const queries = Object.keys(kv);
+        const onlyServiceNameKey = queries.length && queries
+            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName'));
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = !!(subsystems && enableServiceInsights && search.serviceName);
+        this.isAvailable = !!(subsystems && enableServiceInsights && onlyServiceNameKey);
     }
 
     fetch() {

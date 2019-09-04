@@ -50,8 +50,9 @@ export class TrendsTabStateStore {
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const keys = Object.keys(kv);
-        this.isAvailable = enabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
+        const queries = Object.keys(kv);
+        this.isAvailable = enabled && queries.length && queries
+            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName' || key === 'operationName'));
     }
 
     fetch() {

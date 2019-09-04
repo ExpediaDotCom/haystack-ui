@@ -32,9 +32,11 @@ export class ServiceGraphStateStore {
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const keys = Object.keys(kv);
-        const serviceKey = keys.length && keys.every(key => key === 'serviceName');
-        this.isAvailable = enabled && (serviceKey || !keys.length);
+        const queries = Object.keys(kv);
+        const onlyServiceNameKey = queries.length && queries
+            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName'));
+
+        this.isAvailable = enabled && (onlyServiceNameKey || !queries.length);
     }
 
     fetch() {
