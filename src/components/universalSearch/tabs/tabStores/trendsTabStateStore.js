@@ -41,18 +41,17 @@ function createWindow(search) {
 export class TrendsTabStateStore {
     search = null;
     isAvailable = false;
+    serviceName = null;
+    operationName = null;
 
-    init(search) {
+    init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
 
-        // check all keys except time
-        // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const queries = Object.keys(kv);
-        this.isAvailable = enabled && queries.length && queries
-            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName' || key === 'operationName'));
+        this.serviceName = tabProperties.serviceName;
+        this.operationName = tabProperties.operationName;
+        this.isAvailable = enabled && (tabProperties.onlyService || tabProperties.onlyServiceAndOperation);
     }
 
     fetch() {
@@ -68,7 +67,7 @@ export class TrendsTabStateStore {
             until: window.until
         };
 
-        operationStore.fetchStats(this.search.serviceName, query, !!(window.isCustomTimeRange), { operationName: this.search.operationName});
+        operationStore.fetchStats(this.serviceName, query, !!(window.isCustomTimeRange), { operationName: this.operationName});
 
         return operationStore;
     }

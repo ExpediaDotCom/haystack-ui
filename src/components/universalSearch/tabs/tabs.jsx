@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-
+import _ from 'lodash';
 import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
@@ -42,6 +42,26 @@ export default class Tabs extends React.Component {
         history: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired
     };
+
+    static constructTabPropertiesFromSearch(search) {
+        const queries = Object.keys(search)
+            .filter(searchKey => searchKey.startsWith('query_'))
+            .map(query => (search[query]));
+
+        const keys = _.flatten(queries.map(query => Object.keys(query)));
+
+        const onlyService = keys.length === 1 && keys[0] === 'serviceName';
+        const onlyServiceAndOperation = keys.length === 2 && keys.filter(key => key === 'operationName').length === 1 && keys.filter(key => key === 'serviceName').length === 1;
+        const serviceName = onlyService || onlyServiceAndOperation ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
+        const operationName = onlyServiceAndOperation ? _.compact(queries.map(query => (query.operationName)))[0] : null;
+        return {
+            queries,
+            onlyService,
+            onlyServiceAndOperation,
+            serviceName,
+            operationName
+        };
+    }
 
     static tabs = [
         {
@@ -82,8 +102,8 @@ export default class Tabs extends React.Component {
         }
     ];
 
-    static initTabs(search) {
-        Tabs.tabs.forEach((tab) => tab.store && tab.store.init(search));
+    static initTabs(search, tabProperties) {
+        Tabs.tabs.forEach((tab) => tab.store && tab.store.init(search, tabProperties));
     }
 
     constructor(props) {
@@ -92,12 +112,14 @@ export default class Tabs extends React.Component {
         // bindings
         this.TabViewer = this.TabViewer.bind(this);
 
+        const tabProperties = Tabs.constructTabPropertiesFromSearch(this.props.search);
         // init state stores for tabs
-        Tabs.initTabs(props.search);
+        Tabs.initTabs(props.search, tabProperties);
     }
 
     componentWillReceiveProps(nextProps) {
-        Tabs.initTabs(nextProps.search);
+        const nextTabProperties = Tabs.constructTabPropertiesFromSearch(nextProps.search);
+        Tabs.initTabs(nextProps.search, nextTabProperties);
     }
 
     TabViewer({tabId, history, location}) {

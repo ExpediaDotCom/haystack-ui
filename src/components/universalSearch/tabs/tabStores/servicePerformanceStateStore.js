@@ -19,19 +19,10 @@
 const enabled = window.haystackUiConfig && window.haystackUiConfig.subsystems.includes('trends') && window.haystackUiConfig.enableServicePerformance;
 
 export class ServicePerformanceStateStore {
-    search = null;
     isAvailable = false;
 
-    init(search) {
-        // initialize observables using search object
-        // check if for the given search context tab should be available
-        this.search = search;
-
-        // check all keys except time
-        // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const keys = Object.keys(kv);
-        this.isAvailable = enabled && !keys.length;
+    init(search, tabProperties) {
+        this.isAvailable = enabled && !tabProperties.queries.length;
     }
 
     fetch() {}

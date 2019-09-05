@@ -26,15 +26,12 @@ export class TracesTabStateStore {
     search = null;
     isAvailable = false;
 
-    init(search) {
+    init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
 
-        // check all keys except time
-        // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, ...kv} =  search;
-        this.isAvailable = enabled && !!Object.keys(kv).length;
+        this.isAvailable = enabled && !!tabProperties.queries.length;
     }
 
     fetch() {

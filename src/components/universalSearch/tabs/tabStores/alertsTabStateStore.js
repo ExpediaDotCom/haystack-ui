@@ -26,23 +26,23 @@ export class AlertsTabStateStore {
     isAvailable = false;
     interval = null;
 
-    init(search) {
+    init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context tab should be available
         this.search = search;
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const queries = Object.keys(kv);
-        this.isAvailable = isAlertsEnabled && queries.length && queries
-            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName' || key === 'operationName'));
+        const {interval} = search;
+
+        this.serviceName = tabProperties.serviceName;
+        this.isAvailable = isAlertsEnabled && (tabProperties.onlyService || tabProperties.onlyServiceAndOperation);
         this.interval = interval || 'FiveMinute';
     }
 
     fetch() {
         // todo: fetch service alerts based on search time frame
-        alertsStore.fetchServiceAlerts(this.search.serviceName, this.interval, oneDayAgo);
+        alertsStore.fetchServiceAlerts(this.serviceName, this.interval, oneDayAgo);
         return alertsStore;
     }
 }

@@ -21,20 +21,11 @@ const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystem
 const enableServiceInsights = (window.haystackUiConfig && window.haystackUiConfig.enableServiceInsights) || false;
 
 export class ServiceInsightsTabStateStore {
-    search = null;
     isAvailable = false;
 
-    init(search) {
-        this.search = search;
-
-        // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-
-        const queries = Object.keys(kv);
-        const onlyServiceNameKey = queries.length && queries
-            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName'));
+    init(search, tabProperties) {
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = !!(subsystems && enableServiceInsights && onlyServiceNameKey);
+        this.isAvailable = !!(subsystems && enableServiceInsights && tabProperties.onlyService);
     }
 
     fetch() {

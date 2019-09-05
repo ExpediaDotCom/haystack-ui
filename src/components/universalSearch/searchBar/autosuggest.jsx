@@ -296,7 +296,7 @@ export default class Autocomplete extends React.Component {
     // Logic for navigation and selection with keyboard presses
     handleKeyPress(e) {
         const keyPressed = e.keyCode || e.which;
-        if ((keyPressed === ENTER || keyPressed === TAB) && this.state.suggestionStrings.length) {
+        if ((keyPressed === ENTER || keyPressed === TAB) && this.state.suggestionStrings.length && this.inputRef.value.trim().length) {
             e.preventDefault();
             if (this.state.suggestionIndex !== null || this.state.suggestionStrings.length === 1) {
                 this.handleDropdownSelection();
@@ -306,7 +306,8 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             if (this.inputRef.value.trim().length) {
                 this.updateChips();
-            } else {
+            } else if (this.props.uiState.pendingQuery.length) {
+                this.handleBlur();
                 this.props.search();
             }
         } else if (keyPressed === TAB && this.inputRef.value) {
@@ -344,7 +345,7 @@ export default class Autocomplete extends React.Component {
         this.deleteChip(this.props.uiState.pendingQuery.length - 1);
     }
 
-    // Logic for pressing on a query object below the search bar
+    // Logic for clicking on an existing query object below the search bar
     modifyQuery(index) {
         this.props.uiState.pendingQuery = this.props.uiState.queries[index];
         this.inputRef.value = '';

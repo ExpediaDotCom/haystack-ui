@@ -24,19 +24,12 @@ export class ServiceGraphStateStore {
     search = null;
     isAvailable = false;
 
-    init(search) {
+    init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context tab should be available
         this.search = search;
 
-        // check all keys except time
-        // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
-        const queries = Object.keys(kv);
-        const onlyServiceNameKey = queries.length && queries
-            .every(query => Object.keys(kv[query]).every(key => key === 'serviceName'));
-
-        this.isAvailable = enabled && (onlyServiceNameKey || !queries.length);
+        this.isAvailable = enabled && (tabProperties.onlyService || !tabProperties.queries.length);
     }
 
     fetch() {
