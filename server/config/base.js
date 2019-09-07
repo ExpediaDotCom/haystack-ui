@@ -51,8 +51,7 @@ module.exports = {
             // used by haystack-ui-proxy connector
             // proxy: {
             //     baseUrl: 'https://haystack.example.com',
-            //     cookieName: 'SESSION_COOKIE',
-            //     cookieValue: '' // use environment variable HAYSTACK_PROP_CONNECTORS_TRACES_PROXY_COOKIE__VALUE=your-cookie-value
+            //     cookie: 'YOUR_COOKIE_NAME=YOUR_COOKIE_VALUE'
             // },
             // interval in seconds to refresh the service and operation data from backend
             serviceRefreshIntervalInSecs: 60

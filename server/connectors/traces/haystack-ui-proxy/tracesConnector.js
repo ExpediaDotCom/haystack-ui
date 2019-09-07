@@ -20,7 +20,7 @@ const _ = require('lodash');
 const config = require('../../../config/config');
 const fetcher = require('../../operations/restFetcher');
 
-const {baseUrl, cookieName, cookieValue} = config.connectors.traces.proxy;
+const {baseUrl, cookie} = config.connectors.traces.proxy;
 
 const connector = {};
 
@@ -79,7 +79,7 @@ connector.getRawTraces = (traceIdsString) => {
     traceIds.forEach((traceId) => {
         promisedSpans.push(
             fetcher('getRawTraces').fetch(`${baseUrl}/api/trace/${traceId}`, {
-                Cookie: `${cookieName}=${cookieValue}`
+                Cookie: `${cookie}`
             })
         );
     });
@@ -90,7 +90,7 @@ connector.findTraces = ({serviceName, startTime, endTime}) =>
     Q.fcall(() =>
         fetcher('findTraces')
             .fetch(`${baseUrl}/api/traces?useExpressionTree=true&serviceName=${serviceName}&startTime=${startTime}&endTime=${endTime}`, {
-                Cookie: `${cookieName}=${cookieValue}`
+                Cookie: `${cookie}`
             })
             .then((traces) => {
                 if (!Array.isArray(traces)) {
