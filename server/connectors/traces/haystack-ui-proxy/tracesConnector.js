@@ -73,18 +73,12 @@ connector.getRawSpan = () =>
         throw new Error('Unsupported by haystack-ui-proxy connector.');
     });
 
-connector.getRawTraces = (traceIdsString) => {
-    const traceIds = JSON.parse(traceIdsString);
-    const promisedSpans = [];
-    traceIds.forEach((traceId) => {
-        promisedSpans.push(
-            fetcher('getRawTraces').fetch(`${baseUrl}/api/trace/${traceId}`, {
-                Cookie: `${cookie}`
-            })
-        );
-    });
-    return Q.all(promisedSpans).then((spans) => [].concat(...spans));
-};
+connector.getRawTraces = (traceIdsString) =>
+    Q.fcall(() =>
+        fetcher('getRawTraces').fetch(`${baseUrl}/api/traces/raw?traceIds=${traceIdsString}`, {
+            Cookie: `${cookie}`
+        })
+    );
 
 connector.findTraces = ({serviceName, startTime, endTime}) =>
     Q.fcall(() =>
