@@ -265,6 +265,19 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         expect(links.find((e) => e.source === 'some-ui-app')).to.have.property('count', 1);
     });
 
+    it('should gracefully handle an empty array of spans', () => {
+        // given
+        const spans = [];
+
+        // when
+        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
+
+        // then
+        expect(summary).to.have.property('tracesConsidered', 0);
+        expect(nodes).to.be.an('array').that.is.empty;
+        expect(links).to.be.an('array').that.is.empty;
+    });
+
     it('should gracefully handle missing parent spans', () => {
         // given
         const spans = trace(uiAppSpan());

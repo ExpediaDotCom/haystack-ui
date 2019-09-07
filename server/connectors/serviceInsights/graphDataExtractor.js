@@ -193,7 +193,7 @@ function findViolations(nodes, links) {
     // Store count of uninstrumented
     const uninstrumentedCount = [...nodes.values()]
         .map((node) => (node.type === type.uninstrumented ? 1 : 0))
-        .reduce((count, current) => count + current);
+        .reduce((count, current) => count + current, 0);
 
     // Summarize unique count of uninstrumented dependencies
     if (uninstrumentedCount > 0) {
@@ -235,8 +235,10 @@ function processNodesAndLinks(nodes, links, relationshipFilter) {
 
     // Traverse nodes upstream and downstream of the central node and set their relationship
     const centralNode = [...nodes.values()].find((node) => node.relationship === relationship.central);
-    traverseDownstream(centralNode);
-    traverseUpstream(centralNode);
+    if (centralNode) {
+        traverseDownstream(centralNode);
+        traverseUpstream(centralNode);
+    }
 
     // Process nodes
     nodes.forEach((node) => {
