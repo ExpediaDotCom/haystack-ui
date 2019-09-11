@@ -167,11 +167,16 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
 
         // when
         const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: true});
+        const summaryTwo = extractNodesAndLinks({spans, serviceName: 'sOmE-Ui-aPp', traceLimitReached: true}).summary; // support case insensitive `serviceName`
 
         // then
         expect(summary).to.have.property('tracesConsidered', 2);
         expect(summary).to.have.property('hasViolations', false);
         expect(summary).to.have.property('traceLimitReached', true);
+
+        expect(summaryTwo).to.have.property('tracesConsidered', 2);
+        expect(summaryTwo).to.have.property('hasViolations', false);
+        expect(summaryTwo).to.have.property('traceLimitReached', true);
     });
 
     it('should return some nodes', () => {
