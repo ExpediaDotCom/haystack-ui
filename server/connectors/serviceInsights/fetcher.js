@@ -15,6 +15,7 @@
  */
 
 const Q = require('q');
+const _ = require('lodash');
 
 const config = require('../../config/config');
 
@@ -26,12 +27,16 @@ const TRACE_LIMIT = config.connectors.serviceInsights.traceLimit;
 
 const fetcher = (fetcherName) => ({
     fetch(serviceName, startTime, endTime, limit) {
+        // local vars
         const deferred = Q.defer();
         const timer = metrics.timer(`fetcher_${fetcherName}`).start();
+
+        // use given limit or default
         limit = limit || TRACE_LIMIT;
 
+        // use traces connector
         tracesConnector
-            .findTraces({
+            .findTracesFlat({
                 useExpressionTree: 'true',
                 serviceName,
                 startTime,
@@ -40,23 +45,37 @@ const fetcher = (fetcherName) => ({
                 spanLevelFilters: '[]'
             })
             .then((traces) => {
-                if (traces && traces.length > 0) {
-                    tracesConnector.getRawTraces(JSON.stringify(traces.map((trace) => trace.traceId))).then((rawTraces) => {
-                        timer.end();
-                        logger.info(`fetch successful: ${fetcherName}`);
-                        deferred.resolve({
-                            serviceName,
-                            spans: rawTraces,
-                            traceLimitReached: !!(traces.length === limit)
-                        });
+                // check for 1 or more traces
+                const hasTraces = traces && traces.length > 0;
+                if (hasTraces) {
+                    // flat map childSpans to flat array
+                    const spans = _.flatten(traces);
+
+                    // complete timer
+                    timer.end();
+
+                    // log success message
+                    logger.info(`fetch successful: ${fetcherName}`);
+
+                    // resolve promise
+                    deferred.resolve({
+                        serviceName,
+                        spans,
+                        traceLimitReached: !!(traces.length === limit)
                     });
                 } else {
+                    // log no traces found message
                     logger.info(`fetch successful with no traces: ${fetcherName}`);
+
+                    // complete timer
                     timer.end();
+
+                    // resolve promise
                     deferred.resolve({serviceName, spans: [], traceLimitReached: false});
                 }
             });
 
+        // return promise
         return deferred.promise;
     }
 });
