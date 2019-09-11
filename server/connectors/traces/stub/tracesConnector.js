@@ -929,4 +929,6 @@ connector.findTraces = (query) =>
         ];
     });
 
+connector.findTracesFlat = () => Q.fcall(() => [...trace(), ...trace()]);
+
 module.exports = connector;

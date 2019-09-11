@@ -35,11 +35,10 @@ const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', '
 const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
-  return Object
-    .keys(query)
-    .filter(key => query[key] && !reservedField.includes(key))
-    .map(key => `${encodeURIComponent(key).toLowerCase()}=${encodeURIComponent(query[key])}`)
-    .join(' ');
+    return Object.keys(query)
+        .filter((key) => query[key] && !reservedField.includes(key))
+        .map((key) => `${encodeURIComponent(key).toLowerCase()}=${encodeURIComponent(query[key])}`)
+        .join(' ');
 }
 
 function mapQueryParams(query) {
@@ -47,68 +46,59 @@ function mapQueryParams(query) {
         serviceName: query.serviceName,
         spanName: query.operationName ? query.operationName : 'all',
         annotationQuery: toAnnotationQuery(query),
-        endTs: (parseInt(query.endTime, 10) - (30 * 1000 * 1000)) / 1000,
+        endTs: (parseInt(query.endTime, 10) - 30 * 1000 * 1000) / 1000,
         lookback: (parseInt(query.endTime, 10) - parseInt(query.startTime, 10)) / 1000,
         limit: parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT
     };
 
-    return Object
-        .keys(mappedQuery)
-        .filter(key => mappedQuery[key])
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(mappedQuery[key])}`)
+    return Object.keys(mappedQuery)
+        .filter((key) => mappedQuery[key])
+        .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(mappedQuery[key])}`)
         .join('&');
 }
 
 connector.getServices = () => {
-  const fetched = servicesFetcher.fetch(`${baseZipkinUrl}/services`);
-  if (!servicesFilter) {
-    return fetched;
-  }
-  return fetched.then(result => result.filter((value) => {
-      for (let i = 0; i < servicesFilter.length; i += 1) {
-          if (servicesFilter[i].test(value)) {
-              return false;
-          }
-      }
-      return true;
-  }));
+    const fetched = servicesFetcher.fetch(`${baseZipkinUrl}/services`);
+    if (!servicesFilter) {
+        return fetched;
+    }
+    return fetched.then((result) =>
+        result.filter((value) => {
+            for (let i = 0; i < servicesFilter.length; i += 1) {
+                if (servicesFilter[i].test(value)) {
+                    return false;
+                }
+            }
+            return true;
+        })
+    );
 };
 
-connector.getOperations = serviceName =>
-    operationsFetcher
-    .fetch(`${baseZipkinUrl}/spans?serviceName=${serviceName}`);
+connector.getOperations = (serviceName) => operationsFetcher.fetch(`${baseZipkinUrl}/spans?serviceName=${serviceName}`);
 
-connector.getTrace = traceId =>
-    traceFetcher
-    .fetch(`${baseZipkinUrl}/trace/${traceId}`)
-    .then(result => converter.toHaystackTrace(result));
+connector.getTrace = (traceId) => traceFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`).then((result) => converter.toHaystackTrace(result));
 
 connector.findTraces = (query) => {
     const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
 
     if (traceId) {
         // if search is for a trace perform getTrace instead of search
-        return traceFetcher
-        .fetch(`${baseZipkinUrl}/trace/${traceId}`)
-        .then(result => converter.toHaystackSearchResult([result], query));
+        return traceFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`).then((result) => converter.toHaystackSearchResult([result], query));
     }
 
     const queryUrl = mapQueryParams(query);
 
-    return searchTracesFetcher
-    .fetch(`${baseZipkinUrl}/traces?${queryUrl}`)
-    .then(result => converter.toHaystackSearchResult(result, query));
+    return searchTracesFetcher.fetch(`${baseZipkinUrl}/traces?${queryUrl}`).then((result) => converter.toHaystackSearchResult(result, query));
 };
 
-connector.getRawTrace = traceId =>
-    rawTraceFetcher
-    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
+// Not supported for zipkin.  Required for service insights feature.
+connector.findTracesFlat = () => Q.fcall(() => []);
+
+connector.getRawTrace = (traceId) => rawTraceFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
 // TODO: get by trace, span ID is not supported by Zipkin. However, should we
 // not just issue getRawTrace and then filter by span ID?
-connector.getRawSpan = traceId =>
-    rawSpanFetcher
-    .fetch(`${baseZipkinUrl}/trace/${traceId}`);
+connector.getRawSpan = (traceId) => rawSpanFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`);
 
 // TODO: get by multiple ID is not supported by Zipkin. However, should we not
 // just issue multiple calls to getRawTrace?

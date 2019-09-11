@@ -41,13 +41,9 @@ const metricsStopSpy = sinon.spy(metrics, 'end');
 
 // Create mock tracesConnector
 const tracesConnector = {
-    findTraces: () =>
+    findTracesFlat: () =>
         new Promise((resolve) => {
             resolve(mockTraces);
-        }),
-    getRawTraces: () =>
-        new Promise((resolve) => {
-            resolve(mockRawTraces);
         })
 };
 
@@ -114,11 +110,6 @@ describe('fetcher.fetch', () => {
     it('should return 1 spans given 1 trace', (done) => {
         // given
         mockTraces = [
-            {
-                traceId: 1
-            }
-        ];
-        mockRawTraces = [
             {
                 traceId: 1,
                 spanId: 1
