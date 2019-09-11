@@ -20,6 +20,16 @@ const {detectCycles} = require('./detectCycles');
 const {edge, gateway, mesh, database, outbound, service} = require('../../config/config').connectors.serviceInsights.spanTypes;
 
 /**
+ * caseInsensitiveEquals()
+ * Function that returns true if a === b, case insensitive
+ * @param {*} a
+ * @param {*} b
+ */
+function caseInsensitiveEquals(a, b) {
+    return a && b && a.toLowerCase() === b.toLowerCase();
+}
+
+/**
  * createNode()
  * Function to create a graph node and enforce data schema for creating a node
  * @param {object} data
@@ -349,13 +359,12 @@ function createNodeFromSpan(nodeId, span, serviceName) {
         node.type = type.service;
     }
 
-    if (node.serviceName === serviceName && node.type !== type.outbound) {
+    if (caseInsensitiveEquals(node.serviceName, serviceName) && node.type !== type.outbound) {
         node.relationship = relationship.central;
     }
 
     return node;
 }
-
 /**
  * updateNodeFromSpan()
  * @param {object} node
