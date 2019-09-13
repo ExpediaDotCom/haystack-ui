@@ -27,8 +27,11 @@ export class ServiceInsightsTabStateStore {
     init(search) {
         this.search = search;
 
+        // If user is directly accessing URL, show this feature
+        const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
+
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = !!(subsystems && enableServiceInsights && search.serviceName);
+        this.isAvailable = isAccessingServiceInsights || !!(subsystems && enableServiceInsights && search.serviceName);
     }
 
     fetch() {

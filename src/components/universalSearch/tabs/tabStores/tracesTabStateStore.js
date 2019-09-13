@@ -19,7 +19,7 @@ const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystem
 const enabled = subsystems.includes('traces');
 
 function spanLevelFiltersToList(filteredNames, traceSearch) {
-    return JSON.stringify(filteredNames.map(name => JSON.stringify(traceSearch[name])));
+    return JSON.stringify(filteredNames.map((name) => JSON.stringify(traceSearch[name])));
 }
 
 export class TracesTabStateStore {
@@ -33,17 +33,18 @@ export class TracesTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, ...kv} =  search;
-        this.isAvailable = enabled && !!Object.keys(kv).length;
+        const {time, tabId, type, ...kv} = search;
+        const isAccessingTraces = search.tabId === 'traces';
+        this.isAvailable = isAccessingTraces || (enabled && !!Object.keys(kv).length);
     }
 
     fetch() {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
         // eslint-disable-next-line no-unused-vars
-        const { time, tabId, type, interval, serviceName, ...traceSearch } = this.search;
+        const {time, tabId, type, interval, serviceName, ...traceSearch} = this.search;
 
-        const filteredNames = Object.keys(traceSearch).filter(name => /nested_[0-9]/.test(name));
+        const filteredNames = Object.keys(traceSearch).filter((name) => /nested_[0-9]/.test(name));
 
         traceSearch.useExpressionTree = true;
         traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);
