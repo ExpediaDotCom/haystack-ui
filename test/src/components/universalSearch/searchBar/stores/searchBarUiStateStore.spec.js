@@ -43,6 +43,13 @@ describe('class SearchBarUiStateStore()', () => {
         });
     });
 
+    it('setOperatorFromValue() returns operator from KV pair', () => {
+        expect(SearchBarUiStateStore.setOperatorFromValue(['<'])).to.equal('<');
+        expect(SearchBarUiStateStore.setOperatorFromValue(['>'])).to.equal('>');
+        expect(SearchBarUiStateStore.setOperatorFromValue(['='])).to.equal('=');
+        expect(SearchBarUiStateStore.setOperatorFromValue([false])).to.equal('=');
+    });
+
     it('properly processes chips', () => {
         const chips = [
             {

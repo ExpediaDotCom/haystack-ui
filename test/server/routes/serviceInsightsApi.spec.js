@@ -13,16 +13,12 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-/* 
 
-
+const server = require('../../../server/app.js');
 const request = require('supertest');
-*/
 
 describe('routes.servicesApi', () => {
     it('returns http 200 for /api/serviceInsights', (done) => {
-        done();
-        /*
         request(server)
             .get('/api/serviceInsights?serviceName=stark-service&from=1000&to=2000')
             .expect(200)
@@ -32,6 +28,5 @@ describe('routes.servicesApi', () => {
                 }
                 return done();
             });
-        */
     });
 });
