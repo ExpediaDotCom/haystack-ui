@@ -31,7 +31,8 @@ export class ServiceInsightsTabStateStore {
         const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
 
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = isAccessingServiceInsights || !!(subsystems && enableServiceInsights && search.serviceName);
+        const validSearchProps = search.serviceName || search.traceId;
+        this.isAvailable = isAccessingServiceInsights || !!(subsystems && enableServiceInsights && validSearchProps);
     }
 
     fetch() {

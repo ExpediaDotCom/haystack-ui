@@ -49,9 +49,16 @@ const connector = proxyquire('../../../../server/connectors/serviceInsights/serv
 
 describe('serviceInsightsConnector.getServiceInsightsForService', () => {
     it('should initialize promise and return data', (done) => {
-        // given, when
+        // given
+        const options = {
+            serviceName: 'mock-service',
+            startTime: 1000,
+            endTime: 2000
+        };
+
+        // when
         connector
-            .getServiceInsightsForService('mock-service', 1000, 2000)
+            .getServiceInsightsForService(options)
             .then((result) => {
                 // then
                 expect(result).to.have.nested.property('summary.tracesConsidered', 1);
@@ -64,9 +71,17 @@ describe('serviceInsightsConnector.getServiceInsightsForService', () => {
     });
 
     it('should support relationships to filter', (done) => {
-        // given, when
+        // given
+        const options = {
+            serviceName: 'mock-service',
+            startTime: 1000,
+            endTime: 2000,
+            relationship: 'upstream'
+        };
+
+        // when
         connector
-            .getServiceInsightsForService('mock-service', 1000, 2000, 10, 'upstream')
+            .getServiceInsightsForService(options)
             .then((result) => {
                 // then
                 expect(result)

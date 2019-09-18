@@ -25,13 +25,18 @@ export class ServiceInsightsStore extends ErrorHandlingStore {
     @observable filterQuery = null;
 
     @action fetchServiceInsights(filterQuery) {
-        const {serviceName, startTime, endTime, relationship} = filterQuery;
+        const {serviceName, operationName, traceId, startTime, endTime, relationship} = filterQuery;
 
+        // optional parameters
+        const operationNameParam = operationName ? `&operationName=${operationName}` : '';
+        const traceIdParam = traceId ? `&traceId=${traceId}` : '';
         const relationshipParam = relationship ? `&relationship=${relationship}` : '';
 
         this.promiseState = fromPromise(
             axios
-                .get(`/api/serviceInsights?serviceName=${serviceName}&startTime=${startTime}&endTime=${endTime}${relationshipParam}`)
+                .get(
+                    `/api/serviceInsights?serviceName=${serviceName}${operationNameParam}${traceIdParam}&startTime=${startTime}&endTime=${endTime}${relationshipParam}`
+                )
                 .then((result) => {
                     this.filterQuery = filterQuery;
                     this.serviceInsights = result.data;

@@ -26,19 +26,23 @@ const metrics = require('../../utils/metrics');
 const TRACE_LIMIT = config.connectors.serviceInsights.traceLimit;
 
 const fetcher = (fetcherName) => ({
-    fetch(serviceName, startTime, endTime, limit) {
+    fetch(options) {
+        const {serviceName, operationName, traceId, startTime, endTime} = options;
+
         // local vars
         const deferred = Q.defer();
         const timer = metrics.timer(`fetcher_${fetcherName}`).start();
 
         // use given limit or default
-        limit = limit || TRACE_LIMIT;
+        const limit = options.limit || TRACE_LIMIT;
 
         // use traces connector
         tracesConnector
             .findTracesFlat({
                 useExpressionTree: 'true',
                 serviceName,
+                operationName,
+                traceId,
                 startTime,
                 endTime,
                 limit,

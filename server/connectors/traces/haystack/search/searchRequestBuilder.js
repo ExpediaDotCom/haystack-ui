@@ -24,8 +24,8 @@ const DEFAULT_RESULTS_LIMIT = 25;
 
 function createFieldsList(query) {
     return Object.keys(query)
-    .filter(key => query[key] && !reservedField.includes(key))
-    .map(key => expressionTreeBuilder(key, query[key]));
+        .filter((key) => query[key] && !reservedField.includes(key))
+        .map((key) => expressionTreeBuilder(key, query[key]));
 }
 
 requestBuilder.buildRequest = (query) => {

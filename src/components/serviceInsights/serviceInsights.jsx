@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 import Summary from './summary';
 import ServiceInsightsGraph from './serviceInsightsGraph/serviceInsightsGraph';
 import './serviceInsights.less';
+import Enums from '../../../universal/enums';
 
 @observer
 export default class ServiceInsights extends Component {
@@ -39,7 +40,11 @@ export default class ServiceInsights extends Component {
         }
     }
 
-    hasValidSearchProps = () => !!this.props.search.serviceName;
+    // Service Insights requires either a service to search for or a single trace
+    hasValidSearchProps = () => !!this.props.search.serviceName || !!this.props.search.traceId;
+
+    // relationship to the central node is only applicable when a service is specified
+    relationshipIsApplicable = () => !!this.props.search.serviceName;
 
     getServiceInsight = () => {
         const search = this.props.search;
@@ -61,13 +66,16 @@ export default class ServiceInsights extends Component {
         const micro = (milli) => milli * 1000;
         const startTime = micro(activeWindowTimeRange.from);
         const endTime = micro(activeWindowTimeRange.until);
+        const relationship = this.relationshipIsApplicable() ? search.relationship : Enums.relationship.all;
 
         // Get service insights
         this.props.store.fetchServiceInsights({
             serviceName: search.serviceName,
+            operationName: search.operationName,
+            traceId: search.traceId,
             startTime,
             endTime,
-            relationship: search.relationship
+            relationship
         });
     };
 
@@ -88,15 +96,17 @@ export default class ServiceInsights extends Component {
                     </p>
                 )}
 
-                <div className="service-insights__filter">
-                    <span>View:</span>
-                    <select value={this.props.search.relationship} onChange={this.handleSelectViewFilter}>
-                        <option value="downstream,upstream">Only Downstream & Upstream Dependencies</option>
-                        <option value="downstream">Only Downstream Dependencies</option>
-                        <option value="upstream">Only Upstream Dependencies</option>
-                        <option value="all">All Dependencies</option>
-                    </select>
-                </div>
+                {this.relationshipIsApplicable() && (
+                    <div className="service-insights__filter">
+                        <span>View:</span>
+                        <select value={this.props.search.relationship} onChange={this.handleSelectViewFilter}>
+                            <option value="downstream,upstream">Only Downstream &amp; Upstream Dependencies</option>
+                            <option value="downstream">Only Downstream Dependencies</option>
+                            <option value="upstream">Only Upstream Dependencies</option>
+                            <option value="all">All Dependencies</option>
+                        </select>
+                    </div>
+                )}
 
                 {this.hasValidSearchProps() &&
                     store.promiseState &&

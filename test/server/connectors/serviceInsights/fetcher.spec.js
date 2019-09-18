@@ -15,6 +15,8 @@
  *
  */
 
+/* eslint-disable no-unused-expressions */
+
 import {expect} from 'chai';
 
 const sinon = require('sinon');
@@ -23,7 +25,6 @@ const proxyquire = require('proxyquire');
 // Mock trace data
 // Initialized in `beforeEach()` during unit test
 let mockTraces = null;
-let mockRawTraces = null;
 
 // Create mock logger
 const logger = sinon.spy();
@@ -66,7 +67,6 @@ const fetcher = proxyquire('../../../../server/connectors/serviceInsights/fetche
 describe('fetcher.fetch', () => {
     beforeEach(() => {
         mockTraces = [];
-        mockRawTraces = [];
         metricsTimerSpy.reset();
         metricsStartSpy.reset();
         metricsStopSpy.reset();
@@ -76,9 +76,14 @@ describe('fetcher.fetch', () => {
     it('should return 0 spans given 0 traces', (done) => {
         // given
         const {fetch} = fetcher('service_insights');
+        const options = {
+            serviceName: 'mock-service',
+            startTime: '1000',
+            endTime: '2000'
+        };
 
         // when
-        fetch('mock-service', '1000', '2000')
+        fetch(options)
             .then((result) => {
                 // then
                 expect(result.serviceName).to.equal('mock-service');
@@ -94,9 +99,14 @@ describe('fetcher.fetch', () => {
         // given
         mockTraces = false;
         const {fetch} = fetcher('service_insights');
+        const options = {
+            serviceName: 'mock-service',
+            startTime: '1000',
+            endTime: '2000'
+        };
 
         // when
-        fetch('mock-service', '1000', '2000')
+        fetch(options)
             .then((result) => {
                 // then
                 expect(result.serviceName).to.equal('mock-service');
@@ -116,9 +126,15 @@ describe('fetcher.fetch', () => {
             }
         ];
         const {fetch} = fetcher('service insights');
+        const options = {
+            serviceName: 'mock-service',
+            startTime: '1000',
+            endTime: '2000',
+            limit: 1
+        };
 
         // when
-        fetch('mock-service', '1000', '2000', 1)
+        fetch(options)
             .then((result) => {
                 // then
                 expect(result.serviceName).to.equal('mock-service');
