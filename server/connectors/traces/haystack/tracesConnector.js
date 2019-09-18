@@ -142,12 +142,26 @@ connector.findTraces = (query) => {
     });
 };
 
-connector.findTracesFlat = (query) =>
-    tracesSearchFetcher.fetch(searchRequestBuilder.buildRequest(query)).then((result) => {
+connector.findTracesFlat = (query) => {
+    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+
+    if (traceId) {
+        // if search is for a singe trace, perform getTrace instead of search
+        const request = new messages.TraceRequest();
+        request.setTraceid(traceId);
+
+        return traceFetcher.fetch(request).then((result) => {
+            const pbTrace = messages.Trace.toObject(false, result);
+            return pbTraceConverter.toTraceJson(pbTrace);
+        });
+    }
+
+    return tracesSearchFetcher.fetch(searchRequestBuilder.buildRequest(query)).then((result) => {
         const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
         const jsonTraceResults = pbTraceResult.tracesList.map((pbTrace) => pbTraceConverter.toTraceJson(pbTrace));
         return jsonTraceResults;
     });
+};
 
 connector.getRawTrace = (traceId) => {
     const request = new messages.TraceRequest();

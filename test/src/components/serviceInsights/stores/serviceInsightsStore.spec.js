@@ -83,20 +83,24 @@ describe('serviceInsightsStore', () => {
         });
     });
 
-    it('should support an optional relationship parameter', (done) => {
+    it('should support optional parameters', (done) => {
         // given, when
         store.fetchServiceInsights({
             serviceName: 'node-web-ui',
             startTime: 1000,
             endTime: 2000,
-            relationship: 'all'
+            relationship: 'all',
+            operationName: 'some-operation',
+            traceId: 'some-trace'
         });
         observe(store.promiseState, () => {
             store.promiseState.case({
                 fulfilled: (result) => {
                     // then
                     expect(
-                        mockAxiosSpy.calledWith('/api/serviceInsights?serviceName=node-web-ui&startTime=1000&endTime=2000&relationship=all')
+                        mockAxiosSpy.calledWith(
+                            '/api/serviceInsights?serviceName=node-web-ui&operationName=some-operation&traceId=some-trace&startTime=1000&endTime=2000&relationship=all'
+                        )
                     ).to.equal(true);
                     expect(result.data.summary.violations).to.equal(1);
                     done();
