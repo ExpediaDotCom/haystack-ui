@@ -66,6 +66,30 @@ describe('<ServiceInsights/>', () => {
             expect(wrapper.find('Summary')).to.have.lengthOf(1);
             expect(wrapper.find('ServiceInsightsGraph')).to.have.lengthOf(1);
         });
+
+        it('should render relationship filter when it’s applicable', () => {
+            const store = createStoreStub('fulfilled', {
+                summary: {tracesConsidered: 5},
+                nodes: [{}],
+                links: []
+            });
+
+            const wrapper = shallow(<ServiceInsights search={{serviceName: 'web-ui'}} store={store} />);
+
+            expect(wrapper.find('.service-insights__filter')).to.have.lengthOf(1);
+        });
+
+        it('should not render relationship filter when it’s not applicable', () => {
+            const store = createStoreStub('fulfilled', {
+                summary: {tracesConsidered: 1},
+                nodes: [{}],
+                links: []
+            });
+
+            const wrapper = shallow(<ServiceInsights search={{traceId: 'abc123'}} store={store} />);
+
+            expect(wrapper.find('.service-insights__filter')).to.have.lengthOf(0);
+        });
     });
 
     describe('getServiceInsight()', () => {

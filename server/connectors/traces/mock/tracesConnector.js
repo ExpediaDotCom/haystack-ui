@@ -69,13 +69,16 @@ connector.getRawSpan = () =>
         throw new Error('Unsupported by mock connector.');
     });
 
-connector.getRawTraces = () => Q.fcall(() => generateMockTraceSpans());
-
 connector.findTraces = () =>
-    Q.fcall(() => [
-        {
-            traceId: 'unused-by-getRawTraces'
-        }
-    ]);
+    Q.fcall(() => {
+        throw new Error('Unsupported by mock connector.');
+    });
+
+connector.findTracesFlat = () => Q.fcall(() => generateMockTraceSpans());
+
+connector.getRawTraces = () =>
+    Q.fcall(() => {
+        throw new Error('Unsupported by mock connector.');
+    });
 
 module.exports = connector;

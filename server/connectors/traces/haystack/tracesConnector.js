@@ -36,11 +36,11 @@ const services = require('../../../../static_codegen/traceReader_grpc_pb');
 
 const grpcOptions = config.grpcOptions || {};
 
-
 const client = new services.TraceReaderClient(
     `${config.connectors.traces.haystackHost}:${config.connectors.traces.haystackPort}`,
     grpc.credentials.createInsecure(),
-    grpcOptions); // TODO make client secure
+    grpcOptions
+); // TODO make client secure
 
 const fieldValueFetcher = fetcher('getFieldValues', client);
 const fieldNameFetcher = fetcher('getFieldNames', client);
@@ -58,8 +58,10 @@ connector.getServices = () => {
     request.setFieldname('serviceName');
 
     return fieldValueFetcher
-    .fetch(request)
-        .then(result => result.getValuesList()).then(result => result.filter((value) => {
+        .fetch(request)
+        .then((result) => result.getValuesList())
+        .then((result) =>
+            result.filter((value) => {
                 const servicesFilter = config.connectors.traces.servicesFilter;
                 if (servicesFilter) {
                     for (let i = 0; i < servicesFilter.length; i += 1) {
@@ -76,26 +78,24 @@ connector.getServices = () => {
 connector.getSearchableKeys = () => {
     const request = new messages.Empty();
 
-    return fieldNameFetcher
-        .fetch(request)
-        .then((result) => {
-            const fieldNamesWithMetadata = {};
-            const names = result.getNamesList();
-            const metadata = result.getFieldmetadataList();
+    return fieldNameFetcher.fetch(request).then((result) => {
+        const fieldNamesWithMetadata = {};
+        const names = result.getNamesList();
+        const metadata = result.getFieldmetadataList();
 
-            // create map with key as whitelisted field name
-            names.forEach((name, index) => {
-                fieldNamesWithMetadata[name] = {isRangeQuery: metadata[index] ? metadata[index].getIsrangequery() : false};
-            });
-
-            // additional keys which are not part of Index
-            fieldNamesWithMetadata.traceId = {isRangeQuery: false};
-            fieldNamesWithMetadata.serviceName = {isRangeQuery: false};
-            fieldNamesWithMetadata.operationName = {isRangeQuery: false};
-            fieldNamesWithMetadata.duration = {isRangeQuery: true};
-
-            return fieldNamesWithMetadata;
+        // create map with key as whitelisted field name
+        names.forEach((name, index) => {
+            fieldNamesWithMetadata[name] = {isRangeQuery: metadata[index] ? metadata[index].getIsrangequery() : false};
         });
+
+        // additional keys which are not part of Index
+        fieldNamesWithMetadata.traceId = {isRangeQuery: false};
+        fieldNamesWithMetadata.serviceName = {isRangeQuery: false};
+        fieldNamesWithMetadata.operationName = {isRangeQuery: false};
+        fieldNamesWithMetadata.duration = {isRangeQuery: true};
+
+        return fieldNamesWithMetadata;
+    });
 };
 
 connector.getOperations = (serviceName) => {
@@ -108,18 +108,14 @@ connector.getOperations = (serviceName) => {
     request.setFiltersList(new messages.Field());
     request.setFiltersList([service]);
 
-    return fieldValueFetcher
-    .fetch(request)
-    .then(result => result.getValuesList());
+    return fieldValueFetcher.fetch(request).then((result) => result.getValuesList());
 };
 
 connector.getTrace = (traceId) => {
     const request = new messages.TraceRequest();
     request.setTraceid(traceId);
 
-    return traceFetcher
-    .fetch(request)
-    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
+    return traceFetcher.fetch(request).then((result) => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };
 
 connector.findTraces = (query) => {
@@ -130,9 +126,7 @@ connector.findTraces = (query) => {
         const request = new messages.TraceRequest();
         request.setTraceid(traceId);
 
-        return traceFetcher
-        .fetch(request)
-        .then((result) => {
+        return traceFetcher.fetch(request).then((result) => {
             const pbTrace = messages.Trace.toObject(false, result);
             const jsonTrace = pbTraceConverter.toTraceJson(pbTrace);
 
@@ -140,13 +134,32 @@ connector.findTraces = (query) => {
         });
     }
 
-    return tracesSearchFetcher
-    .fetch(searchRequestBuilder.buildRequest(query))
-    .then((result) => {
+    return tracesSearchFetcher.fetch(searchRequestBuilder.buildRequest(query)).then((result) => {
         const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
-        const jsonTraceResults = pbTraceResult.tracesList.map(pbTrace => pbTraceConverter.toTraceJson(pbTrace));
+        const jsonTraceResults = pbTraceResult.tracesList.map((pbTrace) => pbTraceConverter.toTraceJson(pbTrace));
 
         return searchResultsTransformer.transform(jsonTraceResults, query);
+    });
+};
+
+connector.findTracesFlat = (query) => {
+    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+
+    if (traceId) {
+        // if search is for a singe trace, perform getTrace instead of search
+        const request = new messages.TraceRequest();
+        request.setTraceid(traceId);
+
+        return traceFetcher.fetch(request).then((result) => {
+            const pbTrace = messages.Trace.toObject(false, result);
+            return pbTraceConverter.toTraceJson(pbTrace);
+        });
+    }
+
+    return tracesSearchFetcher.fetch(searchRequestBuilder.buildRequest(query)).then((result) => {
+        const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
+        const jsonTraceResults = pbTraceResult.tracesList.map((pbTrace) => pbTraceConverter.toTraceJson(pbTrace));
+        return jsonTraceResults;
     });
 };
 
@@ -154,64 +167,55 @@ connector.getRawTrace = (traceId) => {
     const request = new messages.TraceRequest();
     request.setTraceid(traceId);
 
-    return rawTraceFetcher
-    .fetch(request)
-    .then(result => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
+    return rawTraceFetcher.fetch(request).then((result) => pbTraceConverter.toTraceJson(messages.Trace.toObject(false, result)));
 };
 
 connector.getRawTraces = (traceIds) => {
     const request = new messages.RawTracesRequest();
     request.setTraceidList(JSON.parse(traceIds));
 
-    return rawTracesFetcher
-    .fetch(request)
-    .then(result => pbTraceConverter.toTracesJson(messages.RawTracesResult.toObject(false, result)));
+    return rawTracesFetcher.fetch(request).then((result) => pbTraceConverter.toTracesJson(messages.RawTracesResult.toObject(false, result)));
 };
 
 connector.getRawSpan = (traceId, spanId, serviceName) => {
     const request = new messages.SpanRequest();
     request.setTraceid(traceId);
     request.setSpanid(spanId);
-    return rawSpanFetcher
-    .fetch(request)
-    .then((result) => {
+    return rawSpanFetcher.fetch(request).then((result) => {
         const spanResponse = messages.SpanResponse.toObject(false, result);
-        const pbSpan = spanResponse.spansList.find(span => span.servicename === serviceName);
+        const pbSpan = spanResponse.spansList.find((span) => span.servicename === serviceName);
         return pbTraceConverter.toSpanJson(pbSpan);
-     }); 
+    });
 };
 
 connector.getLatencyCost = (traceId) => {
     const request = new messages.TraceRequest();
     request.setTraceid(traceId);
 
-    return traceCallGraphFetcher
-    .fetch(request)
-    .then((result) => {
+    return traceCallGraphFetcher.fetch(request).then((result) => {
         const latencyCost = callGraphResultTransformer.transform(messages.TraceCallGraph.toObject(false, result));
-        const edges = latencyCost.map(e => ({
+        const edges = latencyCost.map((e) => ({
             serviceName: e.from.serviceName,
             operationName: e.from.operationName
         }));
 
-        return trendsConnector && trendsConnector
-        .getEdgeLatency(edges)
-        .then((trends) => {
-            if (trends && trends.length) {
-                const latencyCostTrends = callGraphResultTransformer.mergeTrendsWithLatencyCost(latencyCost, trends);
-                return {latencyCost, latencyCostTrends};
-            }
-            return {latencyCost};
-        });
+        return (
+            trendsConnector &&
+            trendsConnector.getEdgeLatency(edges).then((trends) => {
+                if (trends && trends.length) {
+                    const latencyCostTrends = callGraphResultTransformer.mergeTrendsWithLatencyCost(latencyCost, trends);
+                    return {latencyCost, latencyCostTrends};
+                }
+                return {latencyCost};
+            })
+        );
     });
 };
 
-connector.getTimeline = query =>
-    traceCountsFetcher
-        .fetch(traceCountsRequestBuilder.buildRequest(query))
-        .then((result) => {
-            const pbTraceCounts = messages.TraceCounts.toObject(false, result);
-            return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts);
-        });
+connector.getTimeline = (query) =>
+    traceCountsFetcher.fetch(traceCountsRequestBuilder.buildRequest(query)).then((result) => {
+        const pbTraceCounts = messages.TraceCounts.toObject(false, result);
+        return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts);
+    });
 
 module.exports = connector;

@@ -46,14 +46,10 @@ module.exports = {
             //             eg. zipkinUrl: 'http://<zipkin>/api/v2'}
             //  - stub - a stub used during development, will be removed in future
             //  - mock - similar to stub, but specifically for testing Service Insights
-            //  - haystack-ui-proxy - proxy to another instance of haystack-ui (development use only)
             connectorName: 'stub',
-            // used by haystack-ui-proxy connector
-            // proxy: {
-            //     baseUrl: 'https://haystack.example.com',
-            //     cookieName: 'SESSION_COOKIE',
-            //     cookieValue: '' // use environment variable HAYSTACK_PROP_CONNECTORS_TRACES_PROXY_COOKIE__VALUE=your-cookie-value
-            // },
+            // Override haystack connector host and port.
+            // haystackHost: '127.0.0.1',
+            // haystackPort: '8088',
             // interval in seconds to refresh the service and operation data from backend
             serviceRefreshIntervalInSecs: 60
         },

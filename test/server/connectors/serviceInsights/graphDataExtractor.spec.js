@@ -167,11 +167,16 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
 
         // when
         const {summary} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: true});
+        const summaryTwo = extractNodesAndLinks({spans, serviceName: 'sOmE-Ui-aPp', traceLimitReached: true}).summary; // support case insensitive `serviceName`
 
         // then
         expect(summary).to.have.property('tracesConsidered', 2);
         expect(summary).to.have.property('hasViolations', false);
         expect(summary).to.have.property('traceLimitReached', true);
+
+        expect(summaryTwo).to.have.property('tracesConsidered', 2);
+        expect(summaryTwo).to.have.property('hasViolations', false);
+        expect(summaryTwo).to.have.property('traceLimitReached', true);
     });
 
     it('should return some nodes', () => {
@@ -263,6 +268,19 @@ describe('graphDataExtractor.extractNodesAndLinks', () => {
         expect(nodes.find((n) => n.type === 'database')).to.have.property('count', 1);
         expect(links.find((e) => e.target === 'some-ui-app')).to.have.property('count', 2);
         expect(links.find((e) => e.source === 'some-ui-app')).to.have.property('count', 1);
+    });
+
+    it('should gracefully handle an empty array of spans', () => {
+        // given
+        const spans = [];
+
+        // when
+        const {summary, nodes, links} = extractNodesAndLinks({spans, serviceName: 'some-ui-app', traceLimitReached: false});
+
+        // then
+        expect(summary).to.have.property('tracesConsidered', 0);
+        expect(nodes).to.be.an('array').that.is.empty;
+        expect(links).to.be.an('array').that.is.empty;
     });
 
     it('should gracefully handle missing parent spans', () => {

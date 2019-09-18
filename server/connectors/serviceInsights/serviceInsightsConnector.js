@@ -21,14 +21,26 @@ const extractor = require('./graphDataExtractor');
 
 const connector = {};
 
-function fetchServiceInsights(serviceName, startTime, endTime, limit, relationship) {
+function fetchServiceInsights(options) {
+    const {serviceName, operationName, traceId, startTime, endTime, limit, relationship} = options;
     const relationshipFilter = relationship ? relationship.split(',') : [];
     return fetcher(serviceName)
-        .fetch(serviceName, startTime, endTime, limit)
+        .fetch({serviceName, operationName, traceId, startTime, endTime, limit})
         .then((data) => extractor.extractNodesAndLinks(data, relationshipFilter));
 }
 
-connector.getServiceInsightsForService = (serviceName, startTime, endTime, limit, relationship) =>
-    Q.fcall(() => fetchServiceInsights(serviceName, startTime, endTime, limit, relationship));
+/**
+ * getServiceInsightsForService
+ *
+ * @param {object} options - Object with the following options:
+ * - serviceName - service to get Service Insights for (required, unless traceId is provided)
+ * - operationName - operation to filter for (optional)
+ * - traceId - single trace to get Service Insights for (optional)
+ * - startTime - filter for traces after this time in microseconds (required)
+ * - endTime - filter for traces before this time in microseconds (required)
+ * - limit - override the default config limit on number of traces to fetch (optional)
+ * - relationship - comma-separated list of relationships to include (optional)
+ */
+connector.getServiceInsightsForService = (options) => Q.fcall(() => fetchServiceInsights(options));
 
 module.exports = connector;

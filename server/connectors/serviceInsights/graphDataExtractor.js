@@ -20,6 +20,16 @@ const {detectCycles} = require('./detectCycles');
 const {edge, gateway, mesh, database, outbound, service} = require('../../config/config').connectors.serviceInsights.spanTypes;
 
 /**
+ * caseInsensitiveEquals()
+ * Function that returns true if a === b, case insensitive
+ * @param {*} a
+ * @param {*} b
+ */
+function caseInsensitiveEquals(a, b) {
+    return a && b && a.toLowerCase() === b.toLowerCase();
+}
+
+/**
  * createNode()
  * Function to create a graph node and enforce data schema for creating a node
  * @param {object} data
@@ -193,7 +203,7 @@ function findViolations(nodes, links) {
     // Store count of uninstrumented
     const uninstrumentedCount = [...nodes.values()]
         .map((node) => (node.type === type.uninstrumented ? 1 : 0))
-        .reduce((count, current) => count + current);
+        .reduce((count, current) => count + current, 0);
 
     // Summarize unique count of uninstrumented dependencies
     if (uninstrumentedCount > 0) {
@@ -235,8 +245,10 @@ function processNodesAndLinks(nodes, links, relationshipFilter) {
 
     // Traverse nodes upstream and downstream of the central node and set their relationship
     const centralNode = [...nodes.values()].find((node) => node.relationship === relationship.central);
-    traverseDownstream(centralNode);
-    traverseUpstream(centralNode);
+    if (centralNode) {
+        traverseDownstream(centralNode);
+        traverseUpstream(centralNode);
+    }
 
     // Process nodes
     nodes.forEach((node) => {
@@ -349,13 +361,12 @@ function createNodeFromSpan(nodeId, span, serviceName) {
         node.type = type.service;
     }
 
-    if (node.serviceName === serviceName && node.type !== type.outbound) {
+    if (caseInsensitiveEquals(node.serviceName, serviceName) && node.type !== type.outbound) {
         node.relationship = relationship.central;
     }
 
     return node;
 }
-
 /**
  * updateNodeFromSpan()
  * @param {object} node

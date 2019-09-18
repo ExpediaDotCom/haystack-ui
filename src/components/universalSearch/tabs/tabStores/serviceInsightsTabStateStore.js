@@ -23,9 +23,15 @@ const enableServiceInsights = (window.haystackUiConfig && window.haystackUiConfi
 export class ServiceInsightsTabStateStore {
     isAvailable = false;
 
-    init(search, tabProperties) {
+    init(search) {
+        this.search = search;
+
+        // If user is directly accessing URL, show this feature
+        const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
+
         // TODO: reconcile this with hasValidSearchProps() in serviceInsights.jsx
-        this.isAvailable = !!(subsystems && enableServiceInsights && tabProperties.onlyService);
+        const validSearchProps = search.serviceName || search.traceId;
+        this.isAvailable = isAccessingServiceInsights || !!(subsystems && enableServiceInsights && validSearchProps);
     }
 
     fetch() {
