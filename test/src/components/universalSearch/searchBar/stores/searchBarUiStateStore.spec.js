@@ -33,7 +33,6 @@ describe('class SearchBarUiStateStore()', () => {
         MockSearchBarUiStateStore.init(mockSearch);
     });
     it('initializes store properly', () => {
-        MockSearchBarUiStateStore.init(mockSearch);
         expect(MockSearchBarUiStateStore.getCurrentSearch()).to.deep.equal({
             tabId: 'traces',
             time: {
@@ -58,23 +57,15 @@ describe('class SearchBarUiStateStore()', () => {
                 value: 'bar'
             },
             {
-                key: 'nested_foo',
+                key: 'durationKey',
                 operator: '>',
-                value: [
-                    {
-                        key: 'foo_sub',
-                        operator: '=',
-                        value: 'bar_sub'
-                    }
-                ]
+                value: 'bar'
             }
         ];
         const result = SearchBarUiStateStore.turnChipsIntoSearch(chips);
         expect(result).to.deep.equal({
             foo: 'bar',
-            nested_foo: {
-                foo_sub: 'bar_sub'
-            }
+            durationKey: '>bar'
         });
     });
 });

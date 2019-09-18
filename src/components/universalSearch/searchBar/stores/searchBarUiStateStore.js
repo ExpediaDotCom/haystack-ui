@@ -71,6 +71,7 @@ export class SearchBarUiStateStore {
             const key = kv.key;
             searchObject[key] = kv.operator !== '=' ? `${kv.operator}${kv.value}` : kv.value;
         });
+
         return searchObject;
     }
 
@@ -79,7 +80,8 @@ export class SearchBarUiStateStore {
         queries.forEach((query, index) => {
             search[`query_${index + 1}`] = SearchBarUiStateStore.turnChipsIntoSearch(query);
         });
-        if (pendingQuery) search[`query_${queries.length + 1}`] = SearchBarUiStateStore.turnChipsIntoSearch(pendingQuery);
+        if (pendingQuery && pendingQuery.length > 0) search[`query_${queries.length + 1}`] = SearchBarUiStateStore.turnChipsIntoSearch(pendingQuery);
+
         return search;
     }
 

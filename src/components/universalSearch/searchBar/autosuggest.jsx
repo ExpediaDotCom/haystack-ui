@@ -120,7 +120,7 @@ export default class Autocomplete extends React.Component {
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.setInputRef = this.setInputRef.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.updateChips = this.updateChips.bind(this);
+        this.addChipToPendingQueries = this.addChipToPendingQueries.bind(this);
         this.modifyChip = this.modifyChip.bind(this);
         this.modifyQuery = this.modifyQuery.bind(this);
         this.deleteChip = this.deleteChip.bind(this);
@@ -241,7 +241,7 @@ export default class Autocomplete extends React.Component {
     // Trigger from pressing the search button or enter on an empty input field
     handleSearch() {
         if (this.inputRef.value) {
-            this.updateChips();
+            this.addChipToPendingQueries();
         }
         this.props.search();
     }
@@ -279,7 +279,7 @@ export default class Autocomplete extends React.Component {
                 this.setSuggestions(this.inputRef.value);
             });
         }
-        if (this.state.suggestedOnType === 'Values') this.updateChips();
+        if (this.state.suggestedOnType === 'Values') this.addChipToPendingQueries();
     }
 
     // Logic for when the user pastes into search bar
@@ -290,7 +290,7 @@ export default class Autocomplete extends React.Component {
             this.inputRef.value += char;
             if (char === ' ') this.handleKeyPress({keyCode: SPACE, preventDefault: () => {}});
         });
-        if (Autocomplete.completeInputString(this.inputRef.value)) this.updateChips();
+        if (Autocomplete.completeInputString(this.inputRef.value)) this.addChipToPendingQueries();
     }
 
     // Logic for navigation and selection with keyboard presses
@@ -305,18 +305,18 @@ export default class Autocomplete extends React.Component {
         } else if (keyPressed === ENTER) {
             e.preventDefault();
             if (this.inputRef.value.trim().length) {
-                this.updateChips();
+                this.addChipToPendingQueries();
             } else if (this.props.uiState.pendingQuery.length) {
                 this.handleBlur();
                 this.props.search();
             }
         } else if (keyPressed === TAB && this.inputRef.value) {
             e.preventDefault();
-            this.updateChips();
+            this.addChipToPendingQueries();
         } else if (keyPressed === SPACE) {
             if (Autocomplete.completeInputString(this.inputRef.value.trim())) {
                 e.preventDefault();
-                this.updateChips();
+                this.addChipToPendingQueries();
             }
         } else if (keyPressed === UP) {
             e.preventDefault();
@@ -415,7 +415,7 @@ export default class Autocomplete extends React.Component {
     }
 
     // Adds inputted text chip to client side store
-    updateChips() {
+    addChipToPendingQueries() {
         this.handleBlur();
         const inputValue = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value);
         if (!inputValue) return;
