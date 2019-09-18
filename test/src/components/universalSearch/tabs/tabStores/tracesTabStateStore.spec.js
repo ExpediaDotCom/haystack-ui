@@ -17,8 +17,8 @@
 
 import {expect} from 'chai';
 
-describe('class ServiceInsightsTabStateStore()', () => {
-    const modulePath = '../../../../../../src/components/universalSearch/tabs/tabStores/serviceInsightsTabStateStore';
+describe('<Traces />', () => {
+    const modulePath = '../../../../../../src/components/universalSearch/tabs/tabStores/tracesTabStateStore.js';
     let oldHaystackUiConfig = null;
     beforeEach(() => {
         // clear require cache
@@ -33,33 +33,13 @@ describe('class ServiceInsightsTabStateStore()', () => {
         let store = require(modulePath).default; // eslint-disable-line
         expect(store.isAvailable).to.equal(false);
     });
-    it('should initialize `isAvailable` as true if `enableServiceInsights` is enabled and search contains `serviceName`', () => {
-        window.haystackUiConfig = {
-            enableServiceInsights: true
-        };
 
+    it('should initialize `isAvailable` as true when accessing traces', () => {
+        window.haystackUiConfig = {};
         let store = require(modulePath).default; // eslint-disable-line
         store.init({
-            serviceName: 'mock-ui'
+            tabId: 'traces'
         });
         expect(store.isAvailable).to.equal(true);
-    });
-    it('should set `isAvailable` as true if `tabId` is set to `serviceInsights`', () => {
-        window.haystackUiConfig = {
-            enableServiceInsights: false
-        };
-        let store = require(modulePath).default; // eslint-disable-line
-        store.init({
-            tabId: 'serviceInsights',
-            serviceName: 'mock-ui'
-        });
-        expect(store.isAvailable).to.equal(true);
-    });
-    it('should return a valid serviceInsights store from fetch()', () => {
-        window.haystackUiConfig = {
-            enableServiceInsights: true
-        };
-        let store = require(modulePath).default; // eslint-disable-line
-        expect(JSON.stringify(store.fetch().serviceInsights)).to.equal('{}');
     });
 });

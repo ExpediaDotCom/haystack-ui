@@ -20,7 +20,7 @@ const request = require('supertest');
 describe('routes.servicesApi', () => {
     it('returns http 200 for /api/serviceInsights', (done) => {
         request(server)
-            .get('/api/serviceInsights?serviceName=mock-ui&from=1000&to=2000')
+            .get('/api/serviceInsights?serviceName=stark-service&from=1000&to=2000')
             .expect(200)
             .end((err) => {
                 if (err) {

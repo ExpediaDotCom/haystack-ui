@@ -88,7 +88,8 @@ export class SearchBarUiStateStore {
         // construct current search object using observables
         const search = SearchBarUiStateStore.turnChipsIntoSearch(this.chips);
 
-        const showAllTabs = Object.keys(search).every((key) => key === 'serviceName' || key === 'operationName');
+        const showAllTabs = Object.keys(search).every((key) => key === 'serviceName' || key === 'operationName') || this.tabId === 'serviceInsights';
+
         if (this.tabId && showAllTabs) {
             search.tabId = this.tabId;
         }
