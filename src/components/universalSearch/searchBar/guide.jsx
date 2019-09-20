@@ -16,44 +16,51 @@
 
 import React from 'react';
 
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const tracesEnabled = subsystems.includes('traces');
+const trendsEnabled = subsystems.includes('trends');
+const alertsEnabled = subsystems.includes('alerts');
+const serviceGraphEnabled = subsystems.includes('serviceGraph');
+const servicePerformanceEnabled = window.haystackUiConfig.enableServicePerformance;
+const serviceInsightsEnabled = window.haystackUiConfig.enableServiceInsights;
+
 export default () => (
     <div className="usb-suggestions__guide-wrapper pull-left">
         <section>
             <div><b>How to search</b></div>
-            <div>Specify tag key value pairs (in whitespace separated key=value format) to search for traces containing give tags, eg:</div>
+            <div>Create a query by specifying key/value pairs in <code>key=value</code> format to search for traces containing tags. One query can have multiple key/value pairs, eg:</div>
             <ul>
                 <li>Traces having traceId xxxx :<code>traceId=xxxx</code></li>
-                <li>Traces passing through test-svc service: <code>serviceName=test-svc</code></li>
-                <li>Traces passing through test-svc service and having error in any of its spans: <code>serviceName=test-svc error=true</code></li>
-            </ul>
-            <div>To target a specific span, enclose tag list in parenthesis, eg:</div>
-            <ul>
-                <li>Traces having testid=1 and having error in service test-svc span: <code>testid=1 (serviceName=test-svc error=true)</code></li>
+                <li>Traces containing a span with test-svc service: <code>serviceName=test-svc</code></li>
+                <li>Traces containing an error span with test-svc service: <code>serviceName=test-svc</code> <code>error=true</code></li>
             </ul>
         </section>
         <section>
             <div><b>How tabs show up</b></div>
             <div>
-                <ul>
-                    <li>If no tag searched -
+                    <li>If no tag searched:
                         <span className="usb-suggestions__guide-highlight">
-                            <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
-                            <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
+                            {serviceGraphEnabled && <React.Fragment><span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span></React.Fragment>}
+                            {servicePerformanceEnabled && <React.Fragment><span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span></React.Fragment>}
                         </span>
                     </li>
-                    <li>If only serviceName (and/or operationName) searched -
+                    <li>If only serviceName (and/or operationName) searched:
+                        <br />
                         <span className="usb-suggestions__guide-highlight">
+                            {tracesEnabled && <React.Fragment><span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span></React.Fragment>}
+                            {trendsEnabled && <React.Fragment><span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span></React.Fragment>}
+                            {alertsEnabled && <React.Fragment><span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span></React.Fragment>}
+                            {serviceGraphEnabled && <React.Fragment><span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span></React.Fragment>}
+                            {serviceInsightsEnabled && <React.Fragment><span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Insights </span></React.Fragment>}
+                        </span>
+                    </li>
+                    {   tracesEnabled &&
+                        <li>Any other combination of tags searched: 
+                            <span className="usb-suggestions__guide-highlight">
                             <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                            <span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span>
-                            <span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span>
                         </span>
-                    </li>
-                    <li>Any other combination of tags searched -
-                        <span className="usb-suggestions__guide-highlight">
-                            <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                        </span>
-                    </li>
-                </ul>
+                        </li>
+                    }
             </div>
         </section>
         <section>
