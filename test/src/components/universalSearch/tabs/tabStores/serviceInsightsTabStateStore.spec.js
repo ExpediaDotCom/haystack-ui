@@ -44,7 +44,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
         });
         expect(store.isAvailable).to.equal(true);
     });
-    it('should set `isAvailable` as true if `tabId` is set to `serviceInsights`', () => {
+    it('should set `isAvailable` as false if `tabId` is set to `serviceInsights` and feature is disabled', () => {
         window.haystackUiConfig = {
             enableServiceInsights: false
         };
@@ -53,7 +53,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
             tabId: 'serviceInsights',
             serviceName: 'mock-ui'
         });
-        expect(store.isAvailable).to.equal(true);
+        expect(store.isAvailable).to.equal(false);
     });
     it('should return a valid serviceInsights store from fetch()', () => {
         window.haystackUiConfig = {
