@@ -18,7 +18,7 @@ const blobUtil = {};
 
 blobUtil.isBlobUrlTag = (key) => {
     const lowercaseKey = key.toLowerCase();
-    return lowercaseKey === 'request-blob' || lowercaseKey === 'response-blob' || lowercaseKey === 'request' || lowercaseKey === 'response';
+    return lowercaseKey.endsWith('-blob') || lowercaseKey === 'request' || lowercaseKey === 'response';
 };
 
 blobUtil.formatBlobTagValue = (tagValue, blobsUrl) => {
