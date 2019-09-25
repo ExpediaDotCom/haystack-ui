@@ -90,16 +90,13 @@ if (config.enableSSO) {
 
 const apis = [];
 if (config.connectors.traces && config.connectors.traces.connectorName !== 'disabled') apis.push(require('./routes/servicesApi'));
-
-if (config.connectors.traces && config.connectors.traces.connectorName !== 'disabled') {
-    apis.push(require('./routes/tracesApi'));
-    apis.push(require('./routes/serviceInsightsApi'));
-}
-
+if (config.connectors.traces && config.connectors.traces.connectorName !== 'disabled') apis.push(require('./routes/tracesApi'));
 if (config.connectors.trends && config.connectors.trends.connectorName !== 'disabled') apis.push(require('./routes/trendsApi'));
 if (config.connectors.trends && config.connectors.trends.connectorName !== 'disabled') apis.push(require('./routes/servicesPerfApi'));
 if (config.connectors.alerts && config.connectors.alerts.connectorName !== 'disabled') apis.push(require('./routes/alertsApi'));
 if (config.connectors.serviceGraph && config.connectors.serviceGraph.connectorName !== 'disabled') apis.push(require('./routes/serviceGraphApi'));
+// prettier-ignore
+if (config.connectors.serviceInsights && config.connectors.serviceInsights.enableServiceInsights !== 'disabled') apis.push(require('./routes/serviceInsightsApi'));
 
 app.use('/api', ...apis);
 

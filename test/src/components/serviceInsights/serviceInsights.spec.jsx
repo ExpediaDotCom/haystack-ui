@@ -29,6 +29,7 @@ function createStoreStub(promiseState, data = {}) {
     return {
         serviceInsights: data,
         fetchServiceInsights: sinon.stub(),
+        hasValidSearch: true,
         promiseState: {
             case: (resp) => resp[promiseState]()
         }
@@ -162,16 +163,6 @@ describe('<ServiceInsights/>', () => {
             const wrapper = shallow(<ServiceInsights search={search} store={store} />);
 
             expect(wrapper.find('Error')).to.have.length(1);
-        });
-
-        it('hasValidSearchProps() returns true or false if valid URL is found', () => {
-            const mockStore = {
-                fetchServiceInsights: sinon.spy()
-            };
-            const instance = shallow(<ServiceInsights search={{}} store={mockStore} history={{}} />).instance();
-            expect(instance.hasValidSearchProps()).to.equal(false);
-            const instance2 = shallow(<ServiceInsights search={{serviceName: 'mock-ui'}} store={mockStore} history={{}} />).instance();
-            expect(instance2.hasValidSearchProps()).to.equal(true);
         });
 
         it('handles select view filter', () => {

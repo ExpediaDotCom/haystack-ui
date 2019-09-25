@@ -35,13 +35,10 @@ export default class ServiceInsights extends Component {
     };
 
     componentDidMount() {
-        if (this.hasValidSearchProps()) {
+        if (this.props.store.hasValidSearch) {
             this.getServiceInsight();
         }
     }
-
-    // Service Insights requires either a service to search for or a single trace
-    hasValidSearchProps = () => !!this.props.search.serviceName || !!this.props.search.traceId;
 
     // relationship to the central node is only applicable when a service is specified
     relationshipIsApplicable = () => !!this.props.search.serviceName;
@@ -90,7 +87,7 @@ export default class ServiceInsights extends Component {
 
         return (
             <section className="container serviceInsights">
-                {!this.hasValidSearchProps() && (
+                {!this.props.store.hasValidSearch && (
                     <p className="select-service-msg">
                         Please search for a serviceName in the global search bar to render a service insight (such as serviceName=example-service).
                     </p>
@@ -108,7 +105,7 @@ export default class ServiceInsights extends Component {
                     </div>
                 )}
 
-                {this.hasValidSearchProps() &&
+                {this.props.store.hasValidSearch &&
                     store.promiseState &&
                     store.promiseState.case({
                         pending: () => <Loading className="service-insights__loading" />,
