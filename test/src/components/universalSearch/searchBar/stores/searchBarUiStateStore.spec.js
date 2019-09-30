@@ -49,6 +49,29 @@ describe('class SearchBarUiStateStore()', () => {
         expect(SearchBarUiStateStore.setOperatorFromValue([false])).to.equal('=');
     });
 
+    it('checkKeyForPeriods() finds key with periods', () => {
+        const result = SearchBarUiStateStore.checkKeyForPeriods('foo', {
+            'http.status.code': 'value'
+        });
+        expect(result).to.equal('foo.http.status.code');
+    });
+
+    it('checkValueForPeriods() finds value of key with period', () => {
+        const result = SearchBarUiStateStore.checkValueForPeriods({
+            '.': 'foo'
+        });
+        expect(result).to.equal('foo');
+    });
+
+    it('createChip() properly transforms data', () => {
+        const result = SearchBarUiStateStore.createChip('serviceName', 'foo');
+        expect(result).to.deep.equal({
+            key: 'serviceName',
+            operator: '=',
+            value: 'foo'
+        });
+    });
+
     it('properly processes chips', () => {
         const chips = [
             {
@@ -66,6 +89,59 @@ describe('class SearchBarUiStateStore()', () => {
         expect(result).to.deep.equal({
             foo: 'bar',
             durationKey: '>bar'
+        });
+    });
+
+    it('getCurrentSearch() returns valid search object', () => {
+        const chips = [
+            {
+                key: 'foo',
+                operator: '=',
+                value: 'bar'
+            },
+            {
+                key: 'serviceName',
+                operator: '=',
+                value: 'mock-ui'
+            },
+            {
+                key: 'operationName',
+                operator: '=',
+                value: 'read'
+            }
+        ];
+        MockSearchBarUiStateStore = new SearchBarUiStateStore();
+        MockSearchBarUiStateStore.init({
+            tabId: 'serviceInsights',
+            time: {
+                from: 1,
+                to: 2
+            }
+        });
+        MockSearchBarUiStateStore.chips = chips;
+        const result = MockSearchBarUiStateStore.getCurrentSearch();
+        expect(result).to.deep.equal({
+            foo: 'bar',
+            tabId: 'serviceInsights',
+            operationName: 'read',
+            serviceName: 'mock-ui',
+            time: {
+                from: 1,
+                to: 2
+            }
+        });
+        MockSearchBarUiStateStore.setTimeWindow({
+            timePreset: 'Last Month'
+        });
+        const result2 = MockSearchBarUiStateStore.getCurrentSearch();
+        expect(result2).to.deep.equal({
+            foo: 'bar',
+            tabId: 'serviceInsights',
+            operationName: 'read',
+            serviceName: 'mock-ui',
+            time: {
+                preset: 'Last Month'
+            }
         });
     });
 });
