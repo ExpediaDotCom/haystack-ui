@@ -50,16 +50,18 @@ export default class Tabs extends React.Component {
 
         const keys = _.flatten(queries.map(query => Object.keys(query)));
 
-        const onlyService = keys.length === 1 && keys[0] === 'serviceName';
-        const onlyServiceAndOperation = keys.length === 2 && keys.filter(key => key === 'operationName').length === 1 && keys.filter(key => key === 'serviceName').length === 1;
-        const serviceName = onlyService || onlyServiceAndOperation ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
-        const operationName = onlyServiceAndOperation ? _.compact(queries.map(query => (query.operationName)))[0] : null;
+        const onlyServiceKey = keys.length === 1 && keys[0] === 'serviceName';
+        const onlyServiceAndOperationKeys = keys.length === 2 && keys.filter(key => key === 'operationName').length === 1 && keys.filter(key => key === 'serviceName').length === 1;
+        const serviceName = onlyServiceKey || onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
+        const operationName = onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.operationName)))[0] : null;
+        const traceId = keys.filter(key => key === 'traceId').length ? _.compact(queries.map(query => (query.traceId)))[0] : null;
         return {
             queries,
-            onlyService,
-            onlyServiceAndOperation,
+            onlyService: onlyServiceKey,
+            onlyServiceAndOperation: onlyServiceAndOperationKeys,
             serviceName,
-            operationName
+            operationName,
+            traceId
         };
     }
 
