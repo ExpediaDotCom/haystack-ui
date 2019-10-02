@@ -93,7 +93,7 @@ describe('class SearchBarUiStateStore()', () => {
     });
 
     it('getCurrentSearch() returns valid search object', () => {
-        const chips = [
+        const chips = [[
             {
                 key: 'foo',
                 operator: '=',
@@ -109,7 +109,7 @@ describe('class SearchBarUiStateStore()', () => {
                 operator: '=',
                 value: 'read'
             }
-        ];
+        ]];
         MockSearchBarUiStateStore = new SearchBarUiStateStore();
         MockSearchBarUiStateStore.init({
             tabId: 'serviceInsights',
@@ -118,13 +118,15 @@ describe('class SearchBarUiStateStore()', () => {
                 to: 2
             }
         });
-        MockSearchBarUiStateStore.chips = chips;
+        MockSearchBarUiStateStore.queries = chips;
         const result = MockSearchBarUiStateStore.getCurrentSearch();
         expect(result).to.deep.equal({
-            foo: 'bar',
+            query_1: {
+                foo: 'bar',
+                serviceName: 'mock-ui',
+                operationName: 'read'
+            },
             tabId: 'serviceInsights',
-            operationName: 'read',
-            serviceName: 'mock-ui',
             time: {
                 from: 1,
                 to: 2
@@ -135,10 +137,12 @@ describe('class SearchBarUiStateStore()', () => {
         });
         const result2 = MockSearchBarUiStateStore.getCurrentSearch();
         expect(result2).to.deep.equal({
-            foo: 'bar',
+            query_1: {
+                foo: 'bar',
+                serviceName: 'mock-ui',
+                operationName: 'read'
+            },
             tabId: 'serviceInsights',
-            operationName: 'read',
-            serviceName: 'mock-ui',
             time: {
                 preset: 'Last Month'
             }

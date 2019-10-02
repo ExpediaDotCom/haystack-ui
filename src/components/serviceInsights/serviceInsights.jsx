@@ -43,7 +43,7 @@ export default class ServiceInsights extends Component {
 
     render() {
         const {store} = this.props;
-        console.log(this.props.store);
+
         return (
             <section className="container serviceInsights">
                 {!this.props.store.hasValidSearch && (

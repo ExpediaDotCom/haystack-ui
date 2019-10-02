@@ -21,7 +21,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 import {shallow} from 'enzyme';
 
-import timeWindow from '../../../../src/utils/timeWindow';
+// import timeWindow from '../../../../src/utils/timeWindow';
 
 import ServiceInsights from '../../../../src/components/serviceInsights/serviceInsights';
 
@@ -94,54 +94,6 @@ describe('<ServiceInsights/>', () => {
     });
 
     describe('getServiceInsight()', () => {
-        it('should call fetchServiceInsights with default timewindow', () => {
-            const search = {serviceName: 'web-ui'};
-            const store = createStoreStub('pending');
-            shallow(<ServiceInsights search={search} store={store} />);
-
-            const queryParams = store.fetchServiceInsights.getCall(0).args[0];
-            expect(queryParams.serviceName).to.equal(search.serviceName);
-            expect(queryParams.startTime).to.exist;
-            expect(queryParams.endTime).to.exist;
-        });
-
-        it('should call toCustomTimeRange when search includes timeframe', () => {
-            const search = {
-                serviceName: 'web-ui',
-                time: {
-                    from: '123',
-                    to: '456'
-                }
-            };
-            const store = createStoreStub('pending');
-            timeWindow.toCustomTimeRange = sinon.stub().returns({value: 'foo'});
-            shallow(<ServiceInsights search={search} store={store} />);
-
-            sinon.assert.calledWith(timeWindow.toCustomTimeRange, '123', '456');
-        });
-
-        it('should call toTimeRange with preset values when search includes preset', () => {
-            const search = {
-                serviceName: 'web-ui',
-                time: {
-                    preset: 'foo'
-                }
-            };
-
-            window.haystackUiConfig.tracesTimePresetOptions = [
-                {
-                    shortName: 'foo',
-                    value: '888'
-                }
-            ];
-
-            const store = createStoreStub('pending');
-            timeWindow.toTimeRange = sinon.stub().returns({});
-            shallow(<ServiceInsights search={search} store={store} />);
-
-            sinon.assert.calledWith(timeWindow.toTimeRange, '888');
-        });
-
         it('should render an error message when no traces found', () => {
             const search = {
                 serviceName: 'web-ui',

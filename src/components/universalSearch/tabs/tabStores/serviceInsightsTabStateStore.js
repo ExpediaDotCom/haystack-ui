@@ -40,7 +40,7 @@ export class ServiceInsightsTabStateStore {
     }
 
     fetch() {
-        const search = this.search;
+        const search = this.search || {};
         const timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
         const isCustomTimeRange = !!(search.time && search.time.from && search.time.to);
 
