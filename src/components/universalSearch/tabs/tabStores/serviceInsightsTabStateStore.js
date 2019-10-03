@@ -38,6 +38,8 @@ export class ServiceInsightsTabStateStore {
     }
 
     fetch() {
+        // Copy `hasValidSearch` so serviceInsight reactJS component can leverage
+        store.hasValidSearch = this.hasValidSearch;
         return store;
     }
 }
