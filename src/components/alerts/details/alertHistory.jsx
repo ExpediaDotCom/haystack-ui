@@ -76,8 +76,10 @@ export default class AlertHistory extends React.Component {
         const to = (timestamp) + buffer;
 
         return linkBuilder.universalSearchTrendsLink({
-            serviceName: this.props.serviceName,
-            operationName: this.props.operationName,
+            query_1: {
+                serviceName: this.props.serviceName,
+                operationName: this.props.operationName
+            },
             time: {
                 from,
                 to
@@ -92,8 +94,10 @@ export default class AlertHistory extends React.Component {
         const to = (timestamp) + buffer;
 
         return linkBuilder.universalSearchTracesLink({
-            serviceName: this.props.serviceName,
-            operationName: this.props.operationName,
+            query_1: {
+                serviceName: this.props.serviceName,
+                operationName: this.props.operationName
+            },
             time: {
                 from,
                 to

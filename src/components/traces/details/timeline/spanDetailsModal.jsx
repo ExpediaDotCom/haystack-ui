@@ -103,8 +103,10 @@ export default class SpanDetailsModal extends React.Component {
                                 className="btn btn-primary"
                                 to={
                                     linkBuilder.universalSearchTrendsLink({
-                                        serviceName,
-                                        operationName: this.props.span.operationName
+                                        query_1: {
+                                            serviceName,
+                                            operationName: this.props.span.operationName
+                                        }
                                     })
                                 }
                             >

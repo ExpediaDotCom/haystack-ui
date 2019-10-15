@@ -154,10 +154,10 @@ export default class ServiceGraphResults extends React.Component {
             return;
         }
         if (highlightedObject.type === 'node') {
-            const search = this.props.search;
-            search.serviceName = highlightedObject.getName();
-            search.tabId = 'serviceGraph';
-            this.props.history.push(linkBuilder.universalSearchLink(search));
+            this.props.history.push(linkBuilder.universalSearchLink({
+                query_1: {serviceName: highlightedObject.getName()},
+                tabId: 'serviceGraph'
+            }));
             return;
         }
         this.setState({connDetails: highlightedObject.getName()});

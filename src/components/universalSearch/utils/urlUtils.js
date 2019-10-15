@@ -20,6 +20,7 @@ function nestedObjectToQuery(parentKey, key, value) {
 }
 
 export const convertSearchToUrlQuery = (search) => {
+    console.log(search);
     const uriComponents = Object.keys(search)
         .filter(key => search[key])
         .map((key) => {

@@ -50,6 +50,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @observable granularity = null;
 
     @action fetchSearchResults(query) {
+        console.log(query);
         const serviceName = decodeURIComponent(query.serviceName);
         const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
         const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));

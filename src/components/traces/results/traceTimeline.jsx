@@ -49,7 +49,7 @@ export default class TraceTimeline extends React.Component {
             const startTime = results[selectedIndex].x / 1000;
             const granularityMs = (results[1].x - results[0].x) / 1000;
             const endTime = startTime + granularityMs;
-
+            console.log(this.props.store.searchQuery);
             const newSearch = {
                 ...this.props.store.searchQuery,
                 timePreset: null,

@@ -49,8 +49,10 @@ export default class AlertDetailsToolbar extends React.Component {
 
     render() {
         const searchConstructor = {
-            serviceName: this.props.serviceName,
-            operationName: this.props.operationName,
+            query_1: {
+                serviceName: this.props.serviceName,
+                operationName: this.props.operationName
+            },
             interval: this.props.interval
         };
 

@@ -25,11 +25,13 @@ function spanLevelFiltersToList(filteredNames, traceSearch) {
 export class TracesTabStateStore {
     search = null;
     isAvailable = false;
+    tabProperties = null;
 
     init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
+        this.tabProperties = tabProperties;
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
@@ -47,7 +49,7 @@ export class TracesTabStateStore {
 
         traceSearch.useExpressionTree = true;
         traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);
-        traceSearch.serviceName = serviceName || '';
+        traceSearch.serviceName = this.tabProperties.serviceName || '';
         traceSearch.timePreset = this.search.time.preset;
         traceSearch.startTime = this.search.time.from;
         traceSearch.endTime = this.search.time.to;

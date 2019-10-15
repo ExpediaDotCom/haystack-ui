@@ -67,8 +67,10 @@ export default class TrendRow extends React.Component {
 
     static openTrendDetailInNewTab(serviceName, operationName, from, until) {
         const url = linkBuilder.universalSearchTrendsLink({
-            serviceName,
-            operationName,
+            query_1: {
+                serviceName,
+                operationName
+            },
             time: {
                 from,
                 to: until
@@ -96,7 +98,7 @@ export default class TrendRow extends React.Component {
     render() {
         const {serviceName, operationName, from, until} = this.props;
         const trends = this.state && this.state.trends;
-        
+
         const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
         const totalPoints = trends && trends.count && trends.count.map(p => p.value);
 

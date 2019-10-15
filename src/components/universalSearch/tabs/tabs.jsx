@@ -17,7 +17,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import _ from 'lodash';
 import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
@@ -40,30 +39,9 @@ export default class Tabs extends React.Component {
         search: PropTypes.object.isRequired,
         handleTabSelection: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        location: PropTypes.object.isRequired,
+        tabProperties: PropTypes.object.isRequired
     };
-
-    static constructTabPropertiesFromSearch(search) {
-        const queries = Object.keys(search)
-            .filter(searchKey => searchKey.startsWith('query_'))
-            .map(query => (search[query]));
-
-        const keys = _.flatten(queries.map(query => Object.keys(query)));
-
-        const onlyServiceKey = keys.length === 1 && keys[0] === 'serviceName';
-        const onlyServiceAndOperationKeys = keys.length === 2 && keys.filter(key => key === 'operationName').length === 1 && keys.filter(key => key === 'serviceName').length === 1;
-        const serviceName = onlyServiceKey || onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
-        const operationName = onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.operationName)))[0] : null;
-        const traceId = keys.filter(key => key === 'traceId').length ? _.compact(queries.map(query => (query.traceId)))[0] : null;
-        return {
-            queries,
-            onlyService: onlyServiceKey,
-            onlyServiceAndOperation: onlyServiceAndOperationKeys,
-            serviceName,
-            operationName,
-            traceId
-        };
-    }
 
     static tabs = [
         {
@@ -114,14 +92,12 @@ export default class Tabs extends React.Component {
         // bindings
         this.TabViewer = this.TabViewer.bind(this);
 
-        const tabProperties = Tabs.constructTabPropertiesFromSearch(this.props.search);
         // init state stores for tabs
-        Tabs.initTabs(props.search, tabProperties);
+        Tabs.initTabs(props.search, props.tabProperties);
     }
 
     componentWillReceiveProps(nextProps) {
-        const nextTabProperties = Tabs.constructTabPropertiesFromSearch(nextProps.search);
-        Tabs.initTabs(nextProps.search, nextTabProperties);
+        Tabs.initTabs(nextProps.search, nextProps.tabProperties);
     }
 
     TabViewer({tabId, history, location}) {
@@ -137,8 +113,8 @@ export default class Tabs extends React.Component {
                     <OperationResults
                         operationStore={store}
                         history={history}
-                        serviceName={this.props.search.serviceName}
-                        interval={this.props.search.interval || null}
+                        serviceName={this.props.tabProperties.serviceName}
+                        interval={this.props.tabProperties.interval}
                     />
                 );
             case 'alerts':
@@ -148,8 +124,8 @@ export default class Tabs extends React.Component {
                         history={history}
                         location={location}
                         defaultPreset={timeWindow.presets[5]}
-                        serviceName={this.props.search.serviceName}
-                        interval={this.props.search.interval}
+                        serviceName={this.props.tabProperties.serviceName}
+                        interval={this.props.tabProperties.interval || 'FiveMinute'}
                     />
                 );
             case 'serviceGraph':
@@ -179,7 +155,7 @@ export default class Tabs extends React.Component {
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ? (
                             <div className="universal-search-bar-tabs__alert-counter">
-                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval} />
+                                <AlertCounter serviceName={this.props.tabProperties.serviceName} interval={this.props.tabProperties.interval} />
                             </div>
                         ) : null}
                     </a>
