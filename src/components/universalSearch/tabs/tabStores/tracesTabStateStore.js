@@ -55,9 +55,9 @@ export class TracesTabStateStore {
         traceSearch.endTime = this.search.time.to;
 
         // remove nested keys
-        filteredNames.forEach((key) => {
-            traceSearch[key] = null;
-        });
+        // filteredNames.forEach((key) => {
+        //     traceSearch[key] = null;
+        // });
 
         tracesSearchStore.fetchSearchResults(traceSearch);
 

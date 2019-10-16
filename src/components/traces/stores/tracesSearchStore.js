@@ -50,12 +50,13 @@ export class TracesSearchStore extends ErrorHandlingStore {
     @observable granularity = null;
 
     @action fetchSearchResults(query) {
-        console.log(query);
-        const serviceName = decodeURIComponent(query.serviceName);
-        const operationName = (!query.operationName || query.operationName === 'all') ? null : decodeURIComponent(query.operationName);
-        const startTime = query.startTime ? query.startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(query.timePreset));
+        /* eslint-disable-next-line prefer-const */
+        let {startTime, endTime, serviceName, operationName, timePreset, useExpressionTree, spanLevelFilters, ...search} = query;
+        serviceName = decodeURIComponent(serviceName);
+        operationName = (!operationName || operationName === 'all') ? null : decodeURIComponent(operationName);
+        startTime = startTime ? startTime * 1000 : ((Date.now() * 1000) - toDurationMicroseconds(timePreset));
         const ARTIFICIAL_DELAY = 45 * 1000;  // artificial delay of 45 sec to get completed traces
-        const endTime = query.endTime ? query.endTime * 1000 : (Date.now() - ARTIFICIAL_DELAY) * 1000;
+        endTime = endTime ? endTime * 1000 : (Date.now() - ARTIFICIAL_DELAY) * 1000;
         const granularity = timeWindow.getHigherGranularity((endTime / 1000) - (startTime / 1000)) * 1000;
 
         const apiQuery = {...query,
@@ -70,7 +71,7 @@ export class TracesSearchStore extends ErrorHandlingStore {
 
         this.fetchTraceResults(queryUrlString);
         this.fetchTimeline(queryUrlString, granularity);
-        this.searchQuery = query;
+        this.searchQuery = search;
         this.apiQuery = apiQuery;
         this.granularity = granularity;
     }
