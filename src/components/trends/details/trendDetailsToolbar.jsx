@@ -238,8 +238,10 @@ export default class TrendDetailsToolbar extends React.Component {
         const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
 
         const tracesLink = linkBuilder.universalSearchTracesLink({
-            serviceName: this.props.serviceName,
-            operationName: this.props.opName,
+            query_1: {
+                serviceName: this.props.serviceName,
+                operationName: this.props.opName
+            },
             time: {
                 preset: this.state.activeWindow.shortName
             }

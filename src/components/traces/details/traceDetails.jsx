@@ -86,7 +86,7 @@ export default class TraceDetails extends React.Component {
     render() {
         const {traceId, traceDetailsStore} = this.props;
 
-        const search = {traceId}; // TODO add specific time for trace
+        const search = {query_1: {traceId}}; // TODO add specific time for trace
         const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
         const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
 
