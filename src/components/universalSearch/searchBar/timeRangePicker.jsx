@@ -45,12 +45,13 @@ export default class TimeRangePicker extends React.Component {
                 endDateTime: moment(parseInt(this.props.range.to, 10))
             } : {
             startDateTime: moment().subtract(1, 'h'),
-            endDateTime: moment()
+            endDateTime: moment(),
+            timeError: false,
+            tooltipHover: false
         };
 
-        this.state.timeError = false;
-
         this.showTimeError = this.showTimeError.bind(this);
+        this.toggleHover = this.toggleHover.bind(this);
         this.handlePresetSelection = this.handlePresetSelection.bind(this);
         this.handleCustomTimeRange = this.handleCustomTimeRange.bind(this);
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
@@ -64,6 +65,10 @@ export default class TimeRangePicker extends React.Component {
         } else {
             this.showTimeError();
         }
+    }
+
+    toggleHover() {
+        this.setState((prevState) => ({tooltipHover: !prevState.tooltipHover}));
     }
 
     handlePresetSelection(preset) {
@@ -103,7 +108,17 @@ export default class TimeRangePicker extends React.Component {
             <div className="timerange-picker">
                 <div className="timerange-picker__custom">
                     {this.state.timeError && <div className="datetimerange-error">Invalid time selection</div>}
-                    <h5>Time Range</h5>
+                    <h5>
+                        Time Range <span
+                            onMouseEnter={this.toggleHover}
+                            onMouseLeave={this.toggleHover}
+                            className="ti-info-alt timerange-picker__info-icon"
+                        />
+                    </h5>
+                    <span className={`tooltip timerange-picker__tooltip fade top in ${!this.state.tooltipHover ? 'hidden' : ''}`} role="tooltip">
+                        <span className="tooltip-arrow"/>
+                        <span className="tooltip-inner"><i>Local machine time ({Intl.DateTimeFormat().resolvedOptions().timeZone})</i></span>
+                    </span>
                     <div className="form-group">
                         <h6>From :</h6>
                         <DateTime className="datetimerange-picker" isValidDate={TimeRangePicker.fromValid} value={this.state.startDateTime} onChange={this.handleChangeStartDate}/>
