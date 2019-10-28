@@ -5,7 +5,10 @@
     "plugins": ["json", "prettier", "import", "jsx-a11y", "react"],
     "parserOptions": {
         "ecmaVersion": 7,
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "legacyDecorators": true
+        }
     },
     "env": {
         "node": true,
