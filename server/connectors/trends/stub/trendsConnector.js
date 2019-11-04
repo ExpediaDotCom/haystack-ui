@@ -20,23 +20,23 @@ const _ = require('lodash');
 const connector = {};
 
 function getValue(min, max) {
-    return _.round((Math.random() * (max - min)) + min, 0);
+    return _.round(Math.random() * (max - min) + min, 0);
 }
 
 function getTimeStamp(addMin) {
-    const currentTime = ((new Date()).getTime());
-    return (currentTime - (addMin * 60 * 1000));
+    const currentTime = new Date().getTime();
+    return currentTime - addMin * 60 * 1000;
 }
 
 function getRandomValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(1000, 10000000), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach((i) => valuesArr.push({value: getValue(1000, 10000000), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
 function getRandomPercentageValues(timeWindow, dataPoints) {
     const valuesArr = [];
-    _.range(dataPoints).forEach(i => valuesArr.push({value: getValue(80, 100), timestamp: getTimeStamp(i * timeWindow)}));
+    _.range(dataPoints).forEach((i) => valuesArr.push({value: getValue(80, 100), timestamp: getTimeStamp(i * timeWindow)}));
     return valuesArr;
 }
 
@@ -56,7 +56,8 @@ connector.getServiceStats = (serviceName, granularity, from, until) => {
             successPercentPoints: getRandomPercentageValues(mins, points),
             latestTp99Duration: 14530,
             tp99DurationPoints: getRandomValues(mins, points)
-        }]);
+        }
+    ]);
 
     return deffered.promise;
 };
@@ -64,30 +65,33 @@ connector.getServiceStats = (serviceName, granularity, from, until) => {
 connector.getServicePerfStats = () => {
     const deffered = Q.defer();
 
-    deffered.resolve(
-         [
-             {serviceName: 'Service 1', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000000, 10000000000)},
-             {serviceName: 'Service 2', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 10000000)},
-             {serviceName: 'Service 3', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 1000000)},
-             {serviceName: 'Service 4', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
-             {serviceName: 'Service 5', successPercent: null, failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
-             {serviceName: 'Service 6', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
-             {serviceName: 'Service 7', successPercent: null, failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
-             {serviceName: 'Service 8', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
-             {serviceName: 'Service 9', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
-             {serviceName: 'Service 10', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
-             {serviceName: 'Service 11', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
-             {serviceName: 'Service 12', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(1, 10)},
-             {serviceName: 'Service 13', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
-             {serviceName: 'Service 14', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
-             {serviceName: 'Service 15', successPercent: getValue(10, 40), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
-             {serviceName: 'Service 16', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 10000000)},
-             {serviceName: 'Service 17', successPercent: getValue(99, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
-             {serviceName: 'Service 18', successPercent: getValue(99, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
-             {serviceName: 'Service 19', successPercent: getValue(10, 40), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
-             {serviceName: 'Service 20', successPercent: getValue(0, 1), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)}
-         ]
-    );
+    deffered.resolve([
+        {
+            serviceName: 'Service 1',
+            successPercent: getValue(90, 100),
+            failureCount: getValue(10, 100000),
+            totalCount: getValue(1000000000, 10000000000)
+        },
+        {serviceName: 'Service 2', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 10000000)},
+        {serviceName: 'Service 3', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 1000000)},
+        {serviceName: 'Service 4', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+        {serviceName: 'Service 5', successPercent: null, failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+        {serviceName: 'Service 6', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+        {serviceName: 'Service 7', successPercent: null, failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+        {serviceName: 'Service 8', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
+        {serviceName: 'Service 9', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
+        {serviceName: 'Service 10', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
+        {serviceName: 'Service 11', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
+        {serviceName: 'Service 12', successPercent: getValue(95, 100), failureCount: getValue(10, 100000), totalCount: getValue(1, 10)},
+        {serviceName: 'Service 13', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
+        {serviceName: 'Service 14', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 1000)},
+        {serviceName: 'Service 15', successPercent: getValue(10, 40), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
+        {serviceName: 'Service 16', successPercent: getValue(90, 100), failureCount: getValue(10, 100000), totalCount: getValue(1000000, 10000000)},
+        {serviceName: 'Service 17', successPercent: getValue(99, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100000)},
+        {serviceName: 'Service 18', successPercent: getValue(99, 100), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
+        {serviceName: 'Service 19', successPercent: getValue(10, 40), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)},
+        {serviceName: 'Service 20', successPercent: getValue(0, 1), failureCount: getValue(10, 100000), totalCount: getValue(10, 100)}
+    ]);
 
     return deffered.promise;
 };
