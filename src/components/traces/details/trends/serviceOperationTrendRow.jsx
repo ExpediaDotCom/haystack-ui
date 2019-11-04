@@ -74,7 +74,6 @@ const TrendRow = ({serviceName, operationName, from, until, granularity}) => {
     const [trends, setTrends] = useState(null);
 
     useEffect(() => {
-        console.log('using effect')
         fetcher.fetchOperationTrends(serviceName, operationName, granularity, from, until)
             .then((result) => {
                 setTrends(result);

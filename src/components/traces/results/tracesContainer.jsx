@@ -1,22 +1,22 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-
+import {toJS} from 'mobx';
 import SpansView from './spansView';
 import SpanSearchStore from '../stores/spansSearchStore';
 import TraceResultsTable from './traceResultsTable';
 
 const TracesContainer = observer(({tracesSearchStore}) => {
-    const {timelineResults, searchQuery, results, totalCount} = tracesSearchStore;
+    const {timelineResults, searchQuery, searchResults, totalCount} = toJS(tracesSearchStore);
     const traceIds = tracesSearchStore.searchResults.map(t => t.traceId);
     const [showSpans, toggleView] = useState(false);
 
     return (
         <article>
             <div className="trace-result-summary">
-                {results.length > 1 ?
+                {searchResults.length > 1 ?
                     <span>
-                            <span>Showing latest <b>{results.length}</b> {results.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
+                            <span>Showing latest <b>{searchResults.length}</b> {searchResults.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
                         {
                             timelineResults && timelineResults.length
                                 ? <span className="text-muted text-right">Select a timeline bar to drill down.</span>
@@ -40,7 +40,7 @@ const TracesContainer = observer(({tracesSearchStore}) => {
                         />)
                         : (<TraceResultsTable
                             query={searchQuery}
-                            results={results}
+                            results={searchResults}
                         />)
                 }
             </section>

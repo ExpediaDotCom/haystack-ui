@@ -145,9 +145,7 @@ function getCaret(direction) {
     return <div/>;
 }
 
-function Header(name) {
-    return <span className="results-header">{name}</span>;
-}
+const Header = (props) => <span className="results-header">{props.name}</span>;
 
 const TraceResultsTable = ({query, results}) => {
     const [expanding, setExpanding] = useState([]);
@@ -308,9 +306,13 @@ const TraceResultsTable = ({query, results}) => {
     );
 };
 
+Header.propTypes = {
+    name: PropTypes.string.isRequired
+};
+
 TraceResultsTable.propTypes = {
     query: PropTypes.object.isRequired,
-    results: PropTypes.object.isRequired
+    results: PropTypes.array.isRequired
 };
 
 export default TraceResultsTable;

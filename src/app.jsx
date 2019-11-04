@@ -17,26 +17,18 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'mobx-react';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
 import Main from './main';
 import storesInitializer from './stores/storesInitializer';
 import withTracker from './components/common/withTracker';
-import serviceGraphStore from './components/serviceGraph/stores/serviceGraphStore';
 
 // app initializers
 storesInitializer.init();
 
-const stores = {
-    graphStore: serviceGraphStore
-};
-
 // mount react components
 ReactDOM.render(
-    <Provider {...stores}>
-        <Router>
-            <Route component={withTracker(Main)}/>
-        </Router>
-    </Provider>
+    <Router>
+        <Route component={withTracker(Main)}/>
+    </Router>
     , document.getElementById('root')
 );
