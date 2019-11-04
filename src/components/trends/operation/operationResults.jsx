@@ -22,7 +22,7 @@ import Loading from '../../common/loading';
 import OperationResultsTable from './operationResultsTable';
 import './operationResults.less';
 import Error from '../../common/error';
-
+import OperationResultsHeatmap from './operationResultsHeatmap';
 
 @observer
 export default class operationResults extends React.Component {
@@ -32,24 +32,63 @@ export default class operationResults extends React.Component {
         interval: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]).isRequired
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.toggleView = this.toggleView.bind(this);
+    }
+
+    toggleView() {
+        this.setState({showHeatmap: !this.state.showHeatmap});
+    }
+
     render() {
+        const showHeatmap = this.state.showHeatmap;
         return (
             <section className="operation-results">
-                { this.props.operationStore.statsPromiseState && this.props.operationStore.statsPromiseState.case({
-                    empty: () => <Loading />,
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.operationStore.statsPromiseState && this.props.operationStore.statsResults.length)
-                        ? <OperationResultsTable
-                            operationStore={this.props.operationStore}
-                            serviceName={this.props.serviceName}
-                            interval={this.props.interval}
-                        />
-                        : <Error errorMessage="There was a problem displaying operation results. Please try again later." />)
-                })
-                }
+                {this.props.operationStore.statsPromiseState &&
+                    this.props.operationStore.statsPromiseState.case({
+                        empty: () => <Loading />,
+                        pending: () => <Loading />,
+                        rejected: () => <Error />,
+                        fulfilled: () =>
+                            this.props.operationStore.statsPromiseState && this.props.operationStore.statsResults.length ? (
+                                <section>
+                                    <div className="operation-results-view-selector text-center">
+                                        <div className="btn-group btn-group-sm">
+                                            <button
+                                                className={showHeatmap ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'}
+                                                onClick={() => this.toggleView()}
+                                            >
+                                                Graph View
+                                            </button>
+                                            <button
+                                                className={!showHeatmap ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'}
+                                                onClick={() => this.toggleView()}
+                                            >
+                                                Heatmap View
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {showHeatmap ? (
+                                        <OperationResultsHeatmap
+                                            operationStore={this.props.operationStore}
+                                            serviceName={this.props.serviceName}
+                                            interval={this.props.interval}
+                                        />
+                                    ) : (
+                                        <OperationResultsTable
+                                            operationStore={this.props.operationStore}
+                                            serviceName={this.props.serviceName}
+                                            interval={this.props.interval}
+                                        />
+                                    )}
+                                </section>
+                            ) : (
+                                <Error errorMessage="There was a problem displaying operation results. Please try again later." />
+                            )
+                    })}
             </section>
         );
     }
 }
-
