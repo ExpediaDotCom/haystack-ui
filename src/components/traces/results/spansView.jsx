@@ -15,7 +15,7 @@
  *
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -23,31 +23,30 @@ import Loading from '../../common/loading';
 import Error from '../../common/error';
 import SpanResultsTable from './spanResultsTable';
 
-@observer
-export default class SpansView extends React.Component {
-    static propTypes = {
-        traceIds: PropTypes.array.isRequired,
-        store: PropTypes.object.isRequired
-    };
+const SpansView = observer(({traceIds, store}) => {
+    useEffect(() => {
+        store.fetchSpans(traceIds);
+    });
 
-    componentDidMount() {
-        this.props.store.fetchSpans(this.props.traceIds);
-    }
+    return (
+        <section>
+            { store.promiseState && store.promiseState.case({
+                empty: () => <Loading />,
+                pending: () => <Loading />,
+                rejected: () => <Error />,
+                fulfilled: () => ((store.results && store.results.length)
+                    ? <SpanResultsTable results={store.results}/>
+                    : <Error errorMessage="There was a problem displaying the spans. Please try again later."/>)
+            })
+            }
+        </section>
+    );
+});
 
-    render() {
-        return (
-            <section>
-                { this.props.store.promiseState && this.props.store.promiseState.case({
-                    empty: () => <Loading />,
-                    pending: () => <Loading />,
-                    rejected: () => <Error />,
-                    fulfilled: () => ((this.props.store.results && this.props.store.results.length)
-                        ? <SpanResultsTable results={this.props.store.results}/>
-                        : <Error errorMessage="There was a problem displaying the spans. Please try again later."/>)
-                })
-                }
-            </section>
-        );
-    }
-}
+SpansView.propTypes = {
+    traceIds: PropTypes.array.isRequired,
+    store: PropTypes.object.isRequired
+};
+
+export default SpansView;
 
