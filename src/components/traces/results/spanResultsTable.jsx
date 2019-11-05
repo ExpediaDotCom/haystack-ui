@@ -86,9 +86,7 @@ function totalDurationColumnFormatter(duration) {
     return `<div class="table__secondary text-right">${formatters.toDurationString(duration)}</div>`;
 }
 
-function Header(name) {
-    return <span className="results-header">{name}</span>;
-}
+const Header = ({name}) => <span className="results-header">{name}</span>;
 
 const SpanResultsTable = ({results}) => {
     const [expanding, setExpanding] = useState([]);
@@ -224,6 +222,10 @@ const SpanResultsTable = ({results}) => {
             ><Header name="Tags"/></TableHeaderColumn>
         </BootstrapTable>
     );
+};
+
+Header.propTypes = {
+    name: PropTypes.string.isRequired
 };
 
 SpanResultsTable.propTypes = {

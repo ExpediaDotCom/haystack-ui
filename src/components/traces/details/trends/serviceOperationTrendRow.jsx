@@ -78,7 +78,7 @@ const TrendRow = ({serviceName, operationName, from, until, granularity}) => {
             .then((result) => {
                 setTrends(result);
             });
-    });
+    }, []);
 
     const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
     const totalPoints = trends && trends.count && trends.count.map(p => p.value);

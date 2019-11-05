@@ -26,7 +26,7 @@ import SpanResultsTable from './spanResultsTable';
 const SpansView = observer(({traceIds, store}) => {
     useEffect(() => {
         store.fetchSpans(traceIds);
-    });
+    }, [traceIds]);
 
     return (
         <section>

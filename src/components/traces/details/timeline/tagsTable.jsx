@@ -58,7 +58,7 @@ const TagsTable = ({tags}) => {
 };
 
 TagsTable.propTypes = {
-    tags: PropTypes.object.isRequired
+    tags: PropTypes.array.isRequired
 };
 
 export default TagsTable;

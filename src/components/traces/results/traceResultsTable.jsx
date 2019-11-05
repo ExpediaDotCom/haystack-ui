@@ -145,7 +145,7 @@ function getCaret(direction) {
     return <div/>;
 }
 
-const Header = (props) => <span className="results-header">{props.name}</span>;
+const Header = ({name}) => <span className="results-header">{name}</span>;
 
 const TraceResultsTable = ({query, results}) => {
     const [expanding, setExpanding] = useState([]);

@@ -37,7 +37,7 @@ function tabViewer(traceId, tabSelected, traceDetailsStore) {
         case 3:
             return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} />;
         case 4:
-            return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore}/>;
+            return <RelatedTracesTabContainer store={traceDetailsStore}/>;
         default:
             return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
     }

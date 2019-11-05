@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -22,35 +22,33 @@ import Loading from '../../../common/loading';
 import Error from '../../../common/error';
 import TimelineTab from './timelineTab';
 
-@observer
-export default class TimelineTabContainer extends React.Component {
-    static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        store: PropTypes.object.isRequired
-    };
+const TimelineTabContainer = observer(({traceId, store}) => {
+    useEffect(() => {
+        store.fetchTraceDetails(traceId);
+    });
 
-    componentWillMount() {
-        this.props.store.fetchTraceDetails(this.props.traceId);
-    }
+    return (
+        <section>
+            { store.promiseState && store.promiseState.case({
+                pending: () => <Loading />,
+                rejected: () => <Error />,
+                fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
+                    ? <TimelineTab
+                        timelineSpans={store.timelineSpans}
+                        totalDuration={store.totalDuration}
+                        startTime={store.startTime}
+                        toggleExpand={store.toggleExpand}
+                    />
+                    : <Error errorMessage="There was a problem displaying the timeline tab. Please try again later."/>)
+            })
+            }
+        </section>
+    );
+});
 
-    render() {
-        const store = this.props.store;
-        return (
-            <section>
-                { store.promiseState && store.promiseState.case({
-                        pending: () => <Loading />,
-                        rejected: () => <Error />,
-                        fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <TimelineTab
-                                    timelineSpans={store.timelineSpans}
-                                    totalDuration={store.totalDuration}
-                                    startTime={store.startTime}
-                                    toggleExpand={store.toggleExpand}
-                                />
-                                : <Error errorMessage="There was a problem displaying the timeline tab. Please try again later."/>)
-                    })
-                }
-            </section>
-        );
-    }
-}
+TimelineTabContainer.propTypes = {
+    traceId: PropTypes.string.isRequired,
+    store: PropTypes.object.isRequired
+};
+
+export default TimelineTabContainer;
