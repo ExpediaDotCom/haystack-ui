@@ -50,7 +50,7 @@ const TraceDetails = observer(({traceId, traceDetailsStore}) => {
 
     useEffect(() => {
         rawTraceStore.fetchRawTrace(traceId);
-    });
+    }, [traceId]);
 
     const openModal = () => {
         setModalIsOpen(true);

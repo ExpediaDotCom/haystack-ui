@@ -25,7 +25,11 @@ import TimelineTab from './timelineTab';
 const TimelineTabContainer = observer(({traceId, store}) => {
     useEffect(() => {
         store.fetchTraceDetails(traceId);
-    });
+    }, [traceId]);
+
+    const toggleExpand = (id) => {
+        store.toggleExpand(id);
+    };
 
     return (
         <section>
@@ -37,7 +41,7 @@ const TimelineTabContainer = observer(({traceId, store}) => {
                         timelineSpans={store.timelineSpans}
                         totalDuration={store.totalDuration}
                         startTime={store.startTime}
-                        toggleExpand={store.toggleExpand}
+                        toggleExpand={toggleExpand}
                     />
                     : <Error errorMessage="There was a problem displaying the timeline tab. Please try again later."/>)
             })

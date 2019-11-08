@@ -23,7 +23,7 @@ import Error from '../../../common/error';
 import RelatedTracesTab from './relatedTracesTab';
 import { toPresetDisplayText } from '../../utils/presets';
 
-const RelatedTracesTabContainer = observer(({store}) => {
+const RelatedTracesTabContainer = observer(({store, traceId}) => {
     const timePresetOptions = (window.haystackUiConfig && window.haystackUiConfig.tracesTimePresetOptions);
 
     const fieldOptions = (window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions);
@@ -50,10 +50,12 @@ const RelatedTracesTabContainer = observer(({store}) => {
             return store.rejectRelatedTracesPromise('This trace does not have the chosen field');
         }
 
+        const selectedTraceId = chosenField.propertyToMatch === 'traceId' ? traceId : null;
+
         // Builds Query
         const query =  {
             serviceName: '',
-            [chosenField.fieldTag]: [chosenField.propertyToMatch] || tags[chosenField.propertyToMatch],
+            [chosenField.fieldTag]: selectedTraceId || tags[chosenField.propertyToMatch],
             timePreset: timePresetOptions[selectedTimeIndex].shortName
         };
 

@@ -67,7 +67,7 @@ const TimelineTab = observer(({timelineSpans, startTime, totalDuration, toggleEx
                     timelineWidthPercent={timelineWidthPercent}
                     timePointersHeight={timePointersHeight}
                     spanHeight={spanHeight}
-                    toggleExpand={(parentId, expand) => toggleExpand(parentId, expand)}
+                    toggleExpand={toggleExpand}
                     parentStartTimePercent={parentStartTimePercent}
                     parentIndex={parentIndex}
                 />);

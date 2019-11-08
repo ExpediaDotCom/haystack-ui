@@ -10,13 +10,17 @@
     [
       "@babel/plugin-proposal-class-properties",
       {
-        "loose": true,
+        "loose": true
       }
     ],
     "dynamic-import-node"
   ],
   "presets": [
-    "@babel/preset-env",
+    ["@babel/preset-env", {
+      "targets": {
+        "node": "current"
+      }
+    }],
     "@babel/preset-react"
   ]
 }

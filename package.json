@@ -101,7 +101,7 @@
     "mobx": "^5.14.2",
     "mobx-react": "^6.1.4",
     "mobx-utils": "^5.5.1",
-    "mocha": "^5.2.0",
+    "mocha": "5.2.0",
     "mocha-lcov-reporter": "^1.3.0",
     "nodemon": "^1.18.3",
     "nyc": "^14.1.1",
