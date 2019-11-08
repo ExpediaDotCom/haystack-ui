@@ -2,6 +2,7 @@
   "port": 8080,
   "cluster": true,
   "upstreamTimeout": 30000,
+  "encoder": "${encoder_type}",
   "enableServicePerformance": false,
   "enableServiceLevelTrends": false,
   "enableLatencyCostViewer": true,
@@ -11,20 +12,18 @@
   },
   "grpcOptions": {
     "grpc.max_receive_message_length": 52428800
-  }
+  },
   "connectors": {
     "traces": {
       "connectorName": "haystack",
       "haystackHost": "${trace_reader_hostname}",
       "haystackPort": ${trace_reader_service_port},
       "serviceRefreshIntervalInSecs": 60,
-      "fieldKeys": [${whitelisted_fields}],
+      "fieldKeys": [${whitelisted_fields}]
     },
     "trends": {
       "connectorName": "haystack",
-      "metricTankUrl": "http://${metrictank_hostname}:${metrictank_port}",
-      "encoder": "${metricpoint_encoder_type}"
-
+      "metricTankUrl": "http://${metrictank_hostname}:${metrictank_port}"
     },
     "alerts": {
       "connectorName": "haystack",

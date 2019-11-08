@@ -215,7 +215,8 @@ connector.getLatencyCost = (traceId) => {
 connector.getTimeline = (query) =>
     traceCountsFetcher.fetch(traceCountsRequestBuilder.buildRequest(query)).then((result) => {
         const pbTraceCounts = messages.TraceCounts.toObject(false, result);
-        return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts);
+        return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts)
+            .sort((a, b) => (a.x - b.x));
     });
 
 module.exports = connector;
