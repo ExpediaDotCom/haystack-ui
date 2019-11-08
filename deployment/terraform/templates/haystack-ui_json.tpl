@@ -2,6 +2,7 @@
   "port": 8080,
   "cluster": true,
   "upstreamTimeout": 30000,
+  "encoder": "${encoder_type}",
   "enableServicePerformance": false,
   "enableServiceLevelTrends": false,
   "enableLatencyCostViewer": true,
@@ -22,9 +23,7 @@
     },
     "trends": {
       "connectorName": "haystack",
-      "metricTankUrl": "http://${metrictank_hostname}:${metrictank_port}",
-      "encoder": "${metricpoint_encoder_type}"
-
+      "metricTankUrl": "http://${metrictank_hostname}:${metrictank_port}"
     },
     "alerts": {
       "connectorName": "haystack",
