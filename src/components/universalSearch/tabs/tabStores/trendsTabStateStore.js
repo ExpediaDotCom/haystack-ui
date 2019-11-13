@@ -49,7 +49,7 @@ export class TrendsTabStateStore {
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, ...kv} = search;
+        const {time, tabId, type, interval, useExpressionTree, spanLevelFilters, relationship, ...kv} = search;
         const keys = Object.keys(kv);
         this.isAvailable = enabled && keys.length && keys.every(key => key === 'serviceName' || key === 'operationName');
     }
