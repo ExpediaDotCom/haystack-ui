@@ -15,52 +15,67 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default () => (
-    <div className="usb-suggestions__guide-wrapper pull-left">
-        <section>
-            <div><b>How to search</b></div>
-            <div>Specify tag key value pairs (in whitespace separated key=value format) to search for traces containing give tags, eg:</div>
-            <ul>
-                <li>Traces having traceId xxxx :<code>traceId=xxxx</code></li>
-                <li>Traces passing through test-svc service: <code>serviceName=test-svc</code></li>
-                <li>Traces passing through test-svc service and having error in any of its spans: <code>serviceName=test-svc error=true</code></li>
-            </ul>
-            <div>To target a specific span, enclose tag list in parenthesis, eg:</div>
-            <ul>
-                <li>Traces having testid=1 and having error in service test-svc span: <code>testid=1 (serviceName=test-svc error=true)</code></li>
-            </ul>
-        </section>
-        <section>
-            <div><b>How tabs show up</b></div>
-            <div>
+const Guide = ({searchCookie}) => {
+    const history = searchCookie();
+    const historyList = history.reverse().map((searchObject) => (
+        <li key={searchObject}><a href={`/search${searchObject}`}>{searchObject.substring(1).split('&').join(', ')}</a></li>
+    ));
+
+    return (
+        <div className="usb-suggestions__guide-wrapper pull-left">
+            <section>
+                <div><b>How to search</b></div>
+                <div>Specify tag key value pairs (in whitespace separated key=value format) to search for traces containing give tags, eg:</div>
                 <ul>
-                    <li>If no tag searched -
-                        <span className="usb-suggestions__guide-highlight">
-                            <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
-                            <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
-                        </span>
-                    </li>
-                    <li>If only serviceName (and/or operationName) searched -
-                        <span className="usb-suggestions__guide-highlight">
-                            <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                            <span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span>
-                            <span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span>
-                        </span>
-                    </li>
-                    <li>Any other combination of tags searched -
-                        <span className="usb-suggestions__guide-highlight">
-                            <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                        </span>
-                    </li>
+                    <li>Traces having traceId xxxx :<code>traceId=xxxx</code></li>
+                    <li>Traces passing through test-svc service: <code>serviceName=test-svc</code></li>
+                    <li>Traces passing through test-svc service and having error in any of its spans: <code>serviceName=test-svc error=true</code></li>
                 </ul>
-            </div>
-        </section>
-        <section>
-            <div><b>History</b></div>
-            <ul>
-                <li><code>coming soon</code></li>
-            </ul>
-        </section>
-    </div>
-);
+                <div>To target a specific span, enclose tag list in parenthesis, eg:</div>
+                <ul>
+                    <li>Traces having testid=1 and having error in service test-svc span: <code>testid=1 (serviceName=test-svc error=true)</code></li>
+                </ul>
+            </section>
+            <section>
+                <div><b>How tabs show up</b></div>
+                <div>
+                    <ul>
+                        <li>If no tag searched -
+                            <span className="usb-suggestions__guide-highlight">
+                        <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
+                        <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
+                    </span>
+                        </li>
+                        <li>If only serviceName (and/or operationName) searched -
+                            <span className="usb-suggestions__guide-highlight">
+                        <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
+                        <span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span>
+                        <span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span>
+                    </span>
+                        </li>
+                        <li>Any other combination of tags searched -
+                            <span className="usb-suggestions__guide-highlight">
+                        <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
+                    </span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <div><b>History</b></div>
+                <ul>
+                    {historyList}
+                </ul>
+            </section>
+        </div>
+    );
+};
+
+Guide.propTypes = {
+    searchCookie: PropTypes.func.isRequired
+};
+
+export default Guide;
+

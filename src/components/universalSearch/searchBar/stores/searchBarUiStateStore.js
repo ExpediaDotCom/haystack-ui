@@ -84,6 +84,36 @@ export class SearchBarUiStateStore {
         return search;
     }
 
+    static setSearchUrlCookie(historyArray) {
+        const date = new Date();
+        date.setTime(date.getTime() + (24 * 60 * 60 * 1000)); // set cookie expiration date for one day
+        const expires = `expires=${date.toUTCString()}`;
+        document.cookie = `searchhistory=${JSON.stringify(historyArray)};${expires};path=/`;
+    }
+
+    getSearchUrlCookie() { // eslint-disable-line
+        const cookie = document.cookie.split(';');
+        for (let i = 0; i < cookie.length; i++) {
+            const inspect = cookie[i];
+            if (inspect.indexOf('searchhistory') === 0) {
+                return JSON.parse(inspect.substring('searchhistory='.length, inspect.length));
+            }
+        }
+        return [];
+    }
+
+    addLocationToSearchUrlCookie() {
+        const location = document.location.search;
+        const searchHistory = this.getSearchUrlCookie();
+        if (location && searchHistory[searchHistory.length - 1] !== location) {
+            searchHistory.push(location);
+            if (searchHistory.length > 5) {
+                searchHistory.shift();
+            }
+            SearchBarUiStateStore.setSearchUrlCookie(searchHistory);
+        }
+    }
+
     getCurrentSearch() {
         // construct current search object using observables
         const search = SearchBarUiStateStore.turnChipsIntoSearch(this.chips);
@@ -134,6 +164,7 @@ export class SearchBarUiStateStore {
                 }
             }
         });
+        this.addLocationToSearchUrlCookie(); // add search to history list in search bar
     }
 
     @action setTimeWindow(timeWindow) {

@@ -569,7 +569,7 @@ export default class Autocomplete extends React.Component {
                             suggestedOnType={this.state.suggestedOnType}
                             suggestedOnValue={this.state.suggestedOnValue}
                         />
-                        <Guide/>
+                        <Guide searchCookie={uiState.getSearchUrlCookie}/>
                     </div>
                 </div>
                 <ErrorMessaging inputError={this.state.inputError}/>
