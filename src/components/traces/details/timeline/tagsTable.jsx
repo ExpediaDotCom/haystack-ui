@@ -21,8 +21,7 @@ import blobUtil from '../../../../utils/blobUtil';
 import transform from '../../../../utils/tagValuesTransformer';
 
 const TagsTable = ({tags}) => {
-    const unique = _.uniqBy(tags, (tag) => tag.key.toLowerCase());
-    const sortedTags = _.sortBy(unique, [(tag) => tag.key.toLowerCase()]);
+    const sortedTags = _.sortBy(tags, [(tag) => tag.key.toLowerCase()]);
     const blobsUrl = window.haystackUiConfig && window.haystackUiConfig.blobsUrl;
 
     if (sortedTags.length) {
