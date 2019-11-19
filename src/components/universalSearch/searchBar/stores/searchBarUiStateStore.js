@@ -108,7 +108,7 @@ export class SearchBarUiStateStore {
         const rawLocation = document.location.search;
         const location = rawLocation
             .split('&')
-            .filter(kvPair => !kvPair.includes('tabId') && !kvPair.includes('time.preset')) // filter tabId & time.preset
+            .filter(kvPair => !kvPair.includes('tabId') && !kvPair.includes('time.preset')) // don't include tabId & time.preset
             .join('&');
         let searchHistory = SearchBarUiStateStore.getSearchUrlCookie();
         if (location && searchHistory[searchHistory.length - 1] !== location) { // prepend history array if new search
@@ -119,7 +119,9 @@ export class SearchBarUiStateStore {
             }
             SearchBarUiStateStore.setSearchUrlCookie(searchHistory);
         }
-        this.searchHistory = searchHistory.slice(1, searchHistory.length);
+        this.searchHistory = location.length ?
+            searchHistory.slice(1, searchHistory.length) :
+            searchHistory; // no need to display first item in list (current search) unless you're at home
     }
 
     getCurrentSearch() {
