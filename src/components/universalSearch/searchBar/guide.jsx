@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Guide = ({searchHistory}) => {
-    const historyList = searchHistory.reverse().map((searchObject) => (
+    const historyList = searchHistory.map((searchObject) => (
         <li key={searchObject}><code><a href={`/search${searchObject}`}>{searchObject.substring(1).split('&').join(', ')}</a></code></li>
     ));
 
@@ -64,7 +64,7 @@ const Guide = ({searchHistory}) => {
             </section>
             <section>
                 <div><b>History</b></div>
-                <ul>
+                <ul className="usb-suggestions__guide-history-list">
                     {historyList}
                 </ul>
             </section>

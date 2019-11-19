@@ -15,6 +15,7 @@
  */
 
 import {observable, action} from 'mobx';
+import _ from 'lodash';
 
 export class SearchBarUiStateStore {
     @observable serviceName = null;
@@ -89,31 +90,36 @@ export class SearchBarUiStateStore {
         const date = new Date();
         date.setTime(date.getTime() + (24 * 60 * 60 * 1000)); // set cookie expiration date for one day
         const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `searchhistory=${JSON.stringify(historyArray)};${expires};path=/`;
+        document.cookie = `searchhistory=${JSON.stringify(historyArray)};${expires};path=/`; // cookie must be set as string
     }
 
-    static getSearchUrlCookie() { // eslint-disable-line
+    static getSearchUrlCookie() {
         const cookie = document.cookie.split(';');
         for (let i = 0; i < cookie.length; i++) {
             const inspect = cookie[i];
             if (inspect.indexOf('searchhistory') === 0) {
-                return JSON.parse(inspect.substring('searchhistory='.length, inspect.length));
+                return JSON.parse(inspect.substring('searchhistory='.length, inspect.length)); // parse cookie string into array
             }
         }
         return [];
     }
 
     addLocationToSearchUrlCookie() {
-        const location = document.location.search;
-        const searchHistory = SearchBarUiStateStore.getSearchUrlCookie();
-        if (location && searchHistory[searchHistory.length - 1] !== location) {
-            searchHistory.push(location);
-            if (searchHistory.length > 5) {
-                searchHistory.shift();
+        const rawLocation = document.location.search;
+        const location = rawLocation
+            .split('&')
+            .filter(kvPair => !kvPair.includes('tabId') && !kvPair.includes('time.preset')) // filter tabId & time.preset
+            .join('&');
+        let searchHistory = SearchBarUiStateStore.getSearchUrlCookie();
+        if (location && searchHistory[searchHistory.length - 1] !== location) { // prepend history array if new search
+            searchHistory.unshift(location);
+            searchHistory = _.uniq(searchHistory);
+            if (searchHistory.length > 15) { // keep max history length at 15 to prevent massive cookie size
+                searchHistory.pop();
             }
             SearchBarUiStateStore.setSearchUrlCookie(searchHistory);
         }
-        this.searchHistory = searchHistory;
+        this.searchHistory = searchHistory.slice(1, searchHistory.length);
     }
 
     getCurrentSearch() {
