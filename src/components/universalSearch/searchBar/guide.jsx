@@ -17,10 +17,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Guide = ({searchCookie}) => {
-    const history = searchCookie();
-    const historyList = history.reverse().map((searchObject) => (
-        <li key={searchObject}><a href={`/search${searchObject}`}>{searchObject.substring(1).split('&').join(', ')}</a></li>
+const Guide = ({searchHistory}) => {
+    const historyList = searchHistory.reverse().map((searchObject) => (
+        <li key={searchObject}><code><a href={`/search${searchObject}`}>{searchObject.substring(1).split('&').join(', ')}</a></code></li>
     ));
 
     return (
@@ -44,21 +43,21 @@ const Guide = ({searchCookie}) => {
                     <ul>
                         <li>If no tag searched -
                             <span className="usb-suggestions__guide-highlight">
-                        <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
-                        <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
-                    </span>
+                                <span className="ti-vector usb-suggestions__guide-tab"/><span> Service Graph </span>
+                                <span className="ti-pie-chart usb-suggestions__guide-tab"/><span> Service Performance </span>
+                            </span>
                         </li>
                         <li>If only serviceName (and/or operationName) searched -
                             <span className="usb-suggestions__guide-highlight">
-                        <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                        <span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span>
-                        <span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span>
-                    </span>
+                                <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
+                                <span className="ti-stats-up usb-suggestions__guide-tab"/><span> Trends </span>
+                                <span className="ti-bell usb-suggestions__guide-tab"/><span> Alerts </span>
+                            </span>
                         </li>
                         <li>Any other combination of tags searched -
                             <span className="usb-suggestions__guide-highlight">
-                        <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
-                    </span>
+                                <span className="ti-align-left usb-suggestions__guide-tab"/><span> Traces </span>
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -74,7 +73,7 @@ const Guide = ({searchCookie}) => {
 };
 
 Guide.propTypes = {
-    searchCookie: PropTypes.func.isRequired
+    searchHistory: PropTypes.object.isRequired
 };
 
 export default Guide;

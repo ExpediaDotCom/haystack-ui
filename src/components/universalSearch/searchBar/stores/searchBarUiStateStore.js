@@ -25,6 +25,7 @@ export class SearchBarUiStateStore {
     @observable chips = [];
     @observable displayErrors = {};
     @observable tabId = null;
+    @observable searchHistory = [];
 
     @action init(search) {
         // initialize observables using search object
@@ -91,7 +92,7 @@ export class SearchBarUiStateStore {
         document.cookie = `searchhistory=${JSON.stringify(historyArray)};${expires};path=/`;
     }
 
-    getSearchUrlCookie() { // eslint-disable-line
+    static getSearchUrlCookie() { // eslint-disable-line
         const cookie = document.cookie.split(';');
         for (let i = 0; i < cookie.length; i++) {
             const inspect = cookie[i];
@@ -104,7 +105,7 @@ export class SearchBarUiStateStore {
 
     addLocationToSearchUrlCookie() {
         const location = document.location.search;
-        const searchHistory = this.getSearchUrlCookie();
+        const searchHistory = SearchBarUiStateStore.getSearchUrlCookie();
         if (location && searchHistory[searchHistory.length - 1] !== location) {
             searchHistory.push(location);
             if (searchHistory.length > 5) {
@@ -112,6 +113,7 @@ export class SearchBarUiStateStore {
             }
             SearchBarUiStateStore.setSearchUrlCookie(searchHistory);
         }
+        this.searchHistory = searchHistory;
     }
 
     getCurrentSearch() {
