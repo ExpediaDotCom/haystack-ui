@@ -15,7 +15,7 @@
  *
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import Clipboard from 'react-copy-to-clipboard';
@@ -30,114 +30,102 @@ import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
 import linkBuilder from '../../../utils/linkBuilder';
 
-@observer
-export default class TraceDetails extends React.Component {
-    static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        traceDetailsStore: PropTypes.object.isRequired
+function tabViewer(traceId, tabSelected, traceDetailsStore) {
+    switch (tabSelected) {
+        case 2:
+            return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
+        case 3:
+            return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} />;
+        case 4:
+            return <RelatedTracesTabContainer store={traceDetailsStore}/>;
+        default:
+            return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
+    }
+}
+
+const TraceDetails = observer(({traceId, traceDetailsStore}) => {
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [tabSelected, setTabSelected] = useState(1);
+    const [showCopied, setShowCopied] = useState(false);
+
+    useEffect(() => {
+        rawTraceStore.fetchRawTrace(traceId);
+    }, [traceId]);
+
+    const openModal = () => {
+        setModalIsOpen(true);
     };
 
-    static tabViewer(traceId, tabSelected, traceDetailsStore) {
-        switch (tabSelected) {
-            case 2:
-                return <LatencyCostTabContainer traceId={traceId} store={latencyCostStore} />;
-            case 3:
-                return <TrendsTabContainer traceId={traceId} store={traceDetailsStore} />;
-            case 4:
-                return <RelatedTracesTabContainer traceId={traceId} store={traceDetailsStore}/>;
-            default:
-                return <TimelineTabContainer traceId={traceId} store={traceDetailsStore} />;
-        }
-    }
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            modalIsOpen: false,
-            tabSelected: 1
-        };
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.toggleTab = this.toggleTab.bind(this);
-        this.handleCopy = this.handleCopy.bind(this);
-    }
+    const toggleTab = (tabIndex) => {
+        setTabSelected(tabIndex);
+    };
 
-    componentDidMount() {
-        rawTraceStore.fetchRawTrace(this.props.traceId);
-    }
+    const handleCopy = () => {
+        setShowCopied(true);
+        setTimeout(() => setShowCopied(false), 2000);
+    };
+    const search = {traceId}; // TODO add specific time for trace
+    const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
+    const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
 
-    openModal() {
-        this.setState({modalIsOpen: true});
-    }
-
-    closeModal() {
-        this.setState({modalIsOpen: false});
-    }
-
-    toggleTab(tabIndex) {
-        this.setState({tabSelected: tabIndex});
-    }
-
-    handleCopy() {
-        this.setState({showCopied: true});
-        setTimeout(() => this.setState({showCopied: false}), 2000);
-    }
-
-    render() {
-        const {traceId, traceDetailsStore} = this.props;
-
-        const search = {traceId}; // TODO add specific time for trace
-        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-        const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
-
-        return (
-            <section className="table-row-details">
-                <div className="tabs-nav-container clearfix">
-                    <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
-                    <div className="btn-group btn-group-sm pull-right">
-                          {
-                            this.state.showCopied ? (
-                                <span className="tooltip fade left in" role="tooltip">
+    return (
+        <section className="table-row-details">
+            <div className="tabs-nav-container clearfix">
+                <h5 className="pull-left traces-details-trace-id__name">TraceId: <span className="traces-details-trace-id__value">{traceId}</span></h5>
+                <div className="btn-group btn-group-sm pull-right">
+                    {
+                        showCopied ? (
+                            <span className="tooltip fade left in" role="tooltip">
                                     <span className="tooltip-arrow" />
                                     <span className="tooltip-inner">Link Copied!</span>
                                 </span>
-                            ) : null
-                          }
-                        <a role="button" className="btn btn-default" href={rawTraceDataLink} download={`${traceId}.json`} tabIndex="-1">
-                            <span className="trace-details-toolbar-option-icon ti-download"/> Download Trace
-                        </a>
-                        <a role="button" className="btn btn-default" onClick={this.openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-server"/> Raw Trace</a>
-                        <a role="button" className="btn btn-sm btn-default" target="_blank" href={traceUrl}><span className="ti-new-window"/> Open in new tab</a>
-                        <Clipboard text={traceUrl} onCopy={this.handleCopy}>
-                            <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
-                        </Clipboard>
-                    </div>
-                    <div className="trace-details-tabs pull-left full-width">
-                        <ul className="nav nav-tabs">
-                            <li className={this.state.tabSelected === 1 ? 'active' : ''}>
-                                <a role="button" id="timeline-view" tabIndex="-1" onClick={() => this.toggleTab(1)} >Timeline</a>
-                            </li>
-                            { window.haystackUiConfig && window.haystackUiConfig.subsystems.includes('trends') ? (
-                                <React.Fragment>
-                                    <li className={this.state.tabSelected === 2 ? 'active' : ''}>
-                                        <a role="button" id="latency-view" tabIndex="-1" onClick={() => this.toggleTab(2)} >Latency Cost</a>
-                                    </li>
-                                    <li className={this.state.tabSelected === 3 ? 'active' : ''}>
-                                    <a role="button" id="trends-view" tabIndex="-1" onClick={() => this.toggleTab(3)} >Trends</a>
-                                    </li>
-                                </React.Fragment>) : null }
-                            { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
-                            <li className={this.state.tabSelected === 4 ? 'active' : ''}>
-                                <a role="button" id="related-view" tabIndex="-1" onClick={() => this.toggleTab(4)} >Related Traces</a>
-                            </li>) : null }
-                        </ul>
-                    </div>
+                        ) : null
+                    }
+                    <a role="button" className="btn btn-default" href={rawTraceDataLink} download={`${traceId}.json`} tabIndex="-1">
+                        <span className="trace-details-toolbar-option-icon ti-download"/> Download Trace
+                    </a>
+                    <a role="button" className="btn btn-default" onClick={openModal} tabIndex="-1"><span className="trace-details-toolbar-option-icon ti-server"/> Raw Trace</a>
+                    <a role="button" className="btn btn-sm btn-default" target="_blank" href={traceUrl}><span className="ti-new-window"/> Open in new tab</a>
+                    <Clipboard text={traceUrl} onCopy={handleCopy}>
+                        <a role="button" className="btn btn-primary"><span className="trace-details-toolbar-option-icon ti-link"/> Share Trace</a>
+                    </Clipboard>
                 </div>
+                <div className="trace-details-tabs pull-left full-width">
+                    <ul className="nav nav-tabs">
+                        <li className={tabSelected === 1 ? 'active' : ''}>
+                            <a role="button" id="timeline-view" tabIndex="-1" onClick={() => toggleTab(1)} >Timeline</a>
+                        </li>
+                        { window.haystackUiConfig && window.haystackUiConfig.subsystems.includes('trends') ? (
+                            <>
+                                <li className={tabSelected === 2 ? 'active' : ''}>
+                                    <a role="button" id="latency-view" tabIndex="-1" onClick={() => toggleTab(2)} >Latency Cost</a>
+                                </li>
+                                <li className={tabSelected === 3 ? 'active' : ''}>
+                                    <a role="button" id="trends-view" tabIndex="-1" onClick={() => toggleTab(3)} >Trends</a>
+                                </li>
+                            </>) : null }
+                        { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
+                            <li className={tabSelected === 4 ? 'active' : ''}>
+                                <a role="button" id="related-view" tabIndex="-1" onClick={() => toggleTab(4)} >Related Traces</a>
+                            </li>) : null }
+                    </ul>
+                </div>
+            </div>
 
-                <section>{TraceDetails.tabViewer(traceId, this.state.tabSelected, traceDetailsStore)}</section>
+            <section>{tabViewer(traceId, tabSelected, traceDetailsStore)}</section>
 
-                <RawTraceModal isOpen={this.state.modalIsOpen} closeModal={this.closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
-            </section>
-        );
-    }
-}
+            <RawTraceModal isOpen={modalIsOpen} closeModal={closeModal} traceId={traceId} rawTraceStore={rawTraceStore}/>
+        </section>
+    );
+});
+
+TraceDetails.propTypes = {
+    traceId: PropTypes.string.isRequired,
+    traceDetailsStore: PropTypes.object.isRequired
+};
+
+export default TraceDetails;

@@ -183,12 +183,10 @@ describe('<UniversalSearch />', () => {
 
     it('should update the state and rerender upon new location prop', () => {
         const wrapper = shallow(<UniversalSearch.WrappedComponent location={stubLocation} history={stubHistory}/>);
-        const spy = sinon.spy(UniversalSearch.WrappedComponent.prototype, 'setState');
 
-        expect(spy.calledOnce).to.equal(false);
         wrapper.setProps({location: updatedStubLocation});
 
-        expect(spy.calledOnce).to.equal(true);
+        expect(wrapper.state().search.serviceName).to.equal('test-service');
     });
 
     it('should render traces trends and alerts with a serviceName query', () => {

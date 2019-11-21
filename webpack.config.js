@@ -57,8 +57,22 @@ module.exports = {
                 loader: 'babel-loader',
                 options: {
                     babelrc: false,
-                    plugins: ['lodash', 'transform-decorators-legacy'],
-                    presets: ['env', 'react', 'stage-1']
+                    plugins: [
+                        'lodash',
+                        [
+                            '@babel/plugin-proposal-decorators',
+                            {
+                                legacy: true
+                            }
+                        ],
+                        [
+                            '@babel/plugin-proposal-class-properties',
+                            {
+                                loose: true
+                            }
+                        ],
+                    ],
+                    presets: ['@babel/preset-env', '@babel/preset-react']
                 }
             },
             {

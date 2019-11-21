@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -22,30 +22,27 @@ import Loading from '../../../common/loading';
 import Error from '../../../common/error';
 import TrendsTab from './trendsTab';
 
-@observer
-export default class extends React.Component {
-    static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        store: PropTypes.object.isRequired
-    };
+const TrendsTabContainer = observer(({traceId, store}) => {
+    useEffect(() => {
+       store.fetchTraceDetails(traceId);
+    });
 
-    componentWillMount() {
-        this.props.store.fetchTraceDetails(this.props.traceId);
-    }
+    return (
+        <section>
+            { store.promiseState && store.promiseState.case({
+                pending: () => <Loading />,
+                rejected: () => <Error />,
+                fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
+                    ? <TrendsTab timelineSpans={store.timelineSpans} />
+                    : <Error errorMessage="There was a problem displaying the trends tab. Please try again later." />)
+            })
+            }
+        </section>
+    );
+});
+TrendsTabContainer.propTypes = {
+    traceId: PropTypes.string.isRequired,
+    store: PropTypes.object.isRequired
+};
 
-    render() {
-        const { store } = this.props;
-        return (
-            <section>
-                { store.promiseState && store.promiseState.case({
-                        pending: () => <Loading />,
-                        rejected: () => <Error />,
-                        fulfilled: () => ((store.timelineSpans && store.timelineSpans.length)
-                                ? <TrendsTab timelineSpans={store.timelineSpans} />
-                                : <Error errorMessage="There was a problem displaying the trends tab. Please try again later." />)
-                    })
-                }
-            </section>
-        );
-    }
-}
+export default TrendsTabContainer;

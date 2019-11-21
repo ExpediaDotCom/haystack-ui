@@ -102,7 +102,7 @@ module.exports = {
         serviceInsights: {
             // serviceInsights uses traces.connectorName
             // Service Insights is beta, so disabled by default
-            enableServiceInsights: true,
+            enableServiceInsights: false,
             // max number of traces to retrieve
             traceLimit: 200,
             // functions to generate nodes from different types of spans

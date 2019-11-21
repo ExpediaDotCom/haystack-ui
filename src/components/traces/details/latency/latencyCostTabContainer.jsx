@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -22,32 +22,30 @@ import Loading from '../../../common/loading';
 import Error from '../../../common/error';
 import LatencyCostTab from './latencyCostTab';
 
-@observer
-export default class LatencyTabContainer extends React.Component {
-    static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        store: PropTypes.object.isRequired
-    };
+const LatencyTabContainer = observer(({traceId, store}) => {
+    useEffect(() => {
+        store.fetchLatencyCost(traceId);
+    });
 
-    componentWillMount() {
-        this.props.store.fetchLatencyCost(this.props.traceId);
-    }
+    return (
+        <section>
+            { store.promiseState && store.promiseState.case({
+                pending: () => <Loading />,
+                rejected: () => <Error />,
+                fulfilled: () => ((store.latencyCost.latencyCost && store.latencyCost.latencyCost.length)
+                    ? <LatencyCostTab latencyCost={store.latencyCost.latencyCost} latencyCostTrends={store.latencyCost.latencyCostTrends} />
+                    : (<div className="well well-sm">
+                        <h6>No span with parent-child relationship found</h6>
+                    </div>))
+            })
+            }
+        </section>
+    );
+});
 
-    render() {
-        const store = this.props.store;
-        return (
-            <section>
-                { store.promiseState && store.promiseState.case({
-                        pending: () => <Loading />,
-                        rejected: () => <Error />,
-                        fulfilled: () => ((store.latencyCost.latencyCost && store.latencyCost.latencyCost.length)
-                                ? <LatencyCostTab latencyCost={store.latencyCost.latencyCost} latencyCostTrends={store.latencyCost.latencyCostTrends} />
-                                : (<div className="well well-sm">
-                                        <h6>No span with parent-child relationship found</h6>
-                                    </div>))
-                    })
-                }
-            </section>
-        );
-    }
-}
+LatencyTabContainer.propTypes = {
+    traceId: PropTypes.string.isRequired,
+    store: PropTypes.object.isRequired
+};
+
+export default LatencyTabContainer;
