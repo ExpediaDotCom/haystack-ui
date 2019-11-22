@@ -21,69 +21,58 @@ import {PropTypes as MobxPropTypes} from 'mobx-react';
 import RelatedTracesRow from './relatedTracesRow';
 import linkBuilder from '../../../../utils/linkBuilder';
 
-export default class relatedTracesTab extends React.Component {
-    static propTypes = {
-        searchQuery: PropTypes.object.isRequired,
-        relatedTraces: MobxPropTypes.observableArray
-    };
+const RelatedTracesTab = ({searchQuery, relatedTraces}) => {
+    const numDisplayedTraces = 10;
 
-    static defaultProps = {
-        relatedTraces: []
-    };
-
-    constructor(props) {
-        super(props);
-        const numDisplayedTraces = 10;
-        this.state = {
-            numDisplayedTraces // compute the fields of the original trace
-        };
-
-        this.showMoreTraces = this.showMoreTraces.bind(this);
-    }
-
-    showMoreTraces() {
-        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(this.props.searchQuery));
+    const showMoreTraces = () => {
+        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(searchQuery));
 
         const tab = window.open(traceUrl, '_blank');
         tab.focus();
-    }
+    };
 
-    render() {
-        const {relatedTraces} = this.props;
-        const {numDisplayedTraces} = this.state;
+    const relatedTracesList = relatedTraces.slice(0, numDisplayedTraces);
 
-        const relatedTracesList = relatedTraces.slice(0, numDisplayedTraces);
+    return (
+        <article>
+            <table className="trace-trend-table">
+                <thead className="trace-trend-table_header">
+                <tr>
+                    <th width="20" className="trace-trend-table_cell">Start Time</th>
+                    <th width="30" className="trace-trend-table_cell">Root</th>
+                    <th width="20" className="trace-trend-table_cell">Root Success</th>
+                    <th width="60" className="trace-trend-table_cell">Span Count</th>
+                    <th width="20" className="trace-trend-table_cell text-right">Total Duration</th>
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    relatedTracesList.map(relatedTrace => (
+                        <RelatedTracesRow
+                            key={relatedTrace.traceId}
+                            {...relatedTrace}
+                        />
+                    ))
+                }
+                </tbody>
+            </table>
+            <footer>
+                <div>{relatedTraces.length > numDisplayedTraces ? `10 of ${relatedTraces.length} Results` : 'End of Results'}</div>
+                <div className="text-center">
+                    <a role="button" className="btn btn-primary" onClick={showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? `Show All(${relatedTraces.length}) in Universal` : 'View in Universal Search' }</a>
+                </div>
+            </footer>
+        </article>
+    );
+};
 
-        return (
-            <article>
-                <table className="trace-trend-table">
-                    <thead className="trace-trend-table_header">
-                        <tr>
-                            <th width="20" className="trace-trend-table_cell">Start Time</th>
-                            <th width="30" className="trace-trend-table_cell">Root</th>
-                            <th width="20" className="trace-trend-table_cell">Root Success</th>
-                            <th width="60" className="trace-trend-table_cell">Span Count</th>
-                            <th width="20" className="trace-trend-table_cell text-right">Total Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        relatedTracesList.map(relatedTrace => (
-                            <RelatedTracesRow
-                                key={relatedTrace.traceId}
-                                {...relatedTrace}
-                            />
-                        ))
-                    }
-                    </tbody>
-                </table>
-                <footer>
-                    <div>{relatedTraces.length > numDisplayedTraces ? `10 of ${relatedTraces.length} Results` : 'End of Results'}</div>
-                    <div className="text-center">
-                        <a role="button" className="btn btn-primary" onClick={this.showMoreTraces} tabIndex="-1">{relatedTraces.length > numDisplayedTraces ? `Show All(${relatedTraces.length}) in Universal` : 'View in Universal Search' }</a>
-                    </div>
-                </footer>
-            </article>
-        );
-    }
-}
+RelatedTracesTab.propTypes = {
+    searchQuery: PropTypes.object.isRequired,
+    relatedTraces: MobxPropTypes.observableArray
+};
+
+RelatedTracesTab.defaultProps = {
+    relatedTraces: []
+};
+
+export default RelatedTracesTab;

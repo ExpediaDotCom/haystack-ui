@@ -22,55 +22,35 @@ import colorMapper from '../../../../utils/serviceColorMapper';
 import linkBuilder from '../../../../utils/linkBuilder';
 import formatters from '../../../../utils/formatters';
 
-export default class RelatedTracesRow extends React.Component {
-    static propTypes = {
-        traceId: PropTypes.string.isRequired,
-        serviceName: PropTypes.string.isRequired,
-        operationName: PropTypes.string.isRequired,
-        spanCount: PropTypes.number.isRequired,
-        startTime: PropTypes.number.isRequired,
-        rootError: PropTypes.bool.isRequired,
-        services: MobxPropTypes.observableArray,
-        duration: PropTypes.number.isRequired
-    };
-
-    static defaultProps = {
-        services: []
-    };
-
-    static openTrendDetailInNewTab(traceId) {
-        let traceUrl = '';
+const RelatedTracesRow = ({traceId, serviceName, operationName, spanCount, startTime, rootError, services, duration}) => {
+    const openTrendDetailInNewTab = () => {
         const search = {traceId};
-        traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
+        const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
 
         const tab = window.open(traceUrl, '_blank');
         tab.focus();
-    }
+    };
 
     // Formatters copied from trace ResultsTable.jsx and then refactored into jsx.
     // START TIME
-    static timeColumnFormatter(startTime) {
-        return (<div>
-                    <div className="table__primary">{formatters.toTimeago(startTime)}</div>
-                    <div className="table__secondary">{formatters.toTimestring(startTime)}</div>
-                </div>);
-    }
+    const timeColumnFormatter = () => (<div>
+            <div className="table__primary">{formatters.toTimeago(startTime)}</div>
+            <div className="table__secondary">{formatters.toTimestring(startTime)}</div>
+        </div>);
 
     // ROOT SUCCESS
-    static errorFormatter(cell) {
+    const errorFormatter = (cell) => {
         const status = cell ? 'error' : 'success';
         return (<div className="table__status">
             <img src={`/images/${status}.svg`} alt={status} height="24" width="24" />
         </div>);
-    }
+    };
 
     // TOTAL DURATION
-    static totalDurationColumnFormatter(duration) {
-        return <div className="table__primary-duration text-right">{formatters.toDurationString(duration)}</div>;
-    }
+    const totalDurationColumnFormatter = () => <div className="table__primary-duration text-right">{formatters.toDurationString(duration)}</div>;
 
     // SPAN COUNT
-    static handleServiceList(services) {
+    const handleServiceList = () => {
         const serviceList = services.slice(0, 2).map(svc =>
             <span key={svc.name} className={'service-spans label ' + colorMapper.toBackgroundClass(svc.name)}>{svc.name +' x' + svc.spanCount}</span> // eslint-disable-line
         );
@@ -79,37 +59,48 @@ export default class RelatedTracesRow extends React.Component {
             serviceList.push(<span key="extra">...</span>);
         }
         return serviceList;
-    }
+    };
 
-    static spanColumnFormatter(spanCount, services) {
-        return (<div>
-                    <div className="table__primary">{spanCount}</div>
-                    <div>{RelatedTracesRow.handleServiceList(services)}</div>
-                </div>);
-    }
+    const spanColumnFormatter = () => (<div>
+            <div className="table__primary">{spanCount}</div>
+            <div>{handleServiceList()}</div>
+        </div>);
 
-    render() {
-        const {traceId, serviceName, operationName, spanCount, services, startTime, rootError, duration} = this.props;
-
-        return (
-            <tr onClick={() => RelatedTracesRow.openTrendDetailInNewTab(traceId)}>
-                <td className="trace-trend-table_cell">
-                    {RelatedTracesRow.timeColumnFormatter(startTime)}
-                </td>
-                <td className="trace-trend-table_cell">
+    return (
+        <tr onClick={openTrendDetailInNewTab}>
+            <td className="trace-trend-table_cell">
+                {timeColumnFormatter()}
+            </td>
+            <td className="trace-trend-table_cell">
                 <div className={`service-spans label label-default ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</div>
-                    <div className="trace-trend-table_op-name">{operationName}</div>
-                </td>
-                <td className="trace-trend-table_cell">
-                    {RelatedTracesRow.errorFormatter(rootError)}
-                </td>
-                <td className="trace-trend-table_cell">
-                    {RelatedTracesRow.spanColumnFormatter(spanCount, services)}
-                </td>
-                <td className="trace-trend-table_cell">
-                    {RelatedTracesRow.totalDurationColumnFormatter(duration)}
-                </td>
-            </tr>
-        );
-    }
-}
+                <div className="trace-trend-table_op-name">{operationName}</div>
+            </td>
+            <td className="trace-trend-table_cell">
+                {errorFormatter(rootError)}
+            </td>
+            <td className="trace-trend-table_cell">
+                {spanColumnFormatter()}
+            </td>
+            <td className="trace-trend-table_cell">
+                {totalDurationColumnFormatter()}
+            </td>
+        </tr>
+    );
+};
+
+RelatedTracesRow.propTypes = {
+    traceId: PropTypes.string.isRequired,
+    serviceName: PropTypes.string.isRequired,
+    operationName: PropTypes.string.isRequired,
+    spanCount: PropTypes.number.isRequired,
+    startTime: PropTypes.number.isRequired,
+    rootError: PropTypes.bool.isRequired,
+    services: MobxPropTypes.observableArray,
+    duration: PropTypes.number.isRequired
+};
+
+RelatedTracesRow.defaultProps = {
+    services: []
+};
+
+export default RelatedTracesRow;

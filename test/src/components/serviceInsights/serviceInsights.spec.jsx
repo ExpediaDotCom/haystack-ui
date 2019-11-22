@@ -124,38 +124,24 @@ describe('<ServiceInsights/>', () => {
             const search = {
                 serviceName: 'web-ui',
                 time: {
-                    preset: 'foo'
+                    preset: '1h'
                 }
             };
-
-            window.haystackUiConfig.tracesTimePresetOptions = [
-                {
-                    shortName: 'foo',
-                    value: '888'
-                }
-            ];
 
             const store = createStoreStub('pending');
             timeWindow.toTimeRange = sinon.stub().returns({});
             shallow(<ServiceInsights search={search} store={store} />);
 
-            sinon.assert.calledWith(timeWindow.toTimeRange, '888');
+            sinon.assert.calledWith(timeWindow.toTimeRange, 3600000);
         });
 
         it('should render an error message when no traces found', () => {
             const search = {
                 serviceName: 'web-ui',
                 time: {
-                    preset: 'foo'
+                    preset: '1h'
                 }
             };
-
-            window.haystackUiConfig.tracesTimePresetOptions = [
-                {
-                    shortName: 'foo',
-                    value: '888'
-                }
-            ];
 
             const store = createStoreStub('fulfilled', {
                 nodes: []

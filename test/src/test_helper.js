@@ -25,10 +25,10 @@ const jsdom = new JSDOM('<!doctype html><html><body><div id="root"></div></body>
 const {window} = jsdom;
 
 function copyProps(src, target) {
-    const props = Object.getOwnPropertyNames(src)
-        .filter((prop) => typeof target[prop] === 'undefined')
-        .map((prop) => Object.getOwnPropertyDescriptor(src, prop));
-    Object.defineProperties(target, props);
+    Object.defineProperties(target, {
+        ...Object.getOwnPropertyDescriptors(src),
+        ...Object.getOwnPropertyDescriptors(target)
+    });
 }
 
 // stubbing animation

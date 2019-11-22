@@ -22,36 +22,32 @@ import Error from '../../common/error';
 
 import Modal from '../../common/modal';
 
-@observer
-export default class RawTraceModal extends React.Component {
-    static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        closeModal: PropTypes.func.isRequired,
-        traceId: PropTypes.string.isRequired,
-        rawTraceStore: PropTypes.object.isRequired
-    };
-
-    render() {
-        const {isOpen, closeModal, rawTraceStore, traceId} = this.props;
-
-        return (
-            <Modal isOpen={isOpen} closeModal={closeModal} title={`Raw Trace: ${traceId}`}>
-                <div>
-                    {
-                        rawTraceStore.promiseState &&
-                        rawTraceStore.promiseState.case({
-                            pending: () => <Loading />,
-                            rejected: () => <Error />,
-                            fulfilled: () => {
-                                if (rawTraceStore.rawTrace) {
-                                    return <pre>{JSON.stringify(rawTraceStore.rawTrace, null, 2)}</pre>;
-                                }
-
-                                return <Error errorMessage="There was a problem displaying the raw span. Please try again later." />;
-                            }
-                        })
+const RawTraceModal = observer(({isOpen, closeModal, traceId, rawTraceStore}) => (
+    <Modal isOpen={isOpen} closeModal={closeModal} title={`Raw Trace: ${traceId}`}>
+    <>
+        {
+            rawTraceStore.promiseState &&
+            rawTraceStore.promiseState.case({
+                pending: () => <Loading />,
+                rejected: () => <Error />,
+                fulfilled: () => {
+                    if (rawTraceStore.rawTrace) {
+                        return <pre>{JSON.stringify(rawTraceStore.rawTrace, null, 2)}</pre>;
                     }
-                </div>
-            </Modal>);
-    }
-}
+
+                    return <Error errorMessage="There was a problem displaying the raw span. Please try again later." />;
+                }
+            })
+        }
+    </>
+</Modal>
+));
+
+RawTraceModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    closeModal: PropTypes.func.isRequired,
+    traceId: PropTypes.string.isRequired,
+    rawTraceStore: PropTypes.object.isRequired
+};
+
+export default RawTraceModal;

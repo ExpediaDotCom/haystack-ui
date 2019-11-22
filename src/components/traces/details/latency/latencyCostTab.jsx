@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
@@ -40,53 +40,41 @@ const backgroundColors = [
     '#e4eada'
 ];
 
-@observer
-export default class LatencyCost extends React.Component {
-    static propTypes = {
-        latencyCost: PropTypes.object.isRequired,
-        latencyCostTrends: PropTypes.object.isRequired
-    };
+const LatencyCost = observer(({latencyCost, latencyCostTrends}) => {
+    const toEnvironmentString = (infrastructureProvider, infrastructureLocation) => (infrastructureProvider || infrastructureLocation) ? `${infrastructureProvider} ${infrastructureLocation}` : 'NA';
 
-    static toEnvironmentString(infrastructureProvider, infrastructureLocation) {
-        return (infrastructureProvider || infrastructureLocation) ? `${infrastructureProvider} ${infrastructureLocation}` : 'NA';
-    }
+    const addEnvironmentInSingleTraceLatencyCost = (rawEdges) => rawEdges.map(edge => ({
+                from: {
+                    ...edge.from,
+                    environment: toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
+                },
+                to: {
+                    ...edge.to,
+                    environment: toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
+                },
+                networkDelta: edge.networkDelta
+            }));
 
-    static addEnvironmentInSingleTraceLatencyCost(rawEdges) {
-        return rawEdges.map(edge => ({
+    const addEnvironmentInAggregatedAverageLatencyCost = (rawEdges) => rawEdges.map(edge => ({
             from: {
                 ...edge.from,
-                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
+                environment: toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
             },
             to: {
                 ...edge.to,
-                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
-            },
-            networkDelta: edge.networkDelta
-        }));
-    }
-
-    static addEnvironmentInAggregatedAverageLatencyCost(rawEdges) {
-        return rawEdges.map(edge => ({
-            from: {
-                ...edge.from,
-                environment: LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
-            },
-            to: {
-                ...edge.to,
-                environment: LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
+                environment: toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation)
             },
             meanNetworkDelta: edge.meanNetworkDelta,
             tp99NetworkDelta: edge.tp99NetworkDelta
         }));
-    }
 
-    static getEnvironments(rawEdges) {
+    const getEnvironments = (rawEdges) => {
         const environments =
             _.uniqWith(
                 _.flatten(rawEdges.map(edge =>
                     [
-                        LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation),
-                        LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
+                        toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation),
+                        toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation)
                     ])),
                 _.isEqual
             );
@@ -107,14 +95,14 @@ export default class LatencyCost extends React.Component {
                 border: borderColors[index]
             };
         }).sort((e1, e2) => e1.environment.localeCompare(e2.environment));
-    }
+    };
 
-    static createNodes(rawEdges, environmentList) {
+    const createNodes = (rawEdges, environmentList) => {
         const allNodes = _.flatten(rawEdges.map((edge) => {
-            const fromEnv = LatencyCost.toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation);
+            const fromEnv = toEnvironmentString(edge.from.infrastructureProvider, edge.from.infrastructureLocation);
             const fromServiceName = edge.from.serviceName;
 
-            const toEnv = LatencyCost.toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation);
+            const toEnv = toEnvironmentString(edge.to.infrastructureProvider, edge.to.infrastructureLocation);
             const toServiceName = edge.to.serviceName;
 
             return [{environment: fromEnv, name: fromServiceName}, {environment: toEnv, name: toServiceName}];
@@ -140,9 +128,9 @@ export default class LatencyCost extends React.Component {
                 }
             };
         });
-    }
+    };
 
-    static calculateLatencySummary(rawEdges) {
+    const calculateLatencySummary = (rawEdges) => {
         let networkTime = 0;
         let meanNetworkTime = 0;
         let tp99NetworkTime = 0;
@@ -188,37 +176,34 @@ export default class LatencyCost extends React.Component {
             crossDcCalls,
             crossDcMeasuredCalls
         };
-    }
+    };
 
-    constructor(props) {
-        super(props);
-        
-        this.latencyCost = this.props.latencyCost;
-        this.latencyCostTrends = this.props.latencyCostTrends;
+    const [latencyCostWithEnvironment, setLatencyCostWithEnvironment] = useState(addEnvironmentInSingleTraceLatencyCost(latencyCost));
+    const [environmentList, setEnvironmentList] = useState(getEnvironments(latencyCostWithEnvironment));
+    const [showTrends, setShowTrends] = useState(false);
 
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
-        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
+    const graphContainer = useRef(null);
 
-        this.state = {
-            latencyCostWithEnvironment,
-            environmentList,
-            showTrends: false
+    const labelEdges = (edges) => edges.map((edge) => {
+        let label = '';
+        if (showTrends) {
+            if (edge.meanNetworkDelta && edge.tp99NetworkDelta) {
+                label = `Mean: ${edge.meanNetworkDelta}ms\nTP99: ${edge.tp99NetworkDelta}ms`;
+            } else {
+                label = 'NA';
+            }
+        } else if (edge.overlappingEdges > 1) {
+            label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
+        } else {
+            label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
+        }
+        return {
+            ...edge,
+            label
         };
+    });
 
-        this.createEdges = this.createEdges.bind(this);
-        this.labelEdges = this.labelEdges.bind(this);
-        this.renderGraph = this.renderGraph.bind(this);
-        this.viewSingleTraceLatency = this.viewSingleTraceLatency.bind(this);
-        this.viewAggregatedAverageLatency = this.viewAggregatedAverageLatency.bind(this);
-    }
-
-    componentDidMount() {
-        this.renderGraph();
-    }
-
-
-    createEdges(rawEdges, nodes) {
-        const showTrends = this.state.showTrends;
+    const createEdges = (rawEdges, nodes) => {
         const edges = [];
         rawEdges.forEach((rawEdge) => {
             const fromIndex = nodes.find(node => node.name === rawEdge.from.serviceName && node.environment === rawEdge.from.environment).id;
@@ -248,56 +233,15 @@ export default class LatencyCost extends React.Component {
                 });
             }
         });
-        return this.labelEdges(edges);
-    }
+        return labelEdges(edges);
+    };
 
-
-    labelEdges(edges) {
-        return edges.map((edge) => {
-            let label = '';
-            if (this.state.showTrends) {
-                if (edge.meanNetworkDelta && edge.tp99NetworkDelta) {
-                    label = `Mean: ${edge.meanNetworkDelta}ms\nTP99: ${edge.tp99NetworkDelta}ms`;
-                } else {
-                    label = 'NA';
-                }
-            } else if (edge.overlappingEdges > 1) {
-                label = edge.networkDelta && `Avg ${Math.round(edge.networkDelta / edge.overlappingEdges)}ms,\n${edge.overlappingEdges} calls`;
-            } else {
-                label = edge.networkDelta && `${edge.networkDelta / edge.overlappingEdges}ms`;
-            }
-            return {
-                ...edge,
-                label
-            };
-        });
-    }
-
-    viewSingleTraceLatency() {
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInSingleTraceLatencyCost(this.latencyCost);
-        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
-
-        this.setState({latencyCostWithEnvironment, environmentList, showTrends: false}, () => {
-            this.renderGraph();
-        });
-    }
-
-    viewAggregatedAverageLatency() {
-        const latencyCostWithEnvironment = LatencyCost.addEnvironmentInAggregatedAverageLatencyCost(this.latencyCostTrends);
-        const environmentList = LatencyCost.getEnvironments(latencyCostWithEnvironment);
-
-        this.setState({latencyCostWithEnvironment, environmentList, showTrends: true}, () => {
-            this.renderGraph();
-        });
-    }
-
-    renderGraph() {
-        const {latencyCostWithEnvironment, environmentList} = this.state;
-
-        const nodes = LatencyCost.createNodes(latencyCostWithEnvironment, environmentList);
-        const edges = this.createEdges(latencyCostWithEnvironment, nodes);
+    const renderGraph = () => {
+        const nodes = createNodes(latencyCostWithEnvironment, environmentList);
+        const edges = createEdges(latencyCostWithEnvironment, nodes);
         const data = {nodes, edges};
-        const container = this.graphContainer;
+        const container = graphContainer.current;
+
         const options = {
             autoResize: true,
             layout: {
@@ -354,48 +298,60 @@ export default class LatencyCost extends React.Component {
         };
 
         import(/* webpackChunkName: "vis", webpackPreload: true */ 'vis')
-        .then(mod => new mod.default.Network(container, data, options));
-    }
+            .then(mod => new mod.default.Network(container, data, options));
+    };
 
-    render() {
-        const {latencyCostWithEnvironment, environmentList, showTrends} = this.state;
-        const summary = LatencyCost.calculateLatencySummary(latencyCostWithEnvironment);
+    const viewSingleTraceLatency = () => {
+        setLatencyCostWithEnvironment(addEnvironmentInSingleTraceLatencyCost(latencyCost));
+        setEnvironmentList(getEnvironments(latencyCostWithEnvironment));
+        setShowTrends(false);
+        renderGraph();
+    };
 
-        const LatencySummary = () =>
-            (<div className="well well-sm">
-                <table className="latency-summary">
-                    <tbody>
-                    <tr>
-                        <td>Network time</td>
-                        <td>
-                            {
-                                !showTrends ?
+    const viewAggregatedAverageLatency = () => {
+        setLatencyCostWithEnvironment(addEnvironmentInAggregatedAverageLatencyCost(latencyCostTrends));
+        setEnvironmentList(getEnvironments(latencyCostWithEnvironment));
+        setShowTrends(true);
+        renderGraph();
+    };
+
+    const summary = calculateLatencySummary(latencyCostWithEnvironment);
+
+    const LatencySummary = () =>
+        (<div className="well well-sm">
+            <table className="latency-summary">
+                <tbody>
+                <tr>
+                    <td>Network time</td>
+                    <td>
+                        {
+                            !showTrends ?
                                 <div>
                                     <span className="latency-summary__primary-info">{summary.networkTime}ms</span>
                                     <span>({summary.measuredCalls} measured out of {summary.calls} calls)</span>
                                 </div> :
                                 <span className="latency-summary__primary-info">Mean: {summary.meanNetworkTime}ms, TP99: {summary.tp99NetworkTime}ms</span>
-                            }
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Network time cross datacenters</td>
-                        <td>
-                            {
-                                !showTrends ?
-                                    <div>
-                                        <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
-                                        <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
-                                    </div> :
-                                    <span className="latency-summary__primary-info">Mean: {summary.meanNetworkTimeCrossDc}ms, TP99: {summary.tp99NetworkTimeCrossDc}ms</span>
-                            }
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Datacenters involved</td>
-                        <td>
-                            <span className="latency-summary__primary-info">{environmentList.length}</span>
-                            <span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>Network time cross datacenters</td>
+                    <td>
+                        {
+                            !showTrends ?
+                                <div>
+                                    <span className="latency-summary__primary-info">{summary.networkTimeCrossDc}ms</span>
+                                    <span>({summary.crossDcMeasuredCalls} measured out of {summary.crossDcCalls} calls)</span>
+                                </div> :
+                                <span className="latency-summary__primary-info">Mean: {summary.meanNetworkTimeCrossDc}ms, TP99: {summary.tp99NetworkTimeCrossDc}ms</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>Datacenters involved</td>
+                    <td>
+                        <span className="latency-summary__primary-info">{environmentList.length}</span>
+                        <span>
                             {
                                 environmentList && environmentList.map(
                                     environment => (
@@ -408,41 +364,51 @@ export default class LatencyCost extends React.Component {
                                         </span>))
                             }
                             </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>);
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>);
 
-        return (
-            <article>
-                <div className="text-center">
-                    <div className="btn-group">
-                        <button
-                            onClick={this.viewSingleTraceLatency}
-                            className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
-                        >Single Trace Latency</button>
-                        {
-                            this.props.latencyCostTrends && !!this.props.latencyCostTrends.length &&
-                            (
-                                <button
-                                    onClick={this.viewAggregatedAverageLatency}
-                                    className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
-                                    disabled={showTrends}
-                                >Aggregated Latency</button>
-                            )
-                        }
-                    </div>
+    useEffect(() => {
+        renderGraph();
+    }, []);
+
+    return (
+        <article>
+            <div className="text-center">
+                <div className="btn-group">
+                    <button
+                        onClick={viewSingleTraceLatency}
+                        className={showTrends ? 'btn btn-default' : 'btn btn-primary'}
+                    >Single Trace Latency</button>
+                    {
+                        latencyCostTrends && !!latencyCostTrends.length &&
+                        (
+                            <button
+                                onClick={viewAggregatedAverageLatency}
+                                className={showTrends ? 'btn btn-primary' : 'btn btn-default'}
+                                disabled={showTrends}
+                            >Aggregated Latency</button>
+                        )
+                    }
                 </div>
-                <LatencySummary />
-                <div ref={(node) => { this.graphContainer = node; }} style={{ height: '600px' }}/>
-                <ul>
-                    <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>
-                    <li>Red edges represent cross datacenter calls</li>
-                    <li>Nodes represent a service(in a datacenter) calls</li>
-                    <li>Network delta value are best estimates</li>
-                </ul>
-            </article>
-        );
-    }
-}
+            </div>
+            <LatencySummary />
+            <div ref={graphContainer} style={{ height: '600px' }}/>
+            <ul>
+                <li>Edges represent network calls, <b>edge value is network latency for the call</b>, or average network latency if there were multiple calls between services</li>
+                <li>Red edges represent cross datacenter calls</li>
+                <li>Nodes represent a service(in a datacenter) calls</li>
+                <li>Network delta value are best estimates</li>
+            </ul>
+        </article>
+    );
+});
+
+LatencyCost.propTypes = {
+    latencyCost: PropTypes.array.isRequired,
+    latencyCostTrends: PropTypes.array.isRequired
+};
+
+export default LatencyCost;

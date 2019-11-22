@@ -24,22 +24,10 @@ import { convertSearchToUrlQuery } from '../../universalSearch/utils/urlUtils';
 
 import './traceTimeline.less';
 
-@observer
-export default class TraceTimeline extends React.Component {
-    static propTypes = {
-        history: PropTypes.object.isRequired,
-        store: PropTypes.object.isRequired
-    };
-
-    constructor(props) {
-        super(props);
-
-        this.updateTimeFrame = this.updateTimeFrame.bind(this);
-    }
-
-    updateTimeFrame(event) {
+const TraceTimeline = observer(({history, store}) => {
+    const updateTimeFrame = (event) => {
         if (event.length) {
-            const results = this.props.store.timelineResults;
+            const results = store.timelineResults;
 
             // this means we reached lowest granularity, couldn't go further down
             if (results.length === 2) return;
@@ -51,7 +39,7 @@ export default class TraceTimeline extends React.Component {
             const endTime = startTime + granularityMs;
 
             const newSearch = {
-                ...this.props.store.searchQuery,
+                ...store.searchQuery,
                 timePreset: null,
                 startTime: null,
                 endTime: null,
@@ -62,79 +50,84 @@ export default class TraceTimeline extends React.Component {
             };
 
             const queryUrl = `?${convertSearchToUrlQuery(newSearch)}`;
-            this.props.history.push({
+            history.push({
                 search: queryUrl
             });
         }
-    }
+    };
 
-    render() {
-        const {granularity, timelineResults, apiQuery} = this.props.store;
-        const labels = [];
-        const data = [];
-        timelineResults.forEach((item) => {
-            labels.push(new Date((item.x + granularity / 2) / 1000)); // small hack to correctly position bar in middle of "from" and "to" times
-            data.push(item.y);
-        });
+    const {granularity, timelineResults, apiQuery} = store;
+    const labels = [];
+    const data = [];
+    timelineResults.forEach((item) => {
+        labels.push(new Date((item.x + granularity / 2) / 1000)); // small hack to correctly position bar in middle of "from" and "to" times
+        data.push(item.y);
+    });
 
-        const chartData = {
-            labels,
-            datasets: [
-                {
-                    label: 'traces count',
-                    backgroundColor: '#78c5f9',
-                    borderColor: '#36A2EB',
-                    borderWidth: 1,
-                    hoverBackgroundColor: '#b5def7',
-                    hoverBorderColor: '#36A2EB',
-                    data
+    const chartData = {
+        labels,
+        datasets: [
+            {
+                label: 'traces count',
+                backgroundColor: '#78c5f9',
+                borderColor: '#36A2EB',
+                borderWidth: 1,
+                hoverBackgroundColor: '#b5def7',
+                hoverBorderColor: '#36A2EB',
+                data
+            }
+        ]
+    };
+
+    const options = {
+        maintainAspectRatio: false,
+        barThickness: 1,
+        gridLines: {
+            offsetGridLines: true
+        },
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                barPercentage: 0.90,
+                barThickness: 'flex',
+                type: 'time',
+                time: {
+                    min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
+                    max: new Date(parseInt(apiQuery.endTime, 10) / 1000)
+                },
+                categoryPercentage: 1
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
                 }
-            ]
-        };
+            }]
+        },
+        tooltips: {
+            callbacks: {
+                title: (tooltipItem) => {
+                    const date = new Date(tooltipItem[0].xLabel).getTime();
+                    const from = moment(date - (granularity / 1000 / 2));
+                    const to = moment(date + (granularity / 1000 / 2));
 
-        const options = {
-            maintainAspectRatio: false,
-            barThickness: 1,
-            gridLines: {
-                offsetGridLines: true
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                xAxes: [{
-                    barPercentage: 0.90,
-                    barThickness: 'flex',
-                    type: 'time',
-                    time: {
-                        min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
-                        max: new Date(parseInt(apiQuery.endTime, 10) / 1000)
-                    },
-                    categoryPercentage: 1
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            tooltips: {
-                callbacks: {
-                    title: (tooltipItem) => {
-                        const date = new Date(tooltipItem[0].xLabel).getTime();
-                        const from = moment(date - (granularity / 1000 / 2));
-                        const to = moment(date + (granularity / 1000 / 2));
-
-                        return `${from.format('MM/DD/YY hh:mm:ss a')} to ${to.format('MM/DD/YY hh:mm:ss a')}`;
-                    }
+                    return `${from.format('MM/DD/YY hh:mm:ss a')} to ${to.format('MM/DD/YY hh:mm:ss a')}`;
                 }
             }
-        };
+        }
+    };
 
-        return (
-            <div className="trace-timeline-container">
-                <Bar data={chartData} height={150} options={options} getElementAtEvent={this.updateTimeFrame}/>
-            </div>
-        );
-    }
-}
+    return (
+        <div className="trace-timeline-container">
+            <Bar data={chartData} height={150} options={options} getElementAtEvent={updateTimeFrame}/>
+        </div>
+    );
+});
+
+TraceTimeline.propTypes = {
+    history: PropTypes.object.isRequired,
+    store: PropTypes.object.isRequired
+};
+
+export default TraceTimeline;

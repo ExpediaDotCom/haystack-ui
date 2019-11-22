@@ -20,17 +20,8 @@ import {observer} from 'mobx-react';
 import Loading from '../../../common/loading';
 import Error from '../../../common/error';
 
-@observer
-export default class RawSpan extends React.Component {
-    static propTypes = {
-        rawSpanStore: PropTypes.object.isRequired
-    };
-
-    render() {
-        const {rawSpanStore} = this.props;
-
-        return (
-                <div>
+const RawSpan = observer(({rawSpanStore}) => (
+                <>
                     {
                         rawSpanStore.promiseState &&
                         rawSpanStore.promiseState.case({
@@ -39,15 +30,21 @@ export default class RawSpan extends React.Component {
                             fulfilled: () => {
                                 if (rawSpanStore.rawSpan) {
                                     return (
-                                        <div>
+                                        <>
                                             <pre className="raw-span">{JSON.stringify(rawSpanStore.rawSpan, null, 2)}</pre>
-                                        </div>);
+                                        </>);
                                 }
 
                                 return <Error errorMessage="There was a problem displaying the raw span. Please try again later."/>;
                             }
                         })
                     }
-                </div>);
-    }
-}
+                </>)
+);
+
+RawSpan.propTypes = {
+    rawSpanStore: PropTypes.object.isRequired
+};
+
+export default RawSpan;
+
