@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 
 const Guide = ({searchHistory}) => {
     const historyList = searchHistory.map((searchObject) => (
-        <li key={searchObject}><code><a href={`/search${searchObject}`}>{searchObject.substring(1).split('&').join(', ')}</a></code></li>
+        <li key={searchObject}><code><a href={`/search?${searchObject}`}>{searchObject.split('&').join(', ')}</a></code></li>
     ));
 
     return (

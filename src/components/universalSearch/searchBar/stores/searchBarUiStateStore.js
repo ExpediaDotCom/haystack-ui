@@ -16,6 +16,7 @@
 
 import {observable, action} from 'mobx';
 import _ from 'lodash';
+import {convertSearchToUrlQuery} from '../../utils/urlUtils';
 
 export class SearchBarUiStateStore {
     @observable serviceName = null;
@@ -96,7 +97,7 @@ export class SearchBarUiStateStore {
     static getSearchUrlCookie() {
         const cookie = document.cookie.split(';');
         for (let i = 0; i < cookie.length; i++) {
-            const inspect = cookie[i];
+            const inspect = cookie[i].trim();
             if (inspect.indexOf('searchhistory') === 0) {
                 return JSON.parse(inspect.substring('searchhistory='.length, inspect.length)); // parse cookie string into array
             }
@@ -104,13 +105,14 @@ export class SearchBarUiStateStore {
         return [];
     }
 
-    addLocationToSearchUrlCookie() {
-        const rawLocation = document.location.search;
+    addLocationToSearchUrlCookie(search) {
+        const rawLocation = convertSearchToUrlQuery(search);
         const location = rawLocation
             .split('&')
             .filter(kvPair => !kvPair.includes('tabId') && !kvPair.includes('time.preset')) // don't include tabId & time.preset
             .join('&');
         let searchHistory = SearchBarUiStateStore.getSearchUrlCookie();
+
         if (location && searchHistory[searchHistory.length - 1] !== location) { // prepend history array if new search
             searchHistory.unshift(location);
             searchHistory = _.uniq(searchHistory);
@@ -174,7 +176,7 @@ export class SearchBarUiStateStore {
                 }
             }
         });
-        this.addLocationToSearchUrlCookie(); // add search to history list in search bar
+        this.addLocationToSearchUrlCookie(search); // add search to history list in search bar
     }
 
     @action setTimeWindow(timeWindow) {

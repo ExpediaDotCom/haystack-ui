@@ -40,7 +40,7 @@ const DOWN = 40;
 const ESC = 27;
 
 @observer
-export default class Autocomplete extends React.Component {
+export default class Autosuggest extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
         options: PropTypes.object,
@@ -78,7 +78,7 @@ export default class Autocomplete extends React.Component {
     }
 
     static removeWhiteSpaceAroundInput(inputString) {
-        const operatorIndex = Autocomplete.findIndexOfoperator(inputString);
+        const operatorIndex = Autosuggest.findIndexOfoperator(inputString);
         if (operatorIndex) {
             const operator = inputString[operatorIndex];
             return inputString.split(operator).map(piece => piece.trim()).join(operator);
@@ -162,10 +162,10 @@ export default class Autocomplete extends React.Component {
     // Takes current input value and displays suggestion options.
     setSuggestions(input) {
         let suggestionArray = [];
-        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
+        const rawSplitInput = Autosuggest.removeWhiteSpaceAroundInput(input).replace('(', '').split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
-        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
+        const operatorIndex = Autosuggest.findIndexOfoperator(targetInput);
 
         let value;
         let type;
@@ -251,14 +251,14 @@ export default class Autocomplete extends React.Component {
 
     // Selection choice fill when navigating with arrow keys
     fillInputFromDropdownSelection() {
-        const rawSplitInput = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value).split(' ');
+        const rawSplitInput = Autosuggest.removeWhiteSpaceAroundInput(this.inputRef.value).split(' ');
         const splitInput = this.checkSplitInputForValuesWithWhitespace(rawSplitInput);
         const targetInput = splitInput[splitInput.length - 1];
         const isNested = targetInput[0] === '(' ? '(' : '';
-        const operatorIndex = Autocomplete.findIndexOfoperator(targetInput);
+        const operatorIndex = Autosuggest.findIndexOfoperator(targetInput);
         let fillValue = '';
         let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
-        value = Autocomplete.checkForWhitespacedValue(value);
+        value = Autosuggest.checkForWhitespacedValue(value);
         if (this.state.suggestedOnType === 'operator') {
             const slicedInput = targetInput.replace(/[(>=<)]/, '');
             fillValue = `${slicedInput}${value}`;
@@ -278,7 +278,7 @@ export default class Autocomplete extends React.Component {
         this.fillInputFromDropdownSelection();
         this.handleBlur();
         this.inputRef.focus();
-        if (!Autocomplete.findIndexOfoperator(this.inputRef.value)) {
+        if (!Autosuggest.findIndexOfoperator(this.inputRef.value)) {
             if (!this.inputMatchesRangeKey(this.inputRef.value)) this.inputRef.value = `${this.inputRef.value}=`;
             this.setState({
                 suggestionStrings: []
@@ -306,7 +306,7 @@ export default class Autocomplete extends React.Component {
 
     // Updating operations inside a nested query
     checkServiceAndUpdateOperation(input) {
-        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(input);
+        const inputValue = Autosuggest.removeWhiteSpaceAroundInput(input);
 
         // If serviceName in the same query, trigger request for operations
         if (inputValue.indexOf('(') > -1 && inputValue.includes('serviceName')) {
@@ -334,7 +334,7 @@ export default class Autocomplete extends React.Component {
             this.inputRef.value += char;
             if (char === ' ') this.handleKeyPress({keyCode: SPACE, preventDefault: () => {}});
         });
-        if (Autocomplete.completeInputString(this.inputRef.value)) this.updateChips();
+        if (Autosuggest.completeInputString(this.inputRef.value)) this.updateChips();
     }
 
     // Logic for navigation and selection with keyboard presses
@@ -354,7 +354,7 @@ export default class Autocomplete extends React.Component {
             e.preventDefault();
             this.updateChips();
         } else if (keyPressed === SPACE) {
-            if (Autocomplete.completeInputString(this.inputRef.value.trim())) {
+            if (Autosuggest.completeInputString(this.inputRef.value.trim())) {
                 e.preventDefault();
                 this.updateChips();
             } else {
@@ -386,12 +386,12 @@ export default class Autocomplete extends React.Component {
         if (chip.key.includes('nested_')) { // Check for nested KV pairs
             let fullString = '';
             chipValue.forEach((nestedChip) => {
-                const value = Autocomplete.checkForWhitespacedValue(nestedChip.value);
+                const value = Autosuggest.checkForWhitespacedValue(nestedChip.value);
                 fullString += `${nestedChip.key}${nestedChip.operator}${value} `;
             });
             this.inputRef.value = `(${fullString.trim()})`;
         } else {
-            const value = Autocomplete.checkForWhitespacedValue(chipValue);
+            const value = Autosuggest.checkForWhitespacedValue(chipValue);
             this.inputRef.value = `${chip.key}${chip.operator}${value}`;
         }
         this.deleteChip(this.props.uiState.chips.length - 1);
@@ -441,7 +441,7 @@ export default class Autocomplete extends React.Component {
     // Test for correct formatting on K/V pairs
     testForValidInputString(kvPair) {
         if (/^(.+)([=><])(.+)$/g.test(kvPair)) { // Ensure format is a=b
-            const indexOfoperator = Autocomplete.findIndexOfoperator(kvPair);
+            const indexOfoperator = Autosuggest.findIndexOfoperator(kvPair);
             const valueKey = kvPair.substring(0, indexOfoperator).trim();
             if (Object.keys(this.props.options).includes(valueKey)) { // Ensure key is searchable
                 this.setState(prevState => ({existingKeys: [...prevState.existingKeys, valueKey]}));
@@ -461,7 +461,7 @@ export default class Autocomplete extends React.Component {
     // Adds inputted text chip to client side store
     updateChips() {
         this.handleBlur();
-        const inputValue = Autocomplete.removeWhiteSpaceAroundInput(this.inputRef.value);
+        const inputValue = Autosuggest.removeWhiteSpaceAroundInput(this.inputRef.value);
         if (!inputValue) return;
         let formattedValue = null;
         if (inputValue.indexOf('(') > -1) {
@@ -488,14 +488,14 @@ export default class Autocomplete extends React.Component {
                 chipValue = [];
                 splitInput.forEach((kvPair) => {
                     const trimmedPair = kvPair.trim();
-                    const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                    const operatorIndex = Autosuggest.findIndexOfoperator(kvPair);
                     const key = trimmedPair.substring(0, operatorIndex);
                     const value = (trimmedPair.substring(operatorIndex + 1, kvPair.length)).replace(/"/g, '');
                     chipValue.push({key, value, operator: kvPair[operatorIndex]});
                 });
             } else {
                 const kvPair = splitInput[0];
-                const operatorIndex = Autocomplete.findIndexOfoperator(kvPair);
+                const operatorIndex = Autosuggest.findIndexOfoperator(kvPair);
                 chipKey = kvPair.substring(0, operatorIndex).trim();
                 chipValue = kvPair.substring(operatorIndex + 1, kvPair.length).trim().replace(/"/g, '');
                 operator = kvPair[operatorIndex];
@@ -542,7 +542,7 @@ export default class Autocomplete extends React.Component {
 
         return (
             <article className="usb-wrapper">
-                <div className="usb-search" role="form" onClick={Autocomplete.focusInput}>
+                <div className="usb-search" role="form" onClick={Autosuggest.focusInput}>
                     <Chips deleteChip={this.deleteChip} uiState={uiState} />
                     <div className="usb-searchbar">
                         <input
