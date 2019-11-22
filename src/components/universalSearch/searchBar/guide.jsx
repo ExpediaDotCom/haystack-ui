@@ -21,7 +21,15 @@ const Guide = ({searchHistory}) => {
     const historyList = searchHistory.map((searchObject) => (
         <li key={searchObject}><code><a href={`/search?${searchObject}`}>{searchObject.split('&').join(', ')}</a></code></li>
     ));
-
+    const history = historyList.length ?
+        (<section>
+            <div><b>History</b></div>
+            <ul className="usb-suggestions__guide-history-list">
+                {historyList}
+            </ul>
+        </section>)
+        : null;
+    
     return (
         <div className="usb-suggestions__guide-wrapper pull-left">
             <section>
@@ -62,12 +70,7 @@ const Guide = ({searchHistory}) => {
                     </ul>
                 </div>
             </section>
-            <section>
-                <div><b>History</b></div>
-                <ul className="usb-suggestions__guide-history-list">
-                    {historyList}
-                </ul>
-            </section>
+            {history}
         </div>
     );
 };
