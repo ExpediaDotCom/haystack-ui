@@ -15,7 +15,7 @@
  *
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 
@@ -25,328 +25,294 @@ import formatters from '../../../utils/formatters';
 import colorMapper from '../../../utils/serviceColorMapper';
 import '../../common/resultsTable.less';
 
-export default class TraceResultsTable extends React.Component {
-    static propTypes = {
-        query: PropTypes.object.isRequired,
-        results: PropTypes.object.isRequired
-    };
+function sortByStartTime(a, b, order) {
+    if (order === 'desc') {
+        return b.startTime - a.startTime;
+    }
+    return a.startTime - b.startTime;
+}
+function sortByRootAndTime(a, b, order) {
+    if (a.rootOperation === b.rootOperation) {
+        return sortByStartTime(a, b, 'desc');
+    }
+    if (order === 'desc') {
+        return a.rootOperation.localeCompare(b.rootOperation);
+    }
+    return b.rootOperation.localeCompare(a.rootOperation);
+}
+function sortByRootSuccessAndTime(a, b, order) {
+    if (a.rootError === b.rootError) {
+        return sortByStartTime(a, b, 'desc');
+    }
+    if (order === 'desc') {
+        return (a.rootError ? 1 : -1);
+    }
+    return (b.rootError ? 1 : -1);
+}
+function sortByOperationSuccessAndTime(a, b, order) {
+    if (a.operationError === b.operationError) {
+        return sortByStartTime(a, b, 'desc');
+    }
+    if (order === 'desc') {
+        return (a.operationError ? 1 : -1);
+    }
+    return (b.operationError ? 1 : -1);
+}
+function sortBySpansAndTime(a, b, order) {
+    if (a.spanCount === b.spanCount) {
+        return sortByStartTime(a, b, 'desc');
+    }
+    if (order === 'desc') {
+        return b.spanCount - a.spanCount;
+    }
+    return a.spanCount - b.spanCount;
+}
 
-    static sortByStartTime(a, b, order) {
-        if (order === 'desc') {
-            return b.startTime - a.startTime;
-        }
-        return a.startTime - b.startTime;
-    }
-    static sortByRootAndTime(a, b, order) {
-        if (a.rootOperation === b.rootOperation) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return a.rootOperation.localeCompare(b.rootOperation);
-        }
-        return b.rootOperation.localeCompare(a.rootOperation);
-    }
-    static sortBySvcDurPcAndTime(a, b, order) {
-        if (a.serviceDurationPercent === b.serviceDurationPercent) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return b.serviceDurationPercent - a.serviceDurationPercent;
-        }
-        return a.serviceDurationPercent - b.serviceDurationPercent;
-    }
-    static sortByOperDurPcAndTime(a, b, order) {
-        if (a.operationDurationPercent === b.operationDurationPercent) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return b.operationDurationPercent - a.operationDurationPercent;
-        }
-        return a.operationDurationPercent - b.operationDurationPercent;
-    }
-    static sortByRootSuccessAndTime(a, b, order) {
-        if (a.rootError === b.rootError) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return (a.rootError ? 1 : -1);
-        }
-        return (b.rootError ? 1 : -1);
-    }
-    static sortByOperationSuccessAndTime(a, b, order) {
-        if (a.operationError === b.operationError) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return (a.operationError ? 1 : -1);
-        }
-        return (b.operationError ? 1 : -1);
-    }
-    static sortBySpansAndTime(a, b, order) {
-        if (a.spanCount === b.spanCount) {
-            return TraceResultsTable.sortByStartTime(a, b, 'desc');
-        }
-        if (order === 'desc') {
-            return b.spanCount - a.spanCount;
-        }
-        return a.spanCount - b.spanCount;
-    }
-
-    static handleServiceList(services) {
-        let serviceList = '';
-        services.slice(0, 2).map((svc) => {
-            serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
-            return serviceList;
-        });
-
-        if (services.length > 2) {
-            serviceList += '<span>...</span>';
-        }
+function handleServiceList(services) {
+    let serviceList = '';
+    services.slice(0, 2).map((svc) => {
+        serviceList += `<span class="service-spans label ${colorMapper.toBackgroundClass(svc.name)}">${svc.name} x${svc.spanCount}</span> `;
         return serviceList;
-    }
+    });
 
-    static timeColumnFormatter(startTime) {
-        return `<div class="table__primary">${formatters.toTimeago(startTime)}</div>
+    if (services.length > 2) {
+        serviceList += '<span>...</span>';
+    }
+    return serviceList;
+}
+
+function timeColumnFormatter(startTime) {
+    return `<div class="table__primary">${formatters.toTimeago(startTime)}</div>
                 <div class="table__secondary">${formatters.toTimestring(startTime)}</div>`;
-    }
+}
 
-    static rootColumnFormatter(cell, row) {
-        return `<div class="table__primary">
+function rootColumnFormatter(cell, row) {
+    return `<div class="table__primary">
                 <span class="service-spans label ${colorMapper.toBackgroundClass(row.root.serviceName)}">${row.root.serviceName}</span> 
                 ${row.root.operationName}
                 </div>
                 <div class="table__secondary">${row.root.url}</div>`;
-    }
+}
 
-    static spanColumnFormatter(cell, row) {
-        const errorText = row.errorSpanCount ? `<small class="error-span-count label">${row.errorSpanCount} ${row.errorSpanCount > 1 ? 'errors' : 'error'}</small>` : '';
-        return `<div class="table__primary">${cell} ${errorText}</div>
-                <div>${TraceResultsTable.handleServiceList(row.services)}</div>`;
-    }
+function spanColumnFormatter(cell, row) {
+    const errorText = row.errorSpanCount ? `<small class="error-span-count label">${row.errorSpanCount} ${row.errorSpanCount > 1 ? 'errors' : 'error'}</small>` : '';
+    return `<div class="table__primary">${cell} ${errorText}</div>
+                <div>${handleServiceList(row.services)}</div>`;
+}
 
-    static errorFormatter(cell) {
-        if (cell) {
-            return (<div className="table__status">
-                <img src="/images/error.svg" alt="Error" height="24" width="24" />
-            </div>);
-        }
+function errorFormatter(cell) {
+    if (cell) {
         return (<div className="table__status">
-            <img src="/images/success.svg" alt="Success" height="24" width="24" />
+            <img src="/images/error.svg" alt="Error" height="24" width="24" />
         </div>);
     }
+    return (<div className="table__status">
+        <img src="/images/success.svg" alt="Success" height="24" width="24" />
+    </div>);
+}
 
-    static totalDurationColumnFormatter(duration) {
-        return `<div class="table__primary-duration text-right">${formatters.toDurationString(duration)}</div>`;
-    }
+function totalDurationColumnFormatter(duration) {
+    return `<div class="table__primary-duration text-right">${formatters.toDurationString(duration)}</div>`;
+}
 
-    static serviceDurationFormatter(duration, row) {
-        return (<div>
-            <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
-            <div className="table__secondary text-right">{row.serviceDurationPercent}% of total</div>
-        </div>);
-    }
+function serviceDurationFormatter(duration, row) {
+    return (<>
+        <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
+        <div className="table__secondary text-right">{row.serviceDurationPercent}% of total</div>
+    </>);
+}
 
-    static operationDurationFormatter(duration, row) {
-        return (<div>
-            <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
-            <div className="table__secondary text-right">{row.operationDurationPercent}% of total</div>
-        </div>);
-    }
+function operationDurationFormatter(duration, row) {
+    return (<>
+        <div className="table__primary text-right">{formatters.toDurationString(duration)}</div>
+        <div className="table__secondary text-right">{row.operationDurationPercent}% of total</div>
+    </>);
+}
 
-    static getCaret(direction) {
-        if (direction === 'asc') {
-          return (
-              <span className="order dropup">
+function getCaret(direction) {
+    if (direction === 'asc') {
+        return (
+            <span className="order dropup">
                   <span className="caret" style={{margin: '10px 5px'}}/>
               </span>);
-        }
-        if (direction === 'desc') {
-          return (
-              <span className="order dropdown">
+    }
+    if (direction === 'desc') {
+        return (
+            <span className="order dropdown">
                   <span className="caret" style={{margin: '10px 5px'}}/>
               </span>);
-        }
-        return <div/>;
     }
+    return <div/>;
+}
 
-    static Header({name}) {
-        return <span className="results-header">{name}</span>;
-    }
+const Header = ({name}) => <span className="results-header">{name}</span>;
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            expanding: [],
-            selected: []
-        };
-        this.handleExpand = this.handleExpand.bind(this);
-        this.expandComponent = this.expandComponent.bind(this);
-    }
-    componentDidMount() {
-        const results = this.props.results;
+const TraceResultsTable = ({query, results}) => {
+    const [expanding, setExpanding] = useState([]);
+    const [selected, setSelected] = useState([]);
+
+    useEffect(() => {
         if (results.length === 1) {
             this.handleExpand(results[0].traceId, true);
         }
-    }
-    handleExpand(rowKey, isExpand) {
+    });
+
+    const handleExpand = (rowKey, isExpand) => {
         if (isExpand) {
-            this.setState(
-                {
-                    expanding: [rowKey],
-                    selected: [rowKey]
-                }
-            );
+            setExpanding([rowKey]);
+            setSelected([rowKey]);
         } else {
-            this.setState(
-                {
-                    expanding: [],
-                    selected: []
-                }
-            );
+            setExpanding([]);
+            setSelected([]);
         }
-    }
-    expandComponent(row) {
-        if (this.state.selected.filter(id => id === row.traceId).length > 0) {
-            return <TraceDetails traceId={row.traceId} serviceName={this.props.query.serviceName} traceDetailsStore={traceDetailsStore} />;
+    };
+
+    const expandComponent = (row) => {
+        if (selected.filter(id => id === row.traceId).length > 0) {
+            return <TraceDetails traceId={row.traceId} serviceName={query.serviceName} traceDetailsStore={traceDetailsStore} />;
         }
         return null;
-    }
+    };
 
-    render() {
-        const {
-            query,
-            results
-        } = this.props;
+    const selectRowProp = {
+        clickToSelect: true,
+        clickToExpand: true,
+        className: 'selected-row',
+        mode: 'checkbox',
+        hideSelectColumn: true,
+        selected
+    };
 
-        const selectRowProp = {
-            clickToSelect: true,
-            clickToExpand: true,
-            className: 'selected-row',
-            mode: 'checkbox',
-            hideSelectColumn: true,
-            selected: this.state.selected
-        };
+    const options = {
+        page: 1,  // which page you want to show as default
+        pageStartIndex: 1, // where to start counting the pages
+        prePage: 'Prev', // Previous page button text
+        nextPage: 'Next', // Next page button text
+        firstPage: 'First', // First page button text
+        lastPage: 'Last', // Last page button text
+        hideSizePerPage: true, // Hide page size bar
+        defaultSortName: query.sortBy || 'startTime',  // default sort column name
+        defaultSortOrder: 'desc',  // default sort order
+        expanding,
+        onExpand: handleExpand,
+        expandBodyClass: 'expand-row-body'
+    };
 
-        const options = {
-            page: 1,  // which page you want to show as default
-            pageStartIndex: 1, // where to start counting the pages
-            prePage: 'Prev', // Previous page button text
-            nextPage: 'Next', // Next page button text
-            firstPage: 'First', // First page button text
-            lastPage: 'Last', // Last page button text
-            hideSizePerPage: true, // Hide page size bar
-            defaultSortName: query.sortBy || 'startTime',  // default sort column name
-            defaultSortOrder: 'desc',  // default sort order
-            expanding: this.state.expanding,
-            onExpand: this.handleExpand,
-            expandBodyClass: 'expand-row-body'
-        };
+    const tableHeaderStyle = { border: 'none' };
+    const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
 
-        const tableHeaderStyle = { border: 'none' };
-        const tableHeaderRightAlignedStyle = { border: 'none', textAlign: 'right' };
-
-        return (
-                <BootstrapTable
-                    data={results}
-                    tableStyle={{ border: 'none' }}
-                    trClassName="tr-no-border"
-                    options={options}
-                    expandableRow={() => true}
-                    expandComponent={this.expandComponent}
-                    selectRow={selectRowProp}
-                >
-                    <TableHeaderColumn
-                        dataField="traceId"
-                        hidden
-                        isKey
-                    >TraceId</TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="startTime"
-                        dataFormat={TraceResultsTable.timeColumnFormatter}
-                        width="15"
-                        dataSort
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderStyle}
-                        headerText={'Start time of the first span in local timezone'}
-                    ><TraceResultsTable.Header name="Start Time"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="rootOperation"
-                        dataFormat={TraceResultsTable.rootColumnFormatter}
-                        width="25"
-                        dataSort
-                        sortFunc={TraceResultsTable.sortByRootAndTime}
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderStyle}
-                        headerText={'Operation name of the root span'}
-                    ><TraceResultsTable.Header name="Root"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="rootError"
-                        width="10"
-                        dataFormat={TraceResultsTable.errorFormatter}
-                        dataSort
-                        sortFunc={TraceResultsTable.sortByRootSuccessAndTime}
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderStyle}
-                        headerText={'Success of the root service'}
-                    ><TraceResultsTable.Header name="Root Success"/></TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="spanCount"
-                        dataFormat={TraceResultsTable.spanColumnFormatter}
-                        width="25"
-                        dataSort
-                        sortFunc={TraceResultsTable.sortBySpansAndTime}
-                        caretRender={TraceResultsTable.getCaret}
-                        thStyle={tableHeaderStyle}
-                        headerText={'Total number of spans across all services in the trace'}
-                    ><TraceResultsTable.Header name="Span Count"/></TableHeaderColumn>
-                    {
-                        (query.operationName && query.operationName !== 'all')
-                        && <TableHeaderColumn
-                            dataField="operationError"
-                            dataFormat={TraceResultsTable.errorFormatter}
-                            width="10"
-                            dataSort
-                            caretRender={TraceResultsTable.getCaret}
-                            sortFunc={TraceResultsTable.sortByOperationSuccessAndTime}
-                            thStyle={tableHeaderRightAlignedStyle}
-                            headerText={'Success of the searched operation'}
-                        ><TraceResultsTable.Header name="Op Success"/></TableHeaderColumn>
-                    }
-                    {
-                        (query.operationName && query.operationName !== 'all')
-                        && <TableHeaderColumn
-                            dataField="operationDuration"
-                            dataFormat={TraceResultsTable.operationDurationFormatter}
-                            width="10"
-                            dataSort
-                            caretRender={TraceResultsTable.getCaret}
-                            thStyle={tableHeaderRightAlignedStyle}
-                            headerText={'Total busy time in timeline for the queried operation'}
-                        ><TraceResultsTable.Header name="Op Duration"/></TableHeaderColumn>
-                    }
-                    {
-                        query.serviceName
-                        ? <TableHeaderColumn
-                            dataField="serviceDuration"
-                            dataFormat={TraceResultsTable.serviceDurationFormatter}
-                            width="10"
-                            dataSort
-                            caretRender={TraceResultsTable.getCaret}
-                            thStyle={tableHeaderRightAlignedStyle}
-                            headerText={'Total busy time in timeline for the queried service'}
-                        ><TraceResultsTable.Header name="Svc Duration"/></TableHeaderColumn>
-                        : null
-                    }
-                    <TableHeaderColumn
-                        dataField="duration"
-                        dataFormat={TraceResultsTable.totalDurationColumnFormatter}
+    return (
+        <BootstrapTable
+            data={results}
+            tableStyle={{ border: 'none' }}
+            trClassName="tr-no-border"
+            options={options}
+            expandableRow={() => true}
+            expandComponent={expandComponent}
+            selectRow={selectRowProp}
+        >
+            <TableHeaderColumn
+                dataField="traceId"
+                hidden
+                isKey
+            >TraceId</TableHeaderColumn>
+            <TableHeaderColumn
+                dataField="startTime"
+                dataFormat={timeColumnFormatter}
+                width="15"
+                dataSort
+                caretRender={getCaret}
+                thStyle={tableHeaderStyle}
+                headerText={'Start time of the first span in local timezone'}
+            ><Header name="Start Time"/></TableHeaderColumn>
+            <TableHeaderColumn
+                dataField="rootOperation"
+                dataFormat={rootColumnFormatter}
+                width="25"
+                dataSort
+                sortFunc={sortByRootAndTime}
+                caretRender={getCaret}
+                thStyle={tableHeaderStyle}
+                headerText={'Operation name of the root span'}
+            ><Header name="Root"/></TableHeaderColumn>
+            <TableHeaderColumn
+                dataField="rootError"
+                width="10"
+                dataFormat={errorFormatter}
+                dataSort
+                sortFunc={sortByRootSuccessAndTime}
+                caretRender={getCaret}
+                thStyle={tableHeaderStyle}
+                headerText={'Success of the root service'}
+            ><Header name="Root Success"/></TableHeaderColumn>
+            <TableHeaderColumn
+                dataField="spanCount"
+                dataFormat={spanColumnFormatter}
+                width="25"
+                dataSort
+                sortFunc={sortBySpansAndTime}
+                caretRender={getCaret}
+                thStyle={tableHeaderStyle}
+                headerText={'Total number of spans across all services in the trace'}
+            ><Header name="Span Count"/></TableHeaderColumn>
+            {
+                (query.operationName && query.operationName !== 'all')
+                && <TableHeaderColumn
+                    dataField="operationError"
+                    dataFormat={errorFormatter}
+                    width="10"
+                    dataSort
+                    caretRender={getCaret}
+                    sortFunc={sortByOperationSuccessAndTime}
+                    thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Success of the searched operation'}
+                ><Header name="Op Success"/></TableHeaderColumn>
+            }
+            {
+                (query.operationName && query.operationName !== 'all')
+                && <TableHeaderColumn
+                    dataField="operationDuration"
+                    dataFormat={operationDurationFormatter}
+                    width="10"
+                    dataSort
+                    caretRender={getCaret}
+                    thStyle={tableHeaderRightAlignedStyle}
+                    headerText={'Total busy time in timeline for the queried operation'}
+                ><Header name="Op Duration"/></TableHeaderColumn>
+            }
+            {
+                query.serviceName
+                    ? <TableHeaderColumn
+                        dataField="serviceDuration"
+                        dataFormat={serviceDurationFormatter}
                         width="10"
                         dataSort
-                        caretRender={TraceResultsTable.getCaret}
+                        caretRender={getCaret}
                         thStyle={tableHeaderRightAlignedStyle}
-                        headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
-                    ><TraceResultsTable.Header name="Total Duration"/></TableHeaderColumn>
-                </BootstrapTable>
-        );
-    }
-}
+                        headerText={'Total busy time in timeline for the queried service'}
+                    ><Header name="Svc Duration"/></TableHeaderColumn>
+                    : null
+            }
+            <TableHeaderColumn
+                dataField="duration"
+                dataFormat={totalDurationColumnFormatter}
+                width="10"
+                dataSort
+                caretRender={getCaret}
+                thStyle={tableHeaderRightAlignedStyle}
+                headerText={'Duration of the span. It is the difference between the start time of earliest operation and the end time of last operation in the trace'}
+            ><Header name="Total Duration"/></TableHeaderColumn>
+        </BootstrapTable>
+    );
+};
+
+Header.propTypes = {
+    name: PropTypes.string.isRequired
+};
+
+TraceResultsTable.propTypes = {
+    query: PropTypes.object.isRequired,
+    results: PropTypes.array.isRequired
+};
+
+export default TraceResultsTable;

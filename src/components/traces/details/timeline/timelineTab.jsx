@@ -22,82 +22,66 @@ import formatters from '../../../../utils/formatters';
 
 import Span from './span';
 
-@observer
-export default class TimelineTab extends React.Component {
-    static propTypes = {
-        timelineSpans: PropTypes.array.isRequired,
-        startTime: PropTypes.number.isRequired,
-        totalDuration: PropTypes.number.isRequired,
-        toggleExpand: PropTypes.func.isRequired
-    };
-
-    static getTimePointers(totalDuration, timelineWidthPerc) {
+const TimelineTab = observer(({timelineSpans, startTime, totalDuration, toggleExpand}) => {
+    const getTimePointers = (timelineWidthPerc) => {
         const offsets = [0.0, 0.25, 0.50, 0.75, 1.0];
         const pointerDurations = offsets.map(dur => (totalDuration * dur));
         const leftOffset = offsets.map(lo => (100 - timelineWidthPerc) + (timelineWidthPerc * (lo - 0.001)));
 
         return leftOffset.map((p, i) => ({leftOffset: p, time: formatters.toDurationString(pointerDurations[i])}));
-    }
+    };
 
-    constructor(props) {
-        super(props);
-        this.toggleExpand = this.toggleExpand.bind(this);
-    }
+    // layout constants
+    const spanHeight = 34;
+    const timelineWidthPercent = 85;
+    const timePointersHeight = 20;
 
-    toggleExpand(selectedParentId, expand) {
-        this.props.toggleExpand(selectedParentId, expand);
-    }
+    // display data items
+    const spans = timelineSpans.filter(s => s.display);
+    const timePointers = getTimePointers(timelineWidthPercent);
 
-    render() {
-        const {
-            timelineSpans,
-            startTime,
-            totalDuration
-        } = this.props;
+    // layout derivatives
+    const timelineHeight = timePointersHeight + (spanHeight * spans.length);
 
-        // layout constants
-        const spanHeight = 34;
-        const timelineWidthPercent = 85;
-        const timePointersHeight = 20;
+    return (
+        <svg height={timelineHeight} width="100%">
+            {timePointers.map(tp =>
+                (<g key={tp.leftOffset}>
+                    <text className="time-pointer" x={`${tp.leftOffset - 0.2}%`} y="15" xmlSpace="preserve" textAnchor="end" >{`${tp.time}`} </text>
+                    <line className="time-pointer-line" x1={`${tp.leftOffset}%`} x2={`${tp.leftOffset}%`} y1="0" y2="20" />
+                </g>)
+            )}
+            <line className="time-pointer-line" x1="0%" x2="100%" y1={timePointersHeight} y2={timePointersHeight} />
 
-        // display data items
-        const spans = timelineSpans.filter(s => s.display);
-        const timePointers = TimelineTab.getTimePointers(totalDuration, timelineWidthPercent);
+            {spans.map((span, index) => {
+                const parent = spans.find(s => s.spanId === span.parentSpanId);
+                const parentStartTimePercent = parent ? parent.startTimePercent : 0;
+                const parentIndex = parent ? spans.indexOf(parent) : 0;
 
-        // layout derivatives
-        const timelineHeight = timePointersHeight + (spanHeight * spans.length);
+                return (<Span
+                    key={span.spanId}
+                    index={index}
+                    span={span}
+                    startTime={startTime}
+                    totalDuration={totalDuration}
+                    timelineWidthPercent={timelineWidthPercent}
+                    timePointersHeight={timePointersHeight}
+                    spanHeight={spanHeight}
+                    toggleExpand={toggleExpand}
+                    parentStartTimePercent={parentStartTimePercent}
+                    parentIndex={parentIndex}
+                />);
+            })
+            }
+        </svg>
+    );
+});
 
-        return (
-            <svg height={timelineHeight} width="100%">
-                {timePointers.map(tp =>
-                    (<g key={tp.leftOffset}>
-                        <text className="time-pointer" x={`${tp.leftOffset - 0.2}%`} y="15" xmlSpace="preserve" textAnchor="end" >{`${tp.time}`} </text>
-                        <line className="time-pointer-line" x1={`${tp.leftOffset}%`} x2={`${tp.leftOffset}%`} y1="0" y2="20" />
-                    </g>)
-                )}
-                <line className="time-pointer-line" x1="0%" x2="100%" y1={timePointersHeight} y2={timePointersHeight} />
+TimelineTab.propTypes = {
+    timelineSpans: PropTypes.array.isRequired,
+    startTime: PropTypes.number.isRequired,
+    totalDuration: PropTypes.number.isRequired,
+    toggleExpand: PropTypes.func.isRequired
+};
 
-                {spans.map((span, index) => {
-                    const parent = spans.find(s => s.spanId === span.parentSpanId);
-                    const parentStartTimePercent = parent ? parent.startTimePercent : 0;
-                    const parentIndex = parent ? spans.indexOf(parent) : 0;
-
-                    return (<Span
-                        key={span.spanId}
-                        index={index}
-                        span={span}
-                        startTime={startTime}
-                        totalDuration={totalDuration}
-                        timelineWidthPercent={timelineWidthPercent}
-                        timePointersHeight={timePointersHeight}
-                        spanHeight={spanHeight}
-                        toggleExpand={this.toggleExpand}
-                        parentStartTimePercent={parentStartTimePercent}
-                        parentIndex={parentIndex}
-                    />);
-                    })
-                }
-            </svg>
-        );
-    }
-}
+export default TimelineTab;

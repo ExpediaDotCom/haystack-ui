@@ -14,7 +14,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -56,74 +56,67 @@ function toAvgSuccessPercent(successPoints, failurePoints) {
     return 100 - ((failureCount / (successCount + failureCount)) * 100);
 }
 
-export default class TrendRow extends React.Component {
-    static propTypes = {
-        serviceName: PropTypes.string.isRequired,
-        operationName: PropTypes.string.isRequired,
-        from: PropTypes.number.isRequired,
-        until: PropTypes.number.isRequired,
-        granularity: PropTypes.number.isRequired
-    };
 
-    static openTrendDetailInNewTab(serviceName, operationName, from, until) {
-        const url = linkBuilder.universalSearchTrendsLink({
-            query_1: {
-                serviceName,
-                operationName
-            },
-            time: {
-                from,
-                to: until
-            }
-        });
+function openTrendDetailInNewTab(serviceName, operationName, from, until) {
+    const url = linkBuilder.universalSearchTrendsLink({
+        query_1: {
+            serviceName,
+            operationName
+        },
+        time: {
+            from,
+            to: until
+        }}
+    );
 
-        const tab = window.open(url, '_blank');
-        tab.focus();
-    }
-
-    componentWillMount() {
-        fetcher.fetchOperationTrends(this.props.serviceName, this.props.operationName, this.props.granularity, this.props.from, this.props.until)
-        .then((result) => {
-            this.setState({trends: result});
-        });
-    }
-
-    componentWillReceiveProps(nextprops) {
-        fetcher.fetchOperationTrends(nextprops.serviceName, nextprops.operationName, nextprops.granularity, nextprops.from, nextprops.until)
-            .then((result) => {
-                this.setState({trends: result});
-            });
-    }
-
-    render() {
-        const {serviceName, operationName, from, until} = this.props;
-        const trends = this.state && this.state.trends;
-
-        const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
-        const totalPoints = trends && trends.count && trends.count.map(p => p.value);
-
-        const latestDuration = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration[trends.tp99Duration.length - 1].value;
-        const durationPoints = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration.map(p => p.value);
-
-        const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount);
-        const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount);
-
-        return (
-            <tr onClick={() => TrendRow.openTrendDetailInNewTab(serviceName, operationName, from, until)}>
-                <td className="trace-trend-table_cell">
-                    <div className={`service-spans label label-default ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</div>
-                    <div className="trace-trend-table_op-name">{operationName}</div>
-                </td>
-                <td className="trace-trend-table_cell">
-                    {trends && <TrendSparklines.CountSparkline total={totalCount} points={totalPoints} />}
-                </td>
-                <td className="trace-trend-table_cell">
-                    {(durationPoints && durationPoints.length) ? <TrendSparklines.DurationSparkline latest={latestDuration} points={durationPoints} /> : null}
-                </td>
-                <td className="trace-trend-table_cell">
-                    {trends && <TrendSparklines.SuccessPercentSparkline average={successPercentAvg} points={successPercentPoints} />}
-                </td>
-            </tr>
-        );
-    }
+    const tab = window.open(url, '_blank');
+    tab.focus();
 }
+
+const TrendRow = ({serviceName, operationName, from, until, granularity}) => {
+    const [trends, setTrends] = useState(null);
+
+    useEffect(() => {
+        fetcher.fetchOperationTrends(serviceName, operationName, granularity, from, until)
+            .then((result) => {
+                setTrends(result);
+            });
+    }, []);
+
+    const totalCount = trends && trends.count && _.sum(trends.count.map(a => a.value));
+    const totalPoints = trends && trends.count && trends.count.map(p => p.value);
+
+    const latestDuration = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration[trends.tp99Duration.length - 1].value;
+    const durationPoints = trends && trends.tp99Duration && trends.tp99Duration.length && trends.tp99Duration.map(p => p.value);
+
+    const successPercentAvg = trends && toAvgSuccessPercent(trends.successCount, trends.failureCount);
+    const successPercentPoints = trends && toSuccessPercentPoints(trends.successCount, trends.failureCount);
+
+    return (
+        <tr onClick={() => openTrendDetailInNewTab(serviceName, operationName, from, until)}>
+            <td className="trace-trend-table_cell">
+                <div className={`service-spans label label-default ${colorMapper.toBackgroundClass(serviceName)}`}>{serviceName}</div>
+                <div className="trace-trend-table_op-name">{operationName}</div>
+            </td>
+            <td className="trace-trend-table_cell">
+                {trends && <TrendSparklines.CountSparkline total={totalCount} points={totalPoints} />}
+            </td>
+            <td className="trace-trend-table_cell">
+                {(durationPoints && durationPoints.length) ? <TrendSparklines.DurationSparkline latest={latestDuration} points={durationPoints} /> : null}
+            </td>
+            <td className="trace-trend-table_cell">
+                {trends && <TrendSparklines.SuccessPercentSparkline average={successPercentAvg} points={successPercentPoints} />}
+            </td>
+        </tr>
+    );
+};
+
+TrendRow.propTypes = {
+    serviceName: PropTypes.string.isRequired,
+    operationName: PropTypes.string.isRequired,
+    from: PropTypes.number.isRequired,
+    until: PropTypes.number.isRequired,
+    granularity: PropTypes.number.isRequired
+};
+
+export default TrendRow;

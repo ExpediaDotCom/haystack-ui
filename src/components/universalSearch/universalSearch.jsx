@@ -98,8 +98,10 @@ class UniversalSearch extends React.Component {
     }
 
     // on update of url query, update the search object
-    componentWillReceiveProps(nextProps) {
-        this.setState({search: UniversalSearch.createSearch(nextProps.location.search)});
+    componentDidUpdate(prev) {
+        if (this.props !== prev) {
+            this.setState({search: UniversalSearch.createSearch(this.props.location.search)}); // eslint-disable-line
+        }
     }
 
     // on update of search in search-bar,

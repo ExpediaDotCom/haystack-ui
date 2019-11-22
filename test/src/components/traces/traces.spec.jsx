@@ -434,7 +434,7 @@ describe('<Traces />', () => {
                     <TraceDetailsStubComponent traceId={stubDetails[0].traceId} location={stubLocation} baseServiceName={stubDetails[0].serviceName} traceDetailsStore={traceDetailsStore} history={stubHistory} />
                 </MemoryRouter>);
                 wrapper.find('.span-click').first().simulate('click');
-                const modal = wrapper.find('SpanDetailsModal').first();
+                const modal = wrapper.find('ModalView').first();
                 expect(modal.props().isOpen).to.be.true;
             });
 
@@ -497,8 +497,7 @@ describe('<Traces />', () => {
                 wrapper.find('select#time').simulate('change', {target: { value: 1}});
                 // Expects that the dictionary of tags was successfully built
                 expect(wrapper.props().store.tags.success).to.equal('false');
-                // Expects that the searchQuery has the correct field and timepreset to find related traces
-                expect(wrapper.props().store.searchQuery.success).to.equal('false');
+                // Expects that the searchQuery has the correct field and timePreset to find related traces
                 expect(wrapper.props().store.searchQuery.timePreset).to.equal('15m');
                 // Expects two result traces results - in the store and rendered
                 expect(wrapper.props().store.relatedTraces.length).to.equal(2);

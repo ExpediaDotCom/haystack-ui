@@ -35,7 +35,7 @@ class UploadContainer extends React.Component {
                 <section className="universal-search-tab__content">
                     <section className="container table-row-details table-row-details-upload">
                         {traceDetailsStore.spans && traceDetailsStore.spans.length > 0 ?
-                            <React.Fragment>
+                            <>
                                 <UploadHeader
                                     traceDetailsStore={traceDetailsStore}
                                 />
@@ -45,7 +45,7 @@ class UploadContainer extends React.Component {
                                     startTime={traceDetailsStore.startTime}
                                     toggleExpand={traceDetailsStore.toggleExpand}
                                 />
-                            </React.Fragment> :
+                            </> :
                             <Error errorMessage="Invalid JSON or file. Please ensure the uploaded file is a valid downloaded trace"/>
                         }
                     </section>

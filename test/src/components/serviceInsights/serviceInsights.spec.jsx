@@ -21,8 +21,6 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 import {shallow} from 'enzyme';
 
-// import timeWindow from '../../../../src/utils/timeWindow';
-
 import ServiceInsights from '../../../../src/components/serviceInsights/serviceInsights';
 
 function createStoreStub(promiseState, data = {}) {
@@ -98,16 +96,9 @@ describe('<ServiceInsights/>', () => {
             const search = {
                 serviceName: 'web-ui',
                 time: {
-                    preset: 'foo'
+                    preset: '1h'
                 }
             };
-
-            window.haystackUiConfig.tracesTimePresetOptions = [
-                {
-                    shortName: 'foo',
-                    value: '888'
-                }
-            ];
 
             const store = createStoreStub('fulfilled', {
                 nodes: []

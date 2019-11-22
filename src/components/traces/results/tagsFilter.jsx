@@ -14,51 +14,48 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
-export default class TagsFilter extends React.Component {
-    static propTypes = {
-        filterHandler: PropTypes.func.isRequired
-    };
+function hasTagsWithFilters(tags, parsedFilters) {
+    return parsedFilters.every(filter =>
+        tags.some(
+            tag => tag && `${tag.key}=${tag.value}`.toLowerCase().includes(filter.toLowerCase())));
+}
 
-    static hasTagsWithFilters(tags, parsedFilters) {
-        return parsedFilters.every(filter =>
-            tags.some(
-                tag => tag && `${tag.key}=${tag.value}`.toLowerCase().includes(filter.toLowerCase())));
-    }
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.handleChange = this.handleChange.bind(this);
-    }
+const TagsFilter = ({filterHandler}) => {
+    const [value, setValue] = useState(null);
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
+    const handleChange = (event) => {
+        setValue(event.target.value);
         const parsedFilters = event.target.value.split(/[\s,;]+/);
 
-        this.props.filterHandler({ callback: (tags) => {
-            if (event.target) {
-                if (/^\s*$/.test(event.target.value)) return true;
-                return TagsFilter.hasTagsWithFilters(tags, parsedFilters);
-            }
+        filterHandler({ callback: (tags) => {
+                if (event.target) {
+                    if (/^\s*$/.test(value)) return true;
+                    return hasTagsWithFilters(tags, parsedFilters);
+                }
 
-            if (/^\s*$/.test(this.state.value)) return true;
-            return TagsFilter.hasTagsWithFilters(tags, parsedFilters);
-        }});
-    }
+                if (/^\s*$/.test(value)) return true;
+                return hasTagsWithFilters(tags, parsedFilters);
+            }});
+    };
 
-    render() {
-        return (
-            <div>
-                <input
-                    className="filter text-filter form-control"
-                    type="text"
-                    placeholder="Filter tags..."
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                />
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <input
+                className="filter text-filter form-control"
+                type="text"
+                placeholder="Filter tags..."
+                value={value}
+                onChange={handleChange}
+            />
+        </div>
+    );
+};
+
+TagsFilter.propTypes = {
+    filterHandler: PropTypes.func.isRequired
+};
+
+export default TagsFilter;
