@@ -22,6 +22,8 @@ const MetricpointNameEncoder = require('../../utils/encoders/MetricpointNameEnco
 
 const trendsFetcher = fetcher('trends');
 
+const defaultFrom = Math.ceil((Date.now() / 1000) - (60 * 60));
+const defaultUntil = Math.ceil(Date.now() / 1000);
 const connector = {};
 const metricTankUrl = config.connectors.trends && config.connectors.trends.metricTankUrl;
 const metricpointNameEncoder = new MetricpointNameEncoder(config.encoder);
@@ -292,11 +294,8 @@ function getEdgeLatencyTrendResults(edges, from, until) {
         .then(trends => trends);
 }
 
-function getOperationNames(serviceName) {
+function getOperationNames(serviceName, from, until) {
     const target = createOperationTarget(serviceName, '~.*', 'OneMinute', '~(count)|(\\*_99)', '~(received-span)|(success-span)|(failure-span)|(duration)');
-
-    const from = Math.ceil((Date.now() / 1000) - (60 * 60));
-    const until = Math.ceil(Date.now() / 1000);
 
     return fetchTrendValues(target, from, until)
         .then(values => (_.uniq(values.map(val => (val.operationName))))); // return only unique operation names from Metrictank response
@@ -318,8 +317,8 @@ connector.getOperationStats = (serviceName, granularity, from, until) =>
 connector.getOperationTrends = (serviceName, operationName, granularity, from, until) =>
     getOperationTrendResults(metricpointNameEncoder.encodeMetricpointName(serviceName), metricpointNameEncoder.encodeMetricpointName(operationName), convertGranularityToTimeWindow(granularity), toMilliseconds(from), toMilliseconds(until));
 
-connector.getEdgeLatency = edges => getEdgeLatencyTrendResults(edges, Math.ceil(Date.now() / 1000) - (60 * 60), Math.ceil(Date.now() / 1000));
+connector.getEdgeLatency = (edges, from = defaultFrom, until = defaultUntil) => getEdgeLatencyTrendResults(edges, from, until);
 
-connector.getOperationNames = serviceName => getOperationNames(metricpointNameEncoder.encodeMetricpointName(serviceName));
+connector.getOperationNames = (serviceName, from = defaultFrom, until = defaultUntil) => getOperationNames(metricpointNameEncoder.encodeMetricpointName(serviceName), from, until);
 
 module.exports = connector;
