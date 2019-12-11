@@ -17,6 +17,10 @@
 
 import store from '../../../serviceInsights/stores/serviceInsightsStore';
 
+// is Service Insights enabled in the appliation config?
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('serviceInsights');
+
 export class ServiceInsightsTabStateStore {
     search = null;
     isAvailable = false;
@@ -25,16 +29,13 @@ export class ServiceInsightsTabStateStore {
     init(search) {
         this.search = search;
 
-        // is Service Insights enabled in the appliation config?
-        const enableServiceInsights = (window.haystackUiConfig && window.haystackUiConfig.enableServiceInsights) || false;
-
         // If user is directly accessing URL, show this feature
         const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
 
         // has required minimal search terms
         this.hasValidSearch = !!(search.serviceName || search.traceId);
 
-        this.isAvailable = enableServiceInsights && (this.hasValidSearch || isAccessingServiceInsights);
+        this.isAvailable = enabled && (this.hasValidSearch || isAccessingServiceInsights);
     }
 
     fetch() {
