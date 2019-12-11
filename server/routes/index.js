@@ -25,7 +25,12 @@ const assets = require('../../public/assets.json');
 
 const router = express.Router();
 
-const subsystems = Object.keys(config.connectors).filter((connector) => config.connectors[connector].connectorName !== 'disabled');
+const subsystems = Object.keys(config.connectors).filter((connector) => {
+    if (connector === 'serviceInsights') {
+        return config.connectors[connector].enableServiceInsights !== 'disabled';
+    }
+    return config.connectors[connector].connectorName !== 'disabled';
+});
 
 router.get('*', (req, res) => {
     const timer = metrics.timer('index').start();

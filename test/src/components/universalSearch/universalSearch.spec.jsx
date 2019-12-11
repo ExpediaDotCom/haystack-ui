@@ -26,6 +26,7 @@ import moment from 'moment';
 
 import UniversalSearch from '../../../../src/components/universalSearch/universalSearch';
 import Autosuggest from '../../../../src/components/universalSearch/searchBar/autosuggest';
+import SearchBar from '../../../../src/components/universalSearch/searchBar/searchBar';
 
 import uiState from '../../../../src/components/universalSearch/searchBar/stores/searchBarUiStateStore';
 import {OperationStore} from '../../../../src/stores/operationStore';
@@ -208,20 +209,34 @@ describe('<UniversalSearch />', () => {
         const stubQueryTwo = {search: '?query_1.serviceName=new-root-service&query_2.error=true&time.preset=4h'};
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQueryOne} history={stubHistory}/></MemoryRouter>);
 
-        expect(wrapper.find('Autocomplete').first().instance().props.uiState.queries.length).to.equal(1);
+        expect(wrapper.find('Autosuggest').first().instance().props.uiState.queries.length).to.equal(1);
         wrapper.setProps({
             children: React.cloneElement(wrapper.props().children, { location: stubQueryTwo })
         });
 
         // Ensure that chips were updated with the location change
-        expect(wrapper.find('Autocomplete').first().instance().props.uiState.queries.length).to.equal(2);
+        expect(wrapper.find('Autosuggest').first().instance().props.uiState.queries.length).to.equal(2);
     });
 
     it('should allow whitelisted keys with a period in them', () => {
         const stubQuery = {search: '?query_1.test.key=root-service'};
         const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQuery} history={stubHistory}/></MemoryRouter>);
 
-        expect(wrapper.find('Autocomplete').first().instance().props.uiState.queries.length).to.equal(1);
+        expect(wrapper.find('Autosuggest').first().instance().props.uiState.queries.length).to.equal(1);
+    });
+
+    it('should add new searches to the history cookie', () => {
+        global.window.document.cookie = 'searchhistory=[]'; // reset search history cookie
+        const stubQueryOne = {search: '?query_1.serviceName=root-service&time.preset=1h'};
+        const stubQueryTwo = {search: '?query_1.serviceName=new-root-service&query_1.error=true&time.preset=4h'};
+        const wrapper = mount(<MemoryRouter><UniversalSearch.WrappedComponent location={stubQueryOne} history={stubHistory}/></MemoryRouter>);
+
+        expect(wrapper.find('Autosuggest').first().instance().props.uiState.searchHistory.length).to.equal(0);
+        wrapper.setProps({
+            children: React.cloneElement(wrapper.props().children, { location: stubQueryTwo })
+        });
+
+        expect(wrapper.find('Autosuggest').first().instance().props.uiState.searchHistory.length).to.equal(1);
     });
 });
 
@@ -238,6 +253,38 @@ describe('uiState', () => {
         const search = UiState.getCurrentSearch();
 
         expect(search.time.preset).to.equal('1h');
+    });
+});
+
+describe('<SearchBar />', () => {
+    before(() => {
+        global.window.document.cookie = 'searchhistory=[]'; // reset search history cookie
+    });
+
+    it('should show history on the search bar', () => {
+        const stubSearchOne = {serviceName: 'test-1'};
+        const stubSearchTwo = {serviceName: 'test-2'};
+        const wrapper = mount(<SearchBar search={stubSearchOne} handleSearch={() => {}}/>);
+        wrapper.setProps({search: stubSearchTwo});
+
+        expect(wrapper.find('Autosuggest').instance().props.uiState.searchHistory.length).to.equal(1);
+        expect(wrapper.find('.usb-suggestions__guide-history-list')).to.have.length(1);
+    });
+
+    it('should show not show duplicate history or tabId', () => {
+        const stubSearchOne = {serviceName: 'test-1'};
+        const stubSearchTwo = {serviceName: 'test-2'};
+        const stubSearchThree = {serviceName: 'test-1', tabId: 'trends'};
+        const wrapper = mount(<SearchBar search={stubSearchOne} handleSearch={() => {}}/>);
+
+        wrapper.setProps({search: stubSearchTwo});
+        expect(wrapper.find('.usb-suggestions__guide-history-list')).to.have.length(1);
+
+        wrapper.setProps({search: stubSearchOne});
+        expect(wrapper.find('.usb-suggestions__guide-history-list')).to.have.length(1);
+
+        wrapper.setProps({search: stubSearchThree});
+        expect(wrapper.find('.usb-suggestions__guide-history-list')).to.have.length(1);
     });
 });
 

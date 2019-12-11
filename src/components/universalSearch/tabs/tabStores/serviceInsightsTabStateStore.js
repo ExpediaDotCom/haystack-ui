@@ -19,6 +19,10 @@ import store from '../../../serviceInsights/stores/serviceInsightsStore';
 import timeWindow from '../../../../utils/timeWindow';
 import Enums from '../../../../../universal/enums';
 
+// is Service Insights enabled in the appliation config?
+const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
+const enabled = subsystems.includes('serviceInsights');
+
 export class ServiceInsightsTabStateStore {
     isAvailable = false;
     hasValidSearch = false;
@@ -27,16 +31,13 @@ export class ServiceInsightsTabStateStore {
         this.search = search;
         this.tabProperties = tabProperties;
 
-        // is Service Insights enabled in the appliation config?
-        const enableServiceInsights = (window.haystackUiConfig && window.haystackUiConfig.enableServiceInsights) || false;
-
         // If user is directly accessing URL, show this feature
         const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
 
         // has required minimal search terms
         this.hasValidSearch = !!(tabProperties.serviceName || tabProperties.traceId);
 
-        this.isAvailable = enableServiceInsights && (this.hasValidSearch || isAccessingServiceInsights);
+        this.isAvailable = enabled && (this.hasValidSearch || isAccessingServiceInsights);
     }
 
     fetch() {

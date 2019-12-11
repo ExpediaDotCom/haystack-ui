@@ -35,7 +35,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
     });
     it('should initialize `isAvailable` as true if `enableServiceInsights` is enabled and serviceName is passed in', () => {
         window.haystackUiConfig = {
-            enableServiceInsights: true
+            subsystems: ['serviceInsights']
         };
 
         let store = require(modulePath).default; // eslint-disable-line
@@ -46,7 +46,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
     });
     it('should set `isAvailable` as false if `tabId` is set to `serviceInsights` and feature is disabled', () => {
         window.haystackUiConfig = {
-            enableServiceInsights: false
+            subsystems: []
         };
         let store = require(modulePath).default; // eslint-disable-line
         store.init({
@@ -59,7 +59,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
 
     it('should set `isAvailable` as true if `tabId` is set to `serviceInsights` and feature is enabled', () => {
         window.haystackUiConfig = {
-            enableServiceInsights: true
+            subsystems: ['serviceInsights']
         };
         let store = require(modulePath).default; // eslint-disable-line
         store.init({
@@ -70,7 +70,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
 
     it('should set `isAvailable` as true if feature is enabled and has valid search', () => {
         window.haystackUiConfig = {
-            enableServiceInsights: true
+            subsystems: ['serviceInsights']
         };
         let store = require(modulePath).default; // eslint-disable-line
         store.init({}, {
@@ -86,7 +86,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
 
     it('should return a valid serviceInsights store from fetch()', () => {
         window.haystackUiConfig = {
-            enableServiceInsights: true
+            subsystems: ['serviceInsights']
         };
         let store = require(modulePath).default; // eslint-disable-line
         store.init({}, {});
