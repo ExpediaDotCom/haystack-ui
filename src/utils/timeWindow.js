@@ -22,7 +22,7 @@ const timeWindow = {};
 
 timeWindow.presets = window.haystackUiConfig.timeWindowPresetOptions;
 
-timeWindow.defaultPreset = timeWindow.presets[2];
+timeWindow.defaultPreset = timeWindow.presets && timeWindow.presets[2] || {shortName: '1h', longName: '1 hour', value: 60 * 60 * 1000};
 
 timeWindow.toTimeRange = (ms) => {
     const nowInMilliseconds = new Date().getTime();

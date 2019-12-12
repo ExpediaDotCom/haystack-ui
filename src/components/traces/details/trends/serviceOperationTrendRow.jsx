@@ -56,15 +56,18 @@ function toAvgSuccessPercent(successPoints, failurePoints) {
     return 100 - ((failureCount / (successCount + failureCount)) * 100);
 }
 
+
 function openTrendDetailInNewTab(serviceName, operationName, from, until) {
     const url = linkBuilder.universalSearchTrendsLink({
-        serviceName,
-        operationName,
+        query_1: {
+            serviceName,
+            operationName
+        },
         time: {
             from,
             to: until
-        }
-    });
+        }}
+    );
 
     const tab = window.open(url, '_blank');
     tab.focus();
@@ -117,4 +120,3 @@ TrendRow.propTypes = {
 };
 
 export default TrendRow;
-

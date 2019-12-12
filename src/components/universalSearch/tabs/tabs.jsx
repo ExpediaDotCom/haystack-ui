@@ -17,7 +17,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-
 import timeWindow from '../../../utils/timeWindow';
 import EmptyTab from './emptyTabPlaceholder';
 import TraceResults from '../../traces/results/traceResults';
@@ -40,7 +39,8 @@ export default class Tabs extends React.Component {
         search: PropTypes.object.isRequired,
         handleTabSelection: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        location: PropTypes.object.isRequired
+        location: PropTypes.object.isRequired,
+        tabProperties: PropTypes.object.isRequired
     };
 
     static tabs = [
@@ -82,8 +82,8 @@ export default class Tabs extends React.Component {
         }
     ];
 
-    static initTabs(search) {
-        Tabs.tabs.forEach((tab) => tab.store && tab.store.init(search));
+    static initTabs(search, tabProperties) {
+        Tabs.tabs.forEach((tab) => tab.store && tab.store.init(search, tabProperties));
     }
 
     constructor(props) {
@@ -93,11 +93,11 @@ export default class Tabs extends React.Component {
         this.TabViewer = this.TabViewer.bind(this);
 
         // init state stores for tabs
-        Tabs.initTabs(props.search);
+        Tabs.initTabs(props.search, props.tabProperties);
     }
 
     componentWillReceiveProps(nextProps) {
-        Tabs.initTabs(nextProps.search);
+        Tabs.initTabs(nextProps.search, nextProps.tabProperties);
     }
 
     TabViewer({tabId, history, location}) {
@@ -113,8 +113,8 @@ export default class Tabs extends React.Component {
                     <OperationResults
                         operationStore={store}
                         history={history}
-                        serviceName={this.props.search.serviceName}
-                        interval={this.props.search.interval || null}
+                        serviceName={this.props.tabProperties.serviceName}
+                        interval={this.props.tabProperties.interval}
                     />
                 );
             case 'alerts':
@@ -124,8 +124,8 @@ export default class Tabs extends React.Component {
                         history={history}
                         location={location}
                         defaultPreset={timeWindow.presets[5]}
-                        serviceName={this.props.search.serviceName}
-                        interval={this.props.search.interval}
+                        serviceName={this.props.tabProperties.serviceName}
+                        interval={this.props.tabProperties.interval || 'FiveMinute'}
                     />
                 );
             case 'serviceGraph':
@@ -155,7 +155,7 @@ export default class Tabs extends React.Component {
                         <span>{tab.displayName}</span>
                         {tab.tabId === 'alerts' ? (
                             <div className="universal-search-bar-tabs__alert-counter">
-                                <AlertCounter serviceName={this.props.search.serviceName} interval={this.props.search.interval} />
+                                <AlertCounter serviceName={this.props.tabProperties.serviceName} interval={this.props.tabProperties.interval} />
                             </div>
                         ) : null}
                     </a>

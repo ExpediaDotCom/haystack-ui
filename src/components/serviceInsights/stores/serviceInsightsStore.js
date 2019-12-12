@@ -23,6 +23,7 @@ export class ServiceInsightsStore extends ErrorHandlingStore {
     @observable serviceInsights = {};
     @observable promiseState = null;
     @observable filterQuery = null;
+    @observable hasValidSearch = null;
 
     @action fetchServiceInsights(filterQuery) {
         const {serviceName, operationName, traceId, startTime, endTime, relationship} = filterQuery;

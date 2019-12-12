@@ -16,31 +16,64 @@
  */
 
 import store from '../../../serviceInsights/stores/serviceInsightsStore';
+import timeWindow from '../../../../utils/timeWindow';
+import Enums from '../../../../../universal/enums';
 
 // is Service Insights enabled in the appliation config?
 const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystems) || [];
 const enabled = subsystems.includes('serviceInsights');
 
 export class ServiceInsightsTabStateStore {
-    search = null;
     isAvailable = false;
     hasValidSearch = false;
 
-    init(search) {
+    init(search, tabProperties) {
         this.search = search;
+        this.tabProperties = tabProperties;
 
         // If user is directly accessing URL, show this feature
         const isAccessingServiceInsights = this.search.tabId === 'serviceInsights';
 
         // has required minimal search terms
-        this.hasValidSearch = !!(search.serviceName || search.traceId);
+        this.hasValidSearch = !!(tabProperties.serviceName || tabProperties.traceId);
 
         this.isAvailable = enabled && (this.hasValidSearch || isAccessingServiceInsights);
     }
 
     fetch() {
-        // Copy `hasValidSearch` so serviceInsight reactJS component can leverage
-        store.hasValidSearch = this.hasValidSearch;
+        const search = this.search || {};
+        const timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
+        const isCustomTimeRange = !!(search.time && search.time.from && search.time.to);
+
+        let activeWindow;
+
+        if (isCustomTimeRange) {
+            activeWindow = timeWindow.toCustomTimeRange(search.time.from, search.time.to);
+        } else if (search.time && search.time.preset) {
+            activeWindow = timePresetOptions.find((preset) => preset.shortName === search.time.preset);
+        } else {
+            activeWindow = timeWindow.defaultPreset;
+        }
+
+        const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
+
+        const micro = (milli) => milli * 1000;
+        const startTime = micro(activeWindowTimeRange.from);
+        const endTime = micro(activeWindowTimeRange.until);
+        const relationship = this.tabProperties.serviceName ? search.relationship : Enums.relationship.all;
+
+        // Get service insights
+        store.fetchServiceInsights({
+            serviceName: this.tabProperties.serviceName,
+            operationName: this.tabProperties.operationName,
+            traceId: this.tabProperties.traceId,
+            startTime,
+            endTime,
+            relationship
+        });
+
+        store.hasValidSearch = true;
+
         return store;
     }
 }

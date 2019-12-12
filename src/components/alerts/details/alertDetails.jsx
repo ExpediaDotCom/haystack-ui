@@ -56,7 +56,7 @@ export default class AlertDetails extends React.Component {
             <section className="table-row-details">
                 <div className="alert-details-container">
                     <div className="clearfix alert-details-container_header">
-                        <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} />
+                        <AlertDetailsToolbar serviceName={this.props.serviceName} operationName={this.props.operationName} interval={this.props.interval} />
                     </div>
                     <div className="row">
                         {

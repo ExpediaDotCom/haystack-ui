@@ -19,6 +19,7 @@ import React from 'react';
 import {withRouter} from 'react-router';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
+import _ from 'lodash';
 
 // layout elements
 import Header from '../layout/slimHeader';
@@ -64,6 +65,31 @@ class UniversalSearch extends React.Component {
         return search;
     }
 
+    static constructTabPropertiesFromSearch(search) {
+        const queries = Object.keys(search)
+            .filter(searchKey => searchKey.startsWith('query_'))
+            .map(query => (search[query]));
+
+        const keys = _.flatten(queries.map(query => Object.keys(query)));
+
+        const onlyServiceKey = keys.length === 1 && keys[0] === 'serviceName';
+        const onlyServiceAndOperationKeys = keys.length === 2 && keys.filter(key => key === 'operationName').length === 1 && keys.filter(key => key === 'serviceName').length === 1;
+        const serviceName = onlyServiceKey || onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
+        const operationName = onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.operationName)))[0] : null;
+        const traceId = keys.filter(key => key === 'traceId').length ? _.compact(queries.map(query => (query.traceId)))[0] : null;
+        const interval = keys.filter(key => key === 'interval').length ? _.compact(queries.map(query => (query.interval)))[0] : null;
+
+        return {
+            queries,
+            onlyService: onlyServiceKey,
+            onlyServiceAndOperation: onlyServiceAndOperationKeys,
+            serviceName,
+            operationName,
+            traceId,
+            interval
+        };
+    }
+
     constructor(props) {
         super(props);
         this.state = {search: UniversalSearch.createSearch(props.location.search)};
@@ -95,13 +121,14 @@ class UniversalSearch extends React.Component {
     render() {
         const {history, location} = this.props;
         const {search} = this.state;
+        const tabProperties = UniversalSearch.constructTabPropertiesFromSearch(search);
 
         return (
             <article className="universal-search-panel">
                 {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
                 <Header />
                 <SearchBar search={search} handleSearch={this.handleSearch} />
-                <Tabs search={search} handleTabSelection={this.handleTabSelection} history={history} location={location} />
+                <Tabs search={search} tabProperties={tabProperties} handleTabSelection={this.handleTabSelection} history={history} location={location} />
                 <Footer />
             </article>
         );

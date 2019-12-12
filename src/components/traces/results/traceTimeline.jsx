@@ -20,9 +20,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Bar} from 'react-chartjs-2';
-import { convertSearchToUrlQuery } from '../../universalSearch/utils/urlUtils';
 
 import './traceTimeline.less';
+import linkBuilder from '../../../utils/linkBuilder';
 
 const TraceTimeline = observer(({history, store}) => {
     const updateTimeFrame = (event) => {
@@ -37,7 +37,6 @@ const TraceTimeline = observer(({history, store}) => {
             const startTime = results[selectedIndex].x / 1000;
             const granularityMs = (results[1].x - results[0].x) / 1000;
             const endTime = startTime + granularityMs;
-
             const newSearch = {
                 ...store.searchQuery,
                 timePreset: null,
@@ -49,10 +48,7 @@ const TraceTimeline = observer(({history, store}) => {
                 }
             };
 
-            const queryUrl = `?${convertSearchToUrlQuery(newSearch)}`;
-            history.push({
-                search: queryUrl
-            });
+            history.push(linkBuilder.universalSearchTracesLink(newSearch));
         }
     };
 

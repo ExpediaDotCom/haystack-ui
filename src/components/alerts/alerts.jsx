@@ -31,12 +31,7 @@ export default class Alerts extends React.Component {
         history: PropTypes.object.isRequired,
         defaultPreset: PropTypes.object.isRequired,
         serviceName: PropTypes.string.isRequired,
-        interval: PropTypes.string
-    };
-
-    // Default interval to FiveMinute if none specified in search
-    static defaultProps = {
-        interval: 'FiveMinute'
+        interval: PropTypes.string.isRequired
     };
 
     render() {

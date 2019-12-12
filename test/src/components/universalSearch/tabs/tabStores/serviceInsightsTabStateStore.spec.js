@@ -33,13 +33,13 @@ describe('class ServiceInsightsTabStateStore()', () => {
         let store = require(modulePath).default; // eslint-disable-line
         expect(store.isAvailable).to.equal(false);
     });
-    it('should initialize `isAvailable` as true if `enableServiceInsights` is enabled and search contains `serviceName`', () => {
+    it('should initialize `isAvailable` as true if `enableServiceInsights` is enabled and serviceName is passed in', () => {
         window.haystackUiConfig = {
             subsystems: ['serviceInsights']
         };
 
         let store = require(modulePath).default; // eslint-disable-line
-        store.init({
+        store.init({}, {
             serviceName: 'mock-ui'
         });
         expect(store.isAvailable).to.equal(true);
@@ -50,7 +50,8 @@ describe('class ServiceInsightsTabStateStore()', () => {
         };
         let store = require(modulePath).default; // eslint-disable-line
         store.init({
-            tabId: 'serviceInsights',
+            tabId: 'serviceInsights'
+        }, {
             serviceName: 'mock-ui'
         });
         expect(store.isAvailable).to.equal(false);
@@ -63,7 +64,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
         let store = require(modulePath).default; // eslint-disable-line
         store.init({
             tabId: 'serviceInsights'
-        });
+        }, {});
         expect(store.isAvailable).to.equal(true);
     });
 
@@ -72,12 +73,12 @@ describe('class ServiceInsightsTabStateStore()', () => {
             subsystems: ['serviceInsights']
         };
         let store = require(modulePath).default; // eslint-disable-line
-        store.init({
+        store.init({}, {
             traceId: '123456789'
         });
         expect(store.isAvailable).to.equal(true);
 
-        store.init({
+        store.init({}, {
             serviceName: 'mock-ui'
         });
         expect(store.isAvailable).to.equal(true);
@@ -88,6 +89,7 @@ describe('class ServiceInsightsTabStateStore()', () => {
             subsystems: ['serviceInsights']
         };
         let store = require(modulePath).default; // eslint-disable-line
+        store.init({}, {});
         expect(JSON.stringify(store.fetch().serviceInsights)).to.equal('{}');
     });
 });

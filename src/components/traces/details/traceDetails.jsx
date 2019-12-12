@@ -64,13 +64,13 @@ const TraceDetails = observer(({traceId, traceDetailsStore}) => {
         setTabSelected(tabIndex);
     };
 
+    const search = {query_1: {traceId}}; // TODO add specific time for trace
+    const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
+    const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
     const handleCopy = () => {
         setShowCopied(true);
         setTimeout(() => setShowCopied(false), 2000);
     };
-    const search = {traceId}; // TODO add specific time for trace
-    const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
-    const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
 
     return (
         <section className="table-row-details">

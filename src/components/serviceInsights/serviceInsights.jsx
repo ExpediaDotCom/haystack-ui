@@ -19,12 +19,10 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import Loading from '../common/loading';
 import Error from '../common/error';
-import timeWindow from '../../utils/timeWindow';
 import PropTypes from 'prop-types';
 import Summary from './summary';
 import ServiceInsightsGraph from './serviceInsightsGraph/serviceInsightsGraph';
 import './serviceInsights.less';
-import Enums from '../../../universal/enums';
 
 @observer
 export default class ServiceInsights extends Component {
@@ -34,47 +32,8 @@ export default class ServiceInsights extends Component {
         store: PropTypes.object.isRequired
     };
 
-    componentDidMount() {
-        if (this.props.store.hasValidSearch) {
-            this.getServiceInsight();
-        }
-    }
-
     // relationship to the central node is only applicable when a service is specified
     relationshipIsApplicable = () => !!this.props.search.serviceName;
-
-    getServiceInsight = () => {
-        const search = this.props.search;
-        const timePresetOptions = window.haystackUiConfig.tracesTimePresetOptions;
-        const isCustomTimeRange = !!(search.time && search.time.from && search.time.to);
-
-        let activeWindow;
-
-        if (isCustomTimeRange) {
-            activeWindow = timeWindow.toCustomTimeRange(search.time.from, search.time.to);
-        } else if (search.time && search.time.preset) {
-            activeWindow = timePresetOptions.find((preset) => preset.shortName === search.time.preset);
-        } else {
-            activeWindow = timeWindow.defaultPreset;
-        }
-
-        const activeWindowTimeRange = timeWindow.toTimeRange(activeWindow.value);
-
-        const micro = (milli) => milli * 1000;
-        const startTime = micro(activeWindowTimeRange.from);
-        const endTime = micro(activeWindowTimeRange.until);
-        const relationship = this.relationshipIsApplicable() ? search.relationship : Enums.relationship.all;
-
-        // Get service insights
-        this.props.store.fetchServiceInsights({
-            serviceName: search.serviceName,
-            operationName: search.operationName,
-            traceId: search.traceId,
-            startTime,
-            endTime,
-            relationship
-        });
-    };
 
     handleSelectViewFilter = (ev) => {
         const params = new URLSearchParams(this.props.history.location.search);

@@ -25,17 +25,18 @@ function spanLevelFiltersToList(filteredNames, traceSearch) {
 export class TracesTabStateStore {
     search = null;
     isAvailable = false;
+    tabProperties = null;
 
-    init(search) {
+    init(search, tabProperties) {
         // initialize observables using search object
         // check if for the given search context, tab is available
         this.search = search;
+        this.tabProperties = tabProperties;
 
         // check all keys except time
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, ...kv} = search;
         const isAccessingTraces = search.tabId === 'traces';
-        this.isAvailable = isAccessingTraces || (enabled && !!Object.keys(kv).length);
+        this.isAvailable = isAccessingTraces || (enabled && !!tabProperties.queries.length);
     }
 
     fetch() {
@@ -44,19 +45,19 @@ export class TracesTabStateStore {
         // eslint-disable-next-line no-unused-vars
         const {time, tabId, type, interval, serviceName, ...traceSearch} = this.search;
 
-        const filteredNames = Object.keys(traceSearch).filter((name) => /nested_[0-9]/.test(name));
+        const filteredNames = Object.keys(traceSearch).filter(name => /query_[0-9]/.test(name));
 
         traceSearch.useExpressionTree = true;
         traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);
-        traceSearch.serviceName = serviceName || '';
+        traceSearch.serviceName = this.tabProperties.serviceName || '';
         traceSearch.timePreset = this.search.time.preset;
         traceSearch.startTime = this.search.time.from;
         traceSearch.endTime = this.search.time.to;
 
         // remove nested keys
-        filteredNames.forEach((key) => {
-            traceSearch[key] = null;
-        });
+        // filteredNames.forEach((key) => {
+        //     traceSearch[key] = null;
+        // });
 
         tracesSearchStore.fetchSearchResults(traceSearch);
 

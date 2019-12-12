@@ -101,8 +101,10 @@ const SpanDetailsModal = observer(({
                             className="btn btn-primary"
                             to={
                                 linkBuilder.universalSearchTrendsLink({
-                                    serviceName,
-                                    operationName: span.operationName
+                                    query_1: {
+                                        serviceName,
+                                        operationName: span.operationName
+                                    }
                                 })
                             }
                         >
