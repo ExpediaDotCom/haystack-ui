@@ -151,11 +151,6 @@ const TraceResultsTable = ({query, results}) => {
     const [expanding, setExpanding] = useState([]);
     const [selected, setSelected] = useState([]);
 
-    useEffect(() => {
-        if (results.length === 1) {
-            this.handleExpand(results[0].traceId, true);
-        }
-    });
 
     const handleExpand = (rowKey, isExpand) => {
         if (isExpand) {
@@ -166,6 +161,13 @@ const TraceResultsTable = ({query, results}) => {
             setSelected([]);
         }
     };
+
+    useEffect(() => {
+        if (results.length === 1) {
+            handleExpand(results[0].traceId, true);
+        }
+    });
+
 
     const expandComponent = (row) => {
         if (selected.filter(id => id === row.traceId).length > 0) {
