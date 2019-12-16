@@ -77,7 +77,7 @@ class UniversalSearch extends React.Component {
         const serviceName = onlyServiceKey || onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.serviceName)))[0] : null;
         const operationName = onlyServiceAndOperationKeys ? _.compact(queries.map(query => (query.operationName)))[0] : null;
         const traceId = keys.filter(key => key === 'traceId').length ? _.compact(queries.map(query => (query.traceId)))[0] : null;
-        const interval = keys.filter(key => key === 'interval').length ? _.compact(queries.map(query => (query.interval)))[0] : null;
+        const interval = search.interval || 'FiveMinute';
 
         return {
             queries,
