@@ -19,24 +19,12 @@ const expressionTreeBuilder = require('../expressionTreeBuilder');
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
 const DEFAULT_RESULTS_LIMIT = 25;
-
-function createFieldsList(query) {
-    return Object.keys(query)
-        .filter((key) => query[key] && !reservedField.includes(key))
-        .map((key) => expressionTreeBuilder.createFieldFromKeyValue(key, query[key]));
-}
 
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TracesSearchRequest();
 
-    if (query.useExpressionTree) {
-        request.setFilterexpression(expressionTreeBuilder.createFilterExpression(query));
-    } else {
-        request.setFieldsList(createFieldsList(query));
-    }
-
+    request.setFilterexpression(expressionTreeBuilder.createFilterExpression(query));
     request.setStarttime(parseInt(query.startTime, 10));
     request.setEndtime(parseInt(query.endTime, 10));
     request.setLimit(parseInt(query.limit, 10) || DEFAULT_RESULTS_LIMIT);

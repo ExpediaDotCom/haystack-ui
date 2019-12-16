@@ -31,7 +31,7 @@ const searchTracesFetcher = fetcher('searchTraces');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 
-const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
+const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters'];
 const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
