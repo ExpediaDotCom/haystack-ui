@@ -15,7 +15,7 @@
  *         limitations under the License.
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {withRouter} from 'react-router';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
@@ -45,27 +45,21 @@ import AuthenticationTimeoutModal from '../layout/authenticationTimeoutModal';
 //
 // LegacyHeader creates search object and pushes it in URL and that triggers receiveProps for UniversalSearch,
 // which in turn re-triggers all tabs
-@observer
-class UniversalSearch extends React.Component {
-    static DEFAULT_TIME_WINDOW = '1h';
 
-    static propTypes = {
-        location: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
-    };
+const UniversalSearch = observer(({location, history}) => {
+    const DEFAULT_TIME_WINDOW = '1h';
 
     // if no time window specified, default to last DEFAULT_TIME_WINDOW
-    static createSearch(urlQuery) {
+    const createSearch = (urlQuery) => {
         const search = convertUrlQueryToSearch(urlQuery);
 
         if (!search.time) {
-            search.time = {preset: UniversalSearch.DEFAULT_TIME_WINDOW};
+            search.time = {preset: DEFAULT_TIME_WINDOW};
         }
-
         return search;
-    }
+    };
 
-    static constructTabPropertiesFromSearch(search) {
+    const constructTabPropertiesFromSearch = (search) => {
         const queries = Object.keys(search)
             .filter(searchKey => searchKey.startsWith('query_'))
             .map(query => (search[query]));
@@ -88,51 +82,43 @@ class UniversalSearch extends React.Component {
             traceId,
             interval
         };
-    }
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {search: UniversalSearch.createSearch(props.location.search)};
-        this.handleSearch = this.handleSearch.bind(this);
-        this.handleTabSelection = this.handleTabSelection.bind(this);
-    }
+    const [search, setSearch] = useState('');
 
-    // on update of url query, update the search object
-    componentDidUpdate(prev) {
-        if (this.props !== prev) {
-            this.setState({search: UniversalSearch.createSearch(this.props.location.search)}); // eslint-disable-line
-        }
-    }
+    // on update of location, update the search object
+    useEffect(() => {
+        setSearch(createSearch(location.search));
+    }, [location]);
 
     // on update of search in search-bar,
     // convert search to url query string and push to browser history
-    handleSearch(search) {
-        this.props.history.push(linkBuilder.universalSearchLink(search));
-    }
+    const handleSearch = (newSearch) => {
+        history.push(linkBuilder.universalSearchLink(newSearch));
+    };
 
     // on update of search in search-bar,
     // convert search to url query string and push to browser history
-    handleTabSelection(tabId) {
-        this.props.history.push(linkBuilder.universalSearchLink({...this.state.search, tabId}));
-    }
+    const handleTabSelection = (tabId) => {
+        history.push(linkBuilder.universalSearchLink({...search, tabId}));
+    };
 
-    // on load, render search bar and tabs
-    // on updation of query, re-render tabs
-    render() {
-        const {history, location} = this.props;
-        const {search} = this.state;
-        const tabProperties = UniversalSearch.constructTabPropertiesFromSearch(search);
+    const tabProperties = constructTabPropertiesFromSearch(search);
 
-        return (
-            <article className="universal-search-panel">
-                {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
-                <Header />
-                <SearchBar search={search} handleSearch={this.handleSearch} />
-                <Tabs search={search} tabProperties={tabProperties} handleTabSelection={this.handleTabSelection} history={history} location={location} />
-                <Footer />
-            </article>
-        );
-    }
-}
+    return (
+        <article className="universal-search-panel">
+            {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
+            <Header />
+            <SearchBar search={search} handleSearch={handleSearch} />
+            <Tabs search={search} tabProperties={tabProperties} handleTabSelection={handleTabSelection} history={history} location={location} />
+            <Footer />
+        </article>
+    );
+});
+
+UniversalSearch.propTypes = {
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
+};
 
 export default withRouter(UniversalSearch);
