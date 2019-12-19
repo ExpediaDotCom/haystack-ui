@@ -84,12 +84,12 @@ const UniversalSearch = observer(({location, history}) => {
         };
     };
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(() => createSearch(location.search));
 
     // on update of location, update the search object
     useEffect(() => {
         setSearch(createSearch(location.search));
-    }, [location]);
+    }, [location.search]);
 
     // on update of search in search-bar,
     // convert search to url query string and push to browser history

@@ -53,7 +53,7 @@ export default class SearchBar extends React.Component {
 
     componentWillReceiveProps(next) {
         // update time window and chips when a history push occurs
-        if (next.search) {
+        if (next.search && next.search !== this.props.search) {
             uiState.setStateFromSearch(next.search);
         }
     }
