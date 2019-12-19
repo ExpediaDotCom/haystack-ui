@@ -15,8 +15,9 @@
  */
 
 import axios from 'axios';
-import {action, observable} from 'mobx';
+import {action, observable, computed} from 'mobx';
 import {fromPromise} from 'mobx-utils';
+import _ from 'lodash';
 
 import {toDurationMicroseconds} from '../utils/presets';
 import {toQueryUrlString} from '../../../utils/queryParser';
@@ -102,6 +103,17 @@ export class TracesSearchStore extends ErrorHandlingStore {
                 TracesSearchStore.handleError(result);
             })
         );
+    }
+
+    @computed get traceId() {
+        const filteredQuery = _.compact(Object.keys(this.searchQuery).map(query => {
+            if (Object.keys(this.searchQuery[query]).includes('traceId')) {
+                return this.searchQuery[query].traceId;
+            }
+            return false;
+        }));
+
+        return filteredQuery.length && filteredQuery[0];
     }
 }
 

@@ -166,7 +166,7 @@ const TraceResultsTable = ({query, results}) => {
         if (results.length === 1) {
             handleExpand(results[0].traceId, true);
         }
-    });
+    }, [results]);
 
 
     const expandComponent = (row) => {

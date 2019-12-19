@@ -119,7 +119,7 @@ connector.getTrace = (traceId) => {
 };
 
 connector.findTraces = (query) => {
-    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+    const traceId = objectUtils.getPropIgnoringCase(JSON.parse(query.spanLevelFilters), 'traceId');
 
     if (traceId) {
         // if search is for a singe trace, perform getTrace instead of search
@@ -143,7 +143,7 @@ connector.findTraces = (query) => {
 };
 
 connector.findTracesFlat = (query) => {
-    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+    const traceId = objectUtils.getPropIgnoringCase(JSON.parse(query.spanLevelFilters), 'traceId');
 
     if (traceId) {
         // if search is for a singe trace, perform getTrace instead of search
@@ -158,8 +158,7 @@ connector.findTracesFlat = (query) => {
 
     return tracesSearchFetcher.fetch(searchRequestBuilder.buildRequest(query)).then((result) => {
         const pbTraceResult = messages.TracesSearchResult.toObject(false, result);
-        const jsonTraceResults = pbTraceResult.tracesList.map((pbTrace) => pbTraceConverter.toTraceJson(pbTrace));
-        return jsonTraceResults;
+        return pbTraceResult.tracesList.map((pbTrace) => pbTraceConverter.toTraceJson(pbTrace));
     });
 };
 
@@ -212,8 +211,7 @@ connector.getLatencyCost = (traceId) => {
     });
 };
 
-connector.getTimeline = (query) =>
-    traceCountsFetcher.fetch(traceCountsRequestBuilder.buildRequest(query)).then((result) => {
+connector.getTimeline = (query) => traceCountsFetcher.fetch(traceCountsRequestBuilder.buildRequest(query)).then((result) => {
         const pbTraceCounts = messages.TraceCounts.toObject(false, result);
         return pbTraceCountsConverter.toTraceCountsJson(pbTraceCounts)
             .sort((a, b) => (a.x - b.x));

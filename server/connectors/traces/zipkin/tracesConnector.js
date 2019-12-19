@@ -79,7 +79,7 @@ connector.getOperations = (serviceName) => operationsFetcher.fetch(`${baseZipkin
 connector.getTrace = (traceId) => traceFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`).then((result) => converter.toHaystackTrace(result));
 
 connector.findTraces = (query) => {
-    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+    const traceId = objectUtils.getPropIgnoringCase(JSON.parse(query.spanLevelFilters), 'traceId');
 
     if (traceId) {
         // if search is for a trace perform getTrace instead of search
