@@ -15,7 +15,7 @@
  *         limitations under the License.
  */
 
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {withRouter} from 'react-router';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
@@ -84,12 +84,7 @@ const UniversalSearch = observer(({location, history}) => {
         };
     };
 
-    const [search, setSearch] = useState(() => createSearch(location.search));
-
-    // on update of location, update the search object
-    useEffect(() => {
-        setSearch(createSearch(location.search));
-    }, [location.search]);
+    const  search = createSearch(location.search);
 
     // on update of search in search-bar,
     // convert search to url query string and push to browser history
