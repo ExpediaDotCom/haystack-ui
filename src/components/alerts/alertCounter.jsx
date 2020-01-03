@@ -28,11 +28,7 @@ const alertsRefreshInterval = window.haystackUiConfig && window.haystackUiConfig
 export default class AlertCounter extends React.Component {
     static propTypes = {
         serviceName: PropTypes.string.isRequired,
-        interval: PropTypes.string
-    };
-
-    static defaultProps = {
-        interval: 'FiveMinute'
+        interval: PropTypes.string.isRequired
     };
 
     componentDidMount() {

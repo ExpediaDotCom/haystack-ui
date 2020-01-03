@@ -18,20 +18,7 @@ const createFilterExpression = require('../expressionTreeBuilder').createFilterE
 const requestBuilder = {};
 const messages = require('../../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'granularity'];
 const DEFAULT_INTERVAL_LIMIT = 60 * 1000 * 1000; // 5m in micro seconds
-
-function createFieldsList(query) {
-    return Object.keys(query)
-    .filter(key => query[key] && !reservedField.includes(key))
-    .map((key) => {
-        const field = new messages.Field();
-        field.setName(key);
-        field.setValue(query[key]);
-
-        return field;
-    });
-}
 
 function roundUpToGranularity(timeString, granularityString) {
     const granularity = parseInt(granularityString, 10);
@@ -49,11 +36,7 @@ function roundDownToGranularity(timeString, granularityString) {
 requestBuilder.buildRequest = (query) => {
     const request = new messages.TraceCountsRequest();
 
-    if (query.useExpressionTree) {
-        request.setFilterexpression(createFilterExpression(query));
-    } else {
-        request.setFieldsList(createFieldsList(query));
-    }
+    request.setFilterexpression(createFilterExpression(query));
     request.setStarttime(roundDownToGranularity(query.startTime, query.granularity));
     request.setEndtime(roundUpToGranularity(query.endTime, query.granularity));
     request.setInterval(parseInt(query.granularity, 10) || DEFAULT_INTERVAL_LIMIT);

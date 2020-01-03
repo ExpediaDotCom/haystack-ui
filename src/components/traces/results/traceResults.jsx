@@ -28,7 +28,7 @@ import '../traces.less';
 
 const TraceResults = ({tracesSearchStore, history}) => useObserver(() => (
         <section>
-            { !tracesSearchStore.apiQuery.traceId && tracesSearchStore.timelinePromiseState && tracesSearchStore.timelinePromiseState.case({
+            { !tracesSearchStore.traceId && tracesSearchStore.timelinePromiseState && tracesSearchStore.timelinePromiseState.case({
                 pending: () => <div className="text-center timeline-loader">Loading timeline...</div>,
                 rejected: () => <Error />,
                 empty: () => <div />,

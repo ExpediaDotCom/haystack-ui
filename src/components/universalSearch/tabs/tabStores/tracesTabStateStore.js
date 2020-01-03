@@ -43,24 +43,16 @@ export class TracesTabStateStore {
         // TODO acting as a wrapper for older stores for now,
         // TODO fetch logic here
         // eslint-disable-next-line no-unused-vars
-        const {time, tabId, type, interval, serviceName, ...traceSearch} = this.search;
+        const {time, tabId, type, interval, ...traceSearch} = this.search;
 
         const filteredNames = Object.keys(traceSearch).filter(name => /query_[0-9]/.test(name));
 
-        traceSearch.useExpressionTree = true;
         traceSearch.spanLevelFilters = spanLevelFiltersToList(filteredNames, traceSearch);
-        traceSearch.serviceName = this.tabProperties.serviceName || '';
         traceSearch.timePreset = this.search.time.preset;
         traceSearch.startTime = this.search.time.from;
         traceSearch.endTime = this.search.time.to;
 
-        // remove nested keys
-        // filteredNames.forEach((key) => {
-        //     traceSearch[key] = null;
-        // });
-
         tracesSearchStore.fetchSearchResults(traceSearch);
-
         return tracesSearchStore;
     }
 }

@@ -17,7 +17,7 @@
 const expressionTreeBuilder = {};
 const messages = require('../../../../static_codegen/traceReader_pb');
 
-const reservedField = ['startTime', 'endTime', 'limit', 'useExpressionTree', 'spanLevelFilters', 'granularity'];
+const reservedField = ['startTime', 'endTime', 'limit', 'spanLevelFilters', 'granularity'];
 
 expressionTreeBuilder.createFieldFromKeyValue = (key, value) => {
     const field = new messages.Field();

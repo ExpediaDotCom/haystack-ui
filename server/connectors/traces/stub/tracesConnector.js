@@ -586,7 +586,7 @@ connector.getRawTraces = () => Q.fcall(() => [...trace(), ...trace()]);
 
 connector.findTraces = (query) =>
     Q.fcall(() => {
-        const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+        const traceId = query.spanLevelFilters && objectUtils.getPropIgnoringCase(JSON.parse(query.spanLevelFilters), 'traceId');
 
         if (traceId) {
             return [

@@ -142,22 +142,9 @@ describe('TracesSearchStore', () => {
     });
 
     it('fetches traces and timeline from the api with a query with a timerange', (done) => {
-        server.onGet('/api/traces?serviceName=test-query&startTime=10000000&endTime=900000000').reply(200, stubTrace);
+        server.onGet('/api/traces?spanLevelFilters=%5B%7B%22serviceName%22%3A%22test-service%22%2C%22operationName%22%3A%22all%22%7D%5D&startTime=10000000&endTime=900000000').reply(200, stubTrace);
 
-        store.fetchTraceResults('serviceName=test-query&startTime=10000000&endTime=900000000');
-
-        when(
-            () => store.searchResults.length > 0,
-            () => {
-                expect(store.searchResults).to.have.length(1);
-                done();
-            });
-    });
-
-    it('fetches traces from the api with a query without a timerange', (done) => {
-        server.onGet('/api/traces?serviceName=test-query').reply(200, stubTrace);
-
-        store.fetchTraceResults('serviceName=test-query');
+        store.fetchTraceResults('spanLevelFilters=%5B%7B%22serviceName%22%3A%22test-service%22%2C%22operationName%22%3A%22all%22%7D%5D&startTime=10000000&endTime=900000000');
 
         when(
             () => store.searchResults.length > 0,
@@ -168,9 +155,9 @@ describe('TracesSearchStore', () => {
     });
 
     it('fetches traces from the api with an query consisting of an operationName of all', (done) => {
-        server.onGet('/api/traces?serviceName=test-query&startTime=1000&endTime=1000').reply(200, stubTrace);
-
-        store.fetchSearchResults({ serviceName: 'test-query', operationName: 'all', startTime: 1, endTime: 1 });
+        server.onGet('/api/traces?spanLevelFilters=%5B%7B%22serviceName%22%3A%22test-service%22%2C%22operationName%22%3A%22all%22%7D%5D&startTime=1000&endTime=1000').reply(200, stubTrace);
+        const spanLevelFilters = JSON.stringify([{serviceName: 'test-service', operationName: 'all'}]);
+        store.fetchSearchResults({ spanLevelFilters, startTime: 1, endTime: 1 });
 
         when(
             () => store.searchResults.length > 0,
@@ -181,9 +168,9 @@ describe('TracesSearchStore', () => {
     });
 
     it('fetches traces from the api and decodes the components before submitting them', (done) => {
-        server.onGet('/api/traces?serviceName=service%20name&operationName=operation%20name&startTime=1000&endTime=1000').reply(200, stubTrace);
-
-        store.fetchSearchResults({ serviceName: 'service%20name', operationName: 'operation%20name', startTime: 1, endTime: 1 });
+        server.onGet('/api/traces?spanLevelFilters=%5B%7B%22serviceName%22%3A%22test-service%22%2C%22operationName%22%3A%22test-operation%22%7D%5D&startTime=1000&endTime=1000').reply(200, stubTrace);
+        const spanLevelFilters = JSON.stringify([{serviceName: 'test-service', operationName: 'test-operation'}]);
+        store.fetchSearchResults({ spanLevelFilters, startTime: 1, endTime: 1 });
 
         when(
             () => store.searchResults.length > 0,
@@ -247,7 +234,7 @@ describe('TracesDetailsStore', () => {
             serviceName: '',
             url2: 'some:data',
             startTime: 1,
-            endTime: 1 
+            endTime: 1
         };
 
         store.fetchRelatedTraces(searchQuery);
@@ -270,7 +257,7 @@ describe('TracesDetailsStore', () => {
             serviceName: '',
             url2: 'some:data',
             startTime: 1,
-            endTime: 1 
+            endTime: 1
         };
 
         try {

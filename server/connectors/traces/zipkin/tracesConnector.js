@@ -31,7 +31,7 @@ const searchTracesFetcher = fetcher('searchTraces');
 const rawTraceFetcher = fetcher('getRawTrace');
 const rawSpanFetcher = fetcher('getRawSpan');
 
-const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters', 'useExpressionTree'];
+const reservedField = ['serviceName', 'operationName', 'startTime', 'endTime', 'limit', 'spanLevelFilters'];
 const DEFAULT_RESULTS_LIMIT = 40;
 
 function toAnnotationQuery(query) {
@@ -79,7 +79,7 @@ connector.getOperations = (serviceName) => operationsFetcher.fetch(`${baseZipkin
 connector.getTrace = (traceId) => traceFetcher.fetch(`${baseZipkinUrl}/trace/${traceId}`).then((result) => converter.toHaystackTrace(result));
 
 connector.findTraces = (query) => {
-    const traceId = objectUtils.getPropIgnoringCase(query, 'traceId');
+    const traceId = objectUtils.getPropIgnoringCase(JSON.parse(query.spanLevelFilters), 'traceId');
 
     if (traceId) {
         // if search is for a trace perform getTrace instead of search

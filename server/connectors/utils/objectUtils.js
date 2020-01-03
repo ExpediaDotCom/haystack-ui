@@ -17,9 +17,10 @@ const _ = require('lodash');
 
 const utils = {};
 
-utils.getPropIgnoringCase = (obj, name) => {
-    const realName = _.findKey(obj, (value, key) => key.toLowerCase() === name.toLowerCase());
-    return obj[realName];
+utils.getPropIgnoringCase = (array, name) => {
+    const prop = _.compact(array.map(query => JSON.parse(query.toLowerCase())[name.toLowerCase()]));
+    return prop && prop.length > 0 && prop[0];
 };
 
 module.exports = utils;
+
