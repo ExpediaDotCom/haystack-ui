@@ -30,7 +30,10 @@ const objectUtils = require('../../utils/objectUtils');
 const fetcher = require('../../operations/grpcFetcher');
 const config = require('../../../config/config');
 
-const trendsConnector = config.connectors.trends && require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require, global-require
+const trendsConnector =
+    config.connectors.trends &&
+    config.connectors.trends.connectorName !== 'disabled' &&
+    require(`../../trends/${config.connectors.trends.connectorName}/trendsConnector`); // eslint-disable-line import/no-dynamic-require, global-require
 
 const services = require('../../../../static_codegen/traceReader_grpc_pb');
 

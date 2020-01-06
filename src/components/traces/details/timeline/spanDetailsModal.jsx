@@ -94,9 +94,8 @@ const SpanDetailsModal = observer(({
                         </li>
                     )}
                 </ul>
-                { subsystems && (subsystems[0] === 'traces') && (subsystems.length === 1)
-                    ? null
-                    : (<div className="btn-group-sm pull-right">
+                { subsystems && subsystems.includes('trends')
+                    ? (<div className="btn-group-sm pull-right">
                         <Link
                             className="btn btn-primary"
                             to={
@@ -110,7 +109,7 @@ const SpanDetailsModal = observer(({
                         >
                             <span className="ti-stats-up"/> Operation Trends
                         </Link>
-                    </div>)}
+                    </div>) : null}
             </div>
             {tabViewer(span)}
         </Modal>
