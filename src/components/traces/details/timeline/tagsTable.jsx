@@ -38,7 +38,7 @@ const TagsTable = ({tags}) => {
                         <tr className="non-highlight-row" key={Math.random()}>
                             <td>{tag.key}</td>
                             <td>
-                                {blobUtil.isBlobUrlTag(tag.key) && (window.haystackUiConfig && window.haystackUiConfig.enableBlobs) ? (
+                                {blobUtil.isBlobUrlTag(tag.key, tag.value) && (window.haystackUiConfig && window.haystackUiConfig.enableBlobs) ? (
                                     <a href={blobUtil.formatBlobTagValue(tag.value, blobsUrl)} target="_blank">
                                         <span className="ti-new-window" /> <span>{blobUtil.formatBlobTagValue(tag.value, blobsUrl)}</span>
                                     </a>
