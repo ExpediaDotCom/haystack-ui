@@ -66,7 +66,7 @@ export default class operationResults extends React.Component {
                                                 className={!showHeatmap ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'}
                                                 onClick={() => this.toggleView()}
                                             >
-                                                Heatmap View
+                                                Availability
                                             </button>
                                         </div>
                                     </div>

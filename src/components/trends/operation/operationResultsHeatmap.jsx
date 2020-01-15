@@ -18,6 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
+import linkBuilder from '../../../utils/linkBuilder';
 import './operationResultsHeatmap.less';
 
 const percentColors = [
@@ -34,8 +35,27 @@ const percentColors = [
 
 export default class OperationResultsHeatmap extends React.Component {
     static propTypes = {
-        operationStore: PropTypes.object.isRequired
+        operationStore: PropTypes.object.isRequired,
+        serviceName: PropTypes.string.isRequired
     };
+
+    static handleCellClick(serviceName, operation, from, until) {
+        const tracesLink = linkBuilder.withAbsoluteUrl(
+            linkBuilder.universalSearchTracesLink({
+                query_1: {
+                    serviceName,
+                    operationName: operation.operationName
+                },
+                time: {
+                    from,
+                    until
+                }
+            })
+        );
+
+        const win = window.open(tracesLink, '_blank');
+        win.focus();
+    }
 
     static getColorForPercentage(pct) {
         let i;
@@ -74,13 +94,9 @@ export default class OperationResultsHeatmap extends React.Component {
         return moment(timestamp).format('lll');
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-
     render() {
         const data = this.props.operationStore.statsResults;
+        const serviceName = this.props.serviceName;
         const {from, until, granularity} = this.props.operationStore.statsQuery;
         const columnHeaders = OperationResultsHeatmap.getColumnHeaders(from, until, granularity);
         return (
@@ -103,17 +119,6 @@ export default class OperationResultsHeatmap extends React.Component {
                             {data.map((op) => (
                                 <tr>
                                     <th>{op.operationName}</th>
-                                    {/* {op.successPercentPoints.map((successPercentDatapoint) => (
-                                        <td
-                                            style={{
-                                                background: successPercentDatapoint.value
-                                                    ? OperationResultsHeatmap.getColorForPercentage(successPercentDatapoint.value / 100)
-                                                    : '#f9edf3'
-                                            }}
-                                        >
-                                            {successPercentDatapoint.value}
-                                        </td>
-                                    ))} */}
                                     {columnHeaders.map((headerTimestamp, index) => {
                                         const availableDatapoint = op.successPercentPoints.find(
                                             (sucessPercentDatapoint) =>
@@ -122,7 +127,21 @@ export default class OperationResultsHeatmap extends React.Component {
                                         );
                                         return availableDatapoint ? (
                                             <td style={{background: OperationResultsHeatmap.getColorForPercentage(availableDatapoint.value / 100)}}>
-                                                {availableDatapoint.value} %
+                                                <div
+                                                    role="link"
+                                                    tabIndex="-1"
+                                                    onClick={() =>
+                                                        OperationResultsHeatmap.handleCellClick(
+                                                            serviceName,
+                                                            op,
+                                                            headerTimestamp,
+                                                            columnHeaders[index + 1]
+                                                        )
+                                                    }
+                                                >
+                                                    {' '}
+                                                    {availableDatapoint.value} %
+                                                </div>
                                             </td>
                                         ) : (
                                             <td style={{background: '#f9edf3'}} />
