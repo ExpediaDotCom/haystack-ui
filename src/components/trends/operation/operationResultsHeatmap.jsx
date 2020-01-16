@@ -39,7 +39,7 @@ export default class OperationResultsHeatmap extends React.Component {
         serviceName: PropTypes.string.isRequired
     };
 
-    static handleCellClick(serviceName, operation, from, until) {
+    static handleCellClick(serviceName, operation, from, to) {
         const tracesLink = linkBuilder.withAbsoluteUrl(
             linkBuilder.universalSearchTracesLink({
                 query_1: {
@@ -48,7 +48,7 @@ export default class OperationResultsHeatmap extends React.Component {
                 },
                 time: {
                     from,
-                    until
+                    to
                 }
             })
         );
