@@ -46,6 +46,7 @@
     "lodash": "^4.17.15",
     "measured": "^1.1.0",
     "moment": "^2.22.1",
+    "nan": "^2.14.0",
     "particles.js": "^2.0.0",
     "passport": "^0.4.0",
     "passport-saml": "^0.33.0",
