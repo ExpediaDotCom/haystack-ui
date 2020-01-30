@@ -57,6 +57,13 @@ export default class OperationResultsHeatmap extends React.Component {
         win.focus();
     }
 
+    static formatAvailabilityPercentage(pct) {
+        if (pct === 100) {
+            return pct;
+        }
+        return Number.parseFloat(pct).toFixed(1);
+    }
+
     static getColorForPercentage(pct) {
         let i;
         for (i = 1; i < percentColors.length - 1; i++) {
@@ -140,7 +147,7 @@ export default class OperationResultsHeatmap extends React.Component {
                                                     }
                                                 >
                                                     {' '}
-                                                    {availableDatapoint.value} %
+                                                    {OperationResultsHeatmap.formatAvailabilityPercentage(availableDatapoint.value)}%
                                                 </div>
                                             </td>
                                         ) : (
