@@ -22,19 +22,20 @@ import {Line} from 'react-chartjs-2';
 import {observable} from 'mobx';
 import DurationGraph from '../../../../../../src/components/trends/details/graphs/durationGraph';
 
-
 describe('<DurationGraph />', () => {
     it('should not transform value as it is already in ms', () => {
+        const from = 1000;
+        const until = 2000;
+
+        const xAxesTicks = {
+            min: from,
+            max: until
+        };
+
         const meanPoints = observable.array([{timestamp: 1530844500000, value: 902}]);
         const tp95Points = observable.array([]);
         const tp99Points = observable.array([]);
-        const wrapper = shallow(<DurationGraph
-            meanPoints={meanPoints}
-            tp95Points={tp95Points}
-            tp99Points={tp99Points}
-            from={1000}
-            until={2000}
-        />);
+        const wrapper = shallow(<DurationGraph meanPoints={meanPoints} tp95Points={tp95Points} tp99Points={tp99Points} xAxesTicks={xAxesTicks} />);
 
         expect(wrapper.find(Line).props().data.datasets[2].data[0].y).to.equal(902);
     });

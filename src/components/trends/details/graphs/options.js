@@ -24,13 +24,31 @@ export default {
         position: 'right'
     },
     scales: {
-        xAxes: [{
-            type: 'time'
-        }],
-        yAxes: [{
-            ticks: {
-                beginAtZero: true
+        xAxes: [
+            {
+                type: 'time'
             }
-        }]
+        ],
+        yAxes: [
+            {
+                ticks: {
+                    beginAtZero: true
+                }
+            }
+        ]
+    },
+    pan: {
+        enabled: false,
+        mode: 'x'
+    },
+    zoom: {
+        enabled: true,
+        mode: 'x',
+        speed: 0.05,
+        drag: {
+            borderColor: 'rgba(63,77,113,0.4)',
+            borderWidth: 0.3,
+            backgroundColor: 'rgba(63,77,113,0.2)'
+        }
     }
 };

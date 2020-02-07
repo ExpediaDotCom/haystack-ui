@@ -23,6 +23,9 @@ import formatters from '../../../../utils/formatters';
 import MissingTrendGraph from './missingTrend';
 import options from './options';
 
+// eslint-disable-next-line no-unused-vars
+import * as zoom from 'chartjs-plugin-zoom';
+
 const backgroundColor1 = [['rgba(255, 99, 132, 0.2)']];
 const borderColor1 = [['rgba(255, 99, 132, 1)']];
 
@@ -34,35 +37,50 @@ const borderColor3 = [['rgba(255, 206, 86, 1)']];
 
 const durationChartOptions = _.cloneDeep(options);
 
-durationChartOptions.scales.yAxes = [{
-    display: true,
-    ticks: {
-        callback(value) {
-            const formattedValue = formatters.toDurationString(value);
-            if (formattedValue.length < 8) {
-                return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
+durationChartOptions.scales.yAxes = [
+    {
+        display: true,
+        ticks: {
+            callback(value) {
+                const formattedValue = formatters.toDurationString(value);
+                if (formattedValue.length < 8) {
+                    return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
+                }
+                return formattedValue;
             }
-            return formattedValue;
         }
     }
-}];
+];
 
-const DurationGraph = ({meanPoints, tp95Points, tp99Points, from, until}) => {
-    const meanData = meanPoints.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp95Data = tp95Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
-    const tp99Data = tp99Points.map(point => ({x: new Date(point.timestamp), y: point.value}));
+const DurationGraph = ({setShowResetZoom, meanPoints, tp95Points, tp99Points, xAxesTicks, setXAxesTicks}) => {
+    const meanData = meanPoints.map((point) => ({x: new Date(point.timestamp), y: point.value}));
+    const tp95Data = tp95Points.map((point) => ({x: new Date(point.timestamp), y: point.value}));
+    const tp99Data = tp99Points.map((point) => ({x: new Date(point.timestamp), y: point.value}));
 
     if (!meanData.length && !tp95Data.length && !tp99Data.length) {
-        return (<MissingTrendGraph title="Duration"/>);
+        return <MissingTrendGraph title="Duration" />;
     }
 
-    durationChartOptions.scales.xAxes = [{
-        type: 'time',
-        time: {
-            min: new Date(from),
-            max: new Date(until)
+    durationChartOptions.scales.xAxes = [
+        {
+            type: 'time',
+            ticks: {
+                min: xAxesTicks.min,
+                max: xAxesTicks.max,
+                autoSkip: true,
+                autoSkipPadding: 25,
+                maxRotation: 0
+            }
         }
-    }];
+    ];
+
+    durationChartOptions.zoom.onZoom = ({chart}) => {
+        setXAxesTicks({
+            min: new Date(chart.options.scales.xAxes[0].ticks.min),
+            max: new Date(chart.options.scales.xAxes[0].ticks.max)
+        });
+        setShowResetZoom(true);
+    };
 
     const chartData = {
         datasets: [
@@ -92,10 +110,12 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points, from, until}) => {
                 borderWidth: 1,
                 pointRadius: 1,
                 pointHoverRadius: 3
-            }]
+            }
+        ]
     };
 
-    return (<div className="col-md-12">
+    return (
+        <div className="col-md-12">
             <h5 className="text-center">Duration</h5>
             <div className="chart-container">
                 <Line data={chartData} options={durationChartOptions} type="line" />
@@ -105,11 +125,12 @@ const DurationGraph = ({meanPoints, tp95Points, tp99Points, from, until}) => {
 };
 
 DurationGraph.propTypes = {
+    setShowResetZoom: PropTypes.bool.isRequired,
     meanPoints: PropTypes.object.isRequired,
     tp95Points: PropTypes.object.isRequired,
     tp99Points: PropTypes.object.isRequired,
-    from: PropTypes.number.isRequired,
-    until: PropTypes.number.isRequired
+    xAxesTicks: PropTypes.object.isRequired,
+    setXAxesTicks: PropTypes.object.isRequired
 };
 
 export default DurationGraph;

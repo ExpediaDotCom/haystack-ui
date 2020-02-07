@@ -25,7 +25,7 @@ import linkBuilder from '../../../utils/linkBuilder';
 import './trendDetailsToolbar.less';
 import TrendTimeRangePicker from '../../common/timeRangePicker';
 
-const refreshInterval = (window.haystackUiConfig && window.haystackUiConfig.refreshInterval);
+const refreshInterval = window.haystackUiConfig && window.haystackUiConfig.refreshInterval;
 const tracesEnabled = window.haystackUiConfig.subsystems.includes('traces');
 
 export default class TrendDetailsToolbar extends React.Component {
@@ -74,18 +74,14 @@ export default class TrendDetailsToolbar extends React.Component {
         this.enableAutoRefresh = this.enableAutoRefresh.bind(this);
         this.disableAutoRefresh = this.disableAutoRefresh.bind(this);
 
-        const {
-            from,
-            until,
-            isCustomTimeRange
-        } = props.trendsStore.statsQuery;
+        const {from, until, isCustomTimeRange} = props.trendsStore.statsQuery;
 
         const activeWindow = TrendDetailsToolbar.getActiveTimeWindow(from, until, isCustomTimeRange);
-        const granularityFromSearch = metricGranularity.options.find(option => option.longName === this.props.interval);
+        const granularityFromSearch = metricGranularity.options.find((option) => option.longName === this.props.interval);
 
         this.state = {
             activeWindow,
-            activeGranularity: granularityFromSearch || timeWindow.getLowerGranularity(activeWindow.value),
+            activeGranularity: granularityFromSearch || timeWindow.getHigherGranularity(activeWindow.value),
             granularityDropdownOpen: false,
             clipboardText: this.setClipboardText(activeWindow),
             showCustomTimeRangePicker: false,
@@ -108,17 +104,19 @@ export default class TrendDetailsToolbar extends React.Component {
     }
 
     setClipboardText(activeWindow) {
-        return linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTrendsLink({
-            query_1: {
-                serviceName: this.props.serviceName,
-                operationName: this.props.opName
-            },
-            interval: this.props.interval,
-            time: {
-                from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
-                to: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
-            }
-        }));
+        return linkBuilder.withAbsoluteUrl(
+            linkBuilder.universalSearchTrendsLink({
+                query_1: {
+                    serviceName: this.props.serviceName,
+                    operationName: this.props.opName
+                },
+                interval: this.props.interval,
+                time: {
+                    from: activeWindow.from || timeWindow.toTimeRange(activeWindow.value).from,
+                    to: activeWindow.until || timeWindow.toTimeRange(activeWindow.value).until
+                }
+            })
+        );
     }
 
     hideTimePicker() {
@@ -130,7 +128,6 @@ export default class TrendDetailsToolbar extends React.Component {
         document.addEventListener('mousedown', this.handleOutsideClick);
         this.setState({showCustomTimeRangePicker: true});
     }
-
 
     handleOutsideClick(e) {
         if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
@@ -205,21 +202,15 @@ export default class TrendDetailsToolbar extends React.Component {
         this.setState({
             autoRefreshEnabled: true
         });
-        this.setState(
-            {
-                autoRefreshTimer: new Date(),
-                countdownTimer: new Date()
-            }
-        );
-        this.autoRefreshTimerRef = setInterval(
-            () => {
-                this.setState({autoRefreshTimer: new Date()});
-                this.refreshTrends();
-            },
-            refreshInterval);
-        this.countdownTimerRef = setInterval(
-            () => this.setState({countdownTimer: new Date()}),
-            1000);
+        this.setState({
+            autoRefreshTimer: new Date(),
+            countdownTimer: new Date()
+        });
+        this.autoRefreshTimerRef = setInterval(() => {
+            this.setState({autoRefreshTimer: new Date()});
+            this.refreshTrends();
+        }, refreshInterval);
+        this.countdownTimerRef = setInterval(() => this.setState({countdownTimer: new Date()}), 1000);
     }
 
     disableAutoRefresh() {
@@ -228,16 +219,17 @@ export default class TrendDetailsToolbar extends React.Component {
         });
         clearInterval(this.autoRefreshTimerRef);
         clearInterval(this.countdownTimerRef);
-        this.setState(
-            {
-                autoRefreshTimer: null,
-                countdownTimer: null
-            }
-        );
+        this.setState({
+            autoRefreshTimer: null,
+            countdownTimer: null
+        });
     }
 
     render() {
-        const countDownMiliSec = (this.state.countdownTimer && this.state.autoRefreshTimer) && (refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime()));
+        const countDownMiliSec =
+            this.state.countdownTimer &&
+            this.state.autoRefreshTimer &&
+            refreshInterval - (this.state.countdownTimer.getTime() - this.state.autoRefreshTimer.getTime());
 
         const tracesLink = linkBuilder.universalSearchTracesLink({
             query_1: {
@@ -265,11 +257,9 @@ export default class TrendDetailsToolbar extends React.Component {
                     <div>Time Range</div>
                     <div ref={this.setWrapperRef}>
                         <div className="btn-group btn-group-sm">
-                            {timeWindow.presets.map(preset => (
-                                <PresetOption
-                                    preset={preset}
-                                    key={preset.shortName}
-                                />))}
+                            {timeWindow.presets.map((preset) => (
+                                <PresetOption preset={preset} key={preset.shortName} />
+                            ))}
                             <button
                                 className={this.state.activeWindow.isCustomTimeRange ? 'custom-btn btn btn-primary' : 'custom-btn btn btn-default'}
                                 type="button"
@@ -278,32 +268,35 @@ export default class TrendDetailsToolbar extends React.Component {
                                 {this.state.activeWindow.isCustomTimeRange ? this.state.activeWindow.longName : 'custom'}
                             </button>
                         </div>
-                        { this.state.showCustomTimeRangePicker
-                            ? <TrendTimeRangePicker customTimeRangeChangeCallback={this.customTimeRangeChangeCallback} from={parseInt(this.state.activeWindow.from, 10)} to={parseInt(this.state.activeWindow.until, 10)}/>
-                            : null
-                        }
+                        {this.state.showCustomTimeRangePicker ? (
+                            <TrendTimeRangePicker
+                                customTimeRangeChangeCallback={this.customTimeRangeChangeCallback}
+                                from={parseInt(this.state.activeWindow.from, 10)}
+                                to={parseInt(this.state.activeWindow.until, 10)}
+                            />
+                        ) : null}
                     </div>
                 </div>
                 <div className="pull-left">
                     <div className="">Metric Granularity</div>
                     <div className={this.state.granularityDropdownOpen ? 'dropdown open' : 'dropdown'}>
-                        <button
-                            className="btn btn-sm btn-default dropdown-toggle"
-                            onClick={() => this.toggleGranularityDropdown()}
-                        >
+                        <button className="btn btn-sm btn-default dropdown-toggle" onClick={() => this.toggleGranularityDropdown()}>
                             <span>{this.state.activeGranularity.shortName}</span>
-                            <span className="caret"/>
+                            <span className="caret" />
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li>
-                                {metricGranularity.options.map(option => (
+                                {metricGranularity.options.map((option) => (
                                     <a
                                         className="granularity-button"
                                         tabIndex={-1}
                                         key={option.shortName}
                                         role="button"
                                         onClick={() => this.updateGranularity(option)}
-                                    >{option.shortName}</a>))}
+                                    >
+                                        {option.shortName}
+                                    </a>
+                                ))}
                             </li>
                         </ul>
                     </div>
@@ -314,47 +307,37 @@ export default class TrendDetailsToolbar extends React.Component {
                         <button
                             className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'primary' : 'default'}`}
                             onClick={this.state.autoRefreshEnabled ? null : this.enableAutoRefresh}
-                        >On</button>
+                        >
+                            On
+                        </button>
                         <button
                             className={`btn btn-sm btn-${this.state.autoRefreshEnabled ? 'default' : 'primary'}`}
                             onClick={this.state.autoRefreshEnabled ? this.disableAutoRefresh : null}
-                        >Off</button>
+                        >
+                            Off
+                        </button>
                     </div>
                 </div>
                 <div className="pull-right btn-group btn-group-sm">
-                    {
-                        this.state.showCopied && (
-                            <span className="tooltip fade left in" role="tooltip">
-                                    <span className="tooltip-arrow"/>
-                                    <span className="tooltip-inner">Link Copied!</span>
-                                </span>
-                        )
-                    }
-                    {
-                        (this.props.serviceSummary === false && tracesEnabled) && (
-                            <Link
-                                role="button"
-                                className="btn btn-sm btn-default"
-                                to={tracesLink}
-                            ><span
-                                className="ti-align-left"
-                            /> See Traces</Link>
-                        )
-                    }
-                    <a
-                        role="button"
-                        className="btn btn-sm btn-default"
-                        target="_blank"
-                        href={this.state.clipboardText}
-                    ><span
-                        className="ti-new-window"
-                    /> Open in new tab</a>
+                    {this.state.showCopied && (
+                        <span className="tooltip fade left in" role="tooltip">
+                            <span className="tooltip-arrow" />
+                            <span className="tooltip-inner">Link Copied!</span>
+                        </span>
+                    )}
+                    {this.props.serviceSummary === false && tracesEnabled && (
+                        <Link role="button" className="btn btn-sm btn-default" to={tracesLink}>
+                            <span className="ti-align-left" /> See Traces
+                        </Link>
+                    )}
+                    <a role="button" className="btn btn-sm btn-default" target="_blank" href={this.state.clipboardText}>
+                        <span className="ti-new-window" /> Open in new tab
+                    </a>
 
-                    <Clipboard
-                        text={this.state.clipboardText}
-                        onCopy={this.handleCopy}
-                    >
-                        <a role="button" className="btn btn-sm btn-primary"><span className="ti-link"/> Share Trend</a>
+                    <Clipboard text={this.state.clipboardText} onCopy={this.handleCopy}>
+                        <a role="button" className="btn btn-sm btn-primary">
+                            <span className="ti-link" /> Share Trend
+                        </a>
                     </Clipboard>
                 </div>
             </div>

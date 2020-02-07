@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Bar} from 'react-chartjs-2';
@@ -24,8 +24,11 @@ import {Bar} from 'react-chartjs-2';
 import './traceTimeline.less';
 import linkBuilder from '../../../utils/linkBuilder';
 
+// eslint-disable-next-line no-unused-vars
+import * as zoom from 'chartjs-plugin-zoom';
+
 const TraceTimeline = observer(({history, store}) => {
-    const updateTimeFrame = (event) => {
+    const updateTimeFrame = (chart, event) => {
         if (event.length) {
             const results = store.timelineResults;
 
@@ -70,43 +73,78 @@ const TraceTimeline = observer(({history, store}) => {
                 borderWidth: 1,
                 hoverBackgroundColor: '#b5def7',
                 hoverBorderColor: '#36A2EB',
-                data
+                data,
+                barPercentage: 0.9,
+                barThickness: 'flex',
+                categoryPercentage: 1
             }
         ]
     };
 
     const options = {
         maintainAspectRatio: false,
-        barThickness: 1,
-        gridLines: {
-            offsetGridLines: true
-        },
         legend: {
             display: false
         },
+        zoom: {
+            enabled: true,
+            mode: 'x',
+            drag: {
+                borderColor: 'rgba(63,77,113,0.4)',
+                borderWidth: 0.3,
+                backgroundColor: 'rgba(63,77,113,0.2)'
+            },
+            onZoom: ({chart}) => {
+                const newSearch = {
+                    ...store.searchQuery,
+                    timePreset: null,
+                    startTime: null,
+                    endTime: null,
+                    time: {
+                        from: chart.options.scales.xAxes[0].ticks.min,
+                        to: chart.options.scales.xAxes[0].ticks.max
+                    }
+                };
+
+                history.push(linkBuilder.universalSearchTracesLink(newSearch));
+            }
+        },
+        pan: {
+            enabled: false,
+            mode: 'x'
+        },
         scales: {
-            xAxes: [{
-                barPercentage: 0.90,
-                barThickness: 'flex',
-                type: 'time',
-                time: {
-                    min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
-                    max: new Date(parseInt(apiQuery.endTime, 10) / 1000)
-                },
-                categoryPercentage: 1
-            }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
+            xAxes: [
+                {
+                    type: 'time',
+                    distribution: 'series',
+                    time: {
+                        unit: 'minute'
+                    },
+                    ticks: {
+                        min: new Date(parseInt(apiQuery.startTime, 10) / 1000),
+                        max: new Date(parseInt(apiQuery.endTime, 10) / 1000),
+                        autoSkip: true,
+                        autoSkipPadding: 25,
+                        maxRotation: 0,
+                        bounds: 'ticks'
+                    }
                 }
-            }]
+            ],
+            yAxes: [
+                {
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }
+            ]
         },
         tooltips: {
             callbacks: {
                 title: (tooltipItem) => {
                     const date = new Date(tooltipItem[0].xLabel).getTime();
-                    const from = moment(date - (granularity / 1000 / 2));
-                    const to = moment(date + (granularity / 1000 / 2));
+                    const from = moment(date - granularity / 1000 / 2);
+                    const to = moment(date + granularity / 1000 / 2);
 
                     return `${from.format('MM/DD/YY hh:mm:ss a')} to ${to.format('MM/DD/YY hh:mm:ss a')}`;
                 }
@@ -116,7 +154,7 @@ const TraceTimeline = observer(({history, store}) => {
 
     return (
         <div className="trace-timeline-container">
-            <Bar data={chartData} height={150} options={options} getElementAtEvent={updateTimeFrame}/>
+            <Bar data={chartData} height={150} options={options} getElementsAtEvent={updateTimeFrame} />
         </div>
     );
 });
