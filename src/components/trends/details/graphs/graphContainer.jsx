@@ -13,39 +13,71 @@
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
+import _ from 'lodash';
 
 import CountGraph from './countGraph';
 import DurationGraph from './durationGraph';
 import SuccessGraph from './successGraph';
-@observer
-export default class GraphContainer extends React.Component {
-    static propTypes = {
-        trendsStore: PropTypes.object.isRequired
+import './graphContainer.less';
+
+const GraphContainer = observer(({trendsStore}) => {
+    const {count, meanDuration, tp95Duration, tp99Duration, failureCount, successCount} = trendsStore.trendsResults;
+    const {from, until} = trendsStore.trendsQuery;
+    const [xAxesTicks, setXAxesTicks] = useState({
+        min: from,
+        max: until
+    });
+
+    const [showResetZoom, setShowResetZoom] = useState(false);
+
+    const handleZoomReset = () => {
+        const sortedCountPoints = _.sortBy(count, (datapoint) => datapoint.timestamp);
+        setXAxesTicks({
+            min: sortedCountPoints[0].timestamp,
+            max: sortedCountPoints[sortedCountPoints.length - 1].timestamp
+        });
+        setShowResetZoom(false);
     };
-    render() {
-        const {
-            count,
-            meanDuration,
-            tp95Duration,
-            tp99Duration,
-            failureCount,
-            successCount
-        } = this.props.trendsStore.trendsResults;
 
-        const {
-            from,
-            until
-        } = this.props.trendsStore.trendsQuery;
+    return (
+        <div className="row">
+            {showResetZoom ? (
+                <button className="reset-button btn-sm pull-right" onClick={() => handleZoomReset()}>
+                    Reset Zoom
+                </button>
+            ) : null}
+            <CountGraph
+                setShowResetZoom={setShowResetZoom}
+                xAxesTicks={xAxesTicks}
+                setXAxesTicks={setXAxesTicks}
+                countPoints={count}
+                successPoints={successCount}
+                failurePoints={failureCount}
+            />
+            <DurationGraph
+                setShowResetZoom={setShowResetZoom}
+                xAxesTicks={xAxesTicks}
+                setXAxesTicks={setXAxesTicks}
+                meanPoints={meanDuration}
+                tp95Points={tp95Duration}
+                tp99Points={tp99Duration}
+            />
+            <SuccessGraph
+                setShowResetZoom={setShowResetZoom}
+                xAxesTicks={xAxesTicks}
+                setXAxesTicks={setXAxesTicks}
+                successCount={successCount}
+                failureCount={failureCount}
+            />
+        </div>
+    );
+});
 
-        return (
-            <div className="row">
-                <CountGraph countPoints={count} successPoints={successCount} failurePoints={failureCount} from={from} until={until}/>
-                <DurationGraph meanPoints={meanDuration} tp95Points={tp95Duration} tp99Points={tp99Duration} from={from} until={until} />
-                <SuccessGraph successCount={successCount} failureCount={failureCount} from={from} until={until} />
-            </div>
-        );
-    }
-}
+GraphContainer.propTypes = {
+    trendsStore: PropTypes.object.isRequired
+};
+
+export default GraphContainer;

@@ -1,3 +1,5 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable react/no-this-in-sfc */
 /*
  * Copyright 2018 Expedia Group
  *
@@ -19,6 +21,9 @@ import {Line} from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
+// eslint-disable-next-line no-unused-vars
+import * as zoom from 'chartjs-plugin-zoom';
+
 import formatters from '../../../../utils/formatters';
 import options from './options';
 import MissingTrendGraph from './missingTrend';
@@ -34,35 +39,50 @@ const borderColorFailure = [['rgba(229, 28, 35, 1)']];
 
 const countChartOptions = _.cloneDeep(options);
 
-countChartOptions.scales.yAxes = [{
-    display: true,
-    ticks: {
-        callback(value) {
-            const formattedValue = formatters.toNumberString(value);
-            if (formattedValue.length < 8) {
-                return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
+countChartOptions.scales.yAxes = [
+    {
+        display: true,
+        ticks: {
+            callback(value) {
+                const formattedValue = formatters.toNumberString(value);
+                if (formattedValue.length < 8) {
+                    return `${' '.repeat(8 - formattedValue.length)}${formattedValue}`;
+                }
+                return formattedValue;
             }
-            return formattedValue;
         }
     }
-}];
+];
 
-const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) => {
-    const totalData = countPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
-    const successData = successPoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
-    const failureData = failurePoints.map(point => ({x: new Date(point.timestamp), y: point.value || 0}));
+const CountGraph = ({setShowResetZoom, countPoints, successPoints, failurePoints, xAxesTicks, setXAxesTicks}) => {
+    const totalData = countPoints.map((point) => ({x: new Date(point.timestamp), y: point.value || 0}));
+    const successData = successPoints.map((point) => ({x: new Date(point.timestamp), y: point.value || 0}));
+    const failureData = failurePoints.map((point) => ({x: new Date(point.timestamp), y: point.value || 0}));
 
     if (!totalData.length && !successData && !failureData) {
-        return (<MissingTrendGraph title="Count"/>);
+        return <MissingTrendGraph title="Count" />;
     }
 
-    countChartOptions.scales.xAxes = [{
-        type: 'time',
-        time: {
-            min: new Date(from),
-            max: new Date(until)
+    countChartOptions.scales.xAxes = [
+        {
+            type: 'time',
+            ticks: {
+                min: xAxesTicks.min,
+                max: xAxesTicks.max,
+                autoSkip: true,
+                autoSkipPadding: 25,
+                maxRotation: 0
+            }
         }
-    }];
+    ];
+
+    countChartOptions.zoom.onZoom = ({chart}) => {
+        setXAxesTicks({
+            min: new Date(chart.options.scales.xAxes[0].ticks.min),
+            max: new Date(chart.options.scales.xAxes[0].ticks.max)
+        });
+        setShowResetZoom(true);
+    };
 
     const chartData = {
         datasets: [
@@ -92,10 +112,12 @@ const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) =>
                 borderWidth: 1,
                 pointRadius: 1,
                 pointHoverRadius: 3
-            }]
+            }
+        ]
     };
 
-    return (<div className="col-md-12">
+    return (
+        <div className="col-md-12">
             <h5 className="text-center">Count</h5>
             <div className="chart-container">
                 <Line data={chartData} options={countChartOptions} type="line" />
@@ -105,11 +127,12 @@ const CountGraph = ({countPoints, successPoints, failurePoints, from, until}) =>
 };
 
 CountGraph.propTypes = {
+    setShowResetZoom: PropTypes.bool.isRequired,
     countPoints: PropTypes.object.isRequired,
     successPoints: PropTypes.object.isRequired,
     failurePoints: PropTypes.object.isRequired,
-    from: PropTypes.number.isRequired,
-    until: PropTypes.number.isRequired
+    xAxesTicks: PropTypes.object.isRequired,
+    setXAxesTicks: PropTypes.object.isRequired
 };
 
 export default CountGraph;
