@@ -136,10 +136,9 @@ describe('<ServiceGraphContainer />', () => {
 
     it('should not show tabs for roots if service name is specified`', () => {
         const stubStore = createServiceGraphStubStore(fulfilledPromise);
-        const serviceNameSearch = {
-            serviceName: 'baratheon-service'
-        };
-        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={serviceNameSearch} history={stubHistory} />);
+        const serviceName = 'baratheon-service';
+
+        const wrapper = shallow(<ServiceGraphContainer graphStore={stubStore} search={stubSearch} history={stubHistory} serviceName={serviceName}/>);
         expect(wrapper.find('.serviceGraph__tab-link').exists()).to.equal(false);
 
         ServiceGraphStore.fetchServiceGraph.restore();
