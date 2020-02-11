@@ -129,7 +129,7 @@ export default class Tabs extends React.Component {
                     />
                 );
             case 'serviceGraph':
-                return <ServiceGraph store={store} search={this.props.search} history={history} />;
+                return <ServiceGraph store={store} search={this.props.search} history={history} serviceName={this.props.tabProperties.serviceName} />;
             case 'servicePerformance':
                 return <ServicePerformance store={store} history={history} />;
             case 'serviceInsights':

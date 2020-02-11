@@ -30,7 +30,8 @@ export default class ServiceGraphContainer extends React.Component {
     static propTypes = {
         search: PropTypes.object.isRequired,
         graphStore: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
+        serviceName: PropTypes.string
     };
 
     static defaultProps = {
@@ -111,7 +112,7 @@ export default class ServiceGraphContainer extends React.Component {
         return (
             <section>
                 <div className="clearfix" id="service-graph">
-                    {!this.props.search.serviceName && this.props.graphStore.graphs && (
+                    {!this.props.serviceName && this.props.graphStore.graphs && (
                         <div className="serviceGraph__tabs pull-right">
                             <ul className="nav nav-tabs">
                                 {this.props.graphStore.graphs.map((graph, index) => (
@@ -134,7 +135,7 @@ export default class ServiceGraphContainer extends React.Component {
                                 this.props.graphStore.graphs && this.props.graphStore.graphs.length ? (
                                     <FilteredServiceGraphResults
                                         graphs={this.props.graphStore.graphs}
-                                        serviceName={this.props.search.serviceName}
+                                        serviceName={this.props.serviceName}
                                         tabSelected={this.state.tabSelected}
                                         history={this.props.history}
                                         search={this.props.search}
