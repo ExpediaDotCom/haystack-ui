@@ -36,17 +36,21 @@ const fetcher = (fetcherName) => ({
         // use given limit or default
         const limit = options.limit || TRACE_LIMIT;
 
+
+        // traces api expects strings
+        const spanLevelFilters = JSON.stringify([JSON.stringify({
+            serviceName,
+            operationName,
+            traceId
+        })]);
+
         // use traces connector
         tracesConnector
             .findTracesFlat({
-                useExpressionTree: 'true',
-                serviceName,
-                operationName,
-                traceId,
                 startTime,
                 endTime,
                 limit,
-                spanLevelFilters: '[]'
+                spanLevelFilters
             })
             .then((traces) => {
                 // check for 1 or more traces

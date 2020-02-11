@@ -1,17 +1,1 @@
-{
-    "ServiceInsights": {
-        "css": "/bundles/style/ServiceInsights.6c12c30afadfd576af3f.css",
-        "js": "/bundles/js/ServiceInsights.6c12c30afadfd576af3f.js"
-    },
-    "app": {"css": "/bundles/style/app.c20a7a69ec8c1456d3b2.css", "js": "/bundles/js/app.c20a7a69ec8c1456d3b2.js"},
-    "commons": {"js": "/bundles/js/commons.307fcb3e8125237870c4.js"},
-    "serviceGraphContainer": {"js": "/bundles/js/serviceGraphContainer.be91dec5d97d334c06db.js"},
-    "servicePerformance": {
-        "css": "/bundles/style/servicePerformance.f9488ab4998a209f9f8c.css",
-        "js": "/bundles/js/servicePerformance.f9488ab4998a209f9f8c.js"
-    },
-    "vendors~ServiceInsights": {"js": "/bundles/js/vendors~ServiceInsights.bfb522ad57677cf89c33.js"},
-    "vendors~serviceGraphContainer": {"js": "/bundles/js/vendors~serviceGraphContainer.d76d31d745cdb9a9037b.js"},
-    "vendors~servicePerformance": {"js": "/bundles/js/vendors~servicePerformance.c154f02c55229c7efea1.js"},
-    "vendors~vis": {"js": "/bundles/js/vendors~vis.465bf84676b1b98665ef.js"}
-}
+{"ServiceInsights":{"css":"/bundles/style/ServiceInsights.css","js":"/bundles/js/ServiceInsights.js"},"app":{"css":"/bundles/style/app.css","js":"/bundles/js/app.js"},"commons":{"js":"/bundles/js/commons.js"},"serviceGraphContainer":{"js":"/bundles/js/serviceGraphContainer.js"},"servicePerformance":{"css":"/bundles/style/servicePerformance.css","js":"/bundles/js/servicePerformance.js"},"vendors~ServiceInsights":{"js":"/bundles/js/vendors~ServiceInsights.js"},"vendors~ServiceInsights~serviceGraphContainer":{"js":"/bundles/js/vendors~ServiceInsights~serviceGraphContainer.js"},"vendors~serviceGraphContainer":{"js":"/bundles/js/vendors~serviceGraphContainer.js"},"vendors~servicePerformance":{"js":"/bundles/js/vendors~servicePerformance.js"},"vendors~vis":{"js":"/bundles/js/vendors~vis.js"}}
