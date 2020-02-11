@@ -25,8 +25,13 @@ export default class ServiceGraph extends React.Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
         search: PropTypes.object.isRequired,
-        store: PropTypes.object.isRequired
+        store: PropTypes.object.isRequired,
+        serviceName: PropTypes.string
     };
+
+    static defaultProps = {
+        serviceName: undefined
+    }
 
     constructor(props) {
         super(props);
@@ -44,7 +49,7 @@ export default class ServiceGraph extends React.Component {
         const ServiceGraphContainer = this.state.ServiceGraphContainer;
         return (
             <section className="service-graph-panel">
-                {ServiceGraphContainer && <ServiceGraphContainer graphStore={this.props.store} search={this.props.search} history={this.props.history} isUniversalSearch /> }
+                {ServiceGraphContainer && <ServiceGraphContainer graphStore={this.props.store} search={this.props.search} history={this.props.history} serviceName={this.props.serviceName} isUniversalSearch /> }
             </section>
         );
     }

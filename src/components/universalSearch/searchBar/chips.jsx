@@ -65,7 +65,7 @@ export default class Chips extends React.Component {
 
     render() {
         const chips = this.props.uiState.pendingQuery.map((chip, index) => (
-                <div className={`usb-chip query-${this.props.uiState.queries.length + 1}`} key={Math.random()}>
+                <div className={`usb-chip query-${this.props.uiState.queries.length % 10}`} key={Math.random()}>
                     <span className="usb-chip__key">{chip.key}</span>
                     {chip.operator !== '=' ? <span className="usb-chip__operator">{chip.operator}</span> : null}
                     <span className="usb-chip__value">{chip.value}</span>
