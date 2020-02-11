@@ -28,7 +28,7 @@ export default class QueryBank extends React.Component {
 
     render() {
         const queries = this.props.uiState.queries.map((query, index) => (
-                <div className={`usb-chip query-${index + 1}`} key={Math.random()}>
+                <div className={`usb-chip query-${index % 10}`} key={Math.random()}>
                     <span role="button" tabIndex="-1" onClick={() => this.props.modifyQuery(index)}>
                         {
                             query.map(nestedChip => (
