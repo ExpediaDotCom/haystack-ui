@@ -174,20 +174,20 @@ export default class Autosuggest extends React.Component {
             if (this.props.options[key] && this.props.options[key].values) {
                 this.props.options[key].values.forEach((option) => {
                     if (option.toLowerCase().includes(value.toLowerCase()) && option !== value) {
-                        suggestionArray.push(option);
+                        suggestionArray.push({value: option});
                     }
                 });
             }
         } else if (this.inputMatchesRangeKey(formattedInput)) {
-            type = 'operator';
-            suggestionArray = ['>', '=', '<'];
+            type = 'Operator';
+            suggestionArray = [{value: '>'}, {value: '='}, {value: '<'}];
             value = '';
         } else {
             type = 'Keys';
             value = formattedInput.toLowerCase();
             Object.keys(this.props.options).forEach((option) => {
                 if (option.toLowerCase().includes(value) && option !== value) {
-                    suggestionArray.push(option);
+                    suggestionArray.push({value: option, description: this.props.options[option].description});
                 }
             });
         }
@@ -252,7 +252,7 @@ export default class Autosuggest extends React.Component {
         const formattedInput = Autosuggest.removeWhiteSpaceAroundInput(this.inputRef.value);
         const operatorIndex = Autosuggest.findIndexOfOperator(formattedInput);
         let fillValue = '';
-        let value = this.state.suggestionStrings[this.state.suggestionIndex || 0];
+        let value = this.state.suggestionStrings[this.state.suggestionIndex || 0].value;
         value = Autosuggest.checkForWhitespacedValue(value);
         if (this.state.suggestedOnType === 'operator') {
             const slicedInput = formattedInput.replace(/[(>=<)]/, '');

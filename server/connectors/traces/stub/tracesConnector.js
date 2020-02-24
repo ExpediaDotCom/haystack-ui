@@ -321,7 +321,7 @@ connector.getSearchableKeys = () =>
         operationName: {isRangeQuery: false},
         traceId: {isRangeQuery: false},
         error: {isRangeQuery: false, values: ['true', 'false']},
-        duration: {isRangeQuery: true},
+        duration: {isRangeQuery: true, description: '(unit: microseconds)'},
         guid: {isRangeQuery: false},
         testid: {isRangeQuery: false}
     }));
