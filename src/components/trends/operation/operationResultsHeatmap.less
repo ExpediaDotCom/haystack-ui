@@ -24,6 +24,10 @@
     padding-top: @padding-small-vertical;
 }
 
+.heatmap-legend {
+    padding-bottom: @padding-small-vertical;
+}
+
 .heatmap {
     position: relative;
     border-collapse: collapse;
@@ -33,6 +37,8 @@
         padding: 0.1em 0.2em 0.1em 0.2em;
         min-width: 45px;
         text-align: center;
+        color: @gray-base;
+        font-size: 12px;
     }
 
     thead th {
@@ -51,17 +57,21 @@
         width: 135px;
         text-align: center;
     }
+
+    // For OperationNames
     thead th:first-child {
         left: 0;
         z-index: 1;
     }
 
-    tbody th {
+    tbody th:first-child {
         position: -webkit-sticky; /* for Safari */
         position: sticky;
         left: 0;
         background-color: @white;
-        min-width: 250px !important;
+        min-width: 150px !important;
+        max-width: 250px !important;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         padding: 0.1em 0.8em 0.1em 0.8em;
@@ -69,8 +79,28 @@
         font-weight: 600;
     }
 
+    // For Avg. Percent Availability
+    thead th:last-child {
+        right: 0;
+        z-index: 1;
+    }
+
+    tbody th:last-child {
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        right: 0;
+        background-color: @white;
+        min-width: 45px !important;
+        max-width: 50px !important;
+        padding: 0.1em 0.2em 0.1em 0.2em;
+        color: @gray-base;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+    }
+
     tbody:hover > tr {
-        opacity: 0.6;
+        opacity: 0.8;
     }
 
     tbody:hover > tr:hover {
