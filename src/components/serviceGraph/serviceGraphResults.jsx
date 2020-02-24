@@ -154,10 +154,12 @@ export default class ServiceGraphResults extends React.Component {
             return;
         }
         if (highlightedObject.type === 'node') {
-            this.props.history.push(linkBuilder.universalSearchLink({
-                query_1: {serviceName: highlightedObject.getName()},
-                tabId: 'serviceGraph'
-            }));
+            this.props.history.push(
+                linkBuilder.universalSearchLink({
+                    query_1: {serviceName: highlightedObject.getName()},
+                    tabId: 'serviceGraph'
+                })
+            );
             return;
         }
         this.setState({connDetails: highlightedObject.getName()});
@@ -191,7 +193,8 @@ export default class ServiceGraphResults extends React.Component {
         const brandPrimary = '#e23474';
         const warning = '#e98c15';
         const grey = '#bbb';
-        const serviceName = this.props.search.serviceName;
+        const serviceName =
+            Object.keys(this.props.search).find((searchparams) => searchparams.includes('query_1')) && this.props.search.query_1.serviceName;
 
         const definitions = {
             detailedNode: {

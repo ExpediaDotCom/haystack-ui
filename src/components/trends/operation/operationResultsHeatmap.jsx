@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import _ from 'lodash';
 
 import linkBuilder from '../../../utils/linkBuilder';
 import './operationResultsHeatmap.less';
@@ -32,6 +33,10 @@ const percentColors = [
     {pct: 0.999, color: {r: 118, g: 182, b: 163}},
     {pct: 1.0, color: {r: 75, g: 157, b: 147}}
 ];
+
+const colorScale = percentColors
+    .map((percentColor) => `RGB(${percentColor.color.r},${percentColor.color.g},${percentColor.color.b}) ${percentColor.pct * 100}%`)
+    .join(',');
 
 export default class OperationResultsHeatmap extends React.Component {
     static propTypes = {
@@ -102,12 +107,25 @@ export default class OperationResultsHeatmap extends React.Component {
     }
 
     render() {
-        const data = this.props.operationStore.statsResults;
+        const data = _.sortBy(this.props.operationStore.statsResults, (stats) => stats.avgSuccessPercent);
         const serviceName = this.props.serviceName;
         const {from, until, granularity} = this.props.operationStore.statsQuery;
         const columnHeaders = OperationResultsHeatmap.getColumnHeaders(from, until, granularity);
         return (
             <section>
+                <div className="heatmap-legend pull-right clearfix">
+                    <div className="pull-left">0%</div>
+                    <div
+                        className="pull-left"
+                        style={{
+                            background: `linear-gradient(to right, ${colorScale})`,
+                            height: '10px',
+                            width: '200px',
+                            margin: '6px'
+                        }}
+                    />
+                    <div className="pull-left">100%</div>
+                </div>
                 <div className="heatmap-container">
                     <table className="heatmap">
                         <thead>
@@ -120,6 +138,9 @@ export default class OperationResultsHeatmap extends React.Component {
                                         </div>
                                     </th>
                                 ))}
+                                <th>
+                                    <div>Avg.</div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -154,6 +175,9 @@ export default class OperationResultsHeatmap extends React.Component {
                                             <td style={{background: '#f9edf3'}} />
                                         );
                                     })}
+                                    <th style={{background: OperationResultsHeatmap.getColorForPercentage(op.avgSuccessPercent / 100)}}>
+                                        {OperationResultsHeatmap.formatAvailabilityPercentage(op.avgSuccessPercent)}%
+                                    </th>
                                 </tr>
                             ))}
                         </tbody>
