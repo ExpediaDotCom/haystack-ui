@@ -127,6 +127,7 @@ export default class Autosuggest extends React.Component {
         this.deleteChip = this.deleteChip.bind(this);
         this.deleteQuery = this.deleteQuery.bind(this);
         this.testForValidInputString = this.testForValidInputString.bind(this);
+        this.resetSearch = this.resetSearch.bind(this);
     }
 
     componentDidMount() {
@@ -480,6 +481,14 @@ export default class Autosuggest extends React.Component {
         }
     }
 
+    // Clears all pending and active queries
+    resetSearch() {
+        this.inputRef.value = '';
+        this.props.uiState.pendingQuery = [];
+        this.props.uiState.queries = [];
+        this.props.search();
+    }
+
     render() {
         const uiState = this.props.uiState;
 
@@ -501,6 +510,15 @@ export default class Autosuggest extends React.Component {
                             placeholder={uiState.pendingQuery.length ? '' : 'Search tags and services...'}
                         />
                     </div>
+                    {(uiState.queries.length > 0 || uiState.pendingQuery.length > 0) &&
+                        <div
+                            className="usb-reset-button"
+                            role="button"
+                            tabIndex="-1"
+                            onClick={this.resetSearch}
+                        >Reset Search
+                        </div>
+                    }
                     <TimeWindowPicker uiState={uiState} />
                     <SearchSubmit handleSearch={this.handleSearch} />
                 </div>
