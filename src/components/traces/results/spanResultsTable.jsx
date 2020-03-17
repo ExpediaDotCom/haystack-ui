@@ -19,7 +19,6 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import ColorHash from 'color-hash';
-
 import TagsTable from '../details/timeline/tagsTable';
 import TagsFilter from './tagsFilter';
 import formatters from '../../../utils/formatters';
@@ -34,9 +33,8 @@ function insertErrorAsKeyInResults(results) {
     const mappedResults = results;
     mappedResults.map((span) => {
         const newSpan = span;
-        let error = false;
-        newSpan.tags.forEach((tag) => { if (tag.key === 'error' && tag.value === true) error = true; });
-        newSpan.error = error;
+        const errorTag = newSpan.tags.find(tag => tag.key === 'error');
+        newSpan.error = errorTag ? errorTag.value : false;
         return newSpan;
     });
     return mappedResults;
@@ -60,7 +58,7 @@ function timeColumnFormatter(startTime) {
 }
 
 function errorFormatter(error) {
-    if (error === true) {
+    if (error) {
         return <img src="/images/error.svg" alt="Error" height="18" width="18" />;
     }
     return <img src="/images/success.svg" alt="Success" height="18" width="18" />;
@@ -197,7 +195,7 @@ const SpanResultsTable = ({results}) => {
             ><Header name="Operation"/></TableHeaderColumn>
             <TableHeaderColumn
                 dataField="error"
-                width="5"
+                width="10"
                 dataFormat={errorFormatter}
                 // formatExtraData={successFilterTypes}
                 filter={{type: 'SelectFilter', options: successFilterTypes, placeholder: 'All'}}
@@ -214,7 +212,7 @@ const SpanResultsTable = ({results}) => {
             ><Header name="Duration"/></TableHeaderColumn>
             <TableHeaderColumn
                 dataField="tags"
-                width="75"
+                width="70"
                 dataFormat={tagsFormatter}
                 filter={{ type: 'CustomFilter', getElement: getCustomFilter}}
                 thStyle={tableHeaderStyle}
