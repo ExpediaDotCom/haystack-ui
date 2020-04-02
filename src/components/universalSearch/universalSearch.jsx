@@ -104,7 +104,7 @@ const UniversalSearch = observer(({location, history}) => {
         <article className="universal-search-panel">
             {window.haystackUiConfig.enableSSO && authenticationStore.timedOut ? <AuthenticationTimeoutModal /> : null}
             <Header />
-            <SearchBar search={search} handleSearch={handleSearch} />
+            <SearchBar history={history} search={search} handleSearch={handleSearch} />
             <Tabs search={search} tabProperties={tabProperties} handleTabSelection={handleTabSelection} history={history} location={location} />
             <Footer />
         </article>
