@@ -44,6 +44,7 @@ const ESC = 27;
 export default class Autosuggest extends React.Component {
     static propTypes = {
         uiState: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired,
         options: PropTypes.object,
         search: PropTypes.func.isRequired,
         serviceStore: PropTypes.object.isRequired,
@@ -486,7 +487,10 @@ export default class Autosuggest extends React.Component {
         this.inputRef.value = '';
         this.props.uiState.pendingQuery = [];
         this.props.uiState.queries = [];
-        this.props.search();
+        this.setState({
+            inputError: false
+        });
+        this.props.history.push('/');
     }
 
     render() {
@@ -509,8 +513,7 @@ export default class Autosuggest extends React.Component {
                             onFocus={this.handleFocus}
                             placeholder={uiState.pendingQuery.length ? '' : 'Search tags and services...'}
                         />
-                    </div>
-                    {(uiState.queries.length > 0 || uiState.pendingQuery.length > 0) &&
+                        {(uiState.queries.length > 0 || uiState.pendingQuery.length > 0) &&
                         <div
                             className="usb-reset-button"
                             role="button"
@@ -518,7 +521,8 @@ export default class Autosuggest extends React.Component {
                             onClick={this.resetSearch}
                         >Reset Search
                         </div>
-                    }
+                        }
+                    </div>
                     <TimeWindowPicker uiState={uiState} />
                     <SearchSubmit handleSearch={this.handleSearch} />
                 </div>
