@@ -444,8 +444,6 @@ describe('<Traces />', () => {
                 expect(wrapper.find('.table-striped')).to.have.length(1);
                 // Expect three rows for three tags.
                 expect(wrapper.find('tbody tr')).to.have.length(3);
-                // Expect boolean transform, which returns an image, to have worked.
-                expect(wrapper.find('img')).to.have.length(1);
                 // Expected two links to be created: one from default transform,
                 // one from the link transform.
                 expect(wrapper.find('a')).to.have.length(2);

@@ -80,16 +80,14 @@ global.window.haystackUiConfig = {
             fieldDescription: 'customer identity'
         }
     ],
-    tagValuesTransformMap: {
-        success: {
-            type: 'boolean'
-        },
-        url2: {
-            type: 'link',
-            urlTemplate: 'https://www.google.com/search?q=#{value}',
-            textTemplate: '[Google] #{value}'
+    externalLinking: [
+        {
+            key: 'tag',
+            tagKey: 'url2',
+            url: 'https://www.google.com/search?q=#{tagValue}',
+            label: '[Google]'
         }
-    },
+    ],
     tracesTTL: -1,
     trendsTTL: -1
 };

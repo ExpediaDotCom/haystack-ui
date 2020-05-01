@@ -224,7 +224,12 @@ const trace = () => {
             startTime: 1504784384000 + 2560000 + 105000,
             duration: 105000,
             logs: [],
-            tags: []
+            tags: [
+                {
+                    key: 'external-link-key',
+                    value: 'external-link-value'
+                }
+            ]
         },
         {
             traceId,

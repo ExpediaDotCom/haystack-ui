@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import blobUtil from '../../../../utils/blobUtil';
-import transform from '../../../../utils/tagValuesTransformer';
+import {tagTransformer} from '../../../../utils/externalLinkFormatter';
 
 const TagsTable = ({tags}) => {
     const sortedTags = _.sortBy(tags, [(tag) => tag.key.toLowerCase()]);
@@ -43,7 +43,7 @@ const TagsTable = ({tags}) => {
                                         <span className="ti-new-window" /> <span>{blobUtil.formatBlobTagValue(tag.value, blobsUrl)}</span>
                                     </a>
                                 ) : (
-                                    <span>{transform(tag)}</span>
+                                    <span>{tagTransformer(tag)}</span>
                                 )}
                             </td>
                         </tr>
