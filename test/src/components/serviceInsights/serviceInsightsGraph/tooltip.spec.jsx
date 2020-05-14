@@ -72,7 +72,7 @@ describe('<Tooltip/>', () => {
             const wrapper = shallow(<Tooltip x={1} y={1} visible type="node" data={data} />);
 
             expect(wrapper.find('.tip-grid').text()).to.contain('Issues:');
-            expect(wrapper.find('.tip-grid').text()).to.contain('⚠️Service not intrumented with open tracing');
+            expect(wrapper.find('.tip-grid').text()).to.contain('⚠️Service not instrumented with open tracing');
         });
 
         it('should render debug info when debug url param is present', () => {

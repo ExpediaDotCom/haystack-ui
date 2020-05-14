@@ -69,7 +69,7 @@ function nodeToolTip(x, y, data) {
                         <Fragment>
                             <div className="tip-grid_label">Issues:</div>
                             <div className="tip-grid_value">
-                                {data.type === 'uninstrumented' && <div>{'⚠️Service not intrumented with open tracing'}</div>}
+                                {data.type === 'uninstrumented' && <div>{'⚠️Service not instrumented with open tracing'}</div>}
                             </div>
                         </Fragment>
                     )}
