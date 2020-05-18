@@ -33,6 +33,7 @@ const subsystems = (window.haystackUiConfig && window.haystackUiConfig.subsystem
 export default class SearchBar extends React.Component {
     static propTypes = {
         search: PropTypes.object.isRequired,
+        history: PropTypes.object.isRequired,
         handleSearch: PropTypes.func.isRequired
     };
 
@@ -66,7 +67,7 @@ export default class SearchBar extends React.Component {
     render() {
         return (
             <article className="universal-search-container container">
-                <Autosuggest search={this.handleSubmit} uiState={uiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
+                <Autosuggest search={this.handleSubmit} history={this.props.history} uiState={uiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
             </article>
         );
     }

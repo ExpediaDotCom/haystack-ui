@@ -162,7 +162,7 @@ const trace = () => {
             tags: [
                 {
                     key: 'error',
-                    value: true
+                    value: 'true'
                 }
             ]
         },
