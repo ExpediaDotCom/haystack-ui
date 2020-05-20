@@ -95,7 +95,7 @@ connector.getSearchableKeys = () => {
         fieldNamesWithMetadata.traceId = {isRangeQuery: false};
         fieldNamesWithMetadata.serviceName = {isRangeQuery: false};
         fieldNamesWithMetadata.operationName = {isRangeQuery: false};
-        fieldNamesWithMetadata.duration = {isRangeQuery: true};
+        fieldNamesWithMetadata.duration = {isRangeQuery: true, description: '(unit: microseconds)'};
 
         return fieldNamesWithMetadata;
     });
