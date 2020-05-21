@@ -70,12 +70,13 @@ export default class Suggestions extends React.Component {
                 <ul className="usb-suggestions__fields">
                     {this.state.suggestionStrings.map((item, i) => (
                         <li
-                            key={item}
+                            key={item.value}
                             onMouseEnter={() => this.props.handleHover(i)}
                             className={this.state.suggestionIndex === i ? 'usb-suggestions__field usb-suggestions__field--active' : 'usb-suggestions__field'}
                         >
                             <div role="link" tabIndex="0" onClick={this.props.handleSelection}>
-                                {Suggestions.formatSuggestion(item, this.state.suggestedOnValue)}
+                                {Suggestions.formatSuggestion(item.value, this.state.suggestedOnValue)}
+                                <span className="usb-suggestions__description">{item.description}</span>
                             </div>
                         </li>)
                     )}
