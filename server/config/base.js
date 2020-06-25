@@ -231,6 +231,11 @@ module.exports = {
     //         tagKey: 'external-link-key', // Tag to create a link from in the span tag list
     //         url: 'https://my-other-splunk-url.com/app/search/search?q=#{key}=#{value}',
     //         label: 'Splunk-Instance-2'
+    //     },
+    //     {
+    //         key: 'traceId', // Include traceId to add external link in trace context view
+    //         url: 'https://my-splunk-url.com/app/search/search?q=traceId=#{value}',
+    //         label: 'Splunk-Instance-1'
     //     }
     // ]
 
