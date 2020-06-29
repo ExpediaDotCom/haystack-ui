@@ -15,7 +15,7 @@
  *
  */
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
 import Clipboard from 'react-copy-to-clipboard';
@@ -26,6 +26,7 @@ import LatencyCostTabContainer from './latency/latencyCostTabContainer';
 import TrendsTabContainer from './trends/trendsTabContainer';
 import RelatedTracesTabContainer from './relatedTraces/relatedTracesTabContainer';
 
+import { constructExternalLinksList } from '../../../utils/externalLinkFormatter';
 import rawTraceStore from '../stores/rawTraceStore';
 import latencyCostStore from '../stores/latencyCostStore';
 import linkBuilder from '../../../utils/linkBuilder';
@@ -64,6 +65,23 @@ const TraceDetails = observer(({traceId, traceDetailsStore}) => {
         setTabSelected(tabIndex);
     };
 
+    const linkWrapperRef = useRef(null);
+    const [linksListOpen, setLinksListOpen] = useState(false);
+
+    const handleOutsideClick = (e) => {
+        if (linkWrapperRef.current && !linkWrapperRef.current.contains(e.target)) {
+            document.removeEventListener('mousedown', handleOutsideClick);
+            setLinksListOpen(false);
+        }
+    };
+
+    const handleTabSelection = () => {
+        if (!linksListOpen) {
+            document.addEventListener('mousedown', handleOutsideClick);
+            setLinksListOpen(true);
+        }
+    };
+
     const search = {query_1: {traceId}}; // TODO add specific time for trace
     const traceUrl = linkBuilder.withAbsoluteUrl(linkBuilder.universalSearchTracesLink(search));
     const rawTraceDataLink = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(traceDetailsStore.spans))}`;
@@ -71,6 +89,8 @@ const TraceDetails = observer(({traceId, traceDetailsStore}) => {
         setShowCopied(true);
         setTimeout(() => setShowCopied(false), 2000);
     };
+    const externalLinks = constructExternalLinksList('traceId', traceId);
+
 
     return (
         <section className="table-row-details">
@@ -111,6 +131,18 @@ const TraceDetails = observer(({traceId, traceDetailsStore}) => {
                         { window.haystackUiConfig && window.haystackUiConfig.relatedTracesOptions && window.haystackUiConfig.relatedTracesOptions.length > 0 ? (
                             <li className={tabSelected === 4 ? 'active' : ''}>
                                 <a role="button" id="related-view" tabIndex="-1" onClick={() => toggleTab(4)} >Related Traces</a>
+                            </li>) : null }
+                        { externalLinks && externalLinks.length > 0 ? (
+                            <li>
+                                <a role="button" tabIndex="-1" onClick={() => handleTabSelection()}>
+                                    <span className="usb-tab-icon ti-new-window" />
+                                    <span>External Links</span> <span className="caret" />
+                                </a>
+                                <div ref={linkWrapperRef} className={linksListOpen ? 'dropdown open' : 'dropdown'}>
+                                    <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        {externalLinks}
+                                    </ul>
+                                </div>
                             </li>) : null }
                     </ul>
                 </div>

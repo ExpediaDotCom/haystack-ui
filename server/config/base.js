@@ -218,18 +218,26 @@ module.exports = {
             propertyToMatch: 'url2',
             fieldDescription: 'test trait'
         }
-    ],
+    ]
 
-    tagValuesTransformMap: {
-        success: {
-            type: 'boolean'
-        },
-        url2: {
-            type: 'link',
-            urlTemplate: 'https://www.google.com/search?q=#{value}',
-            textTemplate: '[Google] #{value}'
-        }
-    }
+    // externalLinking: [
+    //     {
+    //         key: 'serviceName', // Searchable key to add to external link list
+    //         url: 'https://my-splunk-url.com/app/search/search?q=#{key}=#{value}',
+    //         label: 'Splunk-Instance-1'
+    //     },
+    //     {
+    //         key: 'tag',
+    //         tagKey: 'external-link-key', // Tag to create a link from in the span tag list
+    //         url: 'https://my-other-splunk-url.com/app/search/search?q=#{key}=#{value}',
+    //         label: 'Splunk-Instance-2'
+    //     },
+    //     {
+    //         key: 'traceId', // Include traceId to add external link in trace context view
+    //         url: 'https://my-splunk-url.com/app/search/search?q=traceId=#{value}',
+    //         label: 'Splunk-Instance-1'
+    //     }
+    // ]
 
     // use if you need SAML back SSO auth
     //
