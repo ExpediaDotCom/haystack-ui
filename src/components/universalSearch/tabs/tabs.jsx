@@ -32,6 +32,7 @@ import serviceGraphState from './tabStores/serviceGraphStateStore';
 import servicePerformanceState from './tabStores/servicePerformanceStateStore';
 import serviceInsightsTabStateStore from './tabStores/serviceInsightsTabStateStore';
 import AlertCounter from '../../alerts/alertCounter';
+import ExternalLinksList from './externalLinksList';
 
 @observer
 export default class Tabs extends React.Component {
@@ -166,7 +167,12 @@ export default class Tabs extends React.Component {
             <article>
                 <section className="container">
                     <nav>
-                        <ul className="nav nav-tabs">{Tabs.tabs.map((tab) => TabSelector(tab))}</ul>
+                        <ul className="nav nav-tabs">
+                            {Tabs.tabs.map((tab) => TabSelector(tab))}
+                            <ExternalLinksList
+                                search={search}
+                            />
+                        </ul>
                     </nav>
                 </section>
                 <section className="universal-search-tab__content">
