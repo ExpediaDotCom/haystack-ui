@@ -26,10 +26,10 @@ function constructLinks(kvPairs) {
 }
 
 const ExternalLinksList = ({search}) => {
-    const filteredSearchKeys = Object.keys(search).filter(key => key !== 'time');
+    const filteredSearchKeys = Object.keys(search).filter(key => key !== 'time' && key !== 'tabId');
 
     const searchKeyValuePairs = filteredSearchKeys.length && Object.assign(
-        ...filteredSearchKeys.map(query => (search[query])).flat()
+        {}, ...filteredSearchKeys.map(query => (search[query]))
     );
 
     const constructedLinks = constructLinks(searchKeyValuePairs);

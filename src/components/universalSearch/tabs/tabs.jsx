@@ -169,9 +169,9 @@ export default class Tabs extends React.Component {
                     <nav>
                         <ul className="nav nav-tabs">
                             {Tabs.tabs.map((tab) => TabSelector(tab))}
-                            <ExternalLinksList
+                            {(window.haystackUiConfig.externalLinking && window.haystackUiConfig.externalLinking.length) ? <ExternalLinksList
                                 search={search}
-                            />
+                            /> : null}
                         </ul>
                     </nav>
                 </section>
