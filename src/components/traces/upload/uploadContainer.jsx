@@ -26,34 +26,36 @@ import traceDetailsStore from '../stores/traceDetailsStore';
 import Error from '../../common/error';
 import '../traces.less';
 
-@observer
-class UploadContainer extends React.Component {
-    render() {
-        return (
-            <section>
-                <Header />
-                <section className="universal-search-tab__content">
-                    <section className="container table-row-details table-row-details-upload">
-                        {traceDetailsStore.spans && traceDetailsStore.spans.length > 0 ?
-                            <>
-                                <UploadHeader
-                                    traceDetailsStore={traceDetailsStore}
-                                />
-                                <TimelineTab
-                                    timelineSpans={traceDetailsStore.timelineSpans}
-                                    totalDuration={traceDetailsStore.totalDuration}
-                                    startTime={traceDetailsStore.startTime}
-                                    toggleExpand={traceDetailsStore.toggleExpand}
-                                />
-                            </> :
-                            <Error errorMessage="Invalid JSON or file. Please ensure the uploaded file is a valid downloaded trace"/>
-                        }
-                    </section>
+
+const UploadContainer = observer(() => {
+    const toggleExpand = (id) => {
+        traceDetailsStore.toggleExpand(id);
+    };
+
+    return (
+        <section>
+            <Header />
+            <section className="universal-search-tab__content">
+                <section className="container table-row-details table-row-details-upload">
+                    {traceDetailsStore.spans && traceDetailsStore.spans.length > 0 ?
+                        <>
+                            <UploadHeader
+                                traceDetailsStore={traceDetailsStore}
+                            />
+                            <TimelineTab
+                                timelineSpans={traceDetailsStore.timelineSpans}
+                                totalDuration={traceDetailsStore.totalDuration}
+                                startTime={traceDetailsStore.startTime}
+                                toggleExpand={toggleExpand}
+                            />
+                        </> :
+                        <Error errorMessage="Invalid JSON or file. Please ensure the uploaded file is a valid downloaded trace"/>
+                    }
                 </section>
-                <Footer />
             </section>
-        );
-    }
-}
+            <Footer />
+        </section>
+    );
+});
 
 export default withRouter(UploadContainer);
