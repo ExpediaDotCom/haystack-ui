@@ -56,7 +56,7 @@ class UploadHeader extends React.Component {
                     </div>
                 </div>
                 <div className="upload-inline-block">{Object.keys(services).map(svc => (
-                    <span className={`service-spans label ${colorMapper.toBackgroundClass(svc)}`}>{svc} x{services[svc]}</span>))}
+                    <span key={svc} className={`service-spans label ${colorMapper.toBackgroundClass(svc)}`}>{svc} x{services[svc]}</span>))}
                 </div>
             </div>
         );
