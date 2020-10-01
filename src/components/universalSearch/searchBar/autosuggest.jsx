@@ -23,7 +23,7 @@ import {when} from 'mobx';
 import TimeWindowPicker from './timeWindowPicker';
 import Chips from './chips';
 import QueryBank from './queryBank';
-import Guide from './guide';
+import SearchHistory from './searchHistory';
 import Suggestions from './suggestions';
 import SearchSubmit from './searchSubmit';
 
@@ -536,7 +536,7 @@ export default class Autosuggest extends React.Component {
                             suggestedOnType={this.state.suggestedOnType}
                             suggestedOnValue={this.state.suggestedOnValue}
                         />
-                        <Guide searchHistory={uiState.searchHistory}/>
+                        <SearchHistory history={uiState.searchHistory}/>
                     </div>
                 </div>
                 <QueryBank uiState={uiState} modifyQuery={this.modifyQuery} deleteQuery={this.deleteQuery} />
