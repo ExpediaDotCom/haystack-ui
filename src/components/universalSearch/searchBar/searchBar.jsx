@@ -16,7 +16,6 @@
 
 /* eslint-disable react/prefer-stateless-function */
 
-
 import React from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -67,7 +66,14 @@ export default class SearchBar extends React.Component {
     render() {
         return (
             <article className="universal-search-container container">
-                <Autosuggest search={this.handleSubmit} history={this.props.history} uiState={uiState} operationStore={OperationStore} serviceStore={ServiceStore} options={SearchableKeysStore.keys} />
+                <Autosuggest
+                    search={this.handleSubmit}
+                    uiState={uiState}
+                    operationStore={OperationStore}
+                    services={ServiceStore.services}
+                    options={SearchableKeysStore.keys}
+                    history={this.props.history}
+                />
             </article>
         );
     }
