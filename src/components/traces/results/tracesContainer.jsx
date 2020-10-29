@@ -10,6 +10,7 @@ const TracesContainer = observer(({tracesSearchStore}) => {
     const {timelineResults, searchQuery, searchResults, totalCount} = toJS(tracesSearchStore);
     const traceIds = tracesSearchStore.searchResults.map(t => t.traceId);
     const [showSpans, toggleView] = useState(false);
+    const usingZipkinConnector = window.haystackUiConfig.usingZipkinConnector;
 
     return (
         <article>
@@ -27,7 +28,7 @@ const TracesContainer = observer(({tracesSearchStore}) => {
             <div className="trace-result-view-selector text-center">
                 <div className="btn-group btn-group-sm">
                     <button className={showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => toggleView(!showSpans)}>Traces View</button>
-                    <button className={!showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => toggleView(!showSpans)}>Spans View</button>
+                    {!usingZipkinConnector ? <button className={!showSpans ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary'} onClick={() => toggleView(!showSpans)}>Spans View</button> : null}
                 </div>
             </div>
             <section>
