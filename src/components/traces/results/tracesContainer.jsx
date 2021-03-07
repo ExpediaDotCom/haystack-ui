@@ -19,7 +19,7 @@ const TracesContainer = observer(({tracesSearchStore}) => {
                             <span>Showing latest <b>{searchResults.length}</b> {searchResults.length === 1 ? 'trace' : 'traces'} out of total {totalCount ? <b>{totalCount}</b> : null} for time window. </span>
                         {
                             timelineResults && timelineResults.length
-                                ? <span className="text-muted text-right">Select a timeline bar to drill down.</span>
+                                ? <span className="text-muted text-right">Click and drag between two points to drill down.</span>
                                 : null
                         }
                         </span> : null}
