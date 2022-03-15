@@ -43,7 +43,7 @@
     "google-protobuf": "^3.5.0",
     "grpc": "^1.20.1",
     "https": "^1.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "measured": "^1.1.0",
     "moment": "^2.22.1",
     "particles.js": "^2.0.0",
