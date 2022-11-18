@@ -131,7 +131,7 @@
     "sinon": "^1.17.7",
     "style-loader": "^0.21.0",
     "supertest": "^3.0.0",
-    "svg-url-loader": "^3.0.0",
+    "svg-url-loader": "^8.0.0",
     "timeago.js": "^3.0.2",
     "vis": "^4.21.0-EOL",
     "vizceral": "^4.7.3",
