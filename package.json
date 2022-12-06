@@ -51,7 +51,7 @@
     "passport-saml": "^0.33.0",
     "pug": "^2.0.3",
     "q": "^1.5.1",
-    "qs": "^6.5.2",
+    "qs": "^6.9.7",
     "seedrandom": "^3.0.1",
     "serve-favicon": "^2.5.0",
     "statsd-client": "^0.4.2",
